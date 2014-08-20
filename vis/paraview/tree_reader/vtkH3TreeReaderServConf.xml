@@ -1,0 +1,134 @@
+<ServerManagerConfiguration>
+    <ProxyGroup name="sources">
+        <SourceProxy name="H3TreeReader" class="vtkH3TreeReader" label="H3 Tree Reader">
+            <Documentation
+                long_help="H3 Tree reader."
+                short_help="H3 Tree reader.">
+            </Documentation>
+
+            <StringVectorProperty
+                name="FileName"
+                animatable="0"
+                command="SetFileName"
+                number_of_elements="1"
+                panel_visibility="never">
+                <FileListDomain name="files" />
+                <Documentation>
+                    Specify the file name for the reader plugin.
+                </Documentation>
+            </StringVectorProperty>
+
+            <Property
+                name="Refresh"
+                label="Reload data"
+                command="Modified"
+                panel_widget="command_button"/>
+
+
+            <IntVectorProperty
+                name="Visualization level"
+                label="Visualization level"
+                command="set_grid_visualization_level"
+                number_of_elements="1"
+                default_values="-1">
+                <Documentation>
+                    Choose the level to be visualized (-1 for visualizing the
+                    leaf nodes).
+                </Documentation>
+            </IntVectorProperty>
+
+            <PropertyGroup label="Grid">
+                <Property name="Visualization level" />
+            </PropertyGroup>
+
+            <!-- <IntVectorProperty name="Index" -->
+            <!--                    command="set_load_node_index" -->
+            <!--                    number_of_elements="1" -->
+            <!--                    default_values="0"> -->
+            <!--     <BooleanDomain name="bool"/> -->
+            <!-- </IntVectorProperty> -->
+            <!-- <IntVectorProperty name="Level" -->
+            <!--                    command="set_load_node_level" -->
+            <!--                    number_of_elements="1" -->
+            <!--                    default_values="0"> -->
+            <!--     <BooleanDomain name="bool"/> -->
+            <!-- </IntVectorProperty> -->
+            <!-- <IntVectorProperty name="Parent" -->
+            <!--                    command="set_load_node_parent" -->
+            <!--                    number_of_elements="1" -->
+            <!--                    default_values="0"> -->
+            <!--     <BooleanDomain name="bool"/> -->
+            <!-- </IntVectorProperty> -->
+            <!-- <IntVectorProperty name="Children" -->
+            <!--                    command="set_load_node_children" -->
+            <!--                    number_of_elements="1" -->
+            <!--                    default_values="0"> -->
+            <!--     <BooleanDomain name="bool"/> -->
+            <!-- </IntVectorProperty> -->
+            <!-- <IntVectorProperty name="Neighbors" -->
+            <!--                    command="set_load_node_neighbors" -->
+            <!--                    number_of_elements="2" -->
+            <!--                    default_values="-1 -1" -->
+            <!--                    panel_widget="dual_combo_box"> -->
+            <!--     <Documentation> -->
+            <!--         Neighbors to load. -->
+            <!--     </Documentation> -->
+            <!--     <EnumerationDomain name="enum_0"> -->
+            <!--         <Entry value="-1" text="None"/> -->
+            <!--         <Entry value="1" text="Faces"/> -->
+            <!--         <Entry value="2" text="Edges"/> -->
+            <!--         <Entry value="3" text="Corners"/> -->
+            <!--     </EnumerationDomain> -->
+            <!--     <EnumerationDomain name="enum_1"> -->
+            <!--         <Entry value="-1" text="None"/> -->
+            <!--         <Entry value="1" text="Same level"/> -->
+            <!--         <Entry value="2" text="Children level"/> -->
+            <!--         <Entry value="3" text="Both"/> -->
+            <!--     </EnumerationDomain> -->
+            <!--     <Hints> -->
+            <!--         <NoDefault /> -->
+            <!--     </Hints> -->
+            <!-- </IntVectorProperty> -->
+
+            <!-- <PropertyGroup label="Node Data"> -->
+            <!--     <Property name="Index" /> -->
+            <!--     <Property name="Level" /> -->
+            <!--     <Property name="Parent" /> -->
+            <!--     <Property name="Children" /> -->
+            <!--     <Property name="Neighbors" /> -->
+            <!-- </PropertyGroup> -->
+
+            <StringVectorProperty information_only="1"
+                                  name="CellArrayInfo">
+                <ArraySelectionInformationHelper attribute_name="Cell" />
+            </StringVectorProperty>
+            <StringVectorProperty command="SetCellArrayStatus"
+                                  element_types="2 0"
+                                  information_property="CellArrayInfo"
+                                  label="Cell Arrays"
+                                  name="CellArrayStatus"
+                                  number_of_elements="0"
+                                  number_of_elements_per_command="2"
+                                  repeat_command="1">
+                <ArraySelectionDomain name="array_list">
+                    <RequiredProperties>
+                        <Property function="ArrayList"
+                                  name="CellArrayInfo" />
+                    </RequiredProperties>
+                </ArraySelectionDomain>
+                <Documentation>This property lists which cell-centered arrays to
+                read.</Documentation>
+            </StringVectorProperty>
+
+            <OutputPort
+                name="Tree"
+                index="0" />
+
+            <Hints>
+                <ReaderFactory
+                    extensions="h3t h3g"
+                    file_description="Hom3 Tree (h3t) and Grid (h3g) files" />
+            </Hints>
+        </SourceProxy>
+    </ProxyGroup>
+</ServerManagerConfiguration>
