@@ -1,0 +1,11 @@
+h3_test(arithmetic)
+h3_test(cold_do)
+h3_test(core)
+h3_test(heap_buffer)
+h3_test(integral)
+h3_test(ranges)
+h3_test(thrust)
+h3_mpi_test(mpi 2)
+
+add_subdirectory(matrix)
+add_subdirectory(stack)
