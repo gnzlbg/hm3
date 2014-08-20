@@ -1,0 +1,156 @@
+---
+layout: default
+---
+
+## Hierarchical Space Partition
+
+- Memory layout per node:
+  - Children positions: position of node's first child; `64bit index`.
+  - Exist flag: `1 signaling bit`: true if node exists, false otherwise.
+  - Parent positions: position of node's parent; `64bit/#of children`.
+  - Per node: `73bit`.
+- Sizes:
+ - No heap allocations are performed after initialization.
+ - Size `N`: id of last node in use (not the total #of nodes in use!)
+ - Capacity `N_{max}`: max #of nodes allowed
+ - `N < = N_{max}`
+- Inter-process connectivity:
+ - For each neighbor process, a `boost::flat_set` is used to store the indices of Halo nodes: `O(Nh * Np)`.
+
+## Algorithms
+
+- Fundamentals:
+  - Interleaving _immutable_ algorithms is _wait-free_.
+  - _Mutable_ algorithms are not thread-safe.
+  - Direct neighbor means neighbor sharing an `nd - 1`-dimensional face.
+  - Neighbors sharing faces of dimension < `nd - 1` are called diagonal neighbors.
+  - All neighbors mean also neighbors across levels. Omitting *all* means that the neighbors are at the same level.
+  - All complexity guarantees refer to the *worst case*.
+    - `N` is the #of nodes/cells.
+    - `Np` is the #of neighbor processes.
+    - `Nh` is the #of halo cells.
+  - Finding if a node is a halo is `O(Np * logNh) ~ O(Np)`.
+
+- Immutable constants (access is `O(1)`):
+  - `nd`: #of spatial dimensions (e.g. `nd = 2` for 2D and `nd = 3` for 3D).
+  - Relative sibling positions:
+  - Opposite neighbor positions: `neighbor(i, pos) = n`, `neighbor(n, opposite(pos)) = i`. 
+  - Neighbor directions
+  - #of same level direct neighbor positions: `2 * (nd)`.
+  - #of same level diagonal neighbor positions: .
+  - #of child positions: `2^(nd)`.
+  - max #of direct cell neighbors: .
+  - max #of diagonal cell neighbors: .
+
+- Immutable algorithms (connectivity):
+  - No nodes in use:
+    - Type: `f: () -> size_t`.
+    - Complexity: `O(N)`.
+  - Parent of node `n`: 
+    - Type: `f: (NodeIdx n) -> NodeIdx`.
+    - Complexity: `O(1)`.
+    - Alg: `lower_bound((n - 1) / #of children)`.
+  - Child of node `n` in position `p`: 
+    - Type: `f: (NodeIdx n, ChildPos p) -> NodeIdx`.
+    - Complexity: `O(1)`.
+  - Cell of node `n` in grid `g`:
+    - Type: `f: (NodeIdx n, GridIdx g) -> CellIdx`.
+    - Complexity: `O(1)`.
+  - Position in parent of node `n`: 
+    - Type: `f: (NodeIdx c) -> ChildPos`.
+    - Complexity: `O(1)`.
+    - Alg: `(c - 1) % #of children`.
+  - Neighbor position in direction `d` with sign `s`: 
+    - Type: `f: (Direction d, Sign s) -> NghbrPos`.
+    - Complexity: `O(1)`.
+  - Is neighbor position `p` at sing `s`:
+    - Type: `f: (NghbrPos p, Sign s) -> bool`.
+    - Complexity: `O(1)`.
+  - Direct neighbor of node `n` at position `p`: 
+    - Type: `f: (NodeIdx n, NghbrPos p) -> NodeIdx`.
+    - Complexity: `O(logN)`.
+  - Direct neighbors of node `n`: 
+    - Type: `f: (NodeIdx n) -> (NodeIdx...)`.
+    - Complexity: `O(logN)`.
+    - Return value has size: `#of same level neighbor positions`.
+  - Diagonal neighbor of node `n` at position `p`: 
+    - Type: `f: (NodeIdx n, NghbrPos p) -> NodeIdx`.
+    - Complexity: `O(logN)`.
+  - Diagonal neighbors of node `n`: 
+    - Type: `f: (NodeIdx n) -> (NodeIdx...)`.
+    - Complexity: `O(logN)`.
+    - Return value has size: `#of same level diagonal neighbor positions`.
+  - All nodes in grid `g`:
+    - Type: `f: (GridIdx g) -> (NodeIdx...)`.
+    - Complexity: `O(N)`.
+  - All cells in grid `g`:
+    - Type: `f: (GridIdx g) -> (CellIdx...)`.
+    - Complexity: `O(N)`.
+  - Direct neighbor of node `n` at position `p` in grid `g`: 
+    - Type: `f: (NodeIdx n, NghbrPos p, GridIdx g) -> CellIdx`.
+    - Complexity: `O(logN)`.
+  - Direct neighbors of node `n` in grid `g`: 
+    - Type: `f: (NodeIdx n, GridIdx g) -> (CellIdx...)`.
+    - Complexity: `O(logN)`.
+    - Return value has size: `#of same level neighbor positions`.
+  - Diagonal neighbor of node `n` at position `p` in grid `g`: 
+    - Type: `f: (NodeIdx n, NghbrPos p, GridIdx g) -> CellIdx`.
+    - Complexity: `O(logN)`.
+  - Diagonal neighbors of node `n` in grid `g`: 
+    - Type: `f: (NodeIdx n, GridIdx g) -> (CellIdx...)`.
+    - Complexity: `O(logN)`.
+  - All direct neighbors of node `n` in grid `g`: 
+    - Type: `f: (NodeIdx n, GridIdx g) -> (CellIdx...)`.
+    - Complexity: `O(logN)`.
+    - Return value has size < `max #of direct cell neighbors`.
+  - All diagonal neighbors of node `n` in grid `g`: 
+    - Type: `f: (NodeIdx n, GridIdx g) -> (CellIdx...)`.
+    - Complexity: `O(logN)`.
+    - Return value has size < `max #of diagonal cell neighbors`.
+
+- Mutable algorithms (connectivity):
+  - Push node:
+    - Type: `f: () -> NodeIdx`.
+    - Complexity: `O(1)`.
+  - Pop node:
+    - Type: `f: () -> NodeIdx`.
+    - Complexity: `O(1)`.
+  - Insert `n` nodes before position `p`:
+    - Type: `f: (NodeIdx p, Size n) -> NodeIdx`.
+    - Complexity: `O(N)`.
+  - Delete cells satisfying the predicate `p`:
+    - Type: `f: (((NodeIdx) -> bool) p) -> NodeIdx`.
+    - Complexity: `O(N)`.
+
+- Immutable algorithms (geometry):
+  - Length of node `n`:
+    - Type: `f: (NodeIdx n) -> Num`.
+    - Complexity: `O(logN)`.
+  - Coordinates of node `n`:
+    - Type: `f: (NodeIdx n) -> (Num...)`.
+    - Complexity: `O(logN)`.
+  - Cell vertices of node `n`:
+    - Type: `f: (NodeIdx n) -> ((Num...)...)`.
+    - Complexity: `O(logN)`.
+
+- Boundary conditions (B is the #of boundaries): 
+  - Is cell `c` cut by boundary `b`:
+    - Type: `f: (CellIdx c, Boundary b) -> bool`.
+    - Complexity: `O(1)`.
+  - Boundaries cutting cell `c`:
+    - Type: `f: (CellIdx c) -> (Boundary...)`.
+    - Complexity: `O(B)`.
+
+- Immutable algorithms (distributed memory):
+  - Neighbor processes:
+    - Type: `f: () -> (Rank...)`.
+    - Complexity: `O(1)`.
+  - Neighbor processes of grid `g`:
+    - Type: `f: (GridIdx g) -> (Rank...)`.
+    - Complexity: `O(1)`.
+  - Window cells of grid `g` with process `p`:
+    - Type: `f: (GridIdx g, Rank p) -> (CellIdx...)`.
+    - Complexity: `O(Nh logN)`.
+  - `l` halo layers of grid `g` with process `p`:
+    - Type: `f: (GridIdx g, Size l, Rank p) -> HaloHandler`.
+    - Complexity: `O(Nh logN)`.

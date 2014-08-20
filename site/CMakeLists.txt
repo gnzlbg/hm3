@@ -1,0 +1,94 @@
+# Copyright Louis Dionne 2015
+# Copyright Gonzalo Brito Gadeschi
+# Distributed under the Boost Software License, Version 1.0.
+# (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
+
+##############################################################################
+# Setup the documentation
+##############################################################################
+if (NOT DOXYGEN_FOUND)
+    message(WARNING "Doxygen was not found; the 'doc' and the various "
+                    "'gh-pages.*' targets will be unavailable.")
+    return()
+endif()
+
+configure_file(src/doxygen/Doxyfile.in Doxyfile @ONLY)
+add_custom_target(doc
+    COMMAND ! ${DOXYGEN_EXECUTABLE} Doxyfile 2>&1 | grep "warning"
+    COMMENT "Generating API documentation with Doxygen"
+    VERBATIM
+    )
+
+# Generates the website site
+add_custom_target(site
+  COMMAND ${PROJECT_SOURCE_DIR}/site/generate.py ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR}
+  COMMENT "Generating the website"
+  VERBATIM
+  DEPENDS doc
+  WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+)
+
+
+if (NOT GIT_FOUND)
+    message(WARNING "Git was not found; the various 'gh-pages.*' targets will be unavailable.")
+    return()
+endif()
+
+##############################################################################
+# Setup the URL to the official repository on GitHub.
+#
+# If there is a GH_TOKEN environment variable, we assume this token allows
+# us to push to the GitHub repository and we use that in the URL. This token
+# will give us push access for updating the 'gh-pages' branch and doing other
+# useful things e.g. from Travis. Otherwise, if there's no such environment
+# variable, the URL just refers to the GitHub repository without authentication.
+# In this case, we'll be asked for our username and password when/if we try to
+# push to the repository.
+##############################################################################
+if (DEFINED ENV{GH_TOKEN})
+  set(HM3_ORIGIN_URL "https://gnzlbg:$ENV{GH_TOKEN}@github.com/gnzlbg/hm3.git")
+else()
+  set(HM3_ORIGIN_URL "https://github.com/gnzlbg/hm3")
+endif()
+
+add_custom_target(gh-pages.clone
+    COMMAND [ -e ${CMAKE_SOURCE_DIR}/site/gh-pages ] || ${GIT_EXECUTABLE} clone ${HM3_ORIGIN_URL} --depth 1 --branch=gh-pages ${CMAKE_SOURCE_DIR}/site/gh-pages
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Cloning the gh-pages branch into the site/gh-pages directory"
+    VERBATIM
+)
+
+add_custom_target(gh-pages.clean
+    COMMAND ${CMAKE_COMMAND} -E remove *.*
+    COMMAND ${CMAKE_COMMAND} -E remove_directory *.*
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/site/gh-pages
+    DEPENDS gh-pages.clone
+    COMMENT "Cleaning up site/gh-pages"
+    VERBATIM
+)
+
+add_custom_target(gh-pages.copy
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/site/src ${CMAKE_SOURCE_DIR}/site/gh-pages
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/site/gh-pages
+    COMMENT "Copying the documentation from ${CMAKE_SOURCE_DIR}/site/src to ${CMAKE_SOURCE_DIR}/site/gh-pages"
+    DEPENDS site
+    gh-pages.clean
+    VERBATIM
+)
+
+add_custom_target(gh-pages.update
+    COMMAND ${GIT_EXECUTABLE} add --all .
+    COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to ${HM3_CURRENT_COMMIT}"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/site/gh-pages
+    COMMENT "Updating the gh-pages clone with freshly built documentation"
+    DEPENDS gh-pages.copy
+    VERBATIM
+)
+
+add_custom_target(gh-pages.push
+    COMMAND ${GIT_EXECUTABLE} push origin gh-pages
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/site/gh-pages
+    COMMENT "Pushing the gh-pages branch to GitHub"
+    DEPENDS gh-pages.update
+    VERBATIM
+)
