@@ -1,0 +1,7 @@
+\form#0:$\ 2^{n_d - m} \begin{pmatrix} n_d // m \end{pmatrix} $
+\form#1:$ 2^{nd} $
+\form#2:$ 2 ^ {m} $
+\form#3:$ m >= m $
+\form#4:$ (2^{m})^{l} $
+\form#5:$\ (2^{n_d})^{\mathrm{level}} $
+\form#6:$\ \sum_{l = 0}^{level} (2^{n_d})^{\mathrm{l}} $

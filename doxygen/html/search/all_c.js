@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['name',['name',['../structhm3_1_1io_1_1client.html#af40327f5c1b19da24c11c756274f78f5',1,'hm3::io::client::name()'],['../structhm3_1_1io_1_1file_1_1id.html#acce2b2b82a14acafa25c3ecccbe44f18',1,'hm3::io::file::id::name()'],['../structhm3_1_1io_1_1file.html#a1b125000e96056c2a12d160ea16e8d1c',1,'hm3::io::file::name()'],['../namespacehm3_1_1solver_1_1level__set.html#ab556e258bc667b19b2c59e73e9c7ef81',1,'hm3::solver::level_set::name()']]],
+  ['neighbor_5fchildren_5fsharing_5fface_5f_3c_201_2c_200_20_3e',['neighbor_children_sharing_face_&lt; 1, 0 &gt;',['../structhm3_1_1tree_1_1neighbor__children__sharing__face___3_011_00_010_01_4.html',1,'hm3::tree']]],
+  ['neighbor_5flookup_5ftable_5f_3c_201_2c_200_20_3e',['neighbor_lookup_table_&lt; 1, 0 &gt;',['../structhm3_1_1tree_1_1neighbor__lookup__table___3_011_00_010_01_4.html',1,'hm3::tree']]],
+  ['neighbor_5flookup_5ftable_5f_3c_202_2c_200_20_3e',['neighbor_lookup_table_&lt; 2, 0 &gt;',['../structhm3_1_1tree_1_1neighbor__lookup__table___3_012_00_010_01_4.html',1,'hm3::tree']]],
+  ['neighbor_5flookup_5ftable_5f_3c_202_2c_201_20_3e',['neighbor_lookup_table_&lt; 2, 1 &gt;',['../structhm3_1_1tree_1_1neighbor__lookup__table___3_012_00_011_01_4.html',1,'hm3::tree']]],
+  ['neighbor_5flookup_5ftable_5f_3c_203_2c_200_20_3e',['neighbor_lookup_table_&lt; 3, 0 &gt;',['../structhm3_1_1tree_1_1neighbor__lookup__table___3_013_00_010_01_4.html',1,'hm3::tree']]],
+  ['neighbor_5flookup_5ftable_5f_3c_203_2c_201_20_3e',['neighbor_lookup_table_&lt; 3, 1 &gt;',['../structhm3_1_1tree_1_1neighbor__lookup__table___3_013_00_011_01_4.html',1,'hm3::tree']]],
+  ['neighbor_5flookup_5ftable_5f_3c_203_2c_202_20_3e',['neighbor_lookup_table_&lt; 3, 2 &gt;',['../structhm3_1_1tree_1_1neighbor__lookup__table___3_013_00_012_01_4.html',1,'hm3::tree']]],
+  ['neighbors',['neighbors',['../structhm3_1_1grid_1_1adaptor_1_1multi.html#a835a58f13ff8244e9781111d867731b6',1,'hm3::grid::adaptor::multi::neighbors(tree_node_idx n, grid_idx g) const noexcept'],['../structhm3_1_1grid_1_1adaptor_1_1multi.html#a67c566f0f3e5333c867de50e1a22ba1f',1,'hm3::grid::adaptor::multi::neighbors(tree_node_idx n, grid_idx g, Manifold manifold) const noexcept'],['../structhm3_1_1grid_1_1hc_1_1single.html#a70d451ace7d7d4bc2131d23361dd4937',1,'hm3::grid::hc::single::neighbors(tree_node_idx n) const noexcept'],['../structhm3_1_1grid_1_1hc_1_1single.html#a491d7be176d59c84c1481e833ec85d8f',1,'hm3::grid::hc::single::neighbors(tree_node_idx n, Manifold manifold) const noexcept'],['../structhm3_1_1solver_1_1level__set_1_1amr.html#af3aeab2657e4aac78913160dbe4b4d95',1,'hm3::solver::level_set::amr::neighbors()'],['../structhm3_1_1solver_1_1state_1_1grid.html#aea468d01619998a42b6354091b4f5b06',1,'hm3::solver::state::grid::neighbors()']]],
+  ['new_5ffile',['new_file',['../structhm3_1_1io_1_1client.html#a41516ac2241fa60fe9c2f1d1cfe5556b',1,'hm3::io::client']]],
+  ['no_5fcorners',['no_corners',['../structhm3_1_1geometry_1_1square.html#a4f7ae6821e60c9f0f88324281c066018',1,'hm3::geometry::square']]],
+  ['no_5fedges',['no_edges',['../structhm3_1_1geometry_1_1square.html#afbb7f1f7addb5fbdb1a88f47a2e9a982',1,'hm3::geometry::square']]],
+  ['no_5ffiles',['no_files',['../structhm3_1_1io_1_1client.html#a51fbb1e733478a4f7512a8d868c58bbd',1,'hm3::io::client']]],
+  ['no_5fgrids',['no_grids',['../structhm3_1_1grid_1_1adaptor_1_1multi.html#a7bdcb55b507f1da7b11b54244efefba5',1,'hm3::grid::adaptor::multi']]],
+  ['no_5fsiblings',['no_siblings',['../structhm3_1_1solver_1_1level__set_1_1amr.html#a0126111c8b11420990f460a78108f2e9',1,'hm3::solver::level_set::amr']]],
+  ['node',['node',['../structhm3_1_1grid_1_1hc_1_1node.html',1,'hm3::grid::hc']]],
+  ['node',['node',['../structhm3_1_1grid_1_1adaptor_1_1multi.html#af58669e1404a32608d8f709403044514',1,'hm3::grid::adaptor::multi::node(tree_node_idx n, grid_idx g) const noexcept'],['../structhm3_1_1grid_1_1adaptor_1_1multi.html#a121c18af6379125a998f4b659b87b40d',1,'hm3::grid::adaptor::multi::node(tree_node_idx n, grid_idx g) noexcept'],['../structhm3_1_1grid_1_1hc_1_1node.html#a24b08c05d68beb917ead778788dcd16e',1,'hm3::grid::hc::node::node()'],['../structhm3_1_1grid_1_1hc_1_1single.html#aa9f5511d4526db6861d1c1cb824642df',1,'hm3::grid::hc::single::node()']]],
+  ['node_5flength_5ffn',['node_length_fn',['../structhm3_1_1tree_1_1node__length__fn.html',1,'hm3::tree']]],
+  ['node_5fneighbor_5ffn',['node_neighbor_fn',['../structhm3_1_1tree_1_1node__neighbor__fn.html',1,'hm3::tree']]],
+  ['nodes',['nodes',['../structhm3_1_1grid_1_1adaptor_1_1multi.html#aea2269bc554f0c803d64cca5d982e0a8',1,'hm3::grid::adaptor::multi::nodes()'],['../structhm3_1_1solver_1_1level__set_1_1amr.html#acb1e1520953e752febe1477df772ffda',1,'hm3::solver::level_set::amr::nodes()']]],
+  ['non_5floggable',['non_loggable',['../structhm3_1_1amr_1_1non__loggable.html',1,'hm3::amr']]]
+];

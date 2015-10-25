@@ -1,0 +1,9 @@
+- [hm3]({{ site.baseurl }}/documentation)
+  - [io]({{ site.baseurl }}/hm3/io)
+    - [that.html]({{ site.baseurl }}/hm3/io/that.html)
+  - grid
+    - [adaptor]({{ site.baseurl }}/hm3/grid/adaptor)
+      - serialization
+        - [booom.html]({{ site.baseurl }}/hm3/grid/adaptor/serialization/booom.html)
+  - [utility]({{ site.baseurl }}/hm3/utility)
+    - [other.html]({{ site.baseurl }}/hm3/utility/other.html)
