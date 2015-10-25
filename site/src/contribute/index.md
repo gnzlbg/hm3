@@ -18,12 +18,12 @@ messages](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html),
 
 ## Development guidelines
 
-- Stick to the STL/Boost naming convention, that is, write everything in
-  lower-case with underscores (`push_back`), except:
+- Naming convention (STL/Boost): everything in lower-case with underscores
+  (`push_back`), except:
   - macros: capital with underscores prefixed with `HM3_` (`HM3_ASSERT`), and
-  - concepts: camel case (`RandomAccessIterator`).
-- Document code using `///` doxygen-style comments.
-- Indent code using `make fmt` (requires `clang-format`).
-- Unit-Test your code:
-  - for examples, see the `/test` directory,
-  - use `make cov` to check the tests coverage.
+  - type parameters/concepts: camel case (`RandomAccessIterator`).
+  - use `make check-tidy` target to check the naming convetion.
+  - use `make format` to correctly format your code (requires `clang-format`).
+  - Document code using `///` doxygen-style comments.
+- Unit tests are in the
+  [`/test`](https://github.com/gnzlbg/hm3/tree/master/test) directory.

@@ -14,53 +14,34 @@ language extensions (OpenMP, pragma once, zero-variadic-macro-arguments) is
 required. Only [clang](http://clang.llvm.org/) tip-of-trunk is currently tested.
 HM3 depends on the following external libraries:
 
-- C++ standard library: only [libc++](http://libcxx.llvm.org/) tip-of-trunk is tested,
-- MPI: only [mpich](http://www.mpich.org/) is tested, and
-- Boost (header-only): only latest [boost](http://www.boost.org/) is tested.
+- C++ standard library,
+- MPI, and
+- Boost (header-only installation).
 
-For compiling the ParaView plugins the compiled sources of ParaView are needed.
+For compiling the ParaView plugins an installation of ParaView from source is
+required.
 
-## How to build
+## Build options
 
-Run `./aux/configure.py -h` to get a description of the different build modes,
-build options, and targets available. In a nutshell:
+The build options available are specified in
+['cmake/hm3_options.cmake'](https://github.com/gnzlbg/hm3/blob/master/cmake/hm3_options.cmake).
 
-```bash
-make tests # Builds and runs all tests.
-make vis   # Builds the visualization tools.
-make fmt   # Reformats all source code files.
-make cov   # Builds, run tests with coverage analysis, and generates report.
-make site  # Builds the website.
-```
+## Available targets
 
-## FAQ
+Binary targets:
 
-### Why clang?
+- `make check`: Builds and runs all tests.
+- `make vis`: Builds the ParaView plugins.
 
-Is the only modern compiler that works find in both on Cray and IBM
-supercomputers and has OpenMP support.
+Style targets:
 
-### Which Boost libraries are required?
+- `make format`: Reformats all source code files (checks the formatting).
+- `make check-format`: Checks the formatting of all source code files (returns a diff).
+- `make check-tidy`: Checks the styleguide (returns a diff)
 
-Only the following header-only libraries are used:
+Documentation and website target:
 
-- Boost.Container (for vector, static vector, and flat set/maps).
-- Boost.DynamicBitset
-- Boost.Units
-
-These should be fetched automatically from github in the future. 
-
-### Why MPICH?
-
-- All relevant proprietary MPI implementations are MPICH derivatives (Cray, IBM,
-Intel, and MVAPICH, and at the end of the day, one will use one of them).
-
-- MPICH coverage of the current MPI standard is larger, and
-recent MPI standards are implemented there faster.
-
-- MPICH has good (and bug-free) support for `MPI_THREAD_MULTIPLE`.
-
-- MPICH has static checking of MPI data-types when used in combination with
-  clang.
-
-Note: OpenMPI is not tested but it should work just fine.
+- `make doc`: Builds the Doxygen documentation.
+- `make site`: Builds the website.
+- `make gh-pages.push`: Builds the website and uploads it to the `gh-pages`
+  branch.
