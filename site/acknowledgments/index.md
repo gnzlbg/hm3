@@ -1,6 +1,0 @@
----
----
-
-# Acknowledgments
-
-{% include acknowledgments %}
