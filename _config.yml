@@ -1,6 +1,6 @@
 markdown: redcarpet
 baseurl: /hm3
-highlighter: true
+pygments: true
 timezone: Europe/Berlin
 
 scholar:
