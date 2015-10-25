@@ -145,8 +145,8 @@ after_success:
   - |
     if [[ "${Site}" == "true" && "${TRAVIS_PULL_REQUEST}" == "false" && "${TRAVIS_BRANCH}" == "master" ]]; then
         doxygen --version
-        make gh-pages.update
-        #make gh-pages.push &>/dev/null
+        #make gh-pages.update
+        make gh-pages.push &>/dev/null
     fi
 
 notifications:

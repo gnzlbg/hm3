@@ -30,10 +30,11 @@ def path_in_site(md_file_path):
     return os.path.join(dir_name, file_name)
 
 # Copies a file from the tree to the site/src directory and updates its links
-def copy_to_site(md_file_path, md_file_paths):
+def copy_to_site(md_file_path, md_file_paths, verbose):
     site_path = path_in_site(md_file_path)
 
-    print('    - ' + md_file_path + ' -> ' + site_path)
+    if verbose:
+        print('    - ' + md_file_path + ' -> ' + site_path)
 
     # copy file to site directory and prepend ---\n---\n to the file
     site_dir = os.path.dirname(site_path)
@@ -70,9 +71,10 @@ def generate_toc(starting_point):
         for f in sorted(files):
             if f == 'index.md':
                 continue
-            m = f.split('.md')[0] + '.html'
+            n = f.split('.md')[0]
+            m = n + '.html'
             p = os.path.join(topdir, m)
-            toc = toc + link(topdir, m, p, 1)
+            toc = toc + link(topdir, n, p, 1)
     return toc
 
 if __name__ == '__main__':
@@ -81,37 +83,45 @@ if __name__ == '__main__':
     args = docopt(__doc__, version='HM3 ' + version)
     verbose = args['--verbose']
 
-    print('Generating HM3\'s website...')
+    if verbose:
+        print('Generating HM3\'s website...')
     source_dir = args['<source_dir>']
     build_dir = args['<build_dir>']
-    print('  - source_dir: ' + source_dir)
-    print('  - build_dir: ' + build_dir)
+    if verbose:
+        print('  - source_dir: ' + source_dir)
+        print('  - build_dir: ' + build_dir)
     site_dir = os.path.join(source_dir, 'site/src')
-    print('  - site_dir: ' + site_dir)
+    if verbose:
+        print('  - site_dir: ' + site_dir)
 
-    # Get all the site files (TODO: remove this, not necessary)
-    site_files = subprocess.check_output(['git', 'ls-files', site_dir]).strip().split('\n')
-    print('  - site source files:')
-    for f in site_files:
-        print('    - ' + f)
+    if verbose:
+        # Get all the site files (TODO: remove this, not necessary)
+        site_files = subprocess.check_output(['git', 'ls-files', site_dir]).strip().split('\n')
+        print('  - site source files:')
+        for f in site_files:
+            print('    - ' + f)
+    
 
     # Get all the md files in tree
     md_files = [f for f in subprocess.check_output(['git', 'ls-files', source_dir]).strip().split('\n') if os.path.splitext(f)[1] == '.md' and not 'site' in f]
 
-    print('  - copying md files in tree to site:')
+    if verbose:
+        print('  - copying md files in tree to site:')
     for f in md_files:
-        copy_to_site(f, md_files)
+        copy_to_site(f, md_files, verbose)
 
     def toc_link(f):
         return ' {{  site.baseurl }}/' + f.replace('md', 'html')
 
-    print(' - toc files:')
+    if verbose:
+        print(' - toc files:')
     cd = os.getcwd()
     tocd = os.path.join(cd, 'site/src')
     os.chdir(tocd)
     toc = generate_toc('hm3')
     os.chdir(cd)
-    print(toc)
+    if verbose:
+        print(toc)
 
     includes_dir = os.path.join(site_dir, '_includes')
     if not os.path.exists(includes_dir):
@@ -120,5 +130,6 @@ if __name__ == '__main__':
     with file(toc_path, 'w') as toc_file:
         toc_file.write(toc)
 
-    print('...done!')
+    if verbose:
+        print('...done!')
     exit(0)

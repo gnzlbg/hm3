@@ -21,13 +21,12 @@ add_custom_target(doc
 
 # Generates the website site
 add_custom_target(site
-  COMMAND ${PROJECT_SOURCE_DIR}/site/generate.py ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR}
+  COMMAND ${PROJECT_SOURCE_DIR}/site/generate.py ${PROJECT_SOURCE_DIR} ${PROJECT_BINARY_DIR} --verbose
   COMMENT "Generating the website"
   VERBATIM
   DEPENDS doc
   WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
-
 
 if (NOT GIT_FOUND)
     message(WARNING "Git was not found; the various 'gh-pages.*' targets will be unavailable.")
