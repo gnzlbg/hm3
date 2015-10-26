@@ -9,13 +9,13 @@
 ///
 /// \todo Remove this
 #include <array>
-#include <hm3/tree/types.hpp>
 #include <hm3/tree/concepts.hpp>
 #include <hm3/tree/relations/tree.hpp>
+#include <hm3/tree/types.hpp>
 #include <hm3/utility/bit.hpp>
+#include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
-#include <hm3/utility/compact_optional.hpp>
 
 namespace hm3 {
 namespace tree {
@@ -130,6 +130,7 @@ template <uint_t Nd, typename T = uint_t> struct fast {
   /// Reverses the bits of the location
   constexpr void reverse() noexcept {
     HM3_ASSERT(level_, "location uninitialized");
+
     if (level() == 0_l || level() == 1_l) { return; }
     int_t first    = 1;
     int_t last     = *level();
@@ -183,8 +184,9 @@ template <uint_t Nd, typename T = uint_t> struct fast {
       }
     }
     for (auto&& d : dimensions()) {
-      l.x[d] = bit::to_int_r(static_cast<T>(l.to_int(d) + offset[d]),
-                             static_cast<T>(0), static_cast<T>(*l.level() + 1));
+      l.x[d] = bit::to_int_r(
+       static_cast<T>(static_cast<int_t>(l.to_int(d)) + offset[d]),
+       static_cast<T>(0), static_cast<T>(*l.level() + 1));
     }
     return opt_this_t{l};
   }

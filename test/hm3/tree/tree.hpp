@@ -13,12 +13,12 @@
 #else
 #include <hm3/tree/tree.hpp>
 #endif
+#include <hm3/grid/serialization/fio.hpp>
 #include <hm3/tree/algorithm.hpp>
 #include <hm3/tree/location/fast.hpp>
 #include <hm3/tree/location/slim.hpp>
 #include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/serialization/fio.hpp>
-#include <hm3/grid/serialization/fio.hpp>
 #include <hm3/utility/optional.hpp>
 #include <hm3/utility/test.hpp>
 #ifdef HM3_ENABLE_VTK
@@ -344,7 +344,7 @@ template <typename Tree> void check_consistent_leaf_nodes(Tree const& tree) {
 
 template <typename Tree,
           typename Location = location::default_location<Tree::dimension()>>
-void check_consistent_neighbors(Tree const& tree) {
+void check_consistent_neighbors(Tree const& tree, Location = Location{}) {
   constexpr uint_t nd = Tree::dimension();
 
   auto check_opposite_neighbors = [&tree](auto manifold, auto n, auto loc) {
@@ -369,7 +369,7 @@ void check_consistent_neighbors(Tree const& tree) {
 
 template <typename Tree,
           typename Location = location::default_location<Tree::dimension()>>
-void check_is_balanced(Tree const& tree) {
+void check_is_balanced(Tree const& tree, Location = Location{}) {
   for (auto n : tree.nodes()) {
     const auto loc = node_location(tree, n, Location{});
     auto neighbors = node_neighbors(tree, loc);
@@ -381,11 +381,13 @@ void check_is_balanced(Tree const& tree) {
 }
 
 /// Performs all consistency checks:
-template <typename Tree> void consistency_checks(Tree const& tree) {
+template <typename Tree,
+          typename Location = location::default_location<Tree::dimension()>>
+void consistency_checks(Tree const& tree, Location = Location{}) {
   check_root_node_invariants(tree);
   check_consistent_parent_child_edges(tree);
   check_consistent_leaf_nodes(tree);
-  check_consistent_neighbors(tree);
+  check_consistent_neighbors(tree, Location{});
 }
 
 template <typename Tree, typename ReferenceTree,
@@ -394,7 +396,7 @@ void check_tree(Tree const& tree, ReferenceTree const& tref,
                 Location l = Location{}) {
   static_assert(Tree::dimension() == Location::dimension(), "");
   for (auto&& n : tref.nodes) { check_node(tree, n, l); }
-  consistency_checks(tree);
+  consistency_checks(tree, Location{});
 }
 
 template <typename Tree, typename ReferenceTree>
@@ -420,8 +422,8 @@ auto uniformly_refined_tree(uint_t level, uint_t level_capacity)
   return t;
 }
 
-template <typename Tree>  //
-Tree check_io(Tree tree, string file_name) {
+template <typename Tree, typename Location = location::default_location<Tree::dimension()>>  //
+Tree check_io(Tree tree, string file_name, Location = Location{}) {
   file_name = name(tree) + "_" + file_name;
   dfs_sort(tree);
   CHECK(tree.is_compact() == true);
@@ -432,11 +434,13 @@ Tree check_io(Tree tree, string file_name) {
 
   // write tree to disk:
   grid::to_file(tree, file_name);
-  consistency_checks(tree);
+  std::cerr << "HERE0" << std::endl;
+  consistency_checks(tree, Location{});
+  std::cerr << "HERE1" << std::endl;
 
   // read tree from disk
   auto input = grid::from_file(Tree{}, file_name);
-  consistency_checks(input);
+  consistency_checks(input, Location{});
 
   CHECK(tree == input);  // both trees should be identical in memory
   CHECK(input == tree);  // both trees should be identical in memory

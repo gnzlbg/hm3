@@ -20,13 +20,11 @@ struct node_location_fn {
   auto operator()(Tree const& t, node_idx n, Loc loc = Loc()) const noexcept
    -> Loc {
     HM3_ASSERT(n, "cannot compute the location of an invalid node");
-
     root_traversal(t, n, [&](node_idx i) {
       if (t.is_root(i)) { return false; }
       loc.push(Tree::position_in_parent(i));
       return true;
     });
-
     loc.reverse();
     return loc;
   }

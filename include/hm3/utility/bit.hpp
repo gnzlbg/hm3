@@ -4,8 +4,8 @@
 /// Bit manipulation utilities
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
-#include <hm3/utility/range.hpp>
 #include <hm3/utility/math.hpp>
+#include <hm3/utility/range.hpp>
 #if defined(HM3_USE_BMI2) || defined(__BMI2__)
 #pragma message "using BMI2"
 #include <immintrin.h>
@@ -206,7 +206,8 @@ constexpr uint64_t pext(uint64_t source, uint64_t mask) noexcept {
 
 /// Parallel Bits Deposit
 template <typename Integral>
-constexpr Integral deposit_bits(Integral x, Integral mask) {
+__attribute__((no_sanitize("integer"))) constexpr Integral deposit_bits(
+ Integral x, Integral mask) {
 #ifndef HM3_USE_BMI2
   Integral res = 0;
   for (Integral bb = 1; mask != 0; bb += bb) {
@@ -221,7 +222,8 @@ constexpr Integral deposit_bits(Integral x, Integral mask) {
 
 /// Parallel Bits Extract
 template <typename Integral>
-constexpr Integral extract_bits(Integral x, Integral mask) {
+__attribute__((no_sanitize("integer"))) constexpr Integral extract_bits(
+ Integral x, Integral mask) {
 #ifndef HM3_USE_BMI2
   Integral res = 0;
   for (Integral bb = 1; mask != 0; bb += bb) {

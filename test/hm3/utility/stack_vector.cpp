@@ -306,6 +306,13 @@ int main() {
       for (auto i : vec) { CHECK(i == count_--); }
     }
   }
+  {
+    using stack_vec = stack::vector<int, 0>;
+    static_assert(sizeof(stack_vec) == 1, "");
+
+    constexpr auto a = stack_vec{};
+    static_assert(a.size() == std::size_t{0}, "");
+  }
 
   return test::result();
 }

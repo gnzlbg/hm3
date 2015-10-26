@@ -205,8 +205,8 @@ template <typename Target> struct state {
   auto apply() {
     struct {
       bool target_changed;
-      uint_t no_nodes_refined;
-      uint_t no_nodes_coarsened;
+      int_t no_nodes_refined;
+      int_t no_nodes_coarsened;
     } result{false, 0, 0};
 
     // Coarse nodes
@@ -245,8 +245,8 @@ template <typename Target> struct state {
     // Modify the target's grid
     auto result = apply();
 
-    auto no_nodes_before = nodes_.size();
-    auto no_nodes_after
+    int_t no_nodes_before = nodes_.size();
+    int_t no_nodes_after
      = no_nodes_before
        + (result.no_nodes_refined - result.no_nodes_coarsened)
           * t_.no_siblings();

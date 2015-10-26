@@ -2,13 +2,13 @@
 /// \file
 ///
 /// Location testing functions
-#include <hm3/utility/bit.hpp>
-#include <hm3/utility/test.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/concepts.hpp>
 #include <hm3/tree/relations/tree.hpp>
-//#define HM3_TEST_DEBUG_OUTPUT
+#include <hm3/utility/bit.hpp>
+#include <hm3/utility/math.hpp>
+#include <hm3/utility/test.hpp>
+#define HM3_TEST_DEBUG_OUTPUT
 
 template <hm3::uint_t Nd, hm3::uint_t NoLevels, typename Loc>
 void test_location(Loc) {
@@ -54,9 +54,11 @@ void test_location(Loc) {
     CHECK(c == a);
     CHECK(a.level() == a.max_level());
     {
-      using loc_int      = loc_int_t<Loc>;
-      auto a_uint        = static_cast<loc_int>(a);
+      using loc_int = loc_int_t<Loc>;
+      auto a_uint   = static_cast<loc_int>(a);
+      std::cerr << "HERE_A" << std::endl;
       auto a_uint_should = math::ipow(loc_int{2}, loc_int{Nd * *a.max_level()});
+      std::cerr << "HERE_B" << std::endl;
 #ifdef HM3_TEST_DEBUG_OUTPUT
       std::cout << "sizeof(uint_t): " << sizeof(uint_t)
                 << " max_level: " << a.max_level() << std::endl;

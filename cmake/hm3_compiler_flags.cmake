@@ -89,7 +89,7 @@ endif()
 
 if (HM3_ENABLE_ASAN)
   #set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined,leak -fno-omit-frame-pointer -fno-sanitize=unsigned-integer-overflow")
-  set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined")
+  set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined -fno-sanitize-recover=address,integer,undefined -fsanitize-blacklist=${PROJECT_SOURCE_DIR}/sanitize.blacklist")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HM3_ASAN_FLAGS}")
   #hm3_append_flag(HM3_HAS_SANITIZE "${HM3_ASAN_FLAGS}")
   hm3_append_flag(HM3_HAS_NO_OMIT_FRAME_POINTER -fno-omit-frame-pointer)

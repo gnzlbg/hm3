@@ -151,7 +151,9 @@ int main() {
     constexpr auto fn = edge_neighbors<1>{};
     CHECK(size(fn()) == 0_u);
     static_assert(fn.size() == 0, "");
-    test::check_equal(fn.offsets(), neighbor_lookup_table<1, -1>);
+    auto o = fn.offsets();
+    auto m = neighbor_lookup_table<1, -1>;
+    test::check_equal(o, m);
   }
 
   /// Check edge neighbors: 2D
@@ -171,6 +173,7 @@ int main() {
     constexpr auto fn = edge_neighbors<3>{};
     static_assert(fn.size() == 12, "");
     CHECK(size(fn()) == 12_u);
+
     test::check_equal(fn[0], neighbor_offset<3>{{-1, -1, 0}});
     test::check_equal(fn[1], neighbor_offset<3>{{1, -1, 0}});
     test::check_equal(fn[2], neighbor_offset<3>{{-1, 1, 0}});

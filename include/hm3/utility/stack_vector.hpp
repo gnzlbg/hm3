@@ -2,13 +2,84 @@
 /// \file
 ///
 /// Stack allocated vector
-#include <type_traits>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
+#include <type_traits>
 
 namespace hm3 {
 
 namespace stack {
+
+namespace stack_detail {
+
+template <typename T, std::size_t Capacity, bool is_trivially_destructible>  //
+struct storage {
+  static_assert(Capacity != std::size_t{0}, "");
+  std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value>
+   data_[Capacity];
+  std::size_t size_ = 0;
+
+  constexpr const T* data() const noexcept {
+    return reinterpret_cast<T const*>(data_);
+  }
+  constexpr T* data() noexcept { return reinterpret_cast<T*>(data_); }
+
+  constexpr std::size_t size() const noexcept { return size_; }
+  constexpr void set_size(std::size_t new_size) noexcept { size_ = new_size; }
+
+  /// Destroys all elements of the vector inplace
+  /// (required because of using placement new to construct the elements
+  /// on the std::aligned_storage)
+  constexpr void destroy_all() noexcept {
+    for (auto it = data(), e = data() + size(); it != e; ++it) { it->~T(); }
+  }
+  constexpr storage() = default;
+  constexpr storage(storage const&) = default;
+  constexpr storage& operator=(storage const&) = default;
+  constexpr storage(storage&&) = default;
+  constexpr storage& operator=(storage&&) = default;
+  ~storage() { destroy_all(); }
+};
+
+template <typename T, std::size_t Capacity>  //
+struct storage<T, Capacity, true> {
+  static_assert(Capacity != std::size_t{0}, "");
+  std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value> data_[Capacity]
+   = {};
+  std::size_t size_ = 0;
+
+  constexpr const T* data() const noexcept {
+    return reinterpret_cast<T const*>(data_);
+  }
+  constexpr T* data() noexcept { return reinterpret_cast<T*>(data_); }
+
+  constexpr std::size_t size() const noexcept { return size_; }
+  constexpr void set_size(std::size_t new_size) noexcept { size_ = new_size; }
+
+  /// For trivially destructible types there is nothing to do
+  static constexpr void destroy_all() noexcept {}
+};
+
+template <typename T> struct empty_storage {
+  constexpr const T* data() const noexcept { return nullptr; }
+  constexpr T* data() noexcept { return nullptr; }
+
+  static constexpr std::size_t size() noexcept { return 0; }
+  static constexpr void set_size(std::size_t new_size) noexcept {
+    HM3_ASSERT(new_size == std::size_t{0}, "");
+  }
+
+  /// For trivially destructible types there is nothing to do
+  static constexpr void destroy_all() noexcept {}
+};
+
+template <typename T>  //
+struct storage<T, 0, true> : empty_storage<T> {};
+
+template <typename T>  //
+struct storage<T, 0, false> : empty_storage<T> {};
+
+}  // namespace stack_detail
 
 /// Vector with stack storage
 ///
@@ -20,11 +91,19 @@ namespace stack {
 /// - make it as exception safe as possible
 /// - document undefined behavior
 template <typename T, std::size_t Capacity>  //
-struct vector {
+struct vector
+ : stack_detail::storage<T, Capacity, std::is_trivially_destructible<T>{}> {
  private:
-  std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value>
-   data_[Capacity != 0 ? Capacity : 1];  // TODO: hack!
-  std::size_t size_ = 0;
+  using base_t
+   = stack_detail::storage<T, Capacity, std::is_trivially_destructible<T>{}>;
+
+ public:
+  using base_t::data;
+  using base_t::size;
+
+ private:
+  using base_t::set_size;
+  using base_t::destroy_all;
 
   static_assert(std::is_nothrow_destructible<T>{},
                 "stack::vector requires T to be nothrow destructible");
@@ -40,9 +119,6 @@ struct vector {
   using iterator        = T*;
   using const_iterator  = T const*;
 
-  /// Size of the vector
-  constexpr size_type size() const noexcept { return size_; }
-
   /// Is the vector empty?
   constexpr bool empty() const noexcept { return size() == size_type(0); }
 
@@ -53,14 +129,6 @@ struct vector {
 
   /// Maximum number of elements that can be allocated in the vector
   constexpr size_type capacity() const noexcept { return Capacity; }
-
-  /// Pointer to the vector's data
-  constexpr T* data() noexcept { return reinterpret_cast<T*>(data_); }
-
-  /// Pointer to the vector's data
-  constexpr const T* data() const noexcept {
-    return reinterpret_cast<T const*>(data_);
-  }
 
   /// Begin iterator
   constexpr iterator begin() noexcept { return data(); }
@@ -77,30 +145,11 @@ struct vector {
   constexpr const_iterator cend() const noexcept { return end(); }
 
  private:
-  /// Destroys all elements of the vector inplace
-  /// (required because of using placement new to construct the elements
-  /// on the std::aligned_storage)
-  CONCEPT_REQUIRES(!std::is_trivially_destructible<T>{})
-  constexpr void destroy_all() noexcept {
-    for (auto it = begin(), e = end(); it != e; ++it) { it->~T(); }
-  }
-  /// For trivially destructible types there is nothing to do
-  ///
-  /// TODO: move the storage and destructors to a base typename
-  /// and omit the destructor for trivially destructible types: this would
-  /// allow the compiler to automatically generate a constexpr destructor
-  CONCEPT_REQUIRES(std::is_trivially_destructible<T>{})
-  constexpr void destroy_all() {}
-
   using nothrow_move_constructible = std::is_nothrow_move_constructible<T>;
   using nothrow_copy_constructible = std::is_nothrow_copy_constructible<T>;
   using nothrow_move_assignable    = std::is_nothrow_move_assignable<T>;
   using nothrow_copy_assignable    = std::is_nothrow_copy_assignable<T>;
 
- public:
-  ~vector() noexcept { destroy_all(); }
-
- private:
   /// A range can be assigned from if it's an InputRange and T can either be
   /// MoveConstructed or CopyConstructed from the range's elemenets
   ///
@@ -235,7 +284,7 @@ struct vector {
         ranges::swap(*i, *(f++));
       }
     }
-    size_ -= end() - f;
+    set_size(size() - (end() - f));
     for (; f != l; ++f) { f->~T(); }
     return end();
   }
@@ -243,7 +292,7 @@ struct vector {
   /// Clears the vector
   constexpr void clear() noexcept {
     destroy_all();
-    size_ = size_type(0);
+    set_size(0);
   }
 
   /// Emplace back
@@ -254,8 +303,9 @@ struct vector {
   void emplace_back(Args&&... args) {
     HM3_ASSERT(size() <= capacity(),
                "cannot emplace back element, vector is full");
-    new (data_ + size_) T(std::forward<Args>(args)...);
-    ++size_;
+    new (const_cast<ranges::uncvref_t<T>*>(data() + size()))
+     T(std::forward<Args>(args)...);
+    set_size(size() + 1);
   }
 
   /// Push back
@@ -272,7 +322,7 @@ struct vector {
   /// (overload for trivially destructible types and make it constexpr)
   void pop_back() noexcept {
     back()->~T();
-    --size_;
+    set_size(size() - 1);
   }
 
   /// Resize
@@ -284,7 +334,7 @@ struct vector {
     if (count > size()) {
       while (count != size()) { emplace_back(value); }
     } else {
-      erase(end() - (size_ - count), end());
+      erase(end() - (size() - count), end());
     }
   }
 
@@ -297,7 +347,7 @@ struct vector {
     if (count > size()) {
       while (count != size()) { emplace_back(T{}); }
     } else {
-      erase(end() - (size_ - count), end());
+      erase(end() - (size() - count), end());
     }
   }
 };

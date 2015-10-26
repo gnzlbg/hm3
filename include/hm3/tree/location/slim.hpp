@@ -2,13 +2,13 @@
 /// \file
 ///
 /// Slim location implementation
-#include <type_traits>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/types.hpp>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/bit.hpp>
 #include <hm3/utility/compact_optional.hpp>
+#include <type_traits>
 
 namespace hm3 {
 namespace tree {

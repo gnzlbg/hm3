@@ -6,12 +6,12 @@
 /// Adapted from Eric Niebler's range-v3 library
 /// https://github.com/ericniebler/range-v3
 #include <cstdlib>
-#include <utility>
-#include <iostream>
 #include <hm3/types.hpp>
 #include <hm3/utility/fmt.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
+#include <iostream>
+#include <utility>
 
 namespace hm3 {
 

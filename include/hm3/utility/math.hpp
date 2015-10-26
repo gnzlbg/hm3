@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Math utilities
-#include <type_traits>
 #include <cmath>
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
+#include <type_traits>
 
 namespace hm3 {
 
@@ -49,7 +49,7 @@ static constexpr sint_t signum(const T& x) noexcept {
 /// Computes integer pow using exponentiation by squaring
 /// Complexiy O(log(e))
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
-constexpr Int ipow(Int b, Int e) {
+[[clang::no_sanitize("integer")]] constexpr Int ipow(Int b, Int e) {
   Int result = 1;
   while (e) {
     if (e & 1) { result *= b; }

@@ -49,7 +49,6 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
       CHECK(l2.level() == 1_u);
       CHECK(l2[1] == 1u);
     }
-
     t.refine(1_n);
     CHECK(t.size() == 5_u);
 
@@ -63,7 +62,6 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
       CHECK(l4[1] == 0_u);
       CHECK(l4[2] == 1_u);
     }
-
     t.refine(2_n);
     CHECK(t.size() == 7_u);
 
@@ -77,10 +75,10 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
     CHECK(t.size() == 15_u);
 
     check_tree(t, uniform_tree{}, Loc<1>{});
-    check_is_balanced(t);
+    check_is_balanced(t, Loc<1>{});
     check_tree_node_range(t, uniform_tree{});
     CHECK(t.is_compact());
-    check_io(t, "uniform");
+    check_io(t, "uniform", Loc<1>{});
 
     t.refine(11_n);
     CHECK(t.size() == 17_u);
@@ -92,8 +90,8 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
     check_tree(t, tree_after_refine{}, Loc<1>{});
     check_tree_node_range(t, tree_after_refine{});
     CHECK(t.is_compact());
-    check_is_balanced(t);
-    check_io(t, "after_refine");
+    check_is_balanced(t, Loc<1>{});
+    check_io(t, "after_refine", Loc<1>{});
 
     t.coarsen(11_n);
     CHECK(t.size() == 19_u);
@@ -105,8 +103,8 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
     CHECK(!t.is_compact());
     check_tree(t, tree_after_coarsen{}, Loc<1>{});
     check_tree_node_range(t, tree_after_coarsen{});
-    check_is_balanced(t);
-    check_io(t, "after_coarsen");
+    check_is_balanced(t, Loc<1>{});
+    check_io(t, "after_coarsen", Loc<1>{});
 
     auto t2 = t;
     CHECK(t == t2);
@@ -123,13 +121,13 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
          [](auto&& a, auto&& b) { return *a.idx < *b.idx; });
     check_tree(t, tree_after_coarsen_sorted, Loc<1>{});
     check_tree_node_range(t, tree_after_coarsen_sorted);
-    check_is_balanced(t);
-    check_io(t, "after_sort");
+    check_is_balanced(t, Loc<1>{});
+    check_io(t, "after_sort", Loc<1>{});
   }
 }
 
 int main() {
-  test_tree<location::fast>();
+  // test_tree<location::fast>();
   test_tree<location::slim>();
   return test::result();
 }

@@ -3,13 +3,14 @@
 ///
 /// Tree neighbor relations
 #include <array>
+#include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/tree.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/tree/relations/tree.hpp>
 #include <hm3/utility/assert.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/bounded.hpp>
 #include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/math.hpp>
+#include <hm3/utility/stack_vector.hpp>
 /// Use look-up table for the same level neighbors instead of
 /// arithmetic operations
 #define HM3_USE_NEIGHBOR_LOOKUP_TABLE
@@ -48,8 +49,8 @@ static constexpr uint_t no_neighbors(uint_t nd, uint_t m, child_level_tag) {
 ///@{
 
 template <int Nd, int M> struct neighbor_children_sharing_face_ {
-  static constexpr std::array<std::array<child_pos<Nd>, 0>, 0> stencil() {
-    return {{{{}}}};
+  static constexpr stack::vector<stack::vector<child_pos<Nd>, 0>, 0> stencil() {
+    return {};
   }
 };
 
@@ -156,7 +157,7 @@ template <int Nd> using neighbor_offset = std::array<int_t, Nd>;
 ///@{
 
 template <int Nd, int M> struct neighbor_lookup_table_ {
-  static constexpr std::array<neighbor_offset<Nd>, 0> stencil{{}};
+  static constexpr stack::vector<neighbor_offset<Nd>, 0> stencil{};
 };
 
 /// 1D: across faces
@@ -370,7 +371,9 @@ constexpr auto opposite(NeighborIdx p) -> NeighborIdx {
   switch (manifold::rank()) {
     case 1: {
       const bool f = *p % 2;
-      return (!f) * (*p + 1) + f * (*p - 1);
+      HM3_ASSERT(f && *p > 0 || !f, "");
+      auto tmp = f ? (*p - 1) : 0;
+      return (!f) * (*p + 1) + f * tmp;
     }
     case 2: {
       const constexpr std::array<uint_t, 12> stencil{
