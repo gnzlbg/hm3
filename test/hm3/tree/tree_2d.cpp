@@ -88,7 +88,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
     CHECK(!(t != t2));
 
 #ifdef HM3_ENABLE_VTK
-    vtk::serialize(t, "tree_2d_vtk_serialization");
+    ::hm3::tree::vtk::serialize(t, "tree_2d_vtk_serialization");
 #endif
 
     dfs_sort(t);
@@ -104,7 +104,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
     check_io(t, "after_sort");
 
 #ifdef HM3_ENABLE_VTK
-    vtk::serialize(t, "tree_2d_sorted_vtk_serialization");
+    ::hm3::tree::vtk::serialize(t, "tree_2d_sorted_vtk_serialization");
 #endif
   }
 

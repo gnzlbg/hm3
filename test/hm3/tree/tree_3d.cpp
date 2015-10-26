@@ -75,7 +75,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
     check_io(t, "after_refine");
 
 #ifdef HM3_ENABLE_VTK
-    vtk::serialize(t, "tree_3d_vtk_serialization");
+    ::hm3::tree::vtk::serialize(t, "tree_3d_vtk_serialization");
 #endif
 
     t.coarsen(16_n);
