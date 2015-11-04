@@ -3,6 +3,7 @@
 ///
 /// Tree neighbor relations
 #include <array>
+#include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/tree.hpp>
 #include <hm3/tree/types.hpp>
@@ -239,13 +240,11 @@ template <int Nd, int M> struct manifold_neighbors;
 // ///
 /// TODO: simplify this and provide a way of constructing custom neighbor search
 /// tables
-template <int Nd, int M> struct manifold_neighbors {
+template <int Nd, int M> struct manifold_neighbors : dimensional<Nd> {
   static_assert(Nd >= 0 and Nd <= 3, "");
 
-  static constexpr uint_t dimension() noexcept { return Nd; }
-  static constexpr auto dimensions() noexcept {
-    return hm3::dimensions(dimension());
-  }
+  using dimensional<Nd>::dimension;
+  using dimensional<Nd>::dimensions;
   static constexpr uint_t rank() noexcept { return M; }
 
   static constexpr uint_t size() noexcept {

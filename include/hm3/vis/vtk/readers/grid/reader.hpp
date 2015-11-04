@@ -3,16 +3,16 @@
 ///
 /// VTK Grid reader
 #ifdef HM3_ENABLE_VTK
-#include <hm3/grid/types.hpp>
-#include <hm3/vis/vtk/readers/grid/types.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/types.hpp>
+#include <hm3/vis/vtk/readers/grid/types.hpp>
 /// VTK:
-#include <hm3/vis/vtk/vtk.hpp>
-#include <hm3/vis/vtk/reader.hpp>
-#include <hm3/vis/vtk/cell_data.hpp>
-#include <hm3/vis/vtk/unstructured_grid.hpp>
 #include <hm3/vis/field.hpp>
+#include <hm3/vis/vtk/cell_data.hpp>
+#include <hm3/vis/vtk/reader.hpp>
+#include <hm3/vis/vtk/unstructured_grid.hpp>
+#include <hm3/vis/vtk/vtk.hpp>
 /// STD:
 #include <memory>
 #include <vector>
@@ -37,8 +37,8 @@ namespace grid {
 /// are cached inside the reader.
 ///
 template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
-  using grid_t        = ::hm3::grid::hc::multi<Nd>;
-  using cell_data_idx = tree::node_idx;
+  using grid_t       = ::hm3::grid::hc::multi<Nd>;
+  using vtk_cell_idx = tree::node_idx;
 
  protected:
   /// Hierarchical Cartesian Grid

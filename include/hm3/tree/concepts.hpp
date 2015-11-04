@@ -3,10 +3,11 @@
 ///
 /// Tree concepts
 #include <array>
-#include <hm3/types.hpp>
+#include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/range.hpp>
+#include <hm3/types.hpp>
 #include <hm3/utility/compact_optional.hpp>
+#include <hm3/utility/range.hpp>
 
 namespace hm3 {
 namespace tree {
@@ -14,18 +15,9 @@ namespace tree {
 namespace concepts {
 namespace rc = ranges::concepts;
 
-struct dimensioned {
-  template <typename T>
-  auto requires_(T&& t) -> decltype(
-   rc::valid_expr(rc::convertible_to<uint_t>(t.dimension()),           //
-                  rc::model_of<rc::RandomAccessRange>(t.dimensions())  //
-                  ));
-};
-
-using Dimensioned = dimensioned;
-
 /// Locational codes model the location concept
-struct location : rc::refines<rc::Regular, Dimensioned, rc::TotallyOrdered> {
+struct location : rc::refines<rc::Regular, geometry::concepts::Dimensioned,
+                              rc::TotallyOrdered> {
   template <typename T>  //
   auto requires_(T&& t) -> decltype(
    rc::valid_expr((t.push(0_u), 42),  //
@@ -48,10 +40,6 @@ struct location : rc::refines<rc::Regular, Dimensioned, rc::TotallyOrdered> {
 using Location = location;
 
 }  // namespace concepts
-
-template <typename T>
-using Dimensioned
- = concepts::rc::models<concepts::Dimensioned, ranges::uncvref_t<T>>;
 
 template <typename T>
 using Location = concepts::rc::models<concepts::Location, ranges::uncvref_t<T>>;

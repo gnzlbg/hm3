@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Dense matrix implementation
-#include <hm3/utility/unwrap.hpp>
 #include <hm3/utility/matrix/access.hpp>
 #include <hm3/utility/matrix/storage.hpp>
+#include <hm3/utility/unwrap.hpp>
 
 namespace hm3 {
 

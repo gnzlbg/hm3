@@ -2,15 +2,16 @@
 /// \file
 ///
 /// Adaptive Mesh Refinement target for hc::multi<Nd>
-#include <hm3/grid/types.hpp>
-#include <hm3/grid/hc/multi.hpp>
 #include <hm3/amr/target.hpp>
+#include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/types.hpp>
 
 namespace hm3 {
 namespace grid {
 namespace hc {
 
-template <uint_t Nd> struct multi_amr_target : amr::non_loggable {
+template <uint_t Nd>
+struct multi_amr_target : amr::non_loggable, dimensional<Nd> {
   using amr_node_idx = tree_node_idx;
 
   multi<Nd>* g_;
@@ -37,7 +38,6 @@ template <uint_t Nd> struct multi_amr_target : amr::non_loggable {
 
   /// Required to model the SerializableToVTK concept (optional)
   /// (allows writing the AMR state to vtk for debugging purposes):
-  static auto dimensions() noexcept { return ::hm3::dimensions(Nd); }
   geometry::square<Nd> geometry(amr_node_idx n) const { return g_->node(n); }
   geometry::square<Nd> bounding_box() const { return g_->bounding_box(); }
 };

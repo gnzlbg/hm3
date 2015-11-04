@@ -78,9 +78,16 @@ struct multi : TreeGrid {
   /// Otherwise, it refines the node within the tree.
   auto refine(tree_node_idx n) noexcept {
     assert_node_in_use(n, HM3_AT_);
-    return TreeGrid::is_leaf(n) ? TreeGrid::nodes(tree::balanced_refine(
-                                   static_cast<TreeGrid&>(*this), n))
-                                : TreeGrid::children(n);
+    if (TreeGrid::is_leaf(n)) {
+      auto c = tree::balanced_refine(static_cast<TreeGrid&>(*this), n);
+      HM3_ASSERT(c, "balanced_refine of node {} failed (size: {}, capacity: "
+                    "{}, is full: {})!",
+                 n, TreeGrid::size(), TreeGrid::capacity(),
+                 TreeGrid::size() == TreeGrid::capacity());
+      return TreeGrid::nodes(c);
+    } else {
+      return TreeGrid::children(n);
+    }
   }
 
   /// Remove grid node of grid \p g at node \p n

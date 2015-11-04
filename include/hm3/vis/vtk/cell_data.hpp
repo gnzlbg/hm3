@@ -3,9 +3,9 @@
 ///
 /// VTK cell data
 #ifdef HM3_ENABLE_VTK
+#include <hm3/utility/log.hpp>
 #include <hm3/vis/vtk/data_fields.hpp>
 #include <hm3/vis/vtk/vtk.hpp>
-#include <hm3/utility/log.hpp>
 
 namespace hm3 {
 namespace vis {
@@ -18,7 +18,7 @@ namespace vtk {
 /// components, and how to obtain/compute the data for a given cell.
 ///
 /// Each reader needs to provide:
-/// - a type of the cell indices: cell_data_idx used to index the cell data
+/// - a type of the cell indices: vtk_cell_idx used to index the cell data
 /// - a function to execute a kernel over all reader cells:
 ///     `auto for_each_cell(UnaryFunction(CellRange) uf) ->
 ///     UnaryFunction(CellRange)`
@@ -53,7 +53,7 @@ namespace vtk {
 ///
 template <typename Reader, typename VTKGrid>
 struct cell_data : data_fields<cell_data<Reader, VTKGrid>> {
-  using cell_data_idx  = typename Reader::cell_data_idx;
+  using vtk_cell_idx   = vtk_cell_idx_t<Reader>;
   Reader const* reader = nullptr;
   VTKGrid* vtk_grid_   = nullptr;
   log::serial log;
@@ -113,7 +113,7 @@ struct cell_data : data_fields<cell_data<Reader, VTKGrid>> {
     HM3_ASSERT(reader, "reader pointer not set in cell data");
     // type of the component data
     using data_t
-     = decltype(field_component(std::declval<cell_data_idx>(), sint_t{}));
+     = decltype(field_component(std::declval<vtk_cell_idx>(), sint_t{}));
     // array to store the component values
     auto data = make_array<data_t>();
     data->SetName(field_name.c_str());

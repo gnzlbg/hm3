@@ -36,7 +36,7 @@ namespace location {
 /// Right now optimized for insertion but makes it a pain for shifting
 /// coordinates and doing useful stuff with the location hashes
 ///
-template <uint_t Nd, typename T = uint_t> struct fast {
+template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
   using this_t         = fast<Nd, T>;
   using opt_this_t     = compact_optional<this_t>;
   using value_type     = this_t;
@@ -49,10 +49,8 @@ template <uint_t Nd, typename T = uint_t> struct fast {
 
   constexpr level_idx level() const noexcept { return level_; }
 
-  static constexpr auto dimension() noexcept { return Nd; }
-  static constexpr auto dimensions() noexcept {
-    return hm3::dimensions(dimension());
-  }
+  using dimensional<Nd>::dimension;
+  using dimensional<Nd>::dimensions;
 
   static constexpr level_idx max_level() noexcept {
     constexpr auto max = 8 * sizeof(integer_t) - Nd;

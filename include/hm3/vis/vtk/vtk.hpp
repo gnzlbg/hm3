@@ -11,19 +11,19 @@
 #include <vtkSmartPointer.h>
 // Arrays of literal types:
 #include <vtkCharArray.h>
+#include <vtkDoubleArray.h>
+#include <vtkFloatArray.h>
 #include <vtkIntArray.h>
 #include <vtkLongArray.h>
 #include <vtkLongLongArray.h>
+#include <vtkStringArray.h>
 #include <vtkUnsignedIntArray.h>
 #include <vtkUnsignedLongArray.h>
 #include <vtkUnsignedLongLongArray.h>
-#include <vtkFloatArray.h>
-#include <vtkDoubleArray.h>
-#include <vtkStringArray.h>
 // Cell Element types:
+#include <vtkHexahedron.h>
 #include <vtkLine.h>
 #include <vtkQuad.h>
-#include <vtkHexahedron.h>
 // Cell utilities:
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -31,22 +31,24 @@
 // Unstructured grid pipeline:
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include <vtkMultiBlockDataSet.h>
+#include <vtkMultiBlockDataSetAlgorithm.h>
 #include <vtkStreamingDemandDrivenPipeline.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkUnstructuredGridAlgorithm.h>
-#include <vtkMultiBlockDataSet.h>
-#include <vtkMultiBlockDataSetAlgorithm.h>
 // I/O
 #include <vtkXMLUnstructuredGridWriter.h>
 #pragma clang diagnostic pop
-#include <string>
 #include <hm3/geometry/square.hpp>
+#include <string>
 
 namespace hm3 {
 namespace vis {
 
 /// VTK functionality
 namespace vtk {
+
+template <typename T> using vtk_cell_idx_t = typename T::vtk_cell_idx;
 
 template <typename T> using smart_ptr = vtkSmartPointer<std::decay_t<T>>;
 

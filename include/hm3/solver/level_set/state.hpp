@@ -3,8 +3,8 @@
 ///
 /// Level-set solver state
 #include <hm3/io/client.hpp>
-#include <hm3/solver/level_set/fwd.hpp>
 #include <hm3/solver/level_set/fio.hpp>
+#include <hm3/solver/level_set/fwd.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -23,7 +23,7 @@ template <uint_t Nd> string name(state<Nd> const& s) {
   return name(s, s.idx());
 }
 
-template <uint_t Nd> struct state {
+template <uint_t Nd> struct state : dimensional<Nd> {
   using grid = ::hm3::solver::state::grid<Nd>;
 
   using tree_t   = typename grid::tree_t;
@@ -137,7 +137,6 @@ template <uint_t Nd> struct state {
     return g.tree().geometry(g.tree_node(n));
   }
   auto bounding_box() const noexcept { return g.tree().bounding_box(); }
-  auto dimensions() const noexcept { return g.tree().dimensions(); }
 
   static state<Nd> from_session(io::session& s, tree_t& t, string name_,
                                 io::file::index_t i) {

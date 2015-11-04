@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Adaptive mesh refinement for the level-set solver
-#include <hm3/grid/types.hpp>
 #include <hm3/amr/amr.hpp>
+#include <hm3/grid/types.hpp>
 #include <hm3/solver/level_set/state.hpp>
 
 namespace hm3 {
@@ -11,7 +11,7 @@ namespace solver {
 namespace level_set {
 
 /// Adaptive mesh refinement target for the level set solver
-template <uint_t Nd> struct amr {
+template <uint_t Nd> struct amr : dimensional<Nd> {
   using amr_node_idx = grid_node_idx;
 
   state<Nd>* ls_;
@@ -46,7 +46,6 @@ template <uint_t Nd> struct amr {
   // These make the adaptive mesh refinement target serializable (e.g. useful
   // for debugging):
 
-  auto dimensions() const { return ls_->g.tree().dimensions(); }
   auto bounding_box() const { return ls_->g.tree().bounding_box(); }
   auto geometry(amr_node_idx n) const {
     return ls_->g.tree().geometry(ls_->g.tree_node(n));

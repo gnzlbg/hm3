@@ -3,20 +3,21 @@
 /// TODO:
 /// - replace static_cast<int_t> with static_cast<uint_t>
 ///
-#include <memory>
-#include <hm3/tree/types.hpp>
+#include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/relations/tree.hpp>
+#include <hm3/tree/types.hpp>
 #include <hm3/utility/assert.hpp>
+#include <hm3/utility/bounded.hpp>
 #include <hm3/utility/fmt.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
-#include <hm3/utility/bounded.hpp>
+#include <memory>
 
 namespace hm3 {
 namespace tree {
 
 /// Nd-octree data-structure
-template <uint_t Nd> struct tree {
+template <uint_t Nd> struct tree : dimensional<Nd> {
   /// \name Data (all member variables of the tree)
   ///
   /// Memory layout: siblings (node with the same parent) are stored
@@ -53,14 +54,8 @@ template <uint_t Nd> struct tree {
   /// \name Spatial constants
   ///@{
 
-  /// Number of spatial dimensions of the tree
-  static constexpr int_t dimension() noexcept { return Nd; }
-
-  /// Range of spatial dimensions of the tree: [0, Nd)
-  static constexpr auto dimensions() noexcept {
-    return hm3::dimensions(dimension());
-  }
-  HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions());
+  using dimensional<Nd>::dimension;
+  using dimensional<Nd>::dimensions;
 
   /// Number of children per node
   static constexpr uint_t no_children() noexcept {

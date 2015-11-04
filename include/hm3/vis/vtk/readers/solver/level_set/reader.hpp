@@ -3,10 +3,10 @@
 ///
 /// VTK level-set reader
 #ifdef HM3_ENABLE_VTK
-#include <hm3/vis/vtk/reader.hpp>
-#include <hm3/vis/vtk/cell_data.hpp>
-#include <hm3/vis/vtk/readers/grid/reader.hpp>
 #include <hm3/solver/level_set/state.hpp>
+#include <hm3/vis/vtk/cell_data.hpp>
+#include <hm3/vis/vtk/reader.hpp>
+#include <hm3/vis/vtk/readers/grid/reader.hpp>
 
 namespace hm3 {
 namespace vis {
@@ -17,7 +17,7 @@ template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
   using grid_reader_t = ::hm3::vis::vtk::grid::reader<Nd>;
   using level_set_s   = ::hm3::solver::level_set::state<Nd>;
 
-  using cell_data_idx = typename level_set_s::cell_idx;
+  using vtk_cell_idx = typename level_set_s::cell_idx;
 
   /// Pointer to the grid reader (a dependency of level set reader)
   grid_reader_t const* grid_reader;

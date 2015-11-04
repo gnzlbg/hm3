@@ -7,41 +7,20 @@
 ///
 #ifdef HM3_ENABLE_VTK
 #include <hm3/amr/state.hpp>
-#include <hm3/vis/vtk/unstructured_grid.hpp>
-#include <hm3/vis/vtk/cell_data.hpp>
+#include <hm3/geometry/dimensions.hpp>
+#include <hm3/vis/vtk/serialize.hpp>
 
 namespace hm3 {
 namespace amr {
 
 namespace vtk {
 
-namespace concepts {
-namespace rc = ranges::concepts;
-
-/// SerializableToVTK concept
-struct serializable_to_vtk {
-  template <typename T>
-  auto requires_(T&& t) -> decltype(rc::valid_expr(      //
-   (t.bounding_box()),                                   //
-   (t.dimensions()),                                     //
-   (t.geometry(amr_node_idx_t<ranges::uncvref_t<T>>{}))  //
-   //
-   ));
-};
-
-}  // namespace concepts
-
-template <typename T>
-using SerializableToVTK
- = concepts::rc::models<concepts::serializable_to_vtk, ranges::uncvref_t<T>>;
-
 /// Adapts an amr::state<Target> to be serializable to a vtkUnstructuredGrid
-template <typename Target> struct serializable {
-  static_assert(SerializableToVTK<Target>{},
-                "Target is not serializable to VTK");
+template <typename Target>
+struct serializable : dimensional<Target::dimension()> {
   state<Target> const& s_;
 
-  using cell_data_idx = amr_node_idx_t<Target>;
+  using vtk_cell_idx = amr_node_idx_t<Target>;
 
   serializable(state<Target> const& s) : s_{s} {}
 
@@ -55,49 +34,32 @@ template <typename Target> struct serializable {
 
   auto bounding_box() const { return s_.target().bounding_box(); }
 
-  auto dimensions() const { return s_.target().dimensions(); }
-
   template <typename F> auto for_each_cell(F&& f) const {
     f(nodes());
     return f;
   }
 
-  template <typename T> auto find(T&& t) { return s_.find(t); }
+  template <typename CellData> void load(CellData&& cell_data) const {
+    cell_data.load("action", [&](auto&& n, auto&&) {
+      auto i = s_.find(n);
+      HM3_ASSERT(i, "??");
+      return static_cast<sint_t>(i->action);
+    });
+    cell_data.load("idx", [&](auto&& n, auto&&) {
+      auto i = s_.find(n);
+      HM3_ASSERT(i, "??");
+      return *(i->idx);
+    });
+  }
 };
 
-template <typename Target, CONCEPT_REQUIRES_(SerializableToVTK<Target>{})>
+template <typename Target>
 void serialize(state<Target> const& amr_state, string fname_) {
-  string fname = fname_ + ".vtu";
   hm3::log::serial log("amr-serialization-to-vtk");
 
   // makes an amr_state serializable if its target is serializable
   serializable<Target> state(amr_state);
-
-  vis::vtk::unstructured_grid vtk_grid;
-  vtk_grid.log = log;
-
-  vtk_grid.reinitialize(state.nodes(), state);
-
-  using cell_data_t
-   = vis::vtk::cell_data<serializable<Target>, vis::vtk::unstructured_grid>;
-  cell_data_t cell_data(state, vtk_grid, log);
-
-  cell_data.load("action", [&](auto&& n, auto&&) {
-    auto i = state.find(n);
-    HM3_ASSERT(i, "??");
-    return static_cast<sint_t>(i->action);
-  });
-  cell_data.load("idx", [&](auto&& n, auto&&) {
-    auto i = state.find(n);
-    HM3_ASSERT(i, "??");
-    return *(i->idx);
-  });
-
-  vtkSmartPointer<vtkXMLUnstructuredGridWriter> writer
-   = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
-  writer->SetFileName(fname.c_str());
-  writer->SetInputData(vtk_grid.vtk_grid);
-  writer->Write();
+  ::hm3::vis::vtk::serialize(state, fname_, log);
 }
 
 }  // namespace vtk

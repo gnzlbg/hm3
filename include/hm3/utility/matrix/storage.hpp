@@ -58,10 +58,18 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using reference       = typename data_container::reference;
   using const_reference = typename data_container::const_reference;
   using value_type      = typename data_container::value_type;
-  using pointer         = value_type*;
-  using const_pointer   = value_type const*;
 
-  alignas(32) data_container data_;
+  // using data_container  = Eigen::Matrix<T, max_size(), 1>;
+  // using iterator        = T*;
+  // using const_iterator  = T const*;
+  // using reference       = T&;
+  // using const_reference = T const&;
+  // using value_type = T;
+
+  using pointer       = value_type*;
+  using const_pointer = value_type const*;
+
+  alignas(64) data_container data_;
 
   constexpr storage() = default;
   constexpr storage(storage const&) = default;

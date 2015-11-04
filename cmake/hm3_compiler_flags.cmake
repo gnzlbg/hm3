@@ -80,6 +80,10 @@ hm3_append_flag(HM3_HAS_FDIAGNOSTIC_SHOW_TEMPLATE_TREE -fdiagnostics-show-templa
 hm3_append_flag(HM3_HAS_FTEMPLATE_BACKTRACE_LIMIT "-ftemplate-backtrace-limit=0")
 hm3_append_flag(HM3_HAS___EXTERN_ALWAYS_INLINE -D__extern_always_inline=inline)
 
+# Eigen3 Flags
+hm3_append_flag(HM3_HAS_EIGEN_NO_AUTOMATIC_RESIZING -DEIGEN_NO_AUTOMATIC_RESIZING)
+hm3_append_flag(HM3_HAS_EIGEN_STACK_ALLOCATION_LIMIT "-DEIGEN_STACK_ALLOCATION_LIMIT=0")
+
 # Compiler flags controlled by CMake options
 
 if (HM3_ENABLE_WERROR)
@@ -126,6 +130,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   hm3_append_flag(HM3_HAS_O0 -O0)
   hm3_append_flag(HM3_HAS_NO_INLINE -fno-inline)
   hm3_append_flag(HM3_HAS_STACK_PROTECTOR_ALL -fstack-protector-all)
+  hm3_append_flag(HM3_HAS_EIGEN_DONT_VECTORIZE -DEIGEN_DONT_VECTORIZE)
+  hm3_append_flag(HM3_HAS_EIGEN_DONT_PARALLELIZE -DEIGEN_DONT_PARALLELIZE)
 endif()
 
 # Optimization flags: release
@@ -135,13 +141,14 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   hm3_append_flag(HM3_HAS_MTUNE_NATIVE "-mtune=native")
   hm3_append_flag(HM3_HAS_STRICT_ALIASING -fstrict-aliasing)
   hm3_append_flag(HM3_HAS_VECTORIZE -fvectorize)
+  hm3_append_flag(HM3_HAS_EIGEN_FAST_MATH -DEIGEN_FAST_MATH)
   # If assertions disabled, disable assertions in std lib and eigen
   if (NOT HM3_ENABLE_ASSERTIONS)
     hm3_append_flag(HM3_HAS_DNDEBUG -DNDEBUG)
     hm3_append_flag(HM3_HAS_EIGEN_NO_DEBUG -DEIGEN_NO_DEBUG)
   endif()
-  # If ASan not enabled, omit frame pointer
-  if (NOT HM3_ENABLE_ASAN)
+  # If ASan and profile not enabled: omit frame pointer
+  if (NOT HM3_ENABLE_ASAN AND NOT HM3_ENABLE_PROFILE)
     hm3_append_flag(HM3_HAS_OMIT_FRAME_POINTER -fomit-frame-pointer)
   endif()
   # Others could be: -pipe pfdata-sections -ffunction-sections

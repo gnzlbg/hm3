@@ -19,7 +19,7 @@ struct unstructured_grid {
   /// Grid has to provide the following:
   /// - dimensions() returns a range of spatial dimensions
   /// - bounding_box() returns a bounding box of the grid
-  /// - a cell_geometry(value_type<NodeRange>) function that returns the
+  /// - geometry(value_type<NodeRange>) function that returns the
   ///   geometry of a cell
   template <typename NodeRange, typename Grid,
             CONCEPT_REQUIRES_(InputRange<NodeRange>{})>

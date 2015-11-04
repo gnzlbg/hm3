@@ -25,6 +25,16 @@ constexpr cell_idx operator"" _c(unsigned long long int i) {
   return cell_idx{static_cast<idx_t>(i)};
 }
 
+/// Index of a variable
+using var_idx
+ = compact_optional<empty_scalar_value<sidx_t,
+                                       std::numeric_limits<sidx_t>::max()>,
+                    struct var_idx_tag>;
+
+constexpr var_idx operator"" _v(unsigned long long int i) {
+  return var_idx{static_cast<sidx_t>(i)};
+}
+
 /// Index of a surface
 using surface_idx
  = compact_optional<empty_scalar_value<idx_t,
