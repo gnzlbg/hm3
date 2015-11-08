@@ -145,7 +145,7 @@ struct slim : dimensional<Nd> {
                  d, x_[d]);
     }
 
-    num_t scale = math::ipow(2_u, *l);
+    num_t scale = math::ipow(2_su, *l);
     std::array<integer_t, Nd> tmp;
     for (auto&& d : dimensions()) { tmp[d] = x_[d] * scale; }
     value = encode(tmp, l);

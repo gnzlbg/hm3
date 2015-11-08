@@ -32,7 +32,7 @@ struct shift_location_fn {
   ///
   /// If the resulting location is out-of-bounds the optional_location won't
   /// contain a valid value.
-  template <typename Loc, uint_t Nd = Loc::dimension(),
+  template <typename Loc, std::size_t Nd = Loc::dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Loc loc, std::array<int_t, Nd> offset) const noexcept
    -> compact_optional<Loc> {

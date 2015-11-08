@@ -31,6 +31,10 @@ constexpr uint_t operator"" _u(unsigned long long int i) {
   return static_cast<uint_t>(i);
 }
 
+constexpr suint_t operator"" _su(unsigned long long int i) {
+  return static_cast<suint_t>(i);
+}
+
 constexpr std::size_t operator"" _z(unsigned long long int t) { return t; }
 
 ///@}  // Primitive type aliases

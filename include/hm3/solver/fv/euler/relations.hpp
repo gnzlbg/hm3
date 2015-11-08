@@ -4,7 +4,7 @@
 ///
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/solver/fv/euler/indices.hpp>
-#include <hm3/solver/fv/tags.hpp>
+#include <hm3/utility/matrix.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -31,8 +31,9 @@ struct equation_of_state {
   /// Speed of sound
   ///
   /// a = \sqrt{\gamma \frac{p}{\rho}}
-  static constexpr num_t speed_of_sound(num_t gamma, num_t rho,
-                                        num_t p) noexcept {
+  ///
+  /// TODO: cannot be constexpr because of std::sqrt
+  static num_t speed_of_sound(num_t gamma, num_t rho, num_t p) noexcept {
     return std::sqrt(gamma * p / rho);
   }
 
@@ -183,6 +184,89 @@ struct conservative_variables {
     rho_u(f) = rho_u(v) * ud;
     f(rho_u(d)) += p_;
     f(rho_E()) = ud * (v(rho_E()) + p_);
+  }
+};
+
+template <uint_t Nd> struct euler : dimensional<Nd>, indices<Nd> {
+  equation_of_state<Nd> eos;
+  conservative_variables<Nd> cv;
+  primitive_variables<Nd> pv;
+
+  /// \name Physical constants
+  ///@{
+  num_t gamma;
+  num_t gamma_m1;
+  ///@}
+
+  euler(num_t gamma_) : gamma{gamma_}, gamma_m1{gamma_ - 1.0} {
+    HM3_ASSERT(gamma > 0., "negative gamma");
+    HM3_ASSERT(gamma_m1 > 0., "negative gamma-1.0");
+  }
+};
+
+template <uint_t Nd> struct numerical_pv : indices<Nd>, dimensional<Nd> {
+  using indices<Nd>::rho;
+  using indices<Nd>::p;
+  using indices<Nd>::velocities;
+  using eos = equation_of_state;
+
+  template <typename V>
+  static constexpr num_t time_step(V&& v, euler<Nd> const& e, num_t length,
+                                   num_t cfl) noexcept {
+    num_t a = equation_of_state::speed_of_sound(e.gamma, v(rho()), v(p()));
+
+    /// Compute maximum wave speed: s_max = max(|u_d| + a)
+    num_t s_max = (velocities(v).array().abs() + a).maxCoeff();
+
+    return cfl * length / s_max;
+  }
+
+  /// Local Lax-Friedrichs Flux
+  ///
+  /// Computes the \p d-th component of the Local-Lax_Friedrichs flux at
+  /// the surface between the cells \p lIdx and \p rIdx. The distance between
+  /// the cell centers is \p dx and the time-step is \p dt
+  template <typename V, typename F, typename Data>
+  static constexpr void local_lax_friedrichs(PV&& pv_l, V&& pv_r, F&& flux,
+                                             suint_t d, Data&& c) noexcept {
+    num_a<no_variables()> fL, fR;
+    // flux_cv(cv_l, fL, c.physics.gamma_m1, d);
+    // flux_cv(cv_r, fR, c.physics.gamma_m1, d);
+    // flux = (0.5 * (fL + fR + c.dx / c.dt * (cv_l - cv_r)));
+    // flux = (0.5 * (fL + fR + c.dx / c.dt * (cv_l - cv_r)));
+  }
+};
+
+template <uint_t Nd> struct numerical_cv : indices<Nd>, dimensional<Nd> {
+  using indices<Nd>::rho;
+  using indices<Nd>::p;
+  using indices<Nd>::velocities;
+  using eos   = equation_of_state;
+  using cv    = conservative_variables<Nd>;
+  using var_v = num_a<indices<Nd>::nvars()>;
+
+  template <typename V>
+  static constexpr num_t time_step(V&& v, euler<Nd> const& e, num_t length,
+                                   num_t cfl) noexcept {
+    const num_t a = speed_of_sound(e.gamma, v(rho()), pressure(e.gamma_m1, v));
+
+    /// Compute maximum wave speed: s_max = max(|u_d| + a)
+    num_t s_max = (velocities(v).array().abs() + a).maxCoeff();
+
+    return cfl * length / s_max;
+  }
+
+  /// Local Lax-Friedrichs Flux
+  ///
+  /// Computes the \p d-th component of the Local-Lax_Friedrichs flux at
+  /// the surface between the cells \p lIdx and \p rIdx. The distance between
+  /// the cell centers is \p dx and the time-step is \p dt
+  template <typename V, typename F, typename Data>
+  static constexpr var_v local_lax_friedrichs(V&& v_l, V&& v_r, suint_t d,
+                                              Data&& c) noexcept {
+    var_v fL = cv::flux_(v_l, c.physics.gamma_m1, d);
+    var_v fR = cv::flux_(v_r, c.physics.gamma_m1, d);
+    return 0.5 * (fL + fR + c.dx / c.dt * (cv_l - cv_r));
   }
 };
 

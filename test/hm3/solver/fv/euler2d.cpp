@@ -79,9 +79,7 @@ int main(int argc, char* argv[]) {
 
   // Initial condition by cell
   for (auto& b : as0.blocks()) {
-    b.for_each_internal([&](auto&& c) {
-      ic(b.center(c), b.variables(c.idx));
-    });
+    b.for_each_internal([&](auto&& c) { ic(b.center(c), b.variables(c.idx)); });
   }
 
   /// Boundary conditions

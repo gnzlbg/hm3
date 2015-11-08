@@ -29,7 +29,7 @@ struct node_or_parent_at_fn {
     static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
     node result{0_n, 0_u};
     for (auto&& p : loc()) {
-      auto m = t.child(result.idx, child_pos_t<Tree>{p});
+      auto m = t.child(result.idx, child_pos_t<Tree>(p));
       if (!m) { break; }
       result.idx = m;
       ++result.level;

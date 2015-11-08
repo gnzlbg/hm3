@@ -2,6 +2,7 @@
 /// \file
 ///
 /// I/O properties
+/*
 #include <utility>
 #include <unordered_map>
 #include <type_traits>
@@ -69,3 +70,4 @@ void read(properties const& ps, string const& name, T& value) {
 
 }  // namespace io
 }  // namespace hm3
+*/

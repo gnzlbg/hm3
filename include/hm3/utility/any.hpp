@@ -20,8 +20,10 @@
 // Define this macro to disable over-alignment of all any types and see for
 // yourself:
 // #define HM3_UNALIGNED_ANY_TYPE
-
+/*
 #include <stdexcept>
+#include <cstdlib>
+#include <stdlib.h>
 
 namespace hm3 {
 namespace any_detail {
@@ -86,6 +88,13 @@ template <typename T> struct big_any_policy : typed_base_any_policy<T> {
 #else
     *dest = over_aligned_new(sizeof(*reinterpret_cast<T const*>(src)));
     new (*dest) T(*reinterpret_cast<T const*>(src));
+// char* t  = reinterpret_cast<char*>(*dest);
+// auto&& o = *reinterpret_cast<T const*>(src);
+// new (t) T(o);
+// auto ptr     = *dest;
+// auto&& other = *reinterpret_cast<T const*>(src);
+// new (ptr) T;  //
+// *reinterpret_cast<T*>(ptr) = *other;
 #endif
   }
   virtual void clone(void* const* src, void** dest) override final {
@@ -246,3 +255,4 @@ template <typename T> inline T any_cast(any&& a) {
 }
 
 }  // namespace hm3
+*/

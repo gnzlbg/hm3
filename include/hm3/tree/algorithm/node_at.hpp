@@ -26,7 +26,7 @@ struct node_at_fn {
    -> node_idx {
     static_assert(Tree::dimension() == std::decay_t<Loc>::dimension(), "");
     for (auto&& p : loc()) {
-      n = t.child(n, child_pos_t<Tree>{p});
+      n = t.child(n, child_pos_t<Tree>(p));
       if (!n) { return node_idx{}; }
     }
     return n;

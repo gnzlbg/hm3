@@ -119,11 +119,12 @@ struct node_neighbors_fn {
 
     // For each surface manifold append the neighbors
     using manifold_rng = meta::as_list<meta::integer_range<int, 1, Nd + 1>>;
-    meta::for_each(manifold_rng{}, [&](auto m_) {
-      using manifold = manifold_neighbors<Nd, decltype(m_){}>;
-      (*this)(manifold{}, t, loc, neighbors,
-              std::forward<UnaryPredicate>(pred));
-    });
+    meta::for_each(manifold_rng{},
+                   [&](auto m_) {
+                     using manifold = manifold_neighbors<Nd, decltype(m_){}>;
+                     (*this)(manifold{}, t, loc, neighbors,
+                             std::forward<UnaryPredicate>(pred));
+                   });
 
     // sort them and remove dupplicates
     ranges::sort(neighbors);

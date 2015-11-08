@@ -47,7 +47,7 @@ int main(int argc, char* argv[]) {
   solver::initialize_grid(g, as0, [&](auto&& n) { return g.is_leaf(n); });
 
   // Initial condition
-  for (auto&& b : as0.blocks) {
+  for (auto&& b : as0.blocks()) {
     b.for_each_internal([&](auto&& c) {
       for (auto v : as0.physics.variables()) { b.variables(c.idx)(v) = 1.; }
     });

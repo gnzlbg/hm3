@@ -45,7 +45,7 @@ int main() {
     CHECK(b.internal_cells_per_length() == 23_u);
     CHECK(b.cells_per_length() == 27_u);
 
-    for (uint_t i = 0; i != 27; ++i) {
+    for (suint_t i = 0; i != 27; ++i) {
       CHECK(rm[b.from(c{{i}}).idx] == i);
       CHECK(b.from(b.from(c{{i}}).idx).x == c{{i}});
     }
@@ -88,8 +88,8 @@ int main() {
     CHECK(b.cells_per_length() == 5_u);
 
     uint_t count_ = 0;
-    for (uint_t j = 0; j != 5; ++j) {
-      for (uint_t i = 0; i != 5; ++i) {
+    for (suint_t j = 0; j != 5; ++j) {
+      for (suint_t i = 0; i != 5; ++i) {
         CHECK(rm[b.from(c{{i, j}}).idx] == count_);
         CHECK(b.from(b.from(c{{i, j}}).idx).x == c{{i, j}});
         ++count_;
@@ -144,8 +144,8 @@ int main() {
     auto rm = view::iota(0_u, 36_u);
 
     uint_t count_ = 0;
-    for (uint_t j = 0; j != 6; ++j) {
-      for (uint_t i = 0; i != 6; ++i) {
+    for (suint_t j = 0; j != 6; ++j) {
+      for (suint_t i = 0; i != 6; ++i) {
         CHECK(rm[b.from(c{{i, j}}).idx] == count_);
         CHECK(b.from(b.from(c{{i, j}}).idx).x == c{{i, j}});
         ++count_;
@@ -200,9 +200,9 @@ int main() {
     CHECK(b.cells_per_length() == 3_u);
 
     uint_t count_ = 0;
-    for (uint_t k = 0; k != 3; ++k) {
-      for (uint_t j = 0; j != 3; ++j) {
-        for (uint_t i = 0; i != 3; ++i) {
+    for (suint_t k = 0; k != 3; ++k) {
+      for (suint_t j = 0; j != 3; ++j) {
+        for (suint_t i = 0; i != 3; ++i) {
           CHECK(rm[b.from(c{{i, j, k}}).idx] == count_);
           CHECK(b.from(b.from(c{{i, j, k}}).idx).x == c{{i, j, k}});
           ++count_;

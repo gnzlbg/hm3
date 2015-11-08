@@ -86,7 +86,7 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
                  d, x_[d]);
     }
 
-    num_t scale = math::ipow(2_u, *l);
+    num_t scale = math::ipow(2_su, *l);
     for (auto&& d : dimensions()) { from_int_r(d, x_[d] * scale); }
   }
 
@@ -154,7 +154,7 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
 
   explicit operator integer_t() const noexcept {
     std::array<integer_t, Nd> tmp(*this);
-    tmp[0] += math::ipow(2_u, *level());
+    tmp[0] += math::ipow(2_su, *level());
     integer_t result = 0;
     std::size_t i    = 0;
     for (auto l : view::iota(0_u, *level() + 1_u)) {

@@ -44,7 +44,7 @@ struct square_structured_indices : dimensional<Nd> {
   }
   /// Total number of cells
   static constexpr suint_t size() noexcept {
-    return math::ipow(cells_per_length(), dimension());
+    return math::ipow(cells_per_length(), static_cast<suint_t>(dimension()));
   }
   /// First internal tile per length
   static constexpr suint_t internal_begin(uint_t h = 0) noexcept {
@@ -72,7 +72,7 @@ struct square_structured_indices : dimensional<Nd> {
   ///@{
 
   /// Total range of cells
-  static constexpr auto all() noexcept { return view::iota(0_u, size()); }
+  static constexpr auto all() noexcept { return view::iota(0_su, size()); }
 
   /// Internal cells
   static constexpr auto internal() noexcept {
@@ -98,7 +98,7 @@ struct square_structured_indices : dimensional<Nd> {
   }
   /// 1D All
   static constexpr auto all_1d() noexcept {
-    return view::iota(0_u, cells_per_length());
+    return view::iota(0_su, cells_per_length());
   }
 
   ///@}  // External iterators

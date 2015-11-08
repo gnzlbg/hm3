@@ -4,6 +4,7 @@
 ///
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/solver/types.hpp>
+#include <hm3/utility/matrix.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -69,7 +70,7 @@ template <uint_t Nd, typename Flux = AUSM> struct euler : dimensional<Nd> {
 
   template <typename CV>
   static constexpr num_t velocity(CV&& cv, uint_t d) noexcept {
-    //HM3_ASSERT(cv(rho()) > 0., "negative density!");
+    // HM3_ASSERT(cv(rho()) > 0., "negative density!");
     return cv(rho_u(d)) / cv(rho());
   }
 

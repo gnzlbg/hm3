@@ -33,6 +33,7 @@
   static_cast<decltype(ptr)>(__builtin_assume_aligned( \
    (ptr), sizeof(std::remove_pointer_t<decltype(ptr)>)))
 
+#else
 #error HM3_ALIGNED_POINTER is not implemented for this compiler.
 #endif  // For each compiler
 
