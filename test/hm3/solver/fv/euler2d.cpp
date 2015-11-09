@@ -1,6 +1,7 @@
 #include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
 #include <hm3/solver/fv/euler.hpp>
+#include <hm3/solver/fv/euler/vtk.hpp>
 #include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
@@ -50,8 +51,16 @@ int main(int argc, char* argv[]) {
   auto solver_block_capacity
    = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
 
-  using p        = fv::euler<nd, fv::LxF>;
+  using p        = fv::euler::physics<nd>;
   using solver_t = fv::state<p>;
+
+  auto&& num_flux = [](auto&&... vars) {
+    return fv::euler::local_lax_friedrichs(
+     std::forward<decltype(vars)>(vars)...);
+  };
+  auto compute_time_step = [](auto&&... vars) {
+    return fv::euler::time_step(std::forward<decltype(vars)>(vars)...);
+  };
 
   p physics{1.4};
 
@@ -64,17 +73,18 @@ int main(int argc, char* argv[]) {
   auto ic = [&](auto&& x, auto&& vars) {
     geometry::point<nd> xc = geometry::point<nd>::constant(0.5);
     auto r                 = 0.2;
+    auto pv                = physics.pv();
     if (geometry::sd::sphere(x, xc, r) < 0) {
       // inside:
-      vars(p::rho()) = 1.0;
-      vars(p::p()) = 1.0;
+      pv.rho(vars) = 1.0;
+      pv.p(vars) = 1.0;
     } else {
       // outside:
-      vars(p::rho()) = 0.125;
-      vars(p::p()) = 0.1;
+      pv.rho(vars) = 0.125;
+      pv.p(vars) = 0.1;
     }
-    p::vels(vars).fill(0.0);
-    p::pv_to_cv(vars, physics.gamma_m1);
+    pv.u(vars).fill(0.0);
+    pv.to_cv_ip(vars);
   };
 
   // Initial condition by cell
@@ -84,17 +94,17 @@ int main(int argc, char* argv[]) {
 
   /// Boundary conditions
   auto bcs = make_bcs([&]() {
-    num_a<p::no_variables()> vars;
+    num_a<p::nvars()> vars;
     vars(p::rho()) = 0.125;
     vars(p::p()) = 0.1;
-    p::vels(vars).fill(0.0);
-    p::pv_to_cv(vars, physics.gamma_m1);
+    physics.pv().u(vars).fill(0.0);
+    physics.pv().to_cv_ip(vars);
     return vars;
   });
 
   num_t cfl = 1.0;
   bcs.apply(as0);
-  solver::fv::vtk::serialize(as0, "result_0", 0_gn);
+  solver::fv::vtk::serialize(as0, "result_0", physics.cv(), 0_gn);
   for (auto timestep : view::iota(1, 1000)) {
     //   // for (auto rkstep : fv::runge_kutta_steacdps()) {
     {  // can happen in parallel
@@ -106,12 +116,12 @@ int main(int argc, char* argv[]) {
       // fv::exchange_halos(as0);
     }
     bcs.apply(as0);
-    num_t dt = fv::compute_time_step(as0, cfl);
+    num_t dt = fv::compute_time_step(as0, cfl, compute_time_step, physics.cv());
     std::cout << "dt: " << dt << std::endl;
     // fv::compute_gradients(as0);
     //   // fv::correct_boundary_gradients(as0, bcs);
     //   // fv::limit_gradients(as0, limiter_t);
-    fv::compute_internal_fluxes(as0, dt);
+    fv::compute_internal_fluxes(as0, num_flux, dt, physics.cv());
     // fv::compute_boundary_fluxes(as0, bcs);
     // fv::compute_source_terms(as0);
     // fv::pv_to_cv(as0);
@@ -119,7 +129,8 @@ int main(int argc, char* argv[]) {
     fv::advance_variables(as0, dt);
     // if (timestep % 10 == 0) {
     bcs.apply(as0);
-    solver::fv::vtk::serialize(as0, "result_" + std::to_string(timestep), 0_gn);
+    solver::fv::vtk::serialize(as0, "result_" + std::to_string(timestep),
+                               physics.cv(), 0_gn);
     //}
   }
 

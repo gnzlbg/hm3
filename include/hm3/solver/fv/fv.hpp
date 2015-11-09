@@ -139,13 +139,13 @@ template <typename Physics> void exchange_halos(state<Physics>& s) {
   }
 }
 
-template <typename Physics>
-num_t compute_time_step(state<Physics> const& s, num_t cfl) {
+template <typename Physics, typename TimeStepF, typename V>
+num_t compute_time_step(state<Physics> const& s, num_t cfl, TimeStepF&& t,
+                        V&& v) {
   num_t dt = std::numeric_limits<num_t>::max();
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto c) {
-      num_t idt = Physics::compute_time_step_cv(b.variables(c), s.physics,
-                                                b.cell_length(), cfl);
+      num_t idt = t(b.variables(c), v, b.cell_length(), cfl);
       dt = std::min(dt, idt);
     });
   }
@@ -164,20 +164,19 @@ template <typename Physics> void pv_to_cv(state<Physics>& s) {
   }
 }
 
-template <typename Physics>
-void compute_internal_fluxes(state<Physics>& s, num_t dt) {
+template <typename Physics, typename NumFluxF, typename V>
+void compute_internal_fluxes(state<Physics>& s, NumFluxF&& nf, num_t dt,
+                             V&& v) {
   for (auto&& b : s.blocks()) {
     struct {
       num_t dx, area, volume, dt;
-      Physics physics;
-    } data{b.cell_length(), b.cell_surface_area(), b.cell_volume(), dt,
-           s.physics};
+    } data{b.cell_length(), b.cell_surface_area(), b.cell_volume(), dt};
     b.for_each_internal([&](auto c) {
       for (auto&& d : b.dimensions()) {
-        s.physics.numerical_flux_cv(b.variables(b.at(c, d, -1)), b.variables(c),
-                                    b.flux(c, d * 2), d, data);
-        s.physics.numerical_flux_cv(b.variables(c), b.variables(b.at(c, d, +1)),
-                                    b.flux(c, d * 2 + 1), d, data);
+        b.flux(c, d * 2)
+         = nf(v, b.variables(b.at(c, d, -1)), b.variables(c), d, data);
+        b.flux(c, d * 2 + 1)
+         = nf(v, b.variables(c), b.variables(b.at(c, d, +1)), d, data);
       }
     });
 

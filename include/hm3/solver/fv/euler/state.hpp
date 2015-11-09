@@ -3,30 +3,24 @@
 ///
 ///
 #include <hm3/types.hpp>
+#include <hm3/utility/assert.hpp>
 
 namespace hm3 {
 namespace solver {
 namespace fv {
 namespace euler {
 
-template <uint_t Nd>  //
-struct indices {
-  /// \name Conservative variables
+template <uint_t Nd> struct state {
+  /// \name Physical constants
   ///@{
-  static constexpr sidx_t rho_u(sidx_t d) noexcept { return d; }
-  static constexpr sidx_t rho() noexcept { return Nd; }
-  static constexpr sidx_t rho_E() noexcept { return Nd + 1; }
-  ///@}  // Convervative variables
+  num_t gamma;
+  num_t gamma_m1;
+  ///@}
 
-  /// \name Primitive variables
-  ///@{
-
-  // Note: primitive rho() == convervative rho()
-
-  static constexpr sidx_t u(sidx_t d) noexcept { return d; }
-  static constexpr sidx_t p() noexcept { return Nd + 1; }
-
-  ///@}  // Primitive variables
+  state(num_t gamma_) : gamma{gamma_}, gamma_m1{gamma_ - 1.0} {
+    HM3_ASSERT(gamma > 0., "negative gamma");
+    HM3_ASSERT(gamma_m1 > 0., "negative gamma-1.0");
+  }
 };
 
 }  // namespace euler

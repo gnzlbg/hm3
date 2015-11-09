@@ -20,19 +20,15 @@ struct state : dimensional<Physics::dimension()> {
 
   using block_idx = grid_node_idx;
 
-  static constexpr uint_t no_variables() noexcept {
-    return Physics::no_variables();
-  }
+  static constexpr uint_t nvars() noexcept { return Physics::nvars(); }
 
-  static constexpr auto variables() noexcept {
-    return view::iota(0, no_variables());
-  }
+  static constexpr auto variables() noexcept { return view::iota(0, nvars()); }
 
   using block_grid_t = solver::state::grid<dimension()>;
   using grid_t       = typename block_grid_t::tree_t;
   using grid_neighbors_t
    = solver::state::neighbors<tree::max_no_neighbors(dimension()) + 1>;
-  using block_t  = block<dimension(), no_variables(), 100, 2>;
+  using block_t  = block<dimension(), nvars(), 100, 2>;
   using blocks_t = std::vector<block_t>;
 
   Physics physics;

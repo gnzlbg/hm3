@@ -1,4 +1,9 @@
 #pragma once
+#include <hm3/solver/fv/euler/numerical_flux.hpp>
+#include <hm3/solver/fv/euler/physics.hpp>
+#include <hm3/solver/fv/euler/time_step.hpp>
+
+/*
 /// \file
 ///
 ///
@@ -379,3 +384,4 @@ template <uint_t Nd, typename Flux = AUSM> struct euler : dimensional<Nd> {
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3
+*/

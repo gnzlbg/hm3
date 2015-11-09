@@ -10,7 +10,7 @@ namespace fv {
 
 namespace vtk {
 
-template <typename Physics>
+template <typename Physics, typename T>
 struct serializable : dimensional<Physics::dimension()> {
   state<Physics> const& s;
   using block_idx = grid_node_idx;
@@ -56,22 +56,22 @@ struct serializable : dimensional<Physics::dimension()> {
         return static_cast<int_t>(s.is_internal(c));
       });
     }
-    s.physics.load(s, cell_data);
+    s.physics.load(T{s.physics}, s, cell_data);
   }
 
   serializable(state<Physics> const& s_, block_idx b = block_idx{})
    : s(s_), idx{b} {}
 };
 
-template <typename Physics>
-void serialize(state<Physics> const& state, string file_name,
+template <typename Physics, typename T>
+void serialize(state<Physics> const& state, string file_name, T&&,
                grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
   if (b) { file_name += "_" + to_string(b); }
 
-  serializable<Physics> s(state, b);
+  serializable<Physics, T> s(state, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 
