@@ -64,12 +64,13 @@ struct serializable : dimensional<Physics::dimension()> {
 };
 
 template <typename Physics, typename T>
-void serialize(state<Physics> const& state, string file_name, T&&,
-               grid_node_idx b = grid_node_idx{}) {
+void serialize(state<Physics> const& state, string file_name, uint_t time_step,
+               T&&, grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
-  if (b) { file_name += "_" + to_string(b); }
+  if (b) { file_name += "_block_" + to_string(b); }
+  file_name += "_" + to_string(time_step);
 
   serializable<Physics, T> s(state, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);

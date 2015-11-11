@@ -13,9 +13,9 @@ struct equation_of_state {
   /// Pressure
   ///
   /// $ p = (\gamma - 1) \rho (E - ||u||_{L2}^2 / 2) $
-  static constexpr num_t pressure(num_t gamma_m1, num_t u_mag2, num_t rho,
+  static constexpr num_t pressure(num_t gamma_m1, num_t rho_u_mag2, num_t rho,
                                   num_t rho_E) noexcept {
-    return gamma_m1 * (rho_E - 0.5 * rho * u_mag2);
+    return gamma_m1 * (rho_E - 0.5 * rho_u_mag2 / rho);
   }
 
   /// Energy density

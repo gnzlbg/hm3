@@ -13,8 +13,8 @@ namespace solver {
 namespace fv {
 namespace euler {
 
-template <uint_t Nd> struct physics : state<Nd>, dimensional<Nd>, indices<Nd> {
-  physics(num_t gamma) : state<Nd>{std::move(gamma)} {}
+template <uint_t Nd> struct physics : state, dimensional<Nd>, indices<Nd> {
+  physics(num_t gamma) : state{std::move(gamma)} {}
 
   using cv_t = cv<Nd>;
   using pv_t = pv<Nd>;
@@ -32,19 +32,21 @@ template <uint_t Nd> struct physics : state<Nd>, dimensional<Nd>, indices<Nd> {
                    [&](auto&& d) { return v.dimension_name(d); });
     cell_data.load("energy_density",
                    [&](auto c, auto&&) { return v.rho_E(s.variables(c)); });
-    // cell_data.load("pressure", [&](auto c, auto&&) {
-    //   return pressure(gamma_m1, s.variables(c));
-    // });
+    cell_data.load("pressure",
+                   [&](auto c, auto&&) { return v.p(s.variables(c)); });
     cell_data.load(
      "velocity", [&](auto c, auto&& d) { return v.u(s.variables(c), d); },
      v.dimension(), [&](auto&& d) { return v.dimension_name(d); });
     // Gradient
+
     // Temperature
-    // Mach number
+    cell_data.load(
+     "M", [&](auto c, auto&&) { return v.mach_number(s.variables(c)); });
     // Total energy
     // Specific internal energy
     // Enthalpy
-    // Local speed of sound
+    cell_data.load(
+     "a", [&](auto c, auto&&) { return v.speed_of_sound(s.variables(c)); });
   }
 };
 

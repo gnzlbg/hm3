@@ -80,7 +80,7 @@ struct pv_base : dimensional<Nd>, equation_of_state {
     // rho(tmp) = rho(v);
     // u(tmp) = rho(v) * u(v);
     // p(tmp) = eos::energy_density(gamma_m1, u_mag2(v), rho(v), p(v));
-    to_cv_ip(v, gamma_m1);
+    to_cv_ip(tmp, gamma_m1);
     return tmp;
   }
 
@@ -120,13 +120,13 @@ struct pv_base : dimensional<Nd>, equation_of_state {
   }
 };
 
-template <uint_t Nd> struct pv : pv_base<Nd>, state<Nd> {
+template <uint_t Nd> struct pv : pv_base<Nd>, state {
   using b = pv_base<Nd>;
-  using state<Nd>::gamma;
-  using state<Nd>::gamma_m1;
+  using state::gamma;
+  using state::gamma_m1;
   using var_v = num_a<indices<Nd>::nvars()>;
 
-  pv(state<Nd> s) : state<Nd>{std::move(s)} {}
+  pv(state s) : state{std::move(s)} {}
 
   /// Energy density
   template <typename V> constexpr decltype(auto) rho_E(V&& v) const noexcept {

@@ -42,6 +42,12 @@ struct cv_base : dimensional<Nd>, equation_of_state {
     return u(v).squaredNorm();
   }
 
+  /// L2-Norm of the velocity squared ||u||_{L2}^{2}
+  template <typename V>
+  static constexpr decltype(auto) rho_u_mag2(V&& v) noexcept {
+    return rho_u(v).squaredNorm();
+  }
+
   /// L2-Norm of the velocity ||u||_{L2}
   template <typename V> static constexpr decltype(auto) u_mag(V&& v) noexcept {
     return u(v).norm();
@@ -50,7 +56,7 @@ struct cv_base : dimensional<Nd>, equation_of_state {
   /// Pressure
   template <typename V>
   static constexpr decltype(auto) p(V&& v, num_t gamma_m1) noexcept {
-    return eos::pressure(gamma_m1, u_mag2(v), rho(v), rho_E(v));
+    return eos::pressure(gamma_m1, rho_u_mag2(v), rho(v), rho_E(v));
   }
   /// Momentum density
   template <typename V> static constexpr decltype(auto) rho_u(V&& v) noexcept {
@@ -70,9 +76,9 @@ struct cv_base : dimensional<Nd>, equation_of_state {
   /// Inplace conversion to primitive variables
   template <typename V>
   static constexpr void to_pv_ip(V&& v, num_t gamma_m1) noexcept {
-    num_t umag2 = u_mag2_pv(v);
+    num_t rho_umag2 = rho_u_mag2(v);
     rho_u(v) /= rho(v);
-    rho_E(v) = eos::pressure(gamma_m1, umag2, rho(v), rhoE(v));
+    rho_E(v) = eos::pressure(gamma_m1, rho_umag2, rho(v), rho_E(v));
   }
 
   /// Conversion to primitive variables
@@ -116,7 +122,8 @@ struct cv_base : dimensional<Nd>, equation_of_state {
   template <typename V>
   static constexpr num_t mach_number(V&& v, suint_t d, num_t gamma,
                                      num_t gamma_m1) noexcept {
-    return eos::mach_number(u(v)(d).abs(), speed_of_sound(v, gamma, gamma_m1));
+    return eos::mach_number(std::abs(u(v)(d)),
+                            speed_of_sound(v, gamma, gamma_m1));
   }
 
   template <typename V>
@@ -126,13 +133,13 @@ struct cv_base : dimensional<Nd>, equation_of_state {
   }
 };
 
-template <uint_t Nd> struct cv : cv_base<Nd>, state<Nd> {
+template <uint_t Nd> struct cv : cv_base<Nd>, state {
   using b = cv_base<Nd>;
-  using state<Nd>::gamma;
-  using state<Nd>::gamma_m1;
+  using state::gamma;
+  using state::gamma_m1;
   using var_v = num_a<indices<Nd>::nvars()>;
 
-  cv(state<Nd> s) : state<Nd>{std::move(s)} {}
+  cv(state s) : state{std::move(s)} {}
 
   template <typename V> constexpr decltype(auto) p(V&& v) const noexcept {
     return b::p(std::forward<V>(v), gamma_m1);
@@ -143,7 +150,7 @@ template <uint_t Nd> struct cv : cv_base<Nd>, state<Nd> {
   }
 
   template <typename V> constexpr void to_pv_ip(V&& v) const noexcept {
-    b::to_pv(std::forward<V>(v), gamma_m1);
+    b::to_pv_ip(v, gamma_m1);
   }
 
   template <typename V, typename F>

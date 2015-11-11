@@ -209,10 +209,37 @@ void advance_variables(state<Physics>& s, num_t dt) {
     const num_t f = dt / b.cell_length();
     std::cerr << "cl: " << b.cell_length() << " f: " << f << std::endl;
 
+    b.for_each_internal([&](auto c) { b.variables(c) += f * b.rhs(c); });
+  }
+}
+
+template <typename Physics, typename NumFluxF, typename V>
+void old_advance(state<Physics>& s, NumFluxF&& nf, num_t dt, V&& v) {
+  for (auto&& b : s.blocks()) {
+    struct {
+      num_t dx, area, volume, dt;
+    } data{b.cell_length(), b.cell_surface_area(), b.cell_volume(), dt};
     b.for_each_internal([&](auto c) {
-      b.variables(c) += dt * b.rhs(c);
-      // b.variables(c) += dt * b.rhs(c);
+      num_a<4> result = num_a<4>::Zero();
+      for (auto&& d : b.dimensions()) {
+        auto left = nf(v, b.variables(b.at(c, d, -1)), b.variables(c), d, data);
+        auto right
+         = nf(v, b.variables(c), b.variables(b.at(c, d, +1)), d, data);
+        result += (left - right);
+      }
+      b.rhs(c) = b.variables(c) + result * dt;  // / b.cell_length();
+      // b.rhs(c) = b.variables(c) + result * dt / b.cell_length();
     });
+
+    b.for_each_internal([&](auto c) { b.variables(c) = b.rhs(c); });
+
+    // b.for_each_internal([&](auto c) {
+    //   if (c.idx < 3000 || c.idx > 4000) { return; }
+    //   for (auto&& d : b.dimensions()) {
+    //     std::cout << "c: " << c.idx << " f(-1): " << b.flux(c, d * 2)
+    //               << " | f(+1): " << b.flux(c, d * 2 + 1) << std::endl;
+    //   }
+    // });
   }
 }
 

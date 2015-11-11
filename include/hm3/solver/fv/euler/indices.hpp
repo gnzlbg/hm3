@@ -12,6 +12,7 @@ namespace euler {
 template <uint_t Nd>  //
 struct indices {
   static constexpr suint_t nvars() noexcept { return Nd + 2; }
+  static constexpr auto variables() noexcept { return view::iota(0, nvars()); }
   /// \name Conservative variables
   ///@{
   static constexpr sidx_t rho_u(sidx_t d) noexcept { return d; }

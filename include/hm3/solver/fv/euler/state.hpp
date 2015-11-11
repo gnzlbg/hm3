@@ -10,7 +10,7 @@ namespace solver {
 namespace fv {
 namespace euler {
 
-template <uint_t Nd> struct state {
+struct state {
   /// \name Physical constants
   ///@{
   num_t gamma;

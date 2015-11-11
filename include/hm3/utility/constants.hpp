@@ -3,6 +3,7 @@
 #include <limits>
 
 namespace hm3 {
+namespace math {
 
 /// Numeric constants
 namespace constant {
@@ -22,4 +23,10 @@ static const constexpr T e
  = 2.7182818284590452353602874713526624977572470936999595749669676;
 
 }  // namespace constant
+
+using constant::pi;
+using constant::e;
+using constant::eps;
+
+}  // namespace math
 }  // namespace hm3

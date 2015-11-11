@@ -117,14 +117,17 @@ struct node_neighbors_fn {
    -> stack::vector<node_idx, max_no_neighbors(Nd)> {
     stack::vector<node_idx, max_no_neighbors(Nd)> neighbors;
 
-    // For each surface manifold append the neighbors
-    using manifold_rng = meta::as_list<meta::integer_range<int, 1, Nd + 1>>;
-    meta::for_each(manifold_rng{},
-                   [&](auto m_) {
-                     using manifold = manifold_neighbors<Nd, decltype(m_){}>;
-                     (*this)(manifold{}, t, loc, neighbors,
-                             std::forward<UnaryPredicate>(pred));
-                   });
+    for_each_neighbor_manifold<Nd>([&](auto m) {
+      (*this)(m, t, loc, neighbors, std::forward<UnaryPredicate>(pred));
+    });
+    // // For each surface manifold append the neighbors
+    // using manifold_rng = meta::as_list<meta::integer_range<int, 1, Nd + 1>>;
+    // meta::for_each(manifold_rng{},
+    //                [&](auto m_) {
+    //                  using manifold = manifold_neighbors<Nd, decltype(m_){}>;
+    //                  (*this)(manifold{}, t, loc, neighbors,
+    //                          std::forward<UnaryPredicate>(pred));
+    //                });
 
     // sort them and remove dupplicates
     ranges::sort(neighbors);

@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Structured grid utilities
+#include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/solver/types.hpp>
 #include <hm3/utility/assert.hpp>
@@ -32,6 +33,10 @@ struct square_structured_indices : dimensional<Nd> {
   struct index_t {
     suint_t idx;
     coordinates_t x;
+    friend bool operator==(index_t a, index_t b) noexcept {
+      return a.idx == b.idx;
+    }
+    friend bool operator!=(index_t a, index_t b) noexcept { return !(a == b); }
   };
 
   /// Number of halo layers
@@ -307,6 +312,37 @@ struct square_structured_indices : dimensional<Nd> {
     }
   }
   ///@}  // Internal iterators
+
+  constexpr index_t closest_internal_cell(index_t halo) const noexcept {
+    HM3_ASSERT(is_halo(halo), "cell {} is not a halo", halo.idx);
+    sint_t o         = 1;
+    index_t neighbor = halo;
+
+    while (o <= Nhl) {
+      tree::for_each_neighbor_manifold<Nd>([&](auto m) {
+        if (neighbor != halo) { return; }
+        for (auto pos : m()) {
+          auto neighbor_x = halo.x;
+          auto offset     = m[pos];
+          for (auto d : dimensions()) {
+            neighbor_x[d] = static_cast<sint_t>(neighbor_x[d]) + offset[d] * o;
+            if (neighbor_x[d] <= 0 or neighbor_x[d] >= cells_per_length()) {
+              goto next_neighbor;  // overflow, skip this neighbor
+            }
+          }
+          {
+            auto neighbor_idx = from(neighbor_x);
+            if (is_internal(neighbor_idx)) { neighbor = neighbor_idx; }
+          }
+        next_neighbor:
+          continue;
+        }
+      });
+      if (neighbor != halo) { return neighbor; }
+      o += 1;
+    }
+    HM3_FATAL_ERROR("closest internal cell of halo {} not found", halo.idx);
+  }
 };
 
 template <uint_t Nd, uint_t Nic, uint_t Nhl>  //

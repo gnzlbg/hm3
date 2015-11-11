@@ -386,6 +386,15 @@ constexpr auto opposite(NeighborIdx p) -> NeighborIdx {
   }
 }
 
+template <uint_t Nd, typename F> void for_each_neighbor_manifold(F&& f) {
+  using manifold_rng = meta::as_list<meta::integer_range<int, 1, Nd + 1>>;
+  meta::for_each(manifold_rng{},
+                 [&](auto m) {
+                   using manifold = manifold_neighbors<Nd, decltype(m){}>;
+                   f(manifold{});
+                 });
+}
+
 ///@} Neighbor relations
 
 }  // namespace tree
