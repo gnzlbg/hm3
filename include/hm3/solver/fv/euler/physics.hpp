@@ -24,29 +24,46 @@ template <uint_t Nd> struct physics : state, dimensional<Nd>, indices<Nd> {
 
   template <typename S, typename V, typename CellData>
   static void load(V&& v, S const& s, CellData&& cell_data) noexcept {
-    cell_data.load("density",
-                   [&](auto c, auto&&) { return v.rho(s.variables(c)); });
+    cell_data.load("density", [&](auto c, auto&&) {
+      auto t = s.variables(c);
+      return v.rho(t);
+    });
     cell_data.load("momentum_density",
-                   [&](auto c, auto&& d) { return v.rho_u(s.variables(c), d); },
+                   [&](auto c, auto&& d) {
+                     auto t = s.variables(c);
+                     return v.rho_u(t, d);
+                   },
                    v.dimension(),
                    [&](auto&& d) { return v.dimension_name(d); });
-    cell_data.load("energy_density",
-                   [&](auto c, auto&&) { return v.rho_E(s.variables(c)); });
-    cell_data.load("pressure",
-                   [&](auto c, auto&&) { return v.p(s.variables(c)); });
-    cell_data.load(
-     "velocity", [&](auto c, auto&& d) { return v.u(s.variables(c), d); },
-     v.dimension(), [&](auto&& d) { return v.dimension_name(d); });
+    cell_data.load("energy_density", [&](auto c, auto&&) {
+      auto t = s.variables(c);
+      return v.rho_E(t);
+    });
+    cell_data.load("pressure", [&](auto c, auto&&) {
+      auto t = s.variables(c);
+      return v.p(t);
+    });
+    cell_data.load("velocity",
+                   [&](auto c, auto&& d) {
+                     auto t = s.variables(c);
+                     return v.u(t, d);
+                   },
+                   v.dimension(),
+                   [&](auto&& d) { return v.dimension_name(d); });
     // Gradient
 
     // Temperature
-    cell_data.load(
-     "M", [&](auto c, auto&&) { return v.mach_number(s.variables(c)); });
+    cell_data.load("M", [&](auto c, auto&&) {
+      auto t = s.variables(c);
+      return v.mach_number(t);
+    });
     // Total energy
     // Specific internal energy
     // Enthalpy
-    cell_data.load(
-     "a", [&](auto c, auto&&) { return v.speed_of_sound(s.variables(c)); });
+    cell_data.load("a", [&](auto c, auto&&) {
+      auto t = s.variables(c);
+      return v.speed_of_sound(t);
+    });
   }
 };
 

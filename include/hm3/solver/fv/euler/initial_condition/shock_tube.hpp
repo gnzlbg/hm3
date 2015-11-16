@@ -2,8 +2,8 @@
 /// \file
 ///
 ///
-#include <hm3/solver/fv/euler/indices.hpp>
 #include <hm3/geometry/point.hpp>
+#include <hm3/solver/fv/euler/indices.hpp>
 #include <hm3/utility/constants.hpp>
 
 namespace hm3 {
@@ -90,6 +90,27 @@ template <uint_t Nd> struct shock_tube {
   };
 };
 
+/// Sod's test
+///
+///     rho  |   u   |  p
+/// L:  1.0  | 0.0   | 1.0
+/// R: 0.125 | 0.0   | 0.1
+///
+/// see Riemann Solvers and Numerical Methods for Fluid Dynamics 3rd
+/// Edition p. 130
+///
+/// \note Mild test useful for assesing entropy satisfaction.
+///
+/// G. A. Sod, "A Survey of Several Finite Difference Methods for Systems of
+/// Nonlinear Hyperbolic Conservation Laws", Journal of Computational Physics,
+/// 27:1-31, 1978.
+///
+template <uint_t Nd> auto sod_shock_tube() {
+  return shock_tube<Nd>(1.0, 0.0, 1.0,   // left state
+                        0.125, 0.0, 0.1  // right state
+                        );
+}
+
 /// Modified Sod's test
 ///
 ///     rho  |   u   |  p
@@ -103,9 +124,9 @@ template <uint_t Nd> struct shock_tube {
 /// something fundamental is wrong.
 ///
 template <uint_t Nd> auto modified_sod_shock_tube() {
-  return shock_tube<Nd>(1.0, 0.75, 1.0,  // left state
-                        0.125, 0.0, 0.1  // right state
-                        );
+  return shock_tube<Nd>(1.0, 0.75, 1.0,   // left state
+                        0.125, 0.0, 0.1,  // right state
+                        0.3);
 }
 
 /// 123 problem

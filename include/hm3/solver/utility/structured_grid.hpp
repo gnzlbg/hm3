@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Structured grid utilities
-#include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/solver/types.hpp>
+#include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/static_const.hpp>
@@ -315,7 +315,7 @@ struct square_structured_indices : dimensional<Nd> {
 
   constexpr index_t closest_internal_cell(index_t halo) const noexcept {
     HM3_ASSERT(is_halo(halo), "cell {} is not a halo", halo.idx);
-    sint_t o         = 1;
+    uint_t o         = 1;
     index_t neighbor = halo;
 
     while (o <= Nhl) {
@@ -475,10 +475,14 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
   constexpr square_structured_grid& operator=(square_structured_grid&&)
    = default;
 
-  constexpr square_structured_grid(geometry::square<Nd> bbox)
-   : bounding_box_(std::move(bbox))
-   , cell_length_(compute_cell_length(geometry::length(bounding_box_)))
-   , x_first_cell_(compute_first_cell_coordinates(bounding_box_)) {
+  constexpr square_structured_grid(geometry::square<Nd> bbox) {
+    reinitialize(std::move(bbox));
+  }
+
+  constexpr void reinitialize(geometry::square<Nd> bbox) noexcept {
+    bounding_box_ = std::move(bbox);
+    cell_length_ = compute_cell_length(geometry::length(bounding_box_));
+    x_first_cell_ = compute_first_cell_coordinates(bounding_box_);
     HM3_ASSERT(cell_length() > 0.,
                "zero cell length in square structured grid with bbox: {}",
                bounding_box_);

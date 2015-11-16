@@ -146,8 +146,6 @@ void check_time_step(fv::euler::physics<Nd> p, test_state<Nd> a) {
   auto cv = p.cv();
   auto pv = p.pv();
 
-  using var_v = typename test_state<Nd>::var_v;
-
   {  // cv:
     auto one_over_s_max = fv::euler::time_step(a.cv, cv, 1.0, 1.0);
     auto s_max          = 1. / one_over_s_max;
@@ -175,8 +173,8 @@ void check_lax_friedrichs_flux(fv::euler::physics<Nd> p, test_state<Nd> l,
   } s;
 
   RANGES_FOR (auto&& d, p.dimensions()) {
-    auto f_cv1 = fv::euler::local_lax_friedrichs(cv, l.cv, r.cv, d, s);
-    auto f_cv2 = fv::euler::local_lax_friedrichs(cv, r.cv, l.cv, d, s);
+    auto f_cv1 = fv::euler::flux::local_lax_friedrichs(cv, l.cv, r.cv, d, s);
+    auto f_cv2 = fv::euler::flux::local_lax_friedrichs(cv, r.cv, l.cv, d, s);
 
     RANGES_FOR (auto&& v, p.variables()) { CHECK(f_cv1(v) == -f_cv2(v)); }
   }
@@ -247,7 +245,7 @@ void check_euler() {
   {  /// TODO: 3D
   }
 }
-
+/*
 void explosion_test(mpi::env& env) {
   auto comm = env.world();
 
@@ -277,7 +275,7 @@ void explosion_test(mpi::env& env) {
   using solver_t = fv::state<p>;
 
   auto&& num_flux = [](auto&&... vars) {
-    return fv::euler::local_lax_friedrichs(
+    return fv::euler::flux::local_lax_friedrichs(
      std::forward<decltype(vars)>(vars)...);
   };
   auto compute_time_step = [](auto&&... vars) {
@@ -356,7 +354,7 @@ void explosion_test(mpi::env& env) {
     //}
   }
 }
-
+*/
 void sod_test(mpi::env& env) {
   auto comm = env.world();
 
@@ -385,16 +383,6 @@ void sod_test(mpi::env& env) {
   using p        = fv::euler::physics<nd>;
   using solver_t = fv::state<p>;
 
-  auto&& num_flux = [](auto&&... vars) {
-    // return fv::euler::local_lax_friedrichs(
-    //  std::forward<decltype(vars)>(vars)...);
-    return fv::euler::ausm(std::forward<decltype(vars)>(vars)...);
-
-  };
-  auto compute_time_step = [](auto&&... vars) {
-    return fv::euler::time_step(std::forward<decltype(vars)>(vars)...);
-  };
-
   p physics{1.4};
 
   auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};
@@ -403,50 +391,60 @@ void sod_test(mpi::env& env) {
   /// Initial advection solver grid:
   solver::initialize_grid(g, as0, [&](auto&& n) { return g.is_leaf(n); });
 
-  auto ic = fv::euler::ic::modified_sod_shock_tube<nd>();
+  auto ic = fv::euler::ic::sod_shock_tube<nd>();
 
   // Initial condition by cell
   for (auto& b : as0.blocks()) {
-    b.for_each_internal(
-     [&](auto&& c) { b.variables(c.idx) = ic(b.center(c)); });
+    b.for_each_internal([&](auto&& c) {
+      auto pvs = ic(b.center(c));
+      b.variables(c.idx) = physics.pv().to_cv(pvs);
+    });
   }
 
   /// Boundary conditions
   auto bcs = NeumannBoundaryConditions{};
 
-  num_t cfl = 1.0;
+  num_t cfl = 0.4;
   bcs.apply(as0);
   solver::fv::vtk::serialize(as0, "result", 0, physics.cv(), 0_gn);
-  for (auto timestep : view::iota(1, 1000)) {
-    //   // for (auto rkstep : fv::runge_kutta_steacdps()) {
-    {  // can happen in parallel
-      fv::clear_rhs(as0);
-      fv::clear_halos(as0);  // in debug mode
-    }
-    {
-      //  fv::cv_to_pv(as0);
+  num_t time      = 0;
+  num_t time_end  = 0.2;
+  num_t time_step = 0;
+
+  const auto cv = physics.cv();
+  // const auto pv = physics.pv();
+  auto nf       = fv::euler::flux::ausm;
+  auto ts       = fv::euler::time_step;
+  auto li       = fv::limiter::van_albada;
+  auto time_int = fv::runge_kutta;
+
+  while (!math::approx(time, time_end)) {
+    bcs.apply(as0);
+    fv::initialize_time_integration(as0);
+    while (!as0.time_integration.done()) {
+      //   // for (auto rkstep : fv::runge_kutta_steacdps()) {
+      {  // can happen in parallel
+        fv::clear_rhs(as0);
+        // fv::clear_halos(as0);  // in debug mode
+      }
       // fv::exchange_halos(as0);
+      // bcs.apply(as0);
+      num_t dt = fv::compute_time_step(as0, cfl, ts, cv, time, time_end);
+      std::cout << "step: " << time_step << " | time: " << time
+                << " | dt: " << dt << std::endl;
+      fv::compute_structured_gradients(as0, li);
+      // fv::correct_boundary_gradients(as0, bcs);
+      fv::compute_structured_rhs(as0, nf, dt, cv);
+      // fv::compute_boundary_rhs(as0, nf, dt, cv);
+      // fv::compute_source_term_rhs(as0);
+      as0.time_integration.advance_rhs(as0, dt);
+      time += dt;
+      time_step++;
+
+      bcs.apply(as0);
     }
-    bcs.apply(as0);
-    num_t dt = fv::compute_time_step(as0, cfl, compute_time_step, physics.cv());
-    std::cout << "dt: " << dt << std::endl;
-    // fv::compute_gradients(as0);
-    //   // fv::correct_boundary_gradients(as0, bcs);
-    //   // fv::limit_gradients(as0, limiter_t);
-    // fv::compute_internal_fluxes(as0, num_flux, dt, physics.cv());
-    // fv::compute_boundary_fluxes(as0, bcs);
-    // fv::compute_source_terms(as0);
-    // fv::pv_to_cv(as0);
-    // fv::update_rhs(as0);
-    fv::old_advance(as0, num_flux, dt, physics.cv());
-    // fv::advance_variables(as0, dt);
-    // if (timestep % 10 == 0) {
-    bcs.apply(as0);
-    if (timestep % 10 == 0) {
-      solver::fv::vtk::serialize(as0, "result", timestep, physics.cv(), 0_gn);
-    }
-    //}
   }
+  solver::fv::vtk::serialize(as0, "result", time_step, physics.cv(), 0_gn);
 }
 
 int main(int argc, char* argv[]) {

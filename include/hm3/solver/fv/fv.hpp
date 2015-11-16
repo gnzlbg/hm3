@@ -2,6 +2,8 @@
 /// \file
 ///
 /// Finite Volume solver
+#include <hm3/solver/fv/gradient.hpp>
+#include <hm3/solver/fv/limiters.hpp>
 #include <hm3/solver/fv/state.hpp>
 
 namespace hm3 {
@@ -10,9 +12,9 @@ namespace fv {
 
 /// Clears the Right Hand Side of all blocks
 template <typename Physics> void clear_rhs(state<Physics>& s) {
-  for (auto&& b : s.blocks()) { b.rhs_().fill(0.); }
-  for (auto&& b : s.blocks()) { b.fluxes_().fill(0.); }
-  for (auto&& b : s.blocks()) { b.gradients_().fill(0.); }
+  for (auto&& b : s.blocks()) { b.rhs()().fill(0.); }
+  // for (auto&& b : s.blocks()) { b.fluxes_().fill(0.); }
+  // for (auto&& b : s.blocks()) { b.gradients_().fill(0.); }
 }
 
 /// Clears the Halo cells of all blocks
@@ -29,37 +31,36 @@ template <typename Physics> void clear_halos(state<Physics>& s) {
   }
 }
 
-inline num_t compute_gradient(num_t vL, num_t vR, num_t distance) noexcept {
-  return (vR - vL) / distance;
-}
-
-template <typename LeftVars, typename RightVars>
-inline decltype(auto) compute_gradient(LeftVars&& vL, RightVars&& vR,
-                                       num_t const& distance) noexcept {
-  return (vR - vL) / distance;
-}
-
-template <typename Physics, typename block_t, typename Idx,
-          CONCEPT_REQUIRES_(Same<typename state<Physics>::block_t, block_t>{})>
-void compute_gradients(state<Physics>& s, block_t& b, Idx c) {
-  for (auto d : b.dimensions()) {
-    auto cp1 = b.at(c, d, +1);
-    auto cm1 = b.at(c, d, -1);
-    // std::cerr << "idx: " << c.idx << " cp1: " << cp1.idx << " cm1: " <<
-    // cm1.idx
-    //           << std::endl;
-    b.gradient(c, d) = compute_gradient(b.variables(cp1), b.variables(cm1),
-                                        2. * b.cell_length());
-  }
-}
-
-template <typename Physics> void compute_gradients(state<Physics>& s) {
-  // std::cerr << "compute gradients: " << std::endl;
-  int count_ = 0;
+template <typename State, typename Limiter = limiter::none_fn>
+void compute_structured_gradients(State& s, Limiter limiter = Limiter{}) {
+  using vars = num_a<std::decay_t<State>::nvars()>;
   for (auto&& b : s.blocks()) {
-    // std::cout << "block: " << count_ << std::endl;
-    b.for_each_internal([&](auto c) { compute_gradients(s, b, c); }, 1);
-    count_++;
+    const auto dx  = b.cell_length();
+    const auto dx2 = 2. * dx;
+    b.for_each_internal(
+     [&](auto c) {
+       for (auto d : b.dimensions()) {
+         auto cm = b.at(c, d, -1);
+         auto cp = b.at(c, d, +1);
+
+         auto vM = b.variables(cm);
+         auto vP = b.variables(cp);
+
+         if (Same<Limiter, limiter::none_fn>{}) {  // unlimited
+           b.gradient(c, d) = gradient(vP, vM, dx2);
+         } else {  // limited:
+           auto vC = b.variables(c);
+
+           vars gM  = gradient(vC, vM, dx);
+           vars gP  = gradient(vP, vC, dx);
+           vars gC  = gradient(vP, vM, dx2);
+           vars lim = limiter(gM, gP);
+
+           b.gradient(c, d) = gC.array() * lim.array();
+         }
+       }
+     },
+     1);
   }
 }
 
@@ -144,11 +145,18 @@ num_t compute_time_step(state<Physics> const& s, num_t cfl, TimeStepF&& t,
                         V&& v) {
   num_t dt = std::numeric_limits<num_t>::max();
   for (auto&& b : s.blocks()) {
-    b.for_each_internal([&](auto c) {
-      num_t idt = t(b.variables(c), v, b.cell_length(), cfl);
-      dt = std::min(dt, idt);
-    });
+    auto dx = b.cell_length();
+    b.for_each_internal(
+     [&](auto c) { dt = std::min(dt, t(b.variables(c), v, dx, cfl)); });
   }
+  return dt;
+}
+
+template <typename Physics, typename TimeStepF, typename V>
+num_t compute_time_step(state<Physics> const& s, num_t cfl, TimeStepF&& t,
+                        V&& v, num_t time, num_t time_end) {
+  num_t dt = compute_time_step(s, cfl, t, v);
+  if (time + dt > time_end) { dt = time_end - time; }
   return dt;
 }
 
@@ -164,82 +172,57 @@ template <typename Physics> void pv_to_cv(state<Physics>& s) {
   }
 }
 
-template <typename Physics, typename NumFluxF, typename V>
-void compute_internal_fluxes(state<Physics>& s, NumFluxF&& nf, num_t dt,
-                             V&& v) {
-  for (auto&& b : s.blocks()) {
-    struct {
-      num_t dx, area, volume, dt;
-    } data{b.cell_length(), b.cell_surface_area(), b.cell_volume(), dt};
-    b.for_each_internal([&](auto c) {
-      for (auto&& d : b.dimensions()) {
-        b.flux(c, d * 2)
-         = nf(v, b.variables(b.at(c, d, -1)), b.variables(c), d, data);
-        b.flux(c, d * 2 + 1)
-         = nf(v, b.variables(c), b.variables(b.at(c, d, +1)), d, data);
-      }
-    });
+template <typename V, typename G> auto variables_at(V&& v, G&& g, num_t dx) {
+  return v + g * dx;
+}
 
-    // b.for_each_internal([&](auto c) {
-    //   if (c.idx < 3000 || c.idx > 4000) { return; }
-    //   for (auto&& d : b.dimensions()) {
-    //     std::cout << "c: " << c.idx << " f(-1): " << b.flux(c, d * 2)
-    //               << " | f(+1): " << b.flux(c, d * 2 + 1) << std::endl;
-    //   }
-    // });
+template <typename NumFluxF, typename V, typename Block, typename CIdx>
+num_a<std::decay_t<Block>::nvars()> structured_numerical_flux(NumFluxF&& nf,
+                                                              num_t dt, V&& v,
+                                                              Block&& b,
+                                                              CIdx&& c) {
+  num_a<4> result = num_a<4>::Zero();
+  struct {
+    num_t dx, area, volume, dt;
+  } data;
+  data.dx         = b.cell_length();
+  data.area       = b.cell_surface_area();
+  data.volume     = b.cell_volume();
+  data.dt         = dt;
+  const num_t f   = dt / data.dx;
+  const num_t dx2 = data.dx / 2.;
+  for (auto&& d : b.dimensions()) {
+    auto cM = b.at(c, d, -1);
+    auto cP = b.at(c, d, +1);
+
+#define SECOND_ORDER
+#ifdef SECOND_ORDER
+    auto vM = variables_at(b.variables(cM), b.gradient(cM, d), +dx2);
+    auto vcM = variables_at(b.variables(c), b.gradient(c, d), -dx2);
+    auto vcP = variables_at(b.variables(c), b.gradient(c, d), +dx2);
+    auto vP = variables_at(b.variables(cP), b.gradient(cP, d), -dx2);
+#else
+    auto vM  = b.variables(cM);
+    auto vcM = b.variables(c);
+    auto vcP = b.variables(c);
+    auto vP  = b.variables(cP);
+#endif
+    result += (nf(v, vM, vcM, d, data) - nf(v, vcP, vP, d, data));
+  }
+  return f * result;
+}
+
+template <typename State, typename NumFluxF, typename VT>
+void compute_structured_rhs(State&& s, NumFluxF&& nf, num_t dt, VT&& vt) {
+  for (auto&& b : s.blocks()) {
+    b.for_each_internal(
+     [&](auto c) { b.rhs(c) += structured_numerical_flux(nf, dt, vt, b, c); });
   }
 }
 
-/// Updates RHS with fluxes
-template <typename Physics> void update_rhs(state<Physics>& s) {
+template <typename State> void advance_rhs(State& s) {
   for (auto&& b : s.blocks()) {
-    b.for_each_internal([&](auto c) {
-      for (auto&& d : b.dimensions()) {
-        b.rhs(c) += b.flux(c, d * 2);
-        b.rhs(c) -= b.flux(c, d * 2 + 1);
-      }
-    });
-  }
-}
-
-/// Updates variables with RHS
-template <typename Physics>
-void advance_variables(state<Physics>& s, num_t dt) {
-  for (auto&& b : s.blocks()) {
-    const num_t f = dt / b.cell_length();
-    std::cerr << "cl: " << b.cell_length() << " f: " << f << std::endl;
-
-    b.for_each_internal([&](auto c) { b.variables(c) += f * b.rhs(c); });
-  }
-}
-
-template <typename Physics, typename NumFluxF, typename V>
-void old_advance(state<Physics>& s, NumFluxF&& nf, num_t dt, V&& v) {
-  for (auto&& b : s.blocks()) {
-    struct {
-      num_t dx, area, volume, dt;
-    } data{b.cell_length(), b.cell_surface_area(), b.cell_volume(), dt};
-    b.for_each_internal([&](auto c) {
-      num_a<4> result = num_a<4>::Zero();
-      for (auto&& d : b.dimensions()) {
-        auto left = nf(v, b.variables(b.at(c, d, -1)), b.variables(c), d, data);
-        auto right
-         = nf(v, b.variables(c), b.variables(b.at(c, d, +1)), d, data);
-        result += (left - right);
-      }
-      b.rhs(c) = b.variables(c) + result * dt;  // / b.cell_length();
-      // b.rhs(c) = b.variables(c) + result * dt / b.cell_length();
-    });
-
-    b.for_each_internal([&](auto c) { b.variables(c) = b.rhs(c); });
-
-    // b.for_each_internal([&](auto c) {
-    //   if (c.idx < 3000 || c.idx > 4000) { return; }
-    //   for (auto&& d : b.dimensions()) {
-    //     std::cout << "c: " << c.idx << " f(-1): " << b.flux(c, d * 2)
-    //               << " | f(+1): " << b.flux(c, d * 2 + 1) << std::endl;
-    //   }
-    // });
+    b.for_each_internal([&](auto c) { b.variables(c) += b.rhs(c); });
   }
 }
 

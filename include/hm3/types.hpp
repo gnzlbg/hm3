@@ -2,10 +2,15 @@
 /// \file
 ///
 /// HM3's primitive types (these are used everywhere except when doing I/O)
-#include <string>
 #include <cstddef>
+#include <string>
+#include <type_traits>
 
 namespace hm3 {
+
+/// TODO: put rvref where it belongs
+template <typename T>
+static constexpr bool rvref = std::is_rvalue_reference<T>::value;
 
 /// \name Primitive type aliases
 ///@{

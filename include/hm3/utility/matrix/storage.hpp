@@ -103,6 +103,12 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   constexpr auto data() -> pointer { return &data_[0]; }
   constexpr auto data() const -> const_pointer { return &data_[0]; }
+
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
 };
 
 /// Dynamic storage

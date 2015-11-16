@@ -10,21 +10,8 @@ namespace hm3 {
 namespace solver {
 namespace fv {
 
-// template <typename T, suint_t length> struct view {
-//   HM3_RESTRICT T* data;
-//   T& operator[](suint_t i) noexcept {
-//     HM3_ASSERT(i < length, "index {} is out of bounds[0, {})", i, length);
-//     return data[i];
-//   }
-//   T const& operator[](suint_t i) const noexcept {
-//     HM3_ASSERT(i < length, "index {} is out of bounds[0, {})", i, length);
-//     return data[i];
-//   }
-//   static constexpr suint_t size() noexcept { return length; }
-// };
-
 template <uint_t Nd, uint_t Nv, uint_t Nic, uint_t Nhl>  //
-struct block : square_structured_grid<Nd, Nic, Nhl> {
+struct block_base : square_structured_grid<Nd, Nic, Nhl> {
   static_assert(Nic >= Nhl, "");
   using grid_t = square_structured_grid<Nd, Nic, Nhl>;
   using grid_t::dimension;
@@ -32,6 +19,7 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
   using index_t = typename grid_t::index_t;
 
   static constexpr uint_t no_variables() noexcept { return Nv; }
+  static constexpr uint_t nvars() noexcept { return Nv; }
   static constexpr uint_t no_surfaces_per_cell() noexcept {
     return 2 * dimension();
   }
@@ -66,7 +54,7 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
   using srfc_idx = sidx_t;
   using dim_idx  = sidx_t;
 
-  using cell_rhs_flux_order = dense::col_major_t;
+  using cell_rhs_flux_order = dense::row_major_t;
 
   using var_t = dense::matrix<num_t, size(), no_variables(), sidx_t, var_idx,
                               cell_rhs_flux_order>;
@@ -89,92 +77,94 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
   /// Gradients
   gradient_t gradients_;
 
+  TimeIntegration time_int;
+
   ///@}  // Data
 
-  decltype(auto) variables(sidx_t c) noexcept { return variables_().row(c); }
-  decltype(auto) variables(sidx_t c) const noexcept {
-    return variables_().row(c);
+  /// \name Cell variables
+  ///@{
+  auto& variables() noexcept { return variables_; }
+  auto const& variables() const noexcept { return variables_; }
+  auto variables(sidx_t c) noexcept { return variables_().row(c); }
+  auto variables(sidx_t c) const noexcept { return variables_().row(c); }
+  auto variables(index_t c) noexcept { return variables(c.idx); }
+  auto variables(index_t c) const noexcept { return variables(c.idx); }
+  ///@}  Cell variables
+
+  /// \name Right hand side
+  ///@{
+  auto& rhs() noexcept { return rhs_; }
+  auto const& rhs() const noexcept { return rhs_; }
+  auto rhs(sidx_t c) noexcept { return rhs_.row(c); }
+  auto rhs(sidx_t c) const noexcept { return rhs_.row(c); }
+  auto rhs(index_t c) noexcept { return rhs(c.idx); }
+  auto rhs(index_t c) const noexcept { return rhs(c.idx); }
+  ///@} Right hand side
+
+  /// \name Gradients
+  ///@{
+  auto& gradients() noexcept { return gradients_; }
+  auto const& gradients() const noexcept { return gradients_; }
+  auto gradient(sidx_t c, suint_t d) noexcept {
+    return gradients_().row(c).template segment<nvars()>(d * nvars());
+  }
+  auto gradient(sidx_t c, suint_t d) const noexcept {
+    return gradients_().row(c).template segment<nvars()>(d * nvars());
+  }
+  auto gradient(index_t c, suint_t d) noexcept { return gradient(c.idx, d); }
+  auto gradient(index_t c, suint_t d) const noexcept {
+    return gradient(c.idx, d);
   }
 
-  decltype(auto) variables(index_t c) noexcept { return variables(c.idx); }
-  decltype(auto) variables(index_t c) const noexcept {
-    return variables(c.idx);
-  }
+  ///@} Right hand side
 
-  decltype(auto) rhs(sidx_t c) noexcept { return rhs_().row(c); }
-  decltype(auto) rhs(sidx_t c) const noexcept { return rhs_().row(c); }
-
-  decltype(auto) rhs(index_t c) noexcept { return rhs(c.idx); }
-  decltype(auto) rhs(index_t c) const noexcept { return rhs(c.idx); }
-
-  decltype(auto) flux(sidx_t c, suint_t s) noexcept {
+  auto flux(sidx_t c, suint_t s) noexcept {
     return fluxes_().row(c).template segment<no_variables()>(s
                                                              * no_variables());
   }
-  decltype(auto) flux(sidx_t c, suint_t s) const noexcept {
+  auto flux(sidx_t c, suint_t s) const noexcept {
     return fluxes_().row(c).template segment<no_variables()>(s
                                                              * no_variables());
   }
 
-  decltype(auto) flux(index_t c, suint_t s) noexcept { return flux(c.idx, s); }
-  decltype(auto) flux(index_t c, suint_t s) const noexcept {
-    return flux(c.idx, s);
-  }
-
-  decltype(auto) gradient(sidx_t c, suint_t d) noexcept {
-    return gradients_().row(c).template segment<no_variables()>(
-     d * no_variables());
-  }
-  decltype(auto) gradient(sidx_t c, suint_t d) const noexcept {
-    return gradients_().row(c).template segment<no_variables()>(
-     d * no_variables());
-  }
-
-  decltype(auto) gradient(index_t c, suint_t d) noexcept {
-    return gradient(c.idx, d);
-  }
-  decltype(auto) gradient(index_t c, suint_t d) const noexcept {
-    return gradient(c.idx, d);
-  }
+  auto flux(index_t c, suint_t s) noexcept { return flux(c.idx, s); }
+  auto flux(index_t c, suint_t s) const noexcept { return flux(c.idx, s); }
 
   block() {}
 
-  block(level_idx block_level_, geometry::square<Nd> bbox)
-   : square_structured_grid<Nd, Nic, Nhl>(bbox)
-   , block_length(geometry::length(bbox))
-   , block_level(block_level_) {
+  void reinitialize(level_idx block_level_,
+                    geometry::square<Nd> bbox) noexcept {
+    grid_t::reinitialize(bbox);
+    block_length = geometry::length(bbox);
+    block_level  = block_level;
     HM3_ASSERT(*block_level_ >= 0, "negative block level {}", block_level_);
     HM3_ASSERT(block_length > 0., "zero block length in block with bbox: {}",
                bbox);
   }
 
-  // struct cell_t : grid_t::cell_t {
-  //   using base_t = grid_t::cell_t;
-  //   using base_t::idx;
-  //   using base_t::grid;
+  block(level_idx block_level_, geometry::square<Nd> bbox) {
+    reinitialize(std::move(block_level_), std::move(bbox));
+  }
 
-  //   cell_t(base_t c) : base_t{std::move(c)} {}
+  void clear() {}
 
-  //   num_t& v(uint_t i) noexcept { return grid.variables() * (vars_ + i); }
-  //   num_t const& v(uint_t i) const noexcept { return *(vars_ + i); }
-  //   num_t& g(uint_t i, uint_t d) noexcept { return *(grads_ + Nd * i + d); }
-  //   num_t const& g(uint_t i, uint_t d) const noexcept {
-  //     return *(grads_ + Nd * i + d);
-  //   }
-  //   num_t& r(uint_t i) noexcept { return *(rhs_ + i); }
-  //   num_t const& r(uint_t i) const noexcept { return *(rhs_ + i); }
-  //   num_t& f(uint_t s, uint_t i) noexcept { return *(fluxes_ + s * Nv + i); }
-  //   num_t const& f(uint_t s, uint_t i) const noexcept {
-  //     return *(fluxes_ + s * Nv + i);
-  //   }
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
+};
 
-  //   friend bool operator==(cell_t const& a, cell_t const& b) {
-  //     return static_cast<base_t const&>(a) == static_cast<base_t const & b>;
-  //   }
-  //   friend bool operator!=(cell_t const& a, cell_t const& b) {
-  //     return !(a == b);
-  //   }
-  // };
+template <typename BlockBase, typename TimeIntegrationState>  //
+struct block : BlockBase, TimeIntegrationState {
+  using BlockBase::BlockBase;
+  using BlockBase::operator=;
+
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
 };
 
 }  // namespace fv

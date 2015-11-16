@@ -45,7 +45,7 @@ endif()
 hm3_pkg(range-v3 "-DRANGES_SUPPRESS_IOTA_WARNING" "")
 hm3_pkg(json "" "")
 hm3_pkg(spdlog "-DFMT_HEADER_ONLY" "")
-hm3_pkg(Eigen3 "-DEIGEN_FAST_MATH -DEIGEN_NO_AUTOMATIC_RESIZING" "")
+hm3_pkg(Eigen3 "" "")
 
 # MPI:
 find_package(MPI REQUIRED)

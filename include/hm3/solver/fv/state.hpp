@@ -13,7 +13,7 @@ namespace solver {
 namespace fv {
 
 /// Finite volume discretization state
-template <typename Physics>  //
+template <typename Physics, typename TimeIntegration>  //
 struct state : dimensional<Physics::dimension()> {
   using dimensional<Physics::dimension()>::dimension;
   using dimensional<Physics::dimension()>::dimensions;
@@ -28,13 +28,20 @@ struct state : dimensional<Physics::dimension()> {
   using grid_t       = typename block_grid_t::tree_t;
   using grid_neighbors_t
    = solver::state::neighbors<tree::max_no_neighbors(dimension()) + 1>;
-  using block_t  = block<dimension(), nvars(), 100, 2>;
-  using blocks_t = std::vector<block_t>;
+
+  using block_base_t = block_base<dimension(), nvars(), 200, 2>;
+  using time_integration_block_state
+   = decltype(TimeIntegration::state_t(std::declval<block_base_t>()));
+
+  using block_t   = block<block_base_t, time_integration_block_state>;
+  using blocks_t  = std::vector<block_t>;
+  using physics_t = Physics;
 
   Physics physics;
   block_grid_t block_grid;
   grid_neighbors_t block_neighbors;
   blocks_t blocks_;
+  TimeIntegration time_integration;
 
   state(grid_t& g, grid_idx gidx, block_idx block_capacity, Physics p)
    : physics(p)
@@ -61,15 +68,15 @@ struct state : dimensional<Physics::dimension()> {
 
   block_idx push(tree_node_idx n) noexcept {
     block_idx bidx = block_grid.push(n);
-    blocks_[*bidx]
-     = block_t(block_grid.level(bidx), block_grid.tree().geometry(n));
+    blocks_[*bidx].reinitialize(block_grid.level(bidx),
+                                block_grid.tree().geometry(n));
     block_neighbors.push(bidx, block_grid.neighbors(bidx));
     return bidx;
   }
   void pop(block_idx bidx) {
     block_grid.pop(bidx);
     block_neighbors.pop(bidx);
-    blocks_[*bidx] = block_t{};
+    blocks_[*bidx].clear();
   }
   void refine(block_idx bidx) {
     auto guard = block_grid.refine(bidx);
@@ -83,7 +90,7 @@ struct state : dimensional<Physics::dimension()> {
     auto guard = block_grid.coarsen(bidx);
     restrict_children_to_parent(bidx, guard());
     for (auto cb : guard()) {
-      blocks_[*cb] = block_t{};
+      blocks_[*cb].clear();
       block_neighbors.pop(cb);
     }
     block_neighbors.push(guard.parent);

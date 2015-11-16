@@ -5,8 +5,15 @@
 #include <hm3/types.hpp>
 /// Select the default dense index type:
 #define EIGEN_DEFAULT_DENSE_INDEX_TYPE ::hm3::int_t
+
+// Eigen3 does still use dynamic exception specifications which are deprecated
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
+
+#pragma clang diagnostic pop
 
 namespace hm3 {
 

@@ -278,6 +278,12 @@ struct matrix : bounds<NoRows, NoCols>,
   auto begin() const noexcept { return ranges::begin(this->data_); }
   auto end() noexcept { return ranges::begin(this->data_) + size(); }
   auto end() const noexcept { return ranges::begin(this->data_) + size(); }
+
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
 };
 
 template <
