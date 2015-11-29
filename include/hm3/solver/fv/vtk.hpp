@@ -3,6 +3,9 @@
 ///
 #include <hm3/solver/fv/state.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
+#include <hm3/utility/variant.hpp>
+#include <hm3/geometry/square.hpp>
+#include <hm3/geometry/polygon.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -10,9 +13,9 @@ namespace fv {
 
 namespace vtk {
 
-template <typename Physics, typename T>
-struct serializable : dimensional<Physics::dimension()> {
-  state<Physics> const& s;
+template <typename State, typename T>
+struct serializable : dimensional<State::dimension()> {
+  State const& s;
   using block_idx = grid_node_idx;
   block_idx idx   = block_idx{};
 
@@ -30,9 +33,7 @@ struct serializable : dimensional<Physics::dimension()> {
            });
   }
 
-  auto bounding_box() const noexcept {
-    return s.block_grid.tree().bounding_box();
-  }
+  auto bounding_box() const noexcept { return s.grid.tree().bounding_box(); }
 
   template <typename F> auto for_each_cell(F&& f) const noexcept {
     f(nodes());
@@ -59,20 +60,76 @@ struct serializable : dimensional<Physics::dimension()> {
     s.physics.load(T{s.physics}, s, cell_data);
   }
 
-  serializable(state<Physics> const& s_, block_idx b = block_idx{})
-   : s(s_), idx{b} {}
+  serializable(State const& s_, block_idx b = block_idx{}) : s(s_), idx{b} {}
 };
 
-template <typename Physics, typename T>
-void serialize(state<Physics> const& state, string file_name, uint_t time_step,
-               T&&, grid_node_idx b = grid_node_idx{}) {
+template <typename Ls, typename State, typename T>
+struct ls_serializable : serializable<State, T> {
+  using self = ls_serializable<Ls, State, T>;
+  using base = serializable<State, T>;
+  using base::s;
+  using base::idx;
+  using block_idx            = typename base::block_idx;
+  static constexpr uint_t Nd = State::dimension();
+  Ls const& ls;
+  using vtk_cell_idx = cell_idx;
+
+  using geometries_t = variant<geometry::square<Nd>, geometry::polygon<Nd, 4>>;
+
+  geometries_t geometry(cell_idx c) const noexcept {
+    geometries_t v;
+    auto g = s.geometry(c);
+    if (!ls.is_cut(g)) {
+      v = g;
+      return v;
+    }
+    auto shapes = intersect(g, ls);
+    return geometries_t(std::get<0>(shapes));
+  }
+
+  auto nodes() const noexcept {
+    return s.all_cells() | view::filter([&](cell_idx c) {
+             if (!idx) {
+               return s.is_internal(c) and (ls.is_inside(s.geometry(c))
+                                            or ls.is_cut(s.geometry(c)));
+             } else {
+               return s.is_in_block(c, idx);
+             }
+           });
+  }
+
+  template <typename F> auto for_each_cell(F&& f) const noexcept {
+    f(nodes());
+    return f;
+  }
+
+  ls_serializable(Ls const& l, State const& s_, block_idx b = block_idx{})
+   : serializable<State, T>(s_, b), ls(l) {}
+};
+
+template <typename State, typename T>
+void serialize(State const& state, string file_name, uint_t time_step, T&&,
+               grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
   if (b) { file_name += "_block_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
-  serializable<Physics, T> s(state, b);
+  serializable<State, T> s(state, b);
+  ::hm3::vis::vtk::serialize(s, file_name, log);
+}
+
+template <typename State, typename Ls, typename T>
+void ls_serialize(State const& state, Ls const& ls, string file_name,
+                  uint_t time_step, T&&, grid_node_idx b = grid_node_idx{}) {
+  using std::to_string;
+  hm3::log::serial log("fv-serialization-to-vtk");
+
+  if (b) { file_name += "_block_" + to_string(b); }
+  file_name += "_" + to_string(time_step);
+
+  ls_serializable<Ls, State, T> s(ls, state, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 

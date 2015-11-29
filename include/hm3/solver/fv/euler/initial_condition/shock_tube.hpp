@@ -4,6 +4,7 @@
 ///
 #include <hm3/geometry/point.hpp>
 #include <hm3/solver/fv/euler/indices.hpp>
+#include <hm3/solver/fv/euler/pv.hpp>
 #include <hm3/utility/constants.hpp>
 
 namespace hm3 {
@@ -148,7 +149,7 @@ template <uint_t Nd> auto one_two_three_shock_tube() {
                         );
 }
 
-}  // namespace initial
+}  // namespace ic
 
 }  // namespace euler
 }  // namespace fv

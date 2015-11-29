@@ -2,18 +2,10 @@
 /// \file
 ///
 /// Variant
-#include <hm3/utility/range-v3.hpp>
+#include <variant.hpp>
 
 namespace hm3 {
 
-namespace variant_detail {
-using ranges::v3::tagged_variant;
-using ranges::v3::get;
-using ranges::v3::set;
-}  // namespace variant_detail
-
-template <typename... Ts> using variant = variant_detail::tagged_variant<Ts...>;
-using variant_detail::get;
-using variant_detail::set;
+using std::experimental::variant;
 
 }  // namespace hm3

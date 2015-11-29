@@ -50,7 +50,7 @@ constexpr auto square_length(point<Nd> const& x_min, point<Nd> const& x_max)
 }
 
 /// Square
-template <int_t Nd> struct square {
+template <int_t Nd> struct square : dimensional<Nd> {
   using point_t = point<Nd>;
 
   point_t x_center_;
@@ -107,6 +107,11 @@ template <int_t Nd> constexpr auto center(square<Nd> const& s) noexcept {
   return s.x_center_;
 }
 
+/// Square centroid coordinates
+template <int_t Nd> constexpr auto centroid(square<Nd> const& s) noexcept {
+  return s.x_center_;
+}
+
 /// Square volume
 template <int_t Nd> constexpr auto volume(square<Nd> const& s) noexcept {
   const auto l = length(s);
@@ -148,13 +153,13 @@ bool operator!=(square<Nd> const& l, square<Nd> const& r) noexcept {
 
 /// Square corners relative position (+-1)
 ///
-///  Order: right hand rule
+/// Order: right hand rule (counter clock wise)
 ///
-///       6         7
+///       7         6
 ///        *-------*
 ///       /|      /|
 ///      / |     / |       x(1)   x(2)
-///   2 *-------* 3|        ^   ^
+///   3 *-------* 2|        ^   ^
 ///     |  *----|--*        |  /
 ///     | / 4   | / 5       | /
 ///     |/      |/          |/

@@ -16,11 +16,11 @@ namespace location {
 
 template <uint_t Nd, typename UInt = uint_t>  //
 struct slim : dimensional<Nd> {
-  using this_t = slim<Nd, UInt>;
+  using self = slim<Nd, UInt>;
 
-  using value_type     = this_t;
-  using storage_type   = this_t;
-  using reference_type = this_t const&;
+  using value_type     = self;
+  using storage_type   = self;
+  using reference_type = self const&;
   using integer_t      = UInt;
 
   static_assert(UnsignedIntegral<integer_t>{},
@@ -171,12 +171,12 @@ struct slim : dimensional<Nd> {
     return decode(value, level());
   }
 
-  static constexpr this_t empty_value() noexcept {
-    this_t t;
+  static constexpr self empty_value() noexcept {
+    self t;
     t.value = integer_t{0};
     return t;
   }
-  static constexpr bool is_empty_value(this_t v) noexcept {
+  static constexpr bool is_empty_value(self v) noexcept {
     return v.value == integer_t{0};
   }
 

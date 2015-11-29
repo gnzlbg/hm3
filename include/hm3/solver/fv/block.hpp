@@ -54,14 +54,15 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
   using srfc_idx = sidx_t;
   using dim_idx  = sidx_t;
 
-  using cell_rhs_flux_order = dense::row_major_t;
+  // using cell_rhs_flux_order = dense::row_major_t;
+  using cell_rhs_flux_order = dense::col_major_t;
 
   using var_t = dense::matrix<num_t, size(), no_variables(), sidx_t, var_idx,
                               cell_rhs_flux_order>;
 
-  using flux_t
-   = dense::matrix<num_t, size(), no_variables() * no_surfaces_per_cell(),
-                   sidx_t, suint_t, cell_rhs_flux_order>;
+  // using flux_t
+  //  = dense::matrix<num_t, size(), no_variables() * no_surfaces_per_cell(),
+  //                  sidx_t, suint_t, cell_rhs_flux_order>;
 
   using gradient_t = dense::matrix<num_t, size(), no_variables() * dimension(),
                                    sidx_t, suint_t, cell_rhs_flux_order>;
@@ -72,12 +73,10 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
   var_t variables_;
   /// Right Hand Side
   var_t rhs_;
-  /// Fluxes
-  flux_t fluxes_;
+  // /// Fluxes
+  // flux_t fluxes_;
   /// Gradients
   gradient_t gradients_;
-
-  TimeIntegration time_int;
 
   ///@}  // Data
 
@@ -118,19 +117,21 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
 
   ///@} Right hand side
 
-  auto flux(sidx_t c, suint_t s) noexcept {
-    return fluxes_().row(c).template segment<no_variables()>(s
-                                                             * no_variables());
-  }
-  auto flux(sidx_t c, suint_t s) const noexcept {
-    return fluxes_().row(c).template segment<no_variables()>(s
-                                                             * no_variables());
-  }
+  // auto flux(sidx_t c, suint_t s) noexcept {
+  //   return fluxes_().row(c).template segment<no_variables()>(s
+  //                                                            *
+  //                                                            no_variables());
+  // }
+  // auto flux(sidx_t c, suint_t s) const noexcept {
+  //   return fluxes_().row(c).template segment<no_variables()>(s
+  //                                                            *
+  //                                                            no_variables());
+  // }
 
-  auto flux(index_t c, suint_t s) noexcept { return flux(c.idx, s); }
-  auto flux(index_t c, suint_t s) const noexcept { return flux(c.idx, s); }
+  // auto flux(index_t c, suint_t s) noexcept { return flux(c.idx, s); }
+  // auto flux(index_t c, suint_t s) const noexcept { return flux(c.idx, s); }
 
-  block() {}
+  block_base() {}
 
   void reinitialize(level_idx block_level_,
                     geometry::square<Nd> bbox) noexcept {
@@ -142,7 +143,7 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
                bbox);
   }
 
-  block(level_idx block_level_, geometry::square<Nd> bbox) {
+  block_base(level_idx block_level_, geometry::square<Nd> bbox) {
     reinitialize(std::move(block_level_), std::move(bbox));
   }
 

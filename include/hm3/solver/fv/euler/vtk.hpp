@@ -8,10 +8,7 @@ namespace hm3 {
 namespace solver {
 namespace fv {
 
-namespace euler {
-
-
-}  // namespace euler
+namespace euler {}  // namespace euler
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3

@@ -1,27 +1,44 @@
-/*
+#include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
 #include <hm3/solver/fv/advection.hpp>
+#include <hm3/solver/fv/flux/lax_friedrichs.hpp>
+#include <hm3/solver/fv/advection/numerical_flux/upwind.hpp>
+#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
+#include <hm3/solver/fv/advection/initial_condition/square.hpp>
 #include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/time_integration.hpp>
 #include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
+template <typename T> struct dump;
+
 using namespace hm3;
 using namespace solver;
 
-int main(int argc, char* argv[]) {
-  /// Initialize MPI
-  mpi::env env(argc, argv);
+struct NeumannBoundaryConditions {
+  template <typename State, typename To>
+  constexpr void apply(State& s, To&& to) {
+    for (auto&& b : s.blocks()) {
+      b.for_each_halo([&](auto&& h_c) {
+        auto i_c = b.closest_internal_cell(h_c);
+        to(b, h_c) = b.variables(i_c);
+      });
+    }
+  }
+};
+
+void square(mpi::env& env) {
   auto comm = env.world();
 
   // Initialize I/O session
-  io::session::remove("fv_advection_2d", comm);
-  io::session s(io::create, "fv_advection_2d", comm);
+  io::session::remove("fv_euler_sod_2d", comm);
+  io::session s(io::create, "fv_euler_sod_2d", comm);
 
   // Grid parameters
   constexpr uint_t nd       = 2;
   constexpr uint_t no_grids = 1;
-  auto min_grid_level       = 1_u;
+  auto min_grid_level       = 0_u;
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
@@ -36,54 +53,67 @@ int main(int argc, char* argv[]) {
   auto solver_block_capacity
    = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
 
-  using physics_t = fv::advection<nd>;
-  using solver_t  = fv::state<physics_t>;
+  using p    = fv::advection::physics<nd>;
+  using tint = fv::euler_forward;
+  // using tint     = fv::runge_kutta;
+  using solver_t = fv::state<p, tint>;
 
-  physics_t p{1.0};
+  num_a<nd> vel = num_a<nd>::Zero();
+  vel(0) = 1.0;
+  p physics(vel);
 
-  auto as0 = solver_t{g, 0_g, solver_block_capacity, p};
-  g.refine(tree::node_idx{3});
+  auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};
+  // g.refine(tree::node_idx{2});
+  // g.refine(tree::node_idx{3});
 
   /// Initial advection solver grid:
   solver::initialize_grid(g, as0, [&](auto&& n) { return g.is_leaf(n); });
 
-  // Initial condition
-  for (auto&& b : as0.blocks()) {
-    b.for_each_internal([&](auto&& c) {
-      for (auto v : as0.physics.variables()) { b.variables(c.idx)(v) = 1.; }
-    });
+  auto ic = fv::advection::ic::square<nd>(
+   geometry::square<nd>(geometry::point<nd>::constant(0.25), 0.1), 1.0, 0.1);
+
+  // Initial condition by cell
+  for (auto& b : as0.blocks()) {
+    b.for_each_internal(
+     [&](auto&& c) { b.variables(c.idx) = ic(b.center(c)); });
   }
 
-  solver::fv::vtk::serialize(as0, "test");
-  solver::fv::vtk::serialize(as0, "test", 4_gn);
+  /// Boundary conditions
+  auto bcs = NeumannBoundaryConditions{};
 
-  // for (auto timestep : view::iota(0, 10)) {
-  //   // for (auto rkstep : fv::runge_kutta_steps()) {
-  //   {  // can happen in parallel
-  //     fv::clear_rhs(as0);
-  //     fv::clear_halos(as0);
-  //     fv::exchange_halos(as0);
-  //   }
-  //   // fv::apply_bounadry_conditions(as0, bcs);
-  //   // auto dt = fv::compute_time_step(as0);
-  //   // fv::set_time_step(as0, dt);
-  //   fv::compute_gradients(as0);
-  //   // fv::correct_boundary_gradients(as0, bcs);
-  //   // fv::limit_gradients(as0, limiter_t);
-  //   // {  // can happen in parallel
-  //   //   {
-  //   //     for (auto d : dimensions()) {
-  //   //       fv::compute_fluxes(as0, d);
-  //   //       fv::correct_boundary_fluxes(as0, bcs, d);
-  //   //     }
-  //   //   }
-  //   //   fv::compute_source_terms(as0);
-  //   // }
-  //   // fv::update_rhs(as0);
-  //   // }
-  // }
+  num_t cfl = 1.0;
+  // bcs.apply(
+  //  as0, [](auto&& b, auto&& c) -> decltype(auto) { return b.variables(c); });
+  solver::fv::vtk::serialize(as0, "result", 0, physics.cv());
+  num_t time      = 0;
+  num_t time_end  = 0.2;
+  num_t time_step = 0;
+
+  // auto nf = fv::flux::local_lax_friedrichs;
+  auto nf = fv::advection::flux::upwind;
+  // auto nf = fv::advection::flux::rusanov;
+  auto ts = fv::advection::time_step;
+  auto li = fv::limiter::van_albada;
+  // auto li = fv::limiter::zero;
+  // auto li = fv::limiter::none;
+
+  // auto li = fv::limiter::minmod;
+  // auto li = fv::limiter::zero;
+
+  time_step
+   = advance_until(as0, bcs, nf, ts, li, time, time_end, time_step, cfl);
+  solver::fv::vtk::serialize(as0, "result", time_step, physics.cv());
+  solver::fv::vtk::serialize(as0, "block_result", time_step, physics.cv(),
+                             4_gn);
+}
+
+int main(int argc, char* argv[]) {
+  /// Initialize MPI
+  mpi::env env(argc, argv);
+
+  square(env);
+
+  // explosion_test(env);
 
   return test::result();
 }
-*/
-int main() { return 0; }

@@ -27,7 +27,7 @@ struct square_structured_indices : dimensional<Nd> {
 
   /// Coordinates e.g. {i, j, k}
   using coordinates_t       = std::array<suint_t, Nd>;
-  using coordinate_offset_t = std::array<sint_t, Nd>;
+  using coordinate_offset_t = std::array<int_t, Nd>;
 
   /// Index: cell index + coords
   struct index_t {
@@ -313,6 +313,29 @@ struct square_structured_indices : dimensional<Nd> {
   }
   ///@}  // Internal iterators
 
+  // o is the distance in #of cells from cell across each neighbor direction
+  template <typename F>
+  void for_each_neighbor(index_t cell, F&& f, uint_t o = 1) const noexcept {
+    tree::for_each_neighbor_manifold<Nd>([&](auto m) {
+      for (auto pos : m()) {
+        auto neighbor_x = cell.x;
+        auto offset     = m[pos];
+        for (auto d : dimensions()) {
+          neighbor_x[d] = static_cast<sint_t>(neighbor_x[d]) + offset[d] * o;
+          if (neighbor_x[d] <= 0 or neighbor_x[d] >= cells_per_length()) {
+            goto next_neighbor;  // overflow, skip this neighbor
+          }
+        }
+        {
+          auto neighbor_idx = from(neighbor_x);
+          f(neighbor_idx);
+        }
+      next_neighbor:
+        continue;
+      }
+    });
+  }
+
   constexpr index_t closest_internal_cell(index_t halo) const noexcept {
     HM3_ASSERT(is_halo(halo), "cell {} is not a halo", halo.idx);
     uint_t o         = 1;
@@ -355,6 +378,8 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
   using indices::dimensions;
   using indices::size;
   using indices::at;
+  using indices::cells_per_length;
+  using indices::is_internal;
 
   using point_t  = geometry::point<Nd>;
   using square_t = geometry::square<Nd>;
@@ -365,6 +390,10 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
   num_t cell_length_;
   /// Coordinates of the first cell
   point_t x_first_cell_;
+
+  constexpr auto grid_length() const noexcept {
+    return geometry::length(bounding_box_);
+  }
 
   constexpr num_t const& cell_length() const noexcept { return cell_length_; }
   constexpr num_t cell_volume() const noexcept {
@@ -424,48 +453,36 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
   /// Index of cell containing point x
   constexpr index_t at(point_t x) const noexcept {
     HM3_ASSERT(in_grid(x), "point x is not in block");
+    // std::cout << "x: " << x() << std::endl;
 
     // normalize x:
-    auto x_min = geometry::bounds(bounding_box_).min;
-    x() -= x_min() / cell_length();
+    auto x_min = x_first_cell_;
+    x() -= x_min();
+    x() /= cell_length();
+    // std::cout << "x_normalized: " << x() << std::endl;
 
     index_t i;
+    // std::cout << "x_int: ";
     for (auto&& d : dimensions()) {
-      i.x[d] = floor(x[d]);
-      HM3_ASSERT(i.x[d] >= 0 and i.x[d] <= Nd, "");
+      // auto v = floor(x[d]);
+      auto v = x[d];
+      i.x[d] = std::lround(v);  // );
+      // std::cout << i.x[d] << "( " << x[d] << ", " << floor(x[d]) <<  " )"
+      //           << " ";
+      HM3_ASSERT(i.x[d] >= 0 and i.x[d] < cells_per_length(), "");
     }
-    return at(i.x);
+    //    std::cout << std::endl;
+
+    return this->from(i.x);
   }
 
-  // struct cell {
-  //   index_t idx;
-  //   square_structured_grid& grid;
-  //   constexpr geometry::point<Nd> x() const noexcept {
-  //     return grid.center(idx);
-  //   }
-  //   constexpr cell() = default;
-  //   constexpr cell(cell const&) = default;
-  //   constexpr cell& operator=(cell const&) = default;
-  //   constexpr cell(cell&&)  = default;
-  //   constexpr cell& operator=(cell&&) = default;
-
-  //   constexpr cell(index_t i, square_structured_grid& g)
-  //    : idx{std::move(i)}, grid{g} {}
-
-  //   cell at(suint_t d, sint_t offset) const noexcept {
-  //     return indices::at(idx, d, offset);
-  //   }
-  //   cell at(coordinates_t offset) const noexcept {
-  //     return indices::at(idx, offset);
-  //   }
-
-  //   friend constexpr bool operator==(cell const& a, cell const& b) noexcept {
-  //     return a.idx == b.idx;
-  //   }
-  //   friend constexpr bool operator!=(cell const& a, cell const& b) noexcept {
-  //     return !(a == b);
-  //   }
-  // };
+  /// Index of non-halo cell containing point x
+  constexpr index_t at_nh(point_t x) const noexcept {
+    HM3_ASSERT(in_grid(x), "point x is not in block");
+    auto i = at(x);
+    HM3_ASSERT(is_internal(i), "?");
+    return i;
+  }
 
   constexpr square_structured_grid() = default;
   constexpr square_structured_grid(square_structured_grid const&) = default;
@@ -487,19 +504,6 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
                "zero cell length in square structured grid with bbox: {}",
                bounding_box_);
   }
-
-  // template<typename Function>
-  // static constexpr void for_each(Function&& f) noexcept {
-  //   indices::for_each([&](index_t i) { f(cell(std::move(i))); });
-  // }
-
-  // static constexpr void for_each_internal(Function&& f) noexcept {
-  //   indices::for_each_internal([&](auto&& ids) { f(cell(idx)); });
-  // }
-
-  // static constexpr void for_each_halo(Function&& f) noexcept {
-  //   indices::for_each_halo([&](auto&& ids) { f(cell(idx)); });
-  // }
 };
 
 }  // namespace solver

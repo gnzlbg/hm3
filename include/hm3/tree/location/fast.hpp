@@ -37,11 +37,11 @@ namespace location {
 /// coordinates and doing useful stuff with the location hashes
 ///
 template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
-  using this_t         = fast<Nd, T>;
-  using opt_this_t     = compact_optional<this_t>;
-  using value_type     = this_t;
-  using storage_type   = this_t;
-  using reference_type = this_t const&;
+  using self           = fast<Nd, T>;
+  using opt_self       = compact_optional<self>;
+  using value_type     = self;
+  using storage_type   = self;
+  using reference_type = self const&;
   using integer_t      = T;
 
   std::array<T, Nd> x;
@@ -174,11 +174,11 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
     }
   }
 
-  friend opt_this_t shift(this_t l, std::array<int_t, Nd> offset) noexcept {
+  friend opt_self shift(self l, std::array<int_t, Nd> offset) noexcept {
     for (auto&& d : dimensions()) {
       if (bit::overflows_on_add(l.to_int(d), offset[d],
                                 static_cast<integer_t>(*l.level()))) {
-        return opt_this_t{};
+        return opt_self{};
       }
     }
     for (auto&& d : dimensions()) {
@@ -186,7 +186,7 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
        static_cast<T>(static_cast<int_t>(l.to_int(d)) + offset[d]),
        static_cast<T>(0), static_cast<T>(*l.level() + 1));
     }
-    return opt_this_t{l};
+    return opt_self{l};
   }
 
   uint_t pop() noexcept {
@@ -195,12 +195,12 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
     return tmp;
   }
 
-  static constexpr this_t empty_value() noexcept {
-    this_t t;
+  static constexpr self empty_value() noexcept {
+    self t;
     t.level_ = level_idx{};
     return t;
   }
-  static constexpr bool is_empty_value(this_t v) noexcept { return !v.level(); }
+  static constexpr bool is_empty_value(self v) noexcept { return !v.level(); }
 
   static constexpr value_type const& access_value(
    storage_type const& v) noexcept {

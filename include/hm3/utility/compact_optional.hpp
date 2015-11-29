@@ -102,9 +102,9 @@ class compact_optional_base {
 
 template <typename N, typename Tag = default_tag>  //
 class compact_optional : public detail::compact_optional_base<N> {
-  using tag    = Tag;
-  using this_t = compact_optional<N, tag>;
-  using super  = detail::compact_optional_base<N>;
+  using tag   = Tag;
+  using self  = compact_optional<N, tag>;
+  using super = detail::compact_optional_base<N>;
   using super::value_;
 
  public:
@@ -118,88 +118,88 @@ class compact_optional : public detail::compact_optional_base<N> {
 
   constexpr reference_type operator*() const { return this->value(); }
 
-  friend void swap(this_t& l, this_t& r) {
+  friend void swap(self& l, self& r) {
     using std::swap;
     swap(l.value_, r.value_);
   }
 
   CONCEPT_REQUIRES(EqualityComparable<value_type>())
-  constexpr bool operator==(this_t const& o) const noexcept {
+  constexpr bool operator==(self const& o) const noexcept {
     return value_ == o.value_;
   }
   CONCEPT_REQUIRES(EqualityComparable<value_type>())
-  constexpr bool operator!=(this_t const& o) const noexcept {
+  constexpr bool operator!=(self const& o) const noexcept {
     return value_ != o.value_;
   }
 
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator<(this_t const& o) const noexcept {
+  constexpr bool operator<(self const& o) const noexcept {
     return value_ < o.value_;
   }
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator>(this_t const& o) const noexcept {
+  constexpr bool operator>(self const& o) const noexcept {
     return value_ > o.value_;
   }
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator<=(this_t const& o) const noexcept {
+  constexpr bool operator<=(self const& o) const noexcept {
     return value_ <= o.value_;
   }
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator>=(this_t const& o) const noexcept {
+  constexpr bool operator>=(self const& o) const noexcept {
     return value_ >= o.value_;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator++() noexcept {
+  self& operator++() noexcept {
     ++value_;
     return (*this);
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t operator++(int) noexcept {
-    this_t tmp(*this);
+  self operator++(int) noexcept {
+    self tmp(*this);
     ++value_;
     return tmp;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator--() noexcept {
+  self& operator--() noexcept {
     --value_;
     return (*this);
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t operator--(int) noexcept {
-    this_t tmp(*this);
+  self operator--(int) noexcept {
+    self tmp(*this);
     --value_;
     return tmp;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  friend this_t operator+(this_t const& a, this_t const& b) noexcept {
-    return this_t{(*a) + (*b)};
+  friend self operator+(self const& a, self const& b) noexcept {
+    return self{(*a) + (*b)};
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator+=(this_t const& other) noexcept {
+  self& operator+=(self const& other) noexcept {
     value_ += *other;
     return *this;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator-=(this_t const& other) noexcept {
+  self& operator-=(self const& other) noexcept {
     value_ -= *other;
     return *this;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  friend this_t operator-(this_t const& a, this_t const& b) noexcept {
-    return this_t{(*a) - (*b)};
+  friend self operator-(self const& a, self const& b) noexcept {
+    return self{(*a) - (*b)};
   }
 
   /// TODO: constrain on <<
   template <typename OStream>
-  friend constexpr OStream& operator<<(OStream& os, this_t const& a) {
+  friend constexpr OStream& operator<<(OStream& os, self const& a) {
     if (a) {
       os << *a;
     } else {
@@ -209,7 +209,7 @@ class compact_optional : public detail::compact_optional_base<N> {
   };
 
   /// TODO: constrain on to_string
-  friend std::string to_string(this_t const& a) {
+  friend std::string to_string(self const& a) {
     using std::to_string;
     return a ? to_string(*a) : std::string{"_"};
   }

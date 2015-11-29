@@ -148,6 +148,12 @@ struct cv_base : dimensional<Nd>, equation_of_state, indices<Nd> {
                                      num_t gamma_m1) noexcept {
     return mach_number(u_mag(v), speed_of_sound(v, gamma, gamma_m1));
   }
+
+  template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
+  static constexpr num_t max_wave_speed(V&& v, suint_t d, num_t gamma,
+                                        num_t gamma_m1) noexcept {
+    return std::abs(u(v, d)) + speed_of_sound(v, gamma, gamma_m1);
+  }
 };
 
 template <uint_t Nd> struct cv : cv_base<Nd>, state {
@@ -199,6 +205,11 @@ template <uint_t Nd> struct cv : cv_base<Nd>, state {
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   constexpr num_t mach_number(V&& v) const noexcept {
     return b::mach_number(std::forward<V>(v), gamma, gamma_m1);
+  }
+
+  template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
+  constexpr num_t max_wave_speed(V&& v, suint_t d) const noexcept {
+    return b::max_wave_speed(std::forward<V>(v), d, gamma, gamma_m1);
   }
 };
 

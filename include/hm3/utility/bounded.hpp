@@ -9,7 +9,7 @@ namespace hm3 {
 
 /// A tagged type with values in range [from, to)
 template <typename T, T from, T to, typename Tag = void> struct bounded {
-  using this_t         = bounded<T, from, to, Tag>;
+  using self           = bounded<T, from, to, Tag>;
   using value_type     = T;
   using tag            = Tag;
   using reference_type = value_type&;
@@ -41,33 +41,33 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   CONCEPT_REQUIRES(EqualityComparable<value_type>())
-  constexpr bool operator==(this_t const& o) const noexcept {
+  constexpr bool operator==(self const& o) const noexcept {
     return *(*this) == *o;
   }
   CONCEPT_REQUIRES(EqualityComparable<value_type>())
-  constexpr bool operator!=(this_t const& o) const noexcept {
+  constexpr bool operator!=(self const& o) const noexcept {
     return *(*this) != *o;
   }
 
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator<(this_t const& o) const noexcept {
+  constexpr bool operator<(self const& o) const noexcept {
     return *(*this) < *o;
   }
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator>(this_t const& o) const noexcept {
+  constexpr bool operator>(self const& o) const noexcept {
     return *(*this) > *o;
   }
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator<=(this_t const& o) const noexcept {
+  constexpr bool operator<=(self const& o) const noexcept {
     return *(*this) <= *o;
   }
   CONCEPT_REQUIRES(WeaklyOrdered<value_type>())
-  constexpr bool operator>=(this_t const& o) const noexcept {
+  constexpr bool operator>=(self const& o) const noexcept {
     return *(*this) >= *o;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator++() noexcept {
+  self& operator++() noexcept {
     ++value;
     HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
                from, to);
@@ -75,8 +75,8 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t operator++(int) noexcept {
-    this_t tmp(*this);
+  self operator++(int) noexcept {
+    self tmp(*this);
     ++value;
     HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
                from, to);
@@ -84,12 +84,12 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  friend this_t operator+(this_t const& a, this_t const& b) noexcept {
-    this_t v{(*a) + (*b)};
+  friend self operator+(self const& a, self const& b) noexcept {
+    self v{(*a) + (*b)};
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator+=(this_t const& other) noexcept {
+  self& operator+=(self const& other) noexcept {
     value += *other;
     HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
                from, to);
@@ -97,7 +97,7 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  this_t& operator-=(this_t const& other) noexcept {
+  self& operator-=(self const& other) noexcept {
     value -= *other;
     HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
                from, to);
@@ -105,7 +105,7 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   template <typename OStream>
-  friend constexpr OStream& operator<<(OStream& os, this_t const& a) {
+  friend constexpr OStream& operator<<(OStream& os, self const& a) {
     os << *a;
     return os;
   };

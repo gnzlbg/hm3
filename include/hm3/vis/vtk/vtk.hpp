@@ -24,6 +24,7 @@
 #include <vtkHexahedron.h>
 #include <vtkLine.h>
 #include <vtkQuad.h>
+#include <vtkPolygon.h>
 // Cell utilities:
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -39,8 +40,13 @@
 // I/O
 #include <vtkXMLUnstructuredGridWriter.h>
 #pragma clang diagnostic pop
-#include <hm3/geometry/square.hpp>
+// std
+#include <tuple>
 #include <string>
+// hm3
+#include <hm3/geometry/square.hpp>
+#include <hm3/geometry/polygon.hpp>
+#include <hm3/utility/variant.hpp>
 
 namespace hm3 {
 namespace vis {
@@ -77,11 +83,45 @@ template <typename T> auto make_array() {
 }
 
 template <typename T> struct cell_t {};
-template <> struct cell_t<geometry::square<1>> { using type = vtkLine; };
-template <> struct cell_t<geometry::square<2>> { using type = vtkQuad; };
-template <> struct cell_t<geometry::square<3>> { using type = vtkHexahedron; };
+template <> struct cell_t<geometry::square<1>> {
+  using type = vtkLine;
+  static constexpr int value() { return VTK_LINE; }
+};
+template <> struct cell_t<geometry::square<2>> {
+  using type = vtkQuad;
+  static constexpr int value() { return VTK_QUAD; }
+};
+template <> struct cell_t<geometry::square<3>> {
+  using type = vtkHexahedron;
+  static constexpr int value() { return VTK_HEXAHEDRON; }
+};
+template <uint_t Nd, uint_t MaxNp> struct cell_t<geometry::polygon<Nd, MaxNp>> {
+  using type = vtkPolygon;
+  static constexpr int value() { return VTK_POLYGON; }
+};
 
-template <typename T> using to_vtk_cell_t = typename cell_t<T>::type;
+template <typename T> using to_vtk_cell_t     = typename cell_t<T>::type;
+template <typename T> using to_vtk_cell_ptr_t = smart_ptr<to_vtk_cell_t<T>>;
+
+template <typename... Ts>
+using vtk_cell_types_t
+ = meta::transform<meta::list<Ts...>, meta::quote<to_vtk_cell_t>>;
+
+template <typename... Ts>
+using vtk_cell_ptr_types_t
+ = meta::transform<meta::list<Ts...>, meta::quote<to_vtk_cell_ptr_t>>;
+
+template <typename... Ts>
+using vtk_cell_ptr_tuple_t
+ = meta::apply_list<meta::quote<std::tuple>, vtk_cell_ptr_types_t<Ts...>>;
+
+template <typename... Ts>
+auto make_tuple_of_cells(variant<Ts...> const&) -> vtk_cell_ptr_tuple_t<Ts...> {
+  vtk_cell_ptr_tuple_t<Ts...> r;
+  ranges::tuple_for_each(
+   r, [](auto&& t) { t = std::decay_t<decltype(t)>::New(); });
+  return r;
+}
 
 template <int_t Nd>
 constexpr auto to_vtk_point(geometry::point<Nd> p) noexcept

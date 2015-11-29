@@ -1,5 +1,4 @@
 #pragma once
-/// \file 
+/// \file
 ///
 /// Exact Riemann solver
-

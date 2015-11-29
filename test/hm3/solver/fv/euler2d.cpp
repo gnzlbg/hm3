@@ -1,10 +1,13 @@
 #include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
+#include <hm3/geometry/sd.hpp>
 #include <hm3/solver/fv/euler.hpp>
 #include <hm3/solver/fv/euler/initial_condition/shock_tube.hpp>
 #include <hm3/solver/fv/euler/vtk.hpp>
 #include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/time_integration.hpp>
 #include <hm3/solver/fv/vtk.hpp>
+#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -16,7 +19,7 @@ using namespace solver;
 template <typename F> struct BoundaryConditions {
   F f;
   BoundaryConditions(F f_) : f(f_) {}
-  template <typename Physics> constexpr void apply(fv::state<Physics>& s) {
+  template <typename State> constexpr void apply(State& s) {
     for (auto&& b : s.blocks()) {
       b.for_each_halo([&](auto&& c) { b.variables(c) = f(b, c); });
     }
@@ -26,15 +29,49 @@ template <typename F> struct BoundaryConditions {
 template <typename F> auto make_bcs(F&& f) { return BoundaryConditions<F>(f); }
 
 struct NeumannBoundaryConditions {
-  template <typename Physics> constexpr void apply(fv::state<Physics>& s) {
+  template <typename State, typename To>
+  constexpr void apply(State& s, To&& to) {
     for (auto&& b : s.blocks()) {
       b.for_each_halo([&](auto&& h_c) {
         auto i_c = b.closest_internal_cell(h_c);
-        b.variables(h_c) = b.variables(i_c);
+        to(b, h_c) = b.variables(i_c);
       });
     }
   }
 };
+
+// struct CylinderBCs {
+//   geometry::sphere<2> sd(num_a<2>::Constant(0.5), 0.1);
+//   template <typename State, typename To>
+//   constexpr void apply(State& s, To&& to) {
+//     for (auto&& b : s.blocks()) {
+//       b.for_each_halo([&](auto&& h_c) {
+//         auto x_hc = geometry::center(b.geometry(h_c));
+
+//         if (x_hc(0) < 0.) {
+//           // inflow
+//           auto i_c = b.closest_internal_cell(h_c);
+//           to(b, h_c) = b.variables(i_c);
+//         }
+//         if (x_hc(0) > 1.0 || x_hc(1) < 0. || x_hc(1) > 1.0) {
+//           // outflow
+//           auto i_c = b.closest_internal_cell(h_c);
+//           to(b, h_c) = b.variables(i_c);
+//         }
+//       });
+//       b.for_each([&](auto&& c) {
+//         auto x_c = geometry::center(b.geometry(c));
+
+//         if (sd(x_c) > 0.) { return; }
+
+//         // if (not is_cut(x_c, level_set) and level_set(x_c) > 0.) { return;
+//         }
+//         // cell is either cut or inside:
+
+//       });
+//     }
+//   }
+// };
 
 template <uint_t Nd> struct test_state {
   using var_v = num_a<Nd + 2>;
@@ -173,8 +210,8 @@ void check_lax_friedrichs_flux(fv::euler::physics<Nd> p, test_state<Nd> l,
   } s;
 
   RANGES_FOR (auto&& d, p.dimensions()) {
-    auto f_cv1 = fv::euler::flux::local_lax_friedrichs(cv, l.cv, r.cv, d, s);
-    auto f_cv2 = fv::euler::flux::local_lax_friedrichs(cv, r.cv, l.cv, d, s);
+    auto f_cv1 = fv::flux::rusanov(cv, l.cv, r.cv, d, s);
+    auto f_cv2 = fv::flux::rusanov(cv, r.cv, l.cv, d, s);
 
     RANGES_FOR (auto&& v, p.variables()) { CHECK(f_cv1(v) == -f_cv2(v)); }
   }
@@ -380,12 +417,15 @@ void sod_test(mpi::env& env) {
   auto solver_block_capacity
    = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
 
-  using p        = fv::euler::physics<nd>;
-  using solver_t = fv::state<p>;
+  using p    = fv::euler::physics<nd>;
+  using tint = fv::euler_forward;
+  // using tint     = fv::runge_kutta;
+  using solver_t = fv::state<p, tint>;
 
   p physics{1.4};
 
   auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};
+  // g.refine(tree::node_idx{2});
   // g.refine(tree::node_idx{3});
 
   /// Initial advection solver grid:
@@ -396,6 +436,7 @@ void sod_test(mpi::env& env) {
   // Initial condition by cell
   for (auto& b : as0.blocks()) {
     b.for_each_internal([&](auto&& c) {
+      // TODO: ic already returns cv ?!?!?!?!? BUGBUGBUG
       auto pvs = ic(b.center(c));
       b.variables(c.idx) = physics.pv().to_cv(pvs);
     });
@@ -405,46 +446,31 @@ void sod_test(mpi::env& env) {
   auto bcs = NeumannBoundaryConditions{};
 
   num_t cfl = 0.4;
-  bcs.apply(as0);
-  solver::fv::vtk::serialize(as0, "result", 0, physics.cv(), 0_gn);
+  // bcs.apply(
+  //  as0, [](auto&& b, auto&& c) -> decltype(auto) { return b.variables(c); });
+  solver::fv::vtk::serialize(as0, "result", 0, physics.cv());
   num_t time      = 0;
   num_t time_end  = 0.2;
   num_t time_step = 0;
 
-  const auto cv = physics.cv();
   // const auto pv = physics.pv();
-  auto nf       = fv::euler::flux::ausm;
-  auto ts       = fv::euler::time_step;
-  auto li       = fv::limiter::van_albada;
-  auto time_int = fv::runge_kutta;
+  // auto nf = fv::euler::flux::ausm;
+  // auto nf = fv::euler::flux::local_lax_friedrichs;
+  auto nf = fv::flux::rusanov;
+  auto ts = fv::euler::time_step;
+  // auto li = fv::limiter::minmod;
+  auto li = fv::limiter::van_albada;
+  // auto li = fv::limiter::zero;
+  // auto li = fv::limiter::none;
 
-  while (!math::approx(time, time_end)) {
-    bcs.apply(as0);
-    fv::initialize_time_integration(as0);
-    while (!as0.time_integration.done()) {
-      //   // for (auto rkstep : fv::runge_kutta_steacdps()) {
-      {  // can happen in parallel
-        fv::clear_rhs(as0);
-        // fv::clear_halos(as0);  // in debug mode
-      }
-      // fv::exchange_halos(as0);
-      // bcs.apply(as0);
-      num_t dt = fv::compute_time_step(as0, cfl, ts, cv, time, time_end);
-      std::cout << "step: " << time_step << " | time: " << time
-                << " | dt: " << dt << std::endl;
-      fv::compute_structured_gradients(as0, li);
-      // fv::correct_boundary_gradients(as0, bcs);
-      fv::compute_structured_rhs(as0, nf, dt, cv);
-      // fv::compute_boundary_rhs(as0, nf, dt, cv);
-      // fv::compute_source_term_rhs(as0);
-      as0.time_integration.advance_rhs(as0, dt);
-      time += dt;
-      time_step++;
+  // auto li = fv::limiter::minmod;
+  // auto li = fv::limiter::zero;
 
-      bcs.apply(as0);
-    }
-  }
-  solver::fv::vtk::serialize(as0, "result", time_step, physics.cv(), 0_gn);
+  time_step
+   = advance_until(as0, bcs, nf, ts, li, time, time_end, time_step, cfl);
+  solver::fv::vtk::serialize(as0, "result", time_step, physics.cv());
+  solver::fv::vtk::serialize(as0, "block_result", time_step, physics.cv(),
+                             4_gn);
 }
 
 int main(int argc, char* argv[]) {

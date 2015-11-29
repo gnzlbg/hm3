@@ -25,7 +25,7 @@ struct unstructured_grid {
             CONCEPT_REQUIRES_(InputRange<NodeRange>{})>
   void append_internal_cells(NodeRange&& nodes, Grid&& grid) noexcept {
     using grid_cell_t = decltype(grid.geometry(*begin(nodes)));
-    using vtk_cell_t = to_vtk_cell_t<grid_cell_t>;
+    // using vtk_cell_t = to_vtk_cell_t<grid_cell_t>;
 
     const auto no_cells = distance(use_copy_if_single_pass(nodes));
 
@@ -53,28 +53,61 @@ struct unstructured_grid {
 
     /// Create a temporary cell:
     log("Generating vtk grid...");
-    auto tmp_cell = make_ptr<vtk_cell_t>();
-    int_t c_c     = 0;
+    // auto tmp_cell = make_ptr<vtk_cell_t>(); // TODO: tuple of cell types
+    auto tmp_cells = make_tuple_of_cells(grid_cell_t{});
+    std::vector<int> cell_types;
+    cell_types.reserve(no_cells);
+    int_t c_c = 0;
     RANGES_FOR (auto&& n, use_copy_if_single_pass(nodes)) {
       auto cell_geometry = grid.geometry(n);
-      auto cell_corners  = geometry::corners(cell_geometry);
-      // Append corners to the point set, and store the corner ids:
-      RANGES_FOR (auto&& cIdx, grid_cell_t::corner_positions()) {
-        vtkIdType id;
-        auto corner_vtk = to_vtk_point(cell_corners[cIdx]);
-        unique_inserter->InsertUniquePoint(corner_vtk.data(), id);
-        tmp_cell->GetPointIds()->SetId(cIdx, id);
-      }
-      // Insert the cell:
-      cells->InsertNextCell(tmp_cell->GetPointIds());
-      ++c_c;
+      visit(
+       [&](auto&& g) {
+         using geometry_t  = std::decay_t<decltype(g)>;
+         auto cell_corners = geometry::corners(g);
+         auto&& tmp_cell   = std::get<to_vtk_cell_ptr_t<geometry_t>>(tmp_cells);
+         HM3_ASSERT(size(cell_corners) > 0_u,
+                    "cells of zero points not supported (see comment below)");
+         // TL;DR: Cells that don't have any points break too much stuff in too
+         // many different places. Improving this is not worth it.
+         //
+         // ex1: the cell "exists" so we will try to compute and store cell
+         //      variables for it but the cell has no center, possibly breaking
+         //      computation, and they cannot be displayed anyways.
+         //
+         // ex2: the cell offsets will be an empty range [firstPointId,
+         //      firstPointId), but they are stored in an offset array within
+         //      ParaView which requires it to be monotonically increasing (e.g.
+         //      the next value has to be greater than the previous one). Even
+         //      if it is possible to work around this somehow, that's going to
+         //      be painful.
+         tmp_cell->GetPointIds()->Reset();
+         // Append corners to the point set, and store the corner ids:
+         RANGES_FOR (auto&& cIdx, g.corner_positions()) {
+           vtkIdType id;
+           auto corner_vtk = to_vtk_point(cell_corners[cIdx]);
+           unique_inserter->InsertUniquePoint(corner_vtk.data(), id);
+           // TODO: this is faster, tmp_cell->GetPointIds()->SetId(cIdx, id);
+           // so instead of just doing Reset above, we should get
+           // size(corners())
+           // and initialize the cell points, so that we can use SetId
+           //
+           // The InsertId function does bound checks, so we might want to use
+           // that in Debug mode anyways:
+           tmp_cell->GetPointIds()->InsertId(cIdx, id);
+         }
+         // Insert the cell:
+         cells->InsertNextCell(tmp_cell->GetPointIds());
+         cell_types.push_back(cell_t<geometry_t>::value());
+         ++c_c;
+       },
+       cell_geometry);
     }
     HM3_ASSERT(c_c == no_cells,
                "size mismatch: {} cells allocated but {} cells inserted",
                no_cells, c_c);
 
     vtk_grid->SetPoints(points);
-    vtk_grid->SetCells(tmp_cell->GetCellType(), cells);
+    vtk_grid->SetCells(cell_types.data(), cells);
     log("vtk grid has \"{}\" cells (allocated: {}) and \"{}\" vertices "
         "(allocated: {})",
         cells->GetNumberOfCells(), no_cells, points->GetNumberOfPoints(),
