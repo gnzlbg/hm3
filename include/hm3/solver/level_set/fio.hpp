@@ -3,7 +3,7 @@
 ///
 /// Serialization to HM3's File I/O
 #include <hm3/solver/level_set/fwd.hpp>
-#include <hm3/solver/state/grid.hpp>
+#include <hm3/solver/utility/grid.hpp>
 
 namespace hm3 {
 namespace solver {
