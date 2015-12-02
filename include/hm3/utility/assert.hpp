@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Assert macro
-#include <type_traits>
-#include <hm3/utility/at.hpp>
 #include <hm3/utility/assume.hpp>
-#include <hm3/utility/likely.hpp>
+#include <hm3/utility/at.hpp>
 #include <hm3/utility/fmt.hpp>
+#include <hm3/utility/likely.hpp>
+#include <type_traits>
 
 // This requires the gnu/clang zero-variadic-macro-arguments language extension
 #pragma clang diagnostic push

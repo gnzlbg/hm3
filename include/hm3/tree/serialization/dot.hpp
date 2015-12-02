@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Serializes the tree to .dot graph format
-#include <string>
 #include <hm3/tree/tree.hpp>
+#include <string>
 
 namespace hm3 {
 namespace tree {

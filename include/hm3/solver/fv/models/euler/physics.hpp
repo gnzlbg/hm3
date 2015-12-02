@@ -24,6 +24,7 @@ template <uint_t Nd> struct physics : state, dimensional<Nd>, indices<Nd> {
 
   template <typename S, typename V, typename CellData>
   static void load(V&& v, S const& s, CellData&& cell_data) noexcept {
+    /*
     cell_data.load("density", [&](auto c, auto&&) {
       auto t = s.variables(c);
       return v.rho(t);
@@ -64,6 +65,7 @@ template <uint_t Nd> struct physics : state, dimensional<Nd>, indices<Nd> {
       auto t = s.variables(c);
       return v.speed_of_sound(t);
     });
+    */
   }
 };
 

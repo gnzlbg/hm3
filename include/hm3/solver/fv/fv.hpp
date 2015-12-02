@@ -109,7 +109,7 @@ void exchange_halos(State& s, Limiter&& lim) {
         b.for_each_halo([&](auto hc) {
           auto x_hc = b.center(hc);
           if (!bn.in_grid(x_hc)) { return; }
-          auto nc = bn.at_nh(x_hc);
+          auto nc   = bn.at_nh(x_hc);
           b_lhs(hc) = s.time_integration.lhs(bn)(nc);
         });
       }
@@ -246,10 +246,10 @@ num_a<std::decay_t<Block>::nvars()> structured_numerical_flux(
 
 #define SECOND_ORDER
 #ifdef SECOND_ORDER
-    auto vM = variables_at(lhs(cM), b.gradient(cM, d), +dx2);
+    auto vM  = variables_at(lhs(cM), b.gradient(cM, d), +dx2);
     auto vcM = variables_at(lhs(c), b.gradient(c, d), -dx2);
     auto vcP = variables_at(lhs(c), b.gradient(c, d), +dx2);
-    auto vP = variables_at(lhs(cP), b.gradient(cP, d), -dx2);
+    auto vP  = variables_at(lhs(cP), b.gradient(cP, d), -dx2);
 #else
     auto vM  = lhs(cM);
     auto vcM = lhs(c);
@@ -319,7 +319,7 @@ num_t advance_once(State& s, BCs& bcs, NumFlux&& nf, TimeStep&& ts,
     fv::exchange_halos(s, li);
   }
   // vtk::serialize(s, "result", time_step, cv);
-  vtk::ls_serialize(s, bcs, "ls_result", time_step, cv);
+  // vtk::ls_serialize(s, bcs, "ls_result", time_step, cv);
   return dt;
 }
 

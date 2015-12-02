@@ -72,10 +72,10 @@ template <uint_t Nd> struct shock_tube {
     pv_r = rotate_u(u_mag_r);
 
     p::rho(pv_l) = rho_l;
-    p::p(pv_l) = p_l;
+    p::p(pv_l)   = p_l;
 
     p::rho(pv_r) = rho_r;
-    p::p(pv_r) = p_r;
+    p::p(pv_r)   = p_r;
   }
 
   /// Initial condition for Sod's shock-tube problem at point \p x

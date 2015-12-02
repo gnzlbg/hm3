@@ -18,9 +18,9 @@ template <int_t NoRows, int_t NoCols> struct bounds {
   }
   static constexpr uint_t size() noexcept { return no_rows() * no_cols(); }
 
-  constexpr bounds() = default;
+  constexpr bounds()              = default;
   constexpr bounds(bounds const&) = default;
-  constexpr bounds(bounds&&) = default;
+  constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
 
@@ -40,9 +40,9 @@ template <int_t NoCols> struct bounds<dynamic, NoCols> {
   static constexpr auto no_cols() noexcept { return NoCols; }
   uint_t size() const noexcept { return no_rows() * no_cols(); }
 
-  constexpr bounds() = default;
+  constexpr bounds()              = default;
   constexpr bounds(bounds const&) = default;
-  constexpr bounds(bounds&&) = default;
+  constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
 
@@ -62,9 +62,9 @@ template <int_t NoRows> struct bounds<NoRows, dynamic> {
   auto no_cols() const noexcept { return no_cols_; }
   uint_t size() const noexcept { return no_rows() * no_cols(); }
 
-  constexpr bounds() = default;
+  constexpr bounds()              = default;
   constexpr bounds(bounds const&) = default;
-  constexpr bounds(bounds&&) = default;
+  constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
 
@@ -83,9 +83,9 @@ template <> struct bounds<dynamic, dynamic> {
   auto no_cols() const noexcept { return no_cols_; }
   uint_t size() const noexcept { return no_rows() * no_cols(); }
 
-  constexpr bounds() = default;
+  constexpr bounds()              = default;
   constexpr bounds(bounds const&) = default;
-  constexpr bounds(bounds&&) = default;
+  constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
 
@@ -103,9 +103,9 @@ template <int_t MaxRows, int_t MaxCols> struct max_bounds {
     return max_no_rows() * max_no_cols();
   }
 
-  constexpr max_bounds() = default;
+  constexpr max_bounds()                  = default;
   constexpr max_bounds(max_bounds const&) = default;
-  constexpr max_bounds(max_bounds&&) = default;
+  constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
 
@@ -120,9 +120,9 @@ template <int_t MaxCols> struct max_bounds<dynamic, MaxCols> {
   static constexpr auto max_no_cols() noexcept { return MaxCols; }
   auto max_size() const noexcept { return max_no_rows() * max_no_cols(); }
 
-  constexpr max_bounds() = default;
+  constexpr max_bounds()                  = default;
   constexpr max_bounds(max_bounds const&) = default;
-  constexpr max_bounds(max_bounds&&) = default;
+  constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
 
@@ -144,9 +144,9 @@ template <int_t MaxRows> struct max_bounds<MaxRows, dynamic> {
   }
   auto max_size() const noexcept { return max_no_rows() * max_no_cols(); }
 
-  constexpr max_bounds() = default;
+  constexpr max_bounds()                  = default;
   constexpr max_bounds(max_bounds const&) = default;
-  constexpr max_bounds(max_bounds&&) = default;
+  constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
 
@@ -165,9 +165,9 @@ template <> struct max_bounds<dynamic, dynamic> {
   auto max_no_cols() const noexcept { return max_no_cols_; }
   auto max_size() const noexcept { return max_no_rows() * max_no_cols(); }
 
-  constexpr max_bounds() = default;
+  constexpr max_bounds()                  = default;
   constexpr max_bounds(max_bounds const&) = default;
-  constexpr max_bounds(max_bounds&&) = default;
+  constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
 

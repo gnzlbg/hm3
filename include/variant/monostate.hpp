@@ -28,12 +28,11 @@ namespace std {
 
 //- 20.N.M hash support for `monostate`:
 
-template <>
-struct hash<experimental::monostate> {
+template <> struct hash<experimental::monostate> {
   using argument_type = experimental::monostate;
-  using result_type = size_t;
+  using result_type   = size_t;
 
-  result_type operator()(const argument_type &) const { return 0u; }
+  result_type operator()(const argument_type&) const { return 0u; }
 };  // hash<experimental::monostate>
 
 }  // namespace std

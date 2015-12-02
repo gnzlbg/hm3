@@ -3,8 +3,8 @@
 ///
 /// Point
 #include <hm3/types.hpp>
-#include <hm3/utility/matrix.hpp>
 #include <hm3/utility/math.hpp>
+#include <hm3/utility/matrix.hpp>
 
 namespace hm3 {
 namespace geometry {

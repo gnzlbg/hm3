@@ -33,10 +33,10 @@ struct storage {
   constexpr void destroy_all() noexcept {
     for (auto it = data(), e = data() + size(); it != e; ++it) { it->~T(); }
   }
-  constexpr storage() = default;
+  constexpr storage()               = default;
   constexpr storage(storage const&) = default;
   constexpr storage& operator=(storage const&) = default;
-  constexpr storage(storage&&) = default;
+  constexpr storage(storage&&)                 = default;
   constexpr storage& operator=(storage&&) = default;
   ~storage() { destroy_all(); }
 };

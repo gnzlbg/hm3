@@ -17,26 +17,23 @@ namespace std {
 
 //- 20.N.M hash support:
 
-template <typename... Ts>
-struct hash<experimental::variant<Ts...>> {
+template <typename... Ts> struct hash<experimental::variant<Ts...>> {
   using argument_type = experimental::variant<Ts...>;
-  using result_type = size_t;
+  using result_type   = size_t;
 
-  result_type operator()(const argument_type &v) const {
+  result_type operator()(const argument_type& v) const {
     using namespace experimental::detail;
     return unsafe::visit(make_index_visitor<hasher>(), v);
   }
 
-  private:
-  template <size_t I>
-  struct hasher {
-    template <typename Arg>
-    result_type operator()(const Arg &arg) const {
+ private:
+  template <size_t I> struct hasher {
+    template <typename Arg> result_type operator()(const Arg& arg) const {
       using T = meta::at_c<meta::list<Ts...>, I>;
       return hash<T>{}(arg);
     }
   };  // hasher
-};  // hash<experimental::variant<Ts...>>
+};    // hash<experimental::variant<Ts...>>
 
 }  // namespace std
 

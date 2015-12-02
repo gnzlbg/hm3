@@ -58,7 +58,7 @@ template <typename VT, typename V,
           typename var_v = num_a<std::decay_t<VT>::nvars()>>
 constexpr var_v theta(VT&& vt, V&& v, num_t speed_of_sound) noexcept {
   var_v f;
-  vt.rho(f) = vt.rho(v);
+  vt.rho(f)   = vt.rho(v);
   vt.rho_u(f) = vt.rho_u(v);
   vt.rho_E(f) = vt.rho_E(v) + vt.p(v);
   f *= speed_of_sound;

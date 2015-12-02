@@ -4,8 +4,8 @@
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/grid/hc/node.hpp>
-#include <hm3/utility/test.hpp>
 #include <hm3/utility/matrix.hpp>
+#include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
@@ -23,7 +23,7 @@ void test_node() {
   auto xc = point<Nd>::constant(0.5);
 
   auto ppw = point<Nd>::ones();
-  ppw(0) = 1.5;
+  ppw(0)   = 1.5;
 
   CHECK(is_square(pm, pp));
   CHECK(is_square(pm, xc));

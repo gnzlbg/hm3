@@ -3,11 +3,11 @@
 ///
 /// Cells at a given distance from the boundary are refined until they are at a
 /// given level
-#include <vector>
-#include <utility>
-#include <type_traits>
-#include <hm3/grid/types.hpp>
 #include <hm3/amr/action.hpp>
+#include <hm3/grid/types.hpp>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 namespace hm3 {
 namespace amr {
@@ -28,9 +28,9 @@ struct level_till_distance {
   num_t target_distance;
   uint_t target_level;
 
-  level_till_distance() = default;
+  level_till_distance()                           = default;
   level_till_distance(level_till_distance const&) = default;
-  level_till_distance(level_till_distance&&) = default;
+  level_till_distance(level_till_distance&&)      = default;
   level_till_distance& operator=(level_till_distance const&) = default;
   level_till_distance& operator=(level_till_distance&&) = default;
 
@@ -58,9 +58,9 @@ template <typename Step> struct multiple {
   using Steps = std::vector<Step>;
   Steps steps;
 
-  multiple() = default;
+  multiple()                = default;
   multiple(multiple const&) = default;
-  multiple(multiple&&) = default;
+  multiple(multiple&&)      = default;
   multiple& operator=(multiple const&) = default;
   multiple& operator=(multiple&&) = default;
 

@@ -17,24 +17,21 @@ namespace experimental {
 namespace detail {
 
 // Forward declaration.
-template <typename... Ts>
-class variant_base;
+template <typename... Ts> class variant_base;
 
 namespace unsafe {
 
 struct get_impl {
-  template <size_t I, typename V>
-  static constexpr auto &&get(V &&v) {
+  template <size_t I, typename V> static constexpr auto&& get(V&& v) {
     using alternatives = meta::as_list<decay_t<V>>;
     static_assert(I < alternatives::size(), "");
     using T = meta::at_c<alternatives, I>;
     assert(!v.corrupted_by_exception());
-    using R = meta::_t<qualify_as<T, V &&>>;
+    using R = meta::_t<qualify_as<T, V&&>>;
     return static_cast<R>(forward<V>(v).storage_[meta::size_t<I>{}]);
   }
 
-  template <typename T, typename V>
-  static constexpr auto &&get(V &&v) {
+  template <typename T, typename V> static constexpr auto&& get(V&& v) {
     using alternatives = meta::as_list<decay_t<V>>;
     static_assert(meta::count<alternatives, T>{} == 1, "");
     return get<meta::find_index<alternatives, T>{}>(forward<V>(v));
@@ -42,42 +39,42 @@ struct get_impl {
 };  // get_impl
 
 template <size_t I, typename... Ts>
-constexpr auto &&get(const variant_base<Ts...> &v) {
+constexpr auto&& get(const variant_base<Ts...>& v) {
   return get_impl::get<I>(v);
 }
 
 template <size_t I, typename... Ts>
-constexpr auto &&get(variant_base<Ts...> &v) {
+constexpr auto&& get(variant_base<Ts...>& v) {
   return get_impl::get<I>(v);
 }
 
 template <size_t I, typename... Ts>
-constexpr auto &&get(const variant_base<Ts...> &&v) {
+constexpr auto&& get(const variant_base<Ts...>&& v) {
   return get_impl::get<I>(move(v));
 }
 
 template <size_t I, typename... Ts>
-constexpr auto &&get(variant_base<Ts...> &&v) {
+constexpr auto&& get(variant_base<Ts...>&& v) {
   return get_impl::get<I>(move(v));
 }
 
 template <typename T, typename... Ts>
-constexpr auto &&get(const variant_base<Ts...> &v) {
+constexpr auto&& get(const variant_base<Ts...>& v) {
   return get_impl::get<T>(v);
 }
 
 template <typename T, typename... Ts>
-constexpr auto &&get(variant_base<Ts...> &v) {
+constexpr auto&& get(variant_base<Ts...>& v) {
   return get_impl::get<T>(v);
 }
 
 template <typename T, typename... Ts>
-constexpr auto &&get(const variant_base<Ts...> &&v) {
+constexpr auto&& get(const variant_base<Ts...>&& v) {
   return get_impl::get<T>(move(v));
 }
 
 template <typename T, typename... Ts>
-constexpr auto &&get(variant_base<Ts...> &&v) {
+constexpr auto&& get(variant_base<Ts...>&& v) {
   return get_impl::get<T>(move(v));
 }
 

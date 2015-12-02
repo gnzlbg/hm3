@@ -56,9 +56,9 @@ template <int_t Nd> struct square : dimensional<Nd> {
   point_t x_center_;
   num_t length_;
 
-  square() = default;
+  square()                        = default;
   constexpr square(square const&) = default;
-  constexpr square(square&&) = default;
+  constexpr square(square&&)      = default;
   constexpr square& operator=(square const&) = default;
   constexpr square& operator=(square&&) = default;
 
@@ -128,8 +128,8 @@ template <int_t Nd> constexpr auto bounds(square<Nd> const& s) noexcept {
   } b{};
   const num_t length_2 = length(s) / 2.;
   const auto xc        = center(s);
-  b.min() = xc() - point<Nd>::c(length_2);
-  b.max() = xc() + point<Nd>::c(length_2);
+  b.min()              = xc() - point<Nd>::c(length_2);
+  b.max()              = xc() + point<Nd>::c(length_2);
   return b;
 }
 

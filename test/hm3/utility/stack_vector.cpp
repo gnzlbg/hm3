@@ -13,9 +13,9 @@
 //
 //===----------------------------------------------------------------------===//
 #include <hm3/types.hpp>
-#include <hm3/utility/test.hpp>
-#include <hm3/utility/stack_vector.hpp>
 #include <hm3/utility/range.hpp>
+#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/test.hpp>
 
 using namespace hm3;
 

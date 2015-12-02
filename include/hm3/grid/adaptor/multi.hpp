@@ -33,7 +33,7 @@ struct multi : TreeGrid {
 
   multi() : grids_(0, 0) {}
   multi(multi const&) = default;
-  multi(multi&&) = default;
+  multi(multi&&)      = default;
   multi& operator=(multi const&) = default;
   multi& operator=(multi&&) = default;
 
@@ -99,7 +99,7 @@ struct multi : TreeGrid {
     assert_grid_in_bounds(g, HM3_AT_);
     HM3_ASSERT(node(n, g), "node(node: {}, grid: {}) is already invalid", n, g);
     node(n, g) = grid_node_idx{};
-    auto p     = TreeGrid::parent(n);
+    auto p = TreeGrid::parent(n);
     if (TreeGrid::is_leaf(n) and !TreeGrid::is_root(n)) {
       if (all_of(TreeGrid::siblings(n), [&](tree_node_idx m) {
             return all_of(grid_nodes(m), [&](grid_node_idx i) { return !i; });

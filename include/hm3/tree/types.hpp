@@ -3,8 +3,8 @@
 ///
 /// Tree types
 #include <hm3/types.hpp>
-#include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/bounded.hpp>
+#include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {

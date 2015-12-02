@@ -5,81 +5,142 @@ namespace hm3 {
 namespace solver {
 namespace lbm {
 
-template <typename State> void init_variables(State&& s, num_t density) {
-  num_t t_0 = density * 4. / 9.;
-  num_t t_1 = density / 9.;
-  num_t t_2 = density / 36.;
-  using l   = typename std::decay_t<State>::lattice_t;
-
-  for (auto&& b : s.blocks()) {
-    b.for_each([&](auto&& c) {
-      b.nodes0(c, l::center_node_id()) = t_0;
-      RANGES_FOR (auto&& d, l::direct_node_ids()) { b.nodes0(c, d) = t_1; }
-      RANGES_FOR (auto&& d, l::diagonal_node_ids()) { b.nodes0(c, d) = t_2; }
-    });
-  }
-}
-
-template <typename State, typename BCs>
-void propagate(State&& s, BCs&& bcs) noexcept {
-  using l = typename std::decay_t<State>::lattice_t;
+/// Initializes variables to the equilibrium distribution
+template <typename State, typename InitialCondition>
+void initialize_variables_to_equilibrium(State&& s, InitialCondition&& ic) {
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
-      RANGES_FOR (auto&& d, l::node_ids_without_center()) {
-        auto nghbr = b.at(c, l::neighbor_offset(d));
-        if (b.is_halo(nghbr)) { continue; }
-        // if (nghbr.x[1] == 2 or nghbr.x[1] == 101 or b.is_halo(nghbr)
-        //     or bcs(b.center(nghbr)) < 0.) {
-        //   continue;
-        // }
-        b.nodes1(nghbr, d) = b.nodes0(c, d);
+      auto x    = b.center(c);
+      auto f_eq = s.physics.equilibrium_distribution(ic(x));
+      RANGES_FOR (auto&& d, s.physics.all()) {
+        b.nodes0(c, d) = f_eq[d];
+        b.nodes1(c, d) = f_eq[d];
       }
     });
   }
 }
 
 template <typename State, typename BCs>
-void collide(State&& s, BCs&& bcs) noexcept {
-  using l = typename std::decay_t<State>::lattice_t;
+void set_boundary(State&& s, BCs&& bcs) {
   for (auto&& b : s.blocks()) {
-    b.for_each_internal([&](auto&& c) {
-      auto x = b.center(c);
-      if (c.x[1] == 2 || c.x[1] == 101 || bcs(x) < 0.) { return; }
-      l::collide(&b.nodes1(c, 0), &b.nodes0(c, 0), 1.85, 1. / 3.);
+    b.for_each([&](auto&& c) {
+      b.is_boundary(c) = false;
+      ranges::tuple_for_each(bcs, [&](auto&& bc) {
+        b.is_boundary(c) = b.is_boundary(c) or bc(s, b, c);
+      });
     });
   }
 }
 
-template <typename State> num_t compute_total_density(State&& s) {
-  using l   = typename std::decay_t<State>::lattice_t;
-  num_t rho = 0.;
-  for (auto&& b : s.blocks()) {
-    num_t rho_l = 0.;
-    b.for_each_internal([&](auto&& c) { rho_l += l::rho(&b.nodes0(c, 0)); });
-    rho += rho_l;  // atomic
+// Single Relaxation Time
+template <typename Distributions, typename Physics>
+static constexpr void collide(Distributions&& from, Distributions&& to,
+                              Physics&& physics, num_t omega) noexcept {
+  auto f_eq = physics.equilibrium_distribution(from);
+  RANGES_FOR (auto&& d, physics.all()) {
+    to[d] = from[d] + omega * (f_eq[d] - from[d]);
   }
-  return rho;
 }
 
-template <typename State, typename BCs>  //
-num_t advance(State&& s, BCs&& bcs, uint_t no_iterations = 1) {
-  num_t d   = 0.;
-  int count = 1;
-  while (no_iterations > 0) {
-    bcs.redistribute(s);
-    propagate(s, bcs);
-    bcs.periodic(s);
-    bcs.bounce_back(s);
-    collide(s, bcs);
-    d = compute_total_density(s);
-    std::cout << "density: " << d << std::endl;
-    // vtk::ls_serialize(s, bcs, "lbm_res", count);
-    vtk::serialize(s, "lbm_res", count);
-    --no_iterations;
-    ++count;
+template <typename State, typename Solid>
+void collide(State&& s, Solid&& solid, num_t omega) noexcept {
+  // num_t omega
+  //  = physics.omega(static_cast<num_t>(max_level), static_cast<num_t>(level));
+  // num_t omega = 0.1;
+  std::cout << "omega: " << omega << std::endl;
+  for (auto&& b : s.blocks()) {
+    b.for_each_internal([&](auto&& c) {
+      if (solid(s, b, c)) { return; }
+      collide(&b.nodes1(c, 0), &b.nodes0(c, 0), s.physics, omega);
+    });
   }
-  return d;
 }
+
+template <typename State> void propagate(State&& s) noexcept {
+  for (auto&& b : s.blocks()) {
+    b.for_each_internal([&](auto&& c) {
+      RANGES_FOR (auto&& d, s.physics.all()) {
+        auto nghbr = b.at(c, s.physics.dir(d));
+        b.nodes1(nghbr, d) = b.nodes0(c, d);
+      }
+    });
+  }
+}
+template <typename State, typename Solid>
+void propagate_periodic_x(State&& s, Solid&& solid) noexcept {
+  for (auto&& b : s.blocks()) {
+    b.for_each_halo([&](auto&& c) {
+      if (solid(s, b, c)) { return; }
+      RANGES_FOR (auto&& d, s.physics.all()) {
+        auto nghbr = b.at(c, s.physics.periodic_neighbor_dir_x(d));
+        b.nodes1(nghbr, d) = b.nodes0(c, d);
+      }
+    });
+  }
+}
+
+template <typename State, typename Solid>
+void propagate_slip(State&& s, Solid&& solid) noexcept {
+  for (auto&& b : s.blocks()) {
+    b.for_each_halo([&](auto&& c) {
+      if (solid(s, b, c)) { return; }
+      RANGES_FOR (auto&& d, s.physics.all()) {
+        auto nghbr = b.at(c, s.physics.dir(d));
+        if (solid(s, b, nghbr)) { continue; }
+        b.nodes1(nghbr, d) = b.nodes0(c, d);
+      }
+    });
+  }
+}
+
+// template <typename State, typename BCs>
+// void propagate(State&& s, BCs&& bcs) noexcept {
+//   using l = typename std::decay_t<State>::lattice_t;
+//   for (auto&& b : s.blocks()) {
+//     b.for_each_internal([&](auto&& c) {
+//       RANGES_FOR (auto&& d, l::node_ids_without_center()) {
+//         auto nghbr = b.at(c, l::neighbor_offset(d));
+//         if (b.is_halo(nghbr)) { continue; }
+//         // if (nghbr.x[1] == 2 or nghbr.x[1] == 101 or b.is_halo(nghbr)
+//         //     or bcs(b.center(nghbr)) < 0.) {
+//         //   continue;
+//         // }
+//         b.nodes1(nghbr, d) = b.nodes0(c, d);
+//       }
+//     });
+//   }
+// }
+
+// template <typename State> num_t compute_total_density(State&& s) {
+//   using l   = typename std::decay_t<State>::lattice_t;
+//   num_t rho = 0.;
+//   for (auto&& b : s.blocks()) {
+//     num_t rho_l = 0.;
+//     b.for_each_internal([&](auto&& c) { rho_l += l::rho(&b.nodes0(c, 0)); });
+//     rho += rho_l;  // atomic
+//   }
+//   return rho;
+// }
+
+// template <typename State, typename BCs>  //
+// num_t advance(State&& s, BCs&& bcs, uint_t no_iterations = 1) {
+//   num_t d   = 0.;
+//   int count = 1;
+//   while (no_iterations > 0) {
+//     bcs.redistribute(s);
+//     propagate(s, bcs);
+//     bcs.periodic(s);
+//     bcs.bounce_back(s);
+//     collide(s, bcs);
+//     d = compute_total_density(s);
+//     std::cout << "density: " << d << std::endl;
+//     // vtk::ls_serialize(s, bcs, "lbm_res", count);
+//     vtk::serialize(s, "lbm_res", count);
+//     --no_iterations;
+//     ++count;
+//   }
+//   return d;
+// }
 
 }  // namespace lbm
 }  // namespace solver

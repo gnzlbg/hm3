@@ -3,8 +3,10 @@
 ///
 /// Unstructured VTK grid
 #ifdef HM3_ENABLE_VTK
-#include <hm3/vis/vtk/vtk.hpp>
 #include <hm3/utility/log.hpp>
+#include <hm3/utility/variant.hpp>
+#include <hm3/vis/vtk/geometry.hpp>
+#include <hm3/vis/vtk/vtk.hpp>
 
 namespace hm3 {
 namespace vis {
@@ -24,9 +26,12 @@ struct unstructured_grid {
   template <typename NodeRange, typename Grid,
             CONCEPT_REQUIRES_(InputRange<NodeRange>{})>
   void append_internal_cells(NodeRange&& nodes, Grid&& grid) noexcept {
-    using grid_cell_t = decltype(grid.geometry(*begin(nodes)));
-    // using vtk_cell_t = to_vtk_cell_t<grid_cell_t>;
+    using grid_t             = std::decay_t<Grid>;
+    static constexpr auto nd = grid_t::dimension();
+    auto geometry
+     = [&](auto&& n) -> geometries<nd> { return grid.geometry(n); };
 
+    using grid_cell_t   = decltype(geometry(*begin(nodes)));
     const auto no_cells = distance(use_copy_if_single_pass(nodes));
 
     // Preallocate cell array:
@@ -43,8 +48,8 @@ struct unstructured_grid {
 
     /// Create a unique point inserter
     auto unique_inserter = make_ptr<vtkMergePoints>();
-    auto bounds = geometry::bounds(grid.bounding_box());
-    num_t bounds_vtk[6] = {0.0};  // vtk works only in 3D...
+    auto bounds          = geometry::bounds(grid.bounding_box());
+    num_t bounds_vtk[6]  = {0.0};  // vtk works only in 3D...
     for (auto d : grid.dimensions()) {
       bounds_vtk[d]     = bounds.min(d);
       bounds_vtk[d + 3] = bounds.max(d);
@@ -59,8 +64,8 @@ struct unstructured_grid {
     cell_types.reserve(no_cells);
     int_t c_c = 0;
     RANGES_FOR (auto&& n, use_copy_if_single_pass(nodes)) {
-      auto cell_geometry = grid.geometry(n);
-      visit(
+      auto cell_geometry = geometry(n);
+      std::experimental::visit(
        [&](auto&& g) {
          using geometry_t  = std::decay_t<decltype(g)>;
          auto cell_corners = geometry::corners(g);

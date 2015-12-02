@@ -20,9 +20,9 @@ template <uint_t Nd> struct physics : dimensional<Nd>, indices<Nd> {
   self cv() const noexcept { return *this; }
   self pv() const noexcept { return *this; }
 
-  physics() = default;
+  physics()               = default;
   physics(physics const&) = default;
-  physics(physics&&) = default;
+  physics(physics&&)      = default;
   physics& operator=(physics const&) = default;
   physics& operator=(physics&&) = default;
 

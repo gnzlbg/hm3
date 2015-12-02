@@ -2,8 +2,8 @@
 /// \file
 ///
 /// HM3's grid type
-#include <hm3/grid/types.hpp>
 #include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/types.hpp>
 
 namespace hm3 {
 namespace grid {

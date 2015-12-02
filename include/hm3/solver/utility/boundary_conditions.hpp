@@ -2,21 +2,14 @@
 /// \file boundary_conditions.hpp
 
 namespace hm3 {
-  namespace solver {
+namespace solver {
 
-    template<typename Tuple>
-    struct boundary_conditions {
-      Tuple bcs;
+template <typename Tuple> struct boundary_conditions {
+  Tuple bcs;
 
+  // advance
+};
 
-      // advance
+}  // namespace solver
 
-
-    };
-    
-  }  // namespace solver
-
-  
 }  // namespace hm3
-
-

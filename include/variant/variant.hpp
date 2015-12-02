@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <type_traits>
+#include <type_traits>
 #include <utility>
 
 #include <meta/meta.hpp>
@@ -23,6 +24,13 @@
 #include <variant/monostate.hpp>
 
 namespace std {
+
+#if __GNUG__ && __GNUC__ < 5
+template <typename T>
+struct is_trivially_copyable
+ : std::integral_constant<bool, __has_trivial_copy(T)> {};
+#endif
+
 namespace experimental {
 
 namespace detail {
@@ -51,7 +59,7 @@ template <typename... Ts> class variant_base {
   }
 
   variant_base(const variant_base&) = default;
-  variant_base(variant_base&&) = default;
+  variant_base(variant_base&&)      = default;
 
   ~variant_base() = default;
 
@@ -90,7 +98,7 @@ class variant_impl_<meta::list<Ts...>,
   variant_impl_() = default;
 
   variant_impl_(const variant_impl_&) = default;
-  variant_impl_(variant_impl_&&) = default;
+  variant_impl_(variant_impl_&&)      = default;
 
   ~variant_impl_() = default;
 
@@ -227,7 +235,7 @@ class variant_impl_<meta::list<Ts...>,
   variant_impl_() = default;
 
   variant_impl_(const variant_impl_&) = default;
-  variant_impl_(variant_impl_&&) = default;
+  variant_impl_(variant_impl_&&)      = default;
 
   ~variant_impl_() { destroy(); }
 
@@ -299,12 +307,12 @@ template <typename... Ts> class variant : public variant_impl<Ts...> {
   }
 
   variant(const variant&) = default;
-  variant(variant&&) = default;
+  variant(variant&&)      = default;
 
   ~variant() = default;
 
   template <typename Arg, typename T = get_best_match<alternatives, Arg&&>>
-  variant& operator                  =(Arg&& arg) {
+  variant& operator=(Arg&& arg) {
     assign<T>(forward<Arg>(arg));
     return *this;
   }
@@ -370,7 +378,7 @@ template <typename... Ts> class variant : public detail::variant<Ts...> {
   constexpr variant(Arg&& arg) : variant(in_place_type<T>, forward<Arg>(arg)) {}
 
   variant(const variant& that) = default;
-  variant(variant&& that) = default;
+  variant(variant&& that)      = default;
 
   //- 20.N.2.2 destruction:
   ~variant() = default;

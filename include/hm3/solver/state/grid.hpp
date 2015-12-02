@@ -228,7 +228,7 @@ template <uint_t Nd> struct grid {
       in_tree(tree_node_ids_(j)) = i;
     }
     {
-      bool tmp = is_free_(i);
+      bool tmp    = is_free_(i);
       is_free_(i) = is_free_(j);
       is_free_(j) = tmp;
     }
@@ -313,7 +313,7 @@ template <uint_t Nd> struct grid {
        "tree node \"{}\" already has a valid grid node \"{}\" in grid \"{}\"",
        n, in_tree(n), idx());
       tree_node(sn) = n;
-      in_tree(n) = sn;
+      in_tree(n)    = sn;
       update_minmax_level(n);
     }  // else we push a new grid node without a connection with the tree
     ++size_;
@@ -327,9 +327,9 @@ template <uint_t Nd> struct grid {
   /// well.
   void pop(grid_node_idx sn) {
     assert_in_use(sn, HM3_AT_);
-    auto gn = tree_node(sn);
+    auto gn       = tree_node(sn);
     tree_node(sn) = tree_node_idx{};
-    is_free_(sn) = true;
+    is_free_(sn)  = true;
     if (gn) {
       HM3_ASSERT(in_tree(gn) == sn, "");
       tree().remove(gn, idx());
@@ -359,7 +359,7 @@ template <uint_t Nd> struct grid {
       other.parent_ = grid_node_idx{};
     }
     refine_t operator=(refine_t&& other) = delete;
-    refine_t(refine_t const&) = delete;
+    refine_t(refine_t const&)            = delete;
     refine_t operator=(refine_t const&) = delete;
 
     ~refine_t() {
@@ -401,7 +401,7 @@ template <uint_t Nd> struct grid {
       for (auto&& c : (*this)()) { grid_.pop(c); }
     }
     coarsen_t operator=(coarsen_t&& other) = delete;
-    coarsen_t(coarsen_t const&) = delete;
+    coarsen_t(coarsen_t const&)            = delete;
     coarsen_t operator=(coarsen_t const&) = delete;
 
     auto operator()() const noexcept {
@@ -462,7 +462,7 @@ template <uint_t Nd> struct grid {
 
   void update_from_tree() {
     for (auto n : tree().nodes(idx())) {
-      auto cn = in_tree(n);
+      auto cn            = in_tree(n);
       tree_node_ids_(cn) = n;
     }
   }
@@ -508,8 +508,8 @@ template <uint_t Nd> void map_arrays(io::file& f, grid<Nd> const& g) {
 template <uint_t Nd, typename Tree = typename grid<Nd>::tree_t>
 grid<Nd> from_file_unread(grid<Nd> const&, io::file& f, Tree& t,
                           grid_node_idx node_capacity) {
-  auto idx = grid_idx{f.constant("grid_idx", suint_t{})};
-  auto nd = uint_t{f.constant("spatial_dimension", suint_t{})};
+  auto idx      = grid_idx{f.constant("grid_idx", suint_t{})};
+  auto nd       = uint_t{f.constant("spatial_dimension", suint_t{})};
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
   if (Nd != nd) {
     HM3_FATAL_ERROR("spatial_dimension mismatch, type {} vs file {}", Nd, nd);

@@ -18,12 +18,12 @@ namespace detail {
 
 struct equal {
   template <typename T>
-  constexpr bool operator()(const T &lhs, const T &rhs) const {
+  constexpr bool operator()(const T& lhs, const T& rhs) const {
     return lhs == rhs;
   }
 
   template <typename T, typename U>
-  constexpr bool operator()(const T &, const U &) const {
+  constexpr bool operator()(const T&, const U&) const {
     assert(false);
     return false;
   }
@@ -31,12 +31,12 @@ struct equal {
 
 struct less {
   template <typename T>
-  constexpr bool operator()(const T &lhs, const T &rhs) const {
+  constexpr bool operator()(const T& lhs, const T& rhs) const {
     return lhs < rhs;
   }
 
   template <typename T, typename U>
-  constexpr bool operator()(const T &, const U &) const {
+  constexpr bool operator()(const T&, const U&) const {
     assert(false);
     return false;
   }
@@ -47,21 +47,20 @@ struct less {
 //- 20.N.8 relational operators:
 
 template <typename... Ts>
-constexpr bool operator==(const variant<Ts...> &lhs,
-                          const variant<Ts...> &rhs) {
+constexpr bool operator==(const variant<Ts...>& lhs,
+                          const variant<Ts...>& rhs) {
   using namespace detail;
   return lhs.index() == rhs.index() && unsafe::visit(detail::equal{}, lhs, rhs);
 }
 
 template <typename... Ts>
-constexpr bool operator!=(const variant<Ts...> &lhs,
-                          const variant<Ts...> &rhs) {
+constexpr bool operator!=(const variant<Ts...>& lhs,
+                          const variant<Ts...>& rhs) {
   return !(lhs == rhs);
 }
 
 template <typename... Ts>
-constexpr bool operator<(const variant<Ts...> &lhs,
-                         const variant<Ts...> &rhs) {
+constexpr bool operator<(const variant<Ts...>& lhs, const variant<Ts...>& rhs) {
   using namespace detail;
   if (lhs.index() == rhs.index()) {
     return unsafe::visit(detail::less{}, lhs, rhs);
@@ -70,20 +69,19 @@ constexpr bool operator<(const variant<Ts...> &lhs,
 }
 
 template <typename... Ts>
-constexpr bool operator>(const variant<Ts...> &lhs,
-                         const variant<Ts...> &rhs) {
+constexpr bool operator>(const variant<Ts...>& lhs, const variant<Ts...>& rhs) {
   return rhs < lhs;
 }
 
 template <typename... Ts>
-constexpr bool operator<=(const variant<Ts...> &lhs,
-                          const variant<Ts...> &rhs) {
+constexpr bool operator<=(const variant<Ts...>& lhs,
+                          const variant<Ts...>& rhs) {
   return !(lhs > rhs);
 }
 
 template <typename... Ts>
-constexpr bool operator>=(const variant<Ts...> &lhs,
-                          const variant<Ts...> &rhs) {
+constexpr bool operator>=(const variant<Ts...>& lhs,
+                          const variant<Ts...>& rhs) {
   return !(lhs < rhs);
 }
 

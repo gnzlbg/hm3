@@ -17,8 +17,8 @@ namespace detail {
 namespace unsafe {
 
 template <typename F, typename... Vs>
-constexpr decltype(auto) visit(F &&f, Vs &&... vs) {
-  constexpr auto vtable = make_vtable<F &&, as_variant_base<Vs &&>...>();
+constexpr decltype(auto) visit(F&& f, Vs&&... vs) {
+  constexpr auto vtable = make_vtable<F&&, as_variant_base<Vs&&>...>();
   return at(vtable, {vs.index()...})(forward<F>(f), forward<Vs>(vs)...);
 }
 

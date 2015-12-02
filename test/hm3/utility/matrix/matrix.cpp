@@ -102,7 +102,7 @@ template <class Vector> void vector_test(const idx_t n) {
     for (idx_t i = 0; i != n; ++i) { CHECK(v(i) == start++); }
 
     /// Use Eigen expressions:
-    v() = v().unaryExpr([](T i) { return i * 2; });
+    v()   = v().unaryExpr([](T i) { return i * 2; });
     start = 0;
     for (idx_t i = 0; i != n; ++i) { CHECK(v(i) == (start++ * 2)); }
 

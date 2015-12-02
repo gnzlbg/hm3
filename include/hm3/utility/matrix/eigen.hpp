@@ -21,7 +21,7 @@ template <typename EigenType>
 using aligned_eigen_map = Eigen::Map<EigenType, Eigen::Aligned>;
 
 template <typename T, int NoRows, int NoCols, int Order, int MaxRows = NoRows,
-          int MaxCols                                                = NoCols>
+          int MaxCols = NoCols>
 using aligned_eigen_type
  = Eigen::Matrix<T, NoRows, NoCols, Order | Eigen::AutoAlign, MaxRows, MaxCols>;
 

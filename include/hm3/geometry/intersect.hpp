@@ -1,12 +1,12 @@
 #pragma once
 /// \file
 #include <array>
-#include <hm3/types.hpp>
-#include <hm3/geometry/point.hpp>
 #include <hm3/geometry/line.hpp>
-#include <hm3/geometry/square.hpp>
-#include <hm3/geometry/simplex.hpp>
+#include <hm3/geometry/point.hpp>
 #include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/simplex.hpp>
+#include <hm3/geometry/square.hpp>
+#include <hm3/types.hpp>
 
 namespace hm3 {
 namespace geometry {
@@ -31,7 +31,7 @@ template <typename T, uint_t Nd>
 point<Nd> point_with_value(line<Nd> l, std::array<T, 2> v, T val) {
   point<Nd> tmp;
   auto dir = direction(l);
-  tmp() = l.x_0() + dir() * distance_to_value(l, v, val);
+  tmp()    = l.x_0() + dir() * distance_to_value(l, v, val);
   // l().pointAt(distance_to_value(l, v, val));
   return tmp;
 }
@@ -56,6 +56,12 @@ bool is_intersected(Shape&& s, SignedDistance sd) noexcept {
   // e.g. a cell with all positive corners except one zero corner is not
   // intersected
   return (pos_corner and neg_corner);
+}
+
+template <typename Shape, typename SignedDistance,
+          typename ShapeT = std::decay_t<Shape>>
+bool is_completely_inside(Shape&& s, SignedDistance sd) noexcept {
+  return sd(geometry::center(s)) > 0. and !is_intersected(s, sd);
 }
 
 template <typename Shape, typename SignedDistance,

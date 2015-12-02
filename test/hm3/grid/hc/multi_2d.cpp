@@ -1,15 +1,15 @@
 /// \file
 ///
 /// Test multi hierarchical Cartesian grid 2D
-#include <hm3/grid/hc/multi.hpp>
-#include <hm3/grid/hc/amr/multi.hpp>
 #include <hm3/amr/amr.hpp>
 #include <hm3/amr/criterion/level_at_distance.hpp>
+#include <hm3/grid/hc/amr/multi.hpp>
+#include <hm3/grid/hc/multi.hpp>
 #ifdef HM3_ENABLE_VTK
 #include <hm3/amr/serialization/vtk.hpp>
 #endif
-#include <hm3/grid/generation/uniform.hpp>
 #include <hm3/geometry/sd.hpp>
+#include <hm3/grid/generation/uniform.hpp>
 #include <hm3/utility/test.hpp>
 #include "grid.hpp"
 
@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
   g.write();
 
   // Generate moving sphere
-  using hm3::constant::pi;
+  using hm3::math::pi;
   using geometry::point;
   auto time_steps = view::generate([]() mutable {
                       static num_t next = 0.;

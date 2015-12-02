@@ -89,30 +89,31 @@ template <int_t Nd> constexpr auto dimension(edge<Nd>) noexcept {
 
 /// Inverts a signed distance field
 template <typename SignedDistanceF> auto invert(SignedDistanceF& f) {
-  return [&](point<dimension(f)> const& x) { return -f(x); };
+  return [&](auto&& x) { return -f(x); };
 }
 
 /// Union of a signed distance field
 template <typename SignedDistanceF1, typename SignedDistanceF2>
-auto take_union(SignedDistanceF1& f1, SignedDistanceF2& f2) {
-  static_assert(dimension(f1) == dimension(f2), "dimension mismatch");
-  return [&](point<dimension(f1)> const& x) { return std::min(f1(x), f2(x)); };
+auto take_union(SignedDistanceF1&& f1, SignedDistanceF2&& f2) {
+  return [=](auto&& x) { return std::min(f1(x), f2(x)); };
+}
+
+/// Union of a signed distance field
+template <typename SignedDistanceF1, typename... SignedDistanceFs>
+auto take_union(SignedDistanceF1&& f1, SignedDistanceFs&&... fs) {
+  return take_union(f1, take_union(fs...));
 }
 
 /// Intersection of a signed distance field
 template <typename SignedDistanceF1, typename SignedDistanceF2>
 auto take_intersection(SignedDistanceF1& f1, SignedDistanceF2& f2) {
-  constexpr int_t nd1 = decltype(dimension(f1))();
-  constexpr int_t nd2 = decltype(dimension(f2))();
-  static_assert(nd1 == nd2, "dimension mismatch");
-  return [&](point<nd1> const& x) { return std::max(f1(x), f2(x)); };
+  return [&](auto&& x) { return std::max(f1(x), f2(x)); };
 }
 
 /// Difference of a signed distance field
 template <typename SignedDistanceF1, typename SignedDistanceF2>
 auto take_difference(SignedDistanceF1& f1, SignedDistanceF2& f2) {
-  static_assert(dimension(f1) == dimension(f2), "dimension mismatch");
-  return [&](point<dimension(f1)> const& x) { return std::max(f1(x), -f2(x)); };
+  return [&](auto&& x) { return std::max(f1(x), -f2(x)); };
 }
 
 }  // namespace sd

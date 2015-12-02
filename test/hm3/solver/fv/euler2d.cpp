@@ -1,13 +1,16 @@
+#include <hm3/amr/amr.hpp>
+#include <hm3/amr/criterion/level_at_distance.hpp>
+#include <hm3/geometry/sd.hpp>
 #include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
-#include <hm3/geometry/sd.hpp>
+#include <hm3/grid/hc/amr/multi.hpp>
 #include <hm3/solver/fv/euler.hpp>
 #include <hm3/solver/fv/euler/initial_condition/shock_tube.hpp>
 #include <hm3/solver/fv/euler/vtk.hpp>
 #include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/fv/time_integration.hpp>
 #include <hm3/solver/fv/vtk.hpp>
-#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -437,7 +440,7 @@ void sod_test(mpi::env& env) {
   for (auto& b : as0.blocks()) {
     b.for_each_internal([&](auto&& c) {
       // TODO: ic already returns cv ?!?!?!?!? BUGBUGBUG
-      auto pvs = ic(b.center(c));
+      auto pvs           = ic(b.center(c));
       b.variables(c.idx) = physics.pv().to_cv(pvs);
     });
   }
@@ -473,12 +476,235 @@ void sod_test(mpi::env& env) {
                              4_gn);
 }
 
+void grid_for_paper(mpi::env& env) {
+  auto comm = env.world();
+
+  // Initialize I/O session
+  io::session::remove("fv_euler_sod_2d", comm);
+  io::session s(io::create, "fv_euler_sod_2d", comm);
+
+  // Grid parameters
+  constexpr uint_t nd       = 2;
+  constexpr uint_t no_grids = 1;
+  auto min_grid_level       = 4_u;
+  auto max_grid_level       = min_grid_level + 2;
+  auto node_capacity
+   = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
+  auto bounding_box = geometry::square<nd>::unit();
+
+  // Create the grid
+  grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
+
+  // Refine the grid up to the minimum leaf node level
+  grid::generation::uniform(g, min_grid_level);
+
+  auto solver_block_capacity
+   = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
+
+  using p    = fv::euler::physics<nd>;
+  using tint = fv::euler_forward;
+  // using tint     = fv::runge_kutta;
+  using solver_t = fv::state<p, tint>;
+
+  p physics{1.4};
+
+  auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};
+  // g.refine(tree::node_idx{2});
+  // g.refine(tree::node_idx{3});
+  using namespace geometry;
+  const num_t radius = 0.05;
+  auto sph0 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.25, 0.36}}, radius};
+  auto sph1 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.36, 0.12}}, radius};
+  auto sph2 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.55, 0.16}}, radius};
+  auto sph3 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.8, 0.38}}, radius};
+  // auto sph4 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.3, 0.2}}, radius};
+
+  // Create an adaptive mesh refinement handler for adapting the grid
+  auto amr_handler = amr::make(g);
+
+  // Create an amr action to adapt the grid around the moving sphere ensuring a
+  // minimum grid level up to a certain distance:
+  auto amr_criterion
+   = amr::criterion::level_till_cell_distances{g,
+                                               {{10000, min_grid_level},
+                                                {1, min_grid_level + 1},
+                                                {1, min_grid_level + 2},
+                                                {2, min_grid_level + 3}}};
+
+  auto ls_of      = geometry::sd::take_union(sph0, sph1, sph2, sph3);
+  auto amr_action = [&](auto&& n) { return amr_criterion(g, ls_of, n); };
+
+  auto ls_if = [&](auto&& x) { return -ls_of(x); };
+
+  while (amr_handler.adapt(amr_action, [&]() {})) { g.sort(); }
+
+  /// Initial advection solver grid:
+  solver::initialize_grid(g, as0, [&](auto&& n) {
+    return g.is_leaf(n) and geometry::center(g.geometry(n))(1) < 0.5;
+  });
+
+  auto ic = fv::euler::ic::sod_shock_tube<nd>();
+
+  // Initial condition by cell
+  for (auto& b : as0.blocks()) {
+    b.for_each_internal([&](auto&& c) {
+      // TODO: ic already returns cv ?!?!?!?!? BUGBUGBUG
+      auto pvs           = ic(b.center(c));
+      b.variables(c.idx) = physics.pv().to_cv(pvs);
+    });
+  }
+
+  /// Boundary conditions
+  auto bcs = NeumannBoundaryConditions{};
+
+  num_t cfl = 0.4;
+  // bcs.apply(
+  //  as0, [](auto&& b, auto&& c) -> decltype(auto) { return b.variables(c); });
+  solver::fv::vtk::serialize(as0, "result", 0, physics.cv());
+  solver::fv::vtk::ls_serialize(as0, ls_if, "result_inside", 0, physics.cv());
+  solver::fv::vtk::ls_serialize(as0, ls_of, "result_outside", 0, physics.cv());
+
+  num_t time      = 0;
+  num_t time_end  = 0.2;
+  num_t time_step = 0;
+
+  // const auto pv = physics.pv();
+  // auto nf = fv::euler::flux::ausm;
+  // auto nf = fv::euler::flux::local_lax_friedrichs;
+  auto nf = fv::flux::rusanov;
+  auto ts = fv::euler::time_step;
+  // auto li = fv::limiter::minmod;
+  auto li = fv::limiter::van_albada;
+  // auto li = fv::limiter::zero;
+  // auto li = fv::limiter::none;
+
+  // auto li = fv::limiter::minmod;
+  // auto li = fv::limiter::zero;
+
+  time_step
+   = advance_until(as0, bcs, nf, ts, li, time, time_end, time_step, cfl);
+  solver::fv::vtk::serialize(as0, "result", time_step, physics.cv());
+  solver::fv::vtk::serialize(as0, "block_result", time_step, physics.cv(),
+                             4_gn);
+}
+
+void grid_for_paper2(mpi::env& env) {
+  auto comm = env.world();
+
+  // Initialize I/O session
+  io::session::remove("fv_euler_sod_2d", comm);
+  io::session s(io::create, "fv_euler_sod_2d", comm);
+
+  // Grid parameters
+  constexpr uint_t nd       = 2;
+  constexpr uint_t no_grids = 1;
+  auto min_grid_level       = 2_u;
+  auto max_grid_level       = min_grid_level + 3;
+  auto node_capacity
+   = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
+  auto bounding_box = geometry::square<nd>::unit();
+
+  // Create the grid
+  grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
+
+  // Refine the grid up to the minimum leaf node level
+  grid::generation::uniform(g, min_grid_level);
+
+  auto solver_block_capacity
+   = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
+
+  using p    = fv::euler::physics<nd>;
+  using tint = fv::euler_forward;
+  // using tint     = fv::runge_kutta;
+  using solver_t = fv::state<p, tint>;
+
+  p physics{1.4};
+
+  auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};
+  // g.refine(tree::node_idx{2});
+  // g.refine(tree::node_idx{3});
+  using namespace geometry;
+  const num_t radius = 0.05;
+  auto sph0 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.65, 0.66}}, radius};
+  auto sph1 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.36, 0.32}}, radius};
+  auto sph2 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.2, 0.75}}, radius};
+  auto sph3 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.9, 0.25}}, radius};
+  // auto sph4 = geometry::sd::fixed_sphere<nd>{point<nd>{{0.3, 0.2}}, radius};
+
+  // Create an adaptive mesh refinement handler for adapting the grid
+  auto amr_handler = amr::make(g);
+
+  // Create an amr action to adapt the grid around the moving sphere ensuring a
+  // minimum grid level up to a certain distance:
+  auto amr_criterion
+   = amr::criterion::level_till_cell_distances{g,
+                                               {{10000, min_grid_level},
+                                                {1, min_grid_level + 1},
+                                                {1, min_grid_level + 2},
+                                                {2, min_grid_level + 3}}};
+
+  auto ls_of      = geometry::sd::take_union(sph0, sph1, sph2, sph3);
+  auto amr_action = [&](auto&& n) { return amr_criterion(g, ls_of, n); };
+
+  auto ls_if = [&](auto&& x) { return -ls_of(x); };
+
+  while (amr_handler.adapt(amr_action, [&]() {})) { g.sort(); }
+
+  /// Initial advection solver grid:
+  solver::initialize_grid(g, as0, [&](auto&& n) { return g.is_leaf(n); });
+
+  auto ic = fv::euler::ic::sod_shock_tube<nd>();
+
+  // Initial condition by cell
+  for (auto& b : as0.blocks()) {
+    b.for_each_internal([&](auto&& c) {
+      // TODO: ic already returns cv ?!?!?!?!? BUGBUGBUG
+      auto pvs           = ic(b.center(c));
+      b.variables(c.idx) = physics.pv().to_cv(pvs);
+    });
+  }
+
+  /// Boundary conditions
+  auto bcs = NeumannBoundaryConditions{};
+
+  num_t cfl = 0.4;
+  // bcs.apply(
+  //  as0, [](auto&& b, auto&& c) -> decltype(auto) { return b.variables(c); });
+  solver::fv::vtk::serialize(as0, "result", 0, physics.cv());
+  solver::fv::vtk::ls_serialize(as0, ls_if, "result_inside", 0, physics.cv());
+  solver::fv::vtk::ls_serialize(as0, ls_of, "result_outside", 0, physics.cv());
+  return;
+  num_t time      = 0;
+  num_t time_end  = 0.2;
+  num_t time_step = 0;
+
+  // const auto pv = physics.pv();
+  // auto nf = fv::euler::flux::ausm;
+  // auto nf = fv::euler::flux::local_lax_friedrichs;
+  auto nf = fv::flux::rusanov;
+  auto ts = fv::euler::time_step;
+  // auto li = fv::limiter::minmod;
+  auto li = fv::limiter::van_albada;
+  // auto li = fv::limiter::zero;
+  // auto li = fv::limiter::none;
+
+  // auto li = fv::limiter::minmod;
+  // auto li = fv::limiter::zero;
+
+  time_step
+   = advance_until(as0, bcs, nf, ts, li, time, time_end, time_step, cfl);
+  solver::fv::vtk::serialize(as0, "result", time_step, physics.cv());
+  solver::fv::vtk::serialize(as0, "block_result", time_step, physics.cv(),
+                             4_gn);
+}
+
 int main(int argc, char* argv[]) {
   /// Initialize MPI
   mpi::env env(argc, argv);
 
   check_euler();
-  sod_test(env);
+  // sod_test(env);
+  grid_for_paper2(env);
 
   // explosion_test(env);
 

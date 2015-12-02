@@ -1,12 +1,12 @@
 /// \file
 ///
 /// 2D level-set sphere test
-#include <hm3/solver/level_set/state.hpp>
-#include <hm3/solver/level_set/amr.hpp>
-#include <hm3/solver/utility.hpp>
-#include <hm3/grid/generation/uniform.hpp>
-#include <hm3/geometry/sd.hpp>
 #include <hm3/amr/criterion/level_at_distance.hpp>
+#include <hm3/geometry/sd.hpp>
+#include <hm3/grid/generation/uniform.hpp>
+#include <hm3/solver/level_set/amr.hpp>
+#include <hm3/solver/level_set/state.hpp>
+#include <hm3/solver/utility.hpp>
 #ifdef HM3_ENABLE_VTK
 #include <hm3/amr/serialization/vtk.hpp>
 #include <hm3/grid/hc/serialization/multi_vtk.hpp>

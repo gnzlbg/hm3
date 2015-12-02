@@ -14,27 +14,26 @@ namespace detail {
 
 /* `std::invoke` */
 
-#define RETURN(...) -> decltype(__VA_ARGS__) { return __VA_ARGS__; }
+#define RETURN(...) \
+  ->decltype(__VA_ARGS__) { return __VA_ARGS__; }
 
 template <typename F, typename... As>
-constexpr auto invoke(F &&f, As &&... as)
-  RETURN(forward<F>(f)(forward<As>(as)...))
+constexpr auto invoke(F&& f, As&&... as)
+ RETURN(forward<F>(f)(forward<As>(as)...))
 
-template <typename B, typename T, typename D>
-constexpr auto invoke(T B::*pmv, D &&d)
-  RETURN(forward<D>(d).*pmv)
+  template <typename B, typename T, typename D>
+  constexpr auto invoke(T B::*pmv, D&& d) RETURN(forward<D>(d).*pmv)
 
-template <typename Pmv, typename Ptr>
-constexpr auto invoke(Pmv pmv, Ptr &&ptr)
-  RETURN((*forward<Ptr>(ptr)).*pmv)
+   template <typename Pmv, typename Ptr>
+   constexpr auto invoke(Pmv pmv, Ptr&& ptr) RETURN((*forward<Ptr>(ptr)).*pmv)
 
-template <typename B, typename T, typename D, typename... As>
-constexpr auto invoke(T B::*pmf, D &&d, As &&... as)
-  RETURN((forward<D>(d).*pmf)(forward<As>(as)...))
+    template <typename B, typename T, typename D, typename... As>
+    constexpr auto invoke(T B::*pmf, D&& d, As&&... as)
+     RETURN((forward<D>(d).*pmf)(forward<As>(as)...))
 
-template <typename Pmf, typename Ptr, typename... As>
-constexpr auto invoke(Pmf pmf, Ptr &&ptr, As &&... as)
-  RETURN(((*forward<Ptr>(ptr)).*pmf)(forward<As>(as)...))
+      template <typename Pmf, typename Ptr, typename... As>
+      constexpr auto invoke(Pmf pmf, Ptr&& ptr, As&&... as)
+       RETURN(((*forward<Ptr>(ptr)).*pmf)(forward<As>(as)...))
 
 #undef RETURN
 

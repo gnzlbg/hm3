@@ -68,7 +68,7 @@ struct matrix : bounds<NoRows, NoCols>,
   constexpr matrix() = default;
 
   constexpr matrix(matrix const&) = default;
-  constexpr matrix(matrix&&) = default;
+  constexpr matrix(matrix&&)      = default;
 
   constexpr matrix& operator=(matrix const&) = default;
   constexpr matrix& operator=(matrix&&) = default;
@@ -359,8 +359,8 @@ constexpr auto cend(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
 }
 
 template <typename T, int_t NoRows, typename RowIdx = idx_t,
-          int_t MaxRows                             = NoRows,
-          template <class> class Vector             = default_vector>
+          int_t MaxRows                 = NoRows,
+          template <class> class Vector = default_vector>
 using vector = matrix<T, NoRows, 1, RowIdx, RowIdx, col_major_t, MaxRows, 1>;
 
 }  // namespace dense

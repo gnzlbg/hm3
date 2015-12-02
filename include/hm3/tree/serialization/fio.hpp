@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Serialization to HM3's File I/O
-#include <hm3/tree/tree.hpp>
-#include <hm3/tree/algorithm/dfs_sort.hpp>
+#include <hm3/io/client.hpp>
 #include <hm3/io/file.hpp>
 #include <hm3/io/session.hpp>
-#include <hm3/io/client.hpp>
+#include <hm3/tree/algorithm/dfs_sort.hpp>
+#include <hm3/tree/tree.hpp>
 
 namespace hm3 {
 namespace tree {

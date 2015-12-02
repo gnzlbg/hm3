@@ -2,10 +2,10 @@
 ///
 /// Tests I/O Properties
 /*
-#include <memory>
-#include <hm3/utility/test.hpp>
-#include <hm3/io/properties.hpp>
 #include <hm3/geometry/point.hpp>
+#include <hm3/io/properties.hpp>
+#include <hm3/utility/test.hpp>
+#include <memory>
 
 using namespace hm3;
 

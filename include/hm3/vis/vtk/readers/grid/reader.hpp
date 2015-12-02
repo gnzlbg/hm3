@@ -5,6 +5,7 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/square.hpp>
 #include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/hc/serialization/multi_vtk.hpp>
 #include <hm3/grid/types.hpp>
 #include <hm3/vis/vtk/readers/grid/types.hpp>
 /// VTK:
@@ -63,8 +64,8 @@ template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
   }
 
  public:
-  reader() = default;
-  ~reader() = default;
+  reader()         = default;
+  ~reader()        = default;
   reader(reader&&) = default;
   reader& operator=(reader&&) = default;
 
@@ -179,7 +180,10 @@ template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
     if (status == reader_status::topology_changed) {
       log("Reader grid topology changed...");
       cell_data.unload_all();
-      for_each_cell([&](auto&& nodes) { vtk_grid.reinitialize(nodes, *grid); });
+
+      ::hm3::grid::hc::vtk::serializable_multi<Nd> s(*grid);
+
+      for_each_cell([&](auto&& nodes) { vtk_grid.reinitialize(nodes, s); });
       status = reader_status::topology_ready;
     }
 

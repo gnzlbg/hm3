@@ -12,32 +12,27 @@ namespace std {
 namespace experimental {
 namespace detail {
 
-template <typename T, typename U>
-struct qualify_as;
+template <typename T, typename U> struct qualify_as;
 
-template <typename T, typename U>
-struct qualify_as : meta::id<T> {};
+template <typename T, typename U> struct qualify_as : meta::id<T> {};
 
 template <typename T, typename U>
 struct qualify_as<T, const U> : meta::id<const T> {};
 
-template <typename T, typename U>
-struct qualify_as<T, U &> : meta::id<T &> {};
+template <typename T, typename U> struct qualify_as<T, U&> : meta::id<T&> {};
 
 template <typename T, typename U>
-struct qualify_as<T, const U &> : meta::id<const T &> {};
+struct qualify_as<T, const U&> : meta::id<const T&> {};
+
+template <typename T, typename U> struct qualify_as<T, U&&> : meta::id<T&&> {};
 
 template <typename T, typename U>
-struct qualify_as<T, U &&> : meta::id<T &&> {};
+struct qualify_as<T, const U&&> : meta::id<const T&&> {};
+
+template <typename T, typename U> struct qualify_as<T, U*> : meta::id<T*> {};
 
 template <typename T, typename U>
-struct qualify_as<T, const U &&> : meta::id<const T &&> {};
-
-template <typename T, typename U>
-struct qualify_as<T, U *> : meta::id<T *> {};
-
-template <typename T, typename U>
-struct qualify_as<T, const U *> : meta::id<const T *> {};
+struct qualify_as<T, const U*> : meta::id<const T*> {};
 
 }  // namespace detail
 }  // namespace experimental

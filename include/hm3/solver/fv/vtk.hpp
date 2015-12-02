@@ -2,10 +2,13 @@
 /// \file
 ///
 #include <hm3/solver/fv/state.hpp>
+#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
-#include <hm3/utility/variant.hpp>
-#include <hm3/geometry/square.hpp>
+
+#include <hm3/geometry/intersect.hpp>
 #include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/square.hpp>
+#include <hm3/utility/variant.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -45,7 +48,7 @@ struct serializable : dimensional<State::dimension()> {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
     cell_data.load("block_idx", [&](cell_idx c, auto&&) {
-      auto n = s.block(c);
+      auto n = s.block_i(c);
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
     cell_data.load("block_cell_idx", [&](cell_idx c, auto&&) {
@@ -74,24 +77,18 @@ struct ls_serializable : serializable<State, T> {
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
-  using geometries_t = variant<geometry::square<Nd>, geometry::polygon<Nd, 4>>;
-
-  geometries_t geometry(cell_idx c) const noexcept {
-    geometries_t v;
+  vis::vtk::geometries<Nd> geometry(cell_idx c) const noexcept {
     auto g = s.geometry(c);
-    if (!ls.is_cut(g)) {
-      v = g;
-      return v;
-    }
-    auto shapes = intersect(g, ls);
-    return geometries_t(std::get<0>(shapes));
+    if (!geometry::is_intersected(g, ls)) { return g; }
+    return std::get<0>(intersect(g, ls));
   }
 
   auto nodes() const noexcept {
     return s.all_cells() | view::filter([&](cell_idx c) {
              if (!idx) {
-               return s.is_internal(c) and (ls.is_inside(s.geometry(c))
-                                            or ls.is_cut(s.geometry(c)));
+               return s.is_internal(c)
+                      and (geometry::is_completely_inside(s.geometry(c), ls)
+                           or geometry::is_intersected(s.geometry(c), ls));
              } else {
                return s.is_in_block(c, idx);
              }
@@ -101,6 +98,15 @@ struct ls_serializable : serializable<State, T> {
   template <typename F> auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
+  }
+
+  template <typename CellData> void load(CellData&& cell_data) const {
+    serializable<State, T>::load(cell_data);
+    cell_data.load("level_set", [&](cell_idx n, auto&&) {
+      auto x_i = geometry::center(s.geometry(n));
+      return ls(x_i);
+    });
+    s.physics.load(T{s.physics}, s, cell_data);
   }
 
   ls_serializable(Ls const& l, State const& s_, block_idx b = block_idx{})

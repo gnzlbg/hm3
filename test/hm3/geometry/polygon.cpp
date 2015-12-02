@@ -1,8 +1,8 @@
-#include <hm3/utility/test.hpp>
-#include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/line.hpp>
 #include <hm3/geometry/intersect.hpp>
+#include <hm3/geometry/line.hpp>
+#include <hm3/geometry/polygon.hpp>
 #include <hm3/geometry/sd.hpp>
+#include <hm3/utility/test.hpp>
 
 using namespace hm3;
 using namespace geometry;
@@ -22,7 +22,7 @@ int main() {
     ccw_tri0.push_back(x0);
     ccw_tri0.push_back(x1);
     ccw_tri0.push_back(x2);
-    ccw_tri0_area = 0.5 * 1 * 1;
+    ccw_tri0_area        = 0.5 * 1 * 1;
     ccw_tri0_centroid(0) = 1. / 3.;
     ccw_tri0_centroid(1) = 1. / 3.;
   }
@@ -60,7 +60,7 @@ int main() {
     ccw_quad0.push_back(x1);
     ccw_quad0.push_back(x2);
     ccw_quad0.push_back(x3);
-    ccw_quad0_area = 1.;
+    ccw_quad0_area        = 1.;
     ccw_quad0_centroid(0) = .5;
     ccw_quad0_centroid(1) = .5;
   }
@@ -82,7 +82,7 @@ int main() {
     ccw_quad1.push_back(x1);
     ccw_quad1.push_back(x2);
     ccw_quad1.push_back(x3);
-    ccw_quad1_area = 1.5;
+    ccw_quad1_area        = 1.5;
     ccw_quad1_centroid(0) = (0.5 * 1. + (1. + 1. / 3.) * 0.5) / (1 + 0.5);
     ccw_quad1_centroid(1) = (0.5 * 1 + (1. - 1. / 3.) * 0.5) / (1 + 0.5);
   }
@@ -107,7 +107,7 @@ int main() {
   // line tests
   {
     auto l0 = line<2>::through(point<2>::constant(0.), point<2>::constant(1.));
-    num_t l      = std::sqrt(2.);
+    num_t l = std::sqrt(2.);
     point<2> p_c = point<2>::constant(0.5);
     CHECK(dimension(l0) == 2_u);
     CHECK(length(l0) == l);

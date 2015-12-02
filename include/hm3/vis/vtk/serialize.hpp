@@ -58,7 +58,7 @@ void serialize(Source const& s, string file_name_, log::serial log) {
   writer->SetFileName(file_name.c_str());
   writer->SetInputData(vtk_grid.vtk_grid);
   writer->SetDataMode(vtkXMLWriter::Ascii);
-  //writer->SetDataMode(vtkXMLWriter::Binary);
+  // writer->SetDataMode(vtkXMLWriter::Binary);
   writer->Write();
 }
 

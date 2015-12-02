@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Multiple hierarchical Cartesian Grids
-#include <hm3/grid/hc/single.hpp>
-#include <hm3/grid/hc/serialization/single_fio.hpp>
 #include <hm3/grid/adaptor/multi.hpp>
 #include <hm3/grid/adaptor/serialization/multi_fio.hpp>
+#include <hm3/grid/hc/serialization/single_fio.hpp>
+#include <hm3/grid/hc/single.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -48,7 +48,7 @@ template <uint_t Nd> struct multi : adaptor::multi<single<Nd>> {
                                 string const& name_,
                                 io::file::index_t i = io::file::index_t{},
                                 tree_node_idx node_capacity = tree_node_idx{},
-                                grid_idx grid_capacity = grid_idx{}) {
+                                grid_idx grid_capacity      = grid_idx{}) {
     io::client c(s, name_, type_);
     auto f = c.get_file(i);
 

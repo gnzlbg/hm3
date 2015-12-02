@@ -19,11 +19,11 @@ namespace experimental {
    exceptions to report the situation where an invalid attempt is made to
    access the value of a `variant` via `get`. */
 class bad_variant_access : public exception {
-  public:
-  bad_variant_access() = default;
-  bad_variant_access(const bad_variant_access &) = default;
-  bad_variant_access &operator=(const bad_variant_access &) = default;
-  virtual const char *what() const noexcept { return "bad_variant_access"; }
+ public:
+  bad_variant_access()                          = default;
+  bad_variant_access(const bad_variant_access&) = default;
+  bad_variant_access& operator=(const bad_variant_access&) = default;
+  virtual const char* what() const noexcept { return "bad_variant_access"; }
 };  // bad_variant_access
 
 }  // namespace experimental

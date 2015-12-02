@@ -102,10 +102,10 @@ struct slim : dimensional<Nd> {
            | view::transform([=](level_idx l_i) { return (*this)[*l_i]; });
   }
 
-  slim() = default;
+  slim()            = default;
   slim(slim const&) = default;
   slim& operator=(slim const&) = default;
-  slim(slim&&)  = default;
+  slim(slim&&)                 = default;
   slim& operator=(slim&&) = default;
 
   slim(std::initializer_list<uint_t> list) : slim() {
@@ -216,7 +216,7 @@ compact_optional<slim<Nd, Int>> shift(slim<Nd, Int> t,
                                       std::array<int_t, Nd> offset) noexcept {
   using sl = slim<Nd, Int>;
   auto lvl = t.level();
-  auto xs = sl::decode(t.value, static_cast<Int>(*lvl));
+  auto xs  = sl::decode(t.value, static_cast<Int>(*lvl));
   if (none_of(dimensions(Nd), [&](auto&& d) {
         return bit::overflows_on_add(xs[d], offset[d], static_cast<Int>(*lvl));
       })) {

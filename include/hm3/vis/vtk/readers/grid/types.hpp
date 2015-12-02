@@ -3,10 +3,10 @@
 ///
 /// VTK Grid read types
 #ifdef HM3_ENABLE_VTK
+#include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/hc/single.hpp>
 #include <hm3/grid/types.hpp>
 #include <hm3/tree/tree.hpp>
-#include <hm3/grid/hc/single.hpp>
-#include <hm3/grid/hc/multi.hpp>
 
 namespace hm3 {
 namespace vis {

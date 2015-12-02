@@ -17,9 +17,9 @@ struct client {
 
   // buffer
  public:
-  client() = default;
+  client()              = default;
   client(client const&) = default;
-  client(client&&) = default;
+  client(client&&)      = default;
   client& operator=(client const&) = default;
   client& operator=(client&&) = default;
 

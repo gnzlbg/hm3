@@ -23,8 +23,8 @@
 // Cell Element types:
 #include <vtkHexahedron.h>
 #include <vtkLine.h>
-#include <vtkQuad.h>
 #include <vtkPolygon.h>
+#include <vtkQuad.h>
 // Cell utilities:
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -41,11 +41,11 @@
 #include <vtkXMLUnstructuredGridWriter.h>
 #pragma clang diagnostic pop
 // std
-#include <tuple>
 #include <string>
+#include <tuple>
 // hm3
-#include <hm3/geometry/square.hpp>
 #include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/square.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3 {
@@ -116,7 +116,8 @@ using vtk_cell_ptr_tuple_t
  = meta::apply_list<meta::quote<std::tuple>, vtk_cell_ptr_types_t<Ts...>>;
 
 template <typename... Ts>
-auto make_tuple_of_cells(variant<Ts...> const&) -> vtk_cell_ptr_tuple_t<Ts...> {
+auto make_tuple_of_cells(std::experimental::variant<Ts...> const&)
+ -> vtk_cell_ptr_tuple_t<Ts...> {
   vtk_cell_ptr_tuple_t<Ts...> r;
   ranges::tuple_for_each(
    r, [](auto&& t) { t = std::decay_t<decltype(t)>::New(); });

@@ -58,7 +58,8 @@ inline auto make_multi(io::json const& b) {
 
   if (b["files"].empty()) {
     HM3_FATAL_ERROR(
-     "multi hierarchical Cartesian grid contains no files:\n\n{}\n\n", b);
+     "multi hierarchical Cartesian grid contains no files:\n\n{}\n\n",
+     b.dump(2));
   }
 
   uint_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);

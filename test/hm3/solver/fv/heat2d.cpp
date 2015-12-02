@@ -1,10 +1,10 @@
-#include <hm3/geometry/sd.hpp>
 #include <hm3/geometry/intersect.hpp>
+#include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
+#include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/heat/numerical_flux.hpp>
 #include <hm3/solver/fv/heat/physics.hpp>
 #include <hm3/solver/fv/heat/time_step.hpp>
-#include <hm3/solver/fv/heat/numerical_flux.hpp>
-#include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/fv/time_integration.hpp>
 #include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
@@ -46,7 +46,7 @@ struct CylBoundaryCondition {
           if ((*this)(x_n) > 0.) { return; }
           geometry::point<2> x_bndry;
           x_bndry() = x_n() + (x_c() - x_n()) / 2.;
-          auto l = geometry::line<2>::through(x_bndry, x_c);
+          auto l    = geometry::line<2>::through(x_bndry, x_c);
           std::array<num_t, 2> vs{{1.0, b.variables(c)(0)}};
           to(b, n)(0) = geometry::interpolate(l, vs, -1.);
         });

@@ -13,13 +13,13 @@
 // has to use it explicitly.
 #pragma once
 
-#include <utility>
-#include <type_traits>
-#include <initializer_list>
 #include <cassert>
 #include <functional>
-#include <string>
+#include <initializer_list>
 #include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 #define TR2_OPTIONAL_REQUIRES(...) \
   typename enable_if<__VA_ARGS__::value, bool>::type = false

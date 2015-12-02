@@ -89,7 +89,7 @@ template <uint_t Nd> struct state : dimensional<Nd> {
   template <typename ChildrenRange>
   void interpolate_from_children_to_parent(cell_idx parent,
                                            ChildrenRange&& children) noexcept {
-    uint_t count = 0;
+    uint_t count            = 0;
     signed_distance(parent) = 0;
     for (auto&& child : children) {
       signed_distance(parent) += signed_distance(child);

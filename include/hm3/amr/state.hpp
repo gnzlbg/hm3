@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Adaptive mesh refinement state
-#include <vector>
 #include <hm3/amr/action.hpp>
 #include <hm3/amr/target.hpp>
 #include <hm3/tree/types.hpp>
+#include <vector>
 
 namespace hm3 {
 namespace amr {

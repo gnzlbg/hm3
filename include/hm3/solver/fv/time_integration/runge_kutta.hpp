@@ -39,10 +39,10 @@ struct runge_kutta {
   uint_t stage = 0;
   ///@}  // Time integration state
 
-  runge_kutta() = default;
+  runge_kutta()                   = default;
   runge_kutta(runge_kutta const&) = default;
   runge_kutta& operator=(runge_kutta const&) = default;
-  runge_kutta(runge_kutta&&) = default;
+  runge_kutta(runge_kutta&&)                 = default;
   runge_kutta& operator=(runge_kutta&&) = default;
 
   constexpr runge_kutta(coefficients_t coefficients_)

@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Visualization field
-#include <string>
 #include <functional>
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
+#include <string>
 
 namespace hm3 {
 namespace vis {

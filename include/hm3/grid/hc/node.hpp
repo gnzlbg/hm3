@@ -13,10 +13,10 @@ namespace hc {
 /// Hierarchical Cartesian grid node
 template <uint_t Nd>  //
 struct node : geometry::square<Nd>, tree_node_idx {
-  using point_t = geometry::point<Nd>;
-  constexpr node() = default;
+  using point_t               = geometry::point<Nd>;
+  constexpr node()            = default;
   constexpr node(node const&) = default;
-  constexpr node(node&&)  = default;
+  constexpr node(node&&)      = default;
   constexpr node& operator=(node const&) = default;
   constexpr node& operator=(node&&) = default;
 

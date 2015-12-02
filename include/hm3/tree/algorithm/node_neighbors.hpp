@@ -9,8 +9,8 @@
 #include <hm3/tree/location/default.hpp>
 #include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/static_const.hpp>
 #include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace tree {

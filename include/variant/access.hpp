@@ -19,18 +19,17 @@ namespace std {
 namespace experimental {
 
 // Forward declaration.
-template <typename... Ts>
-class variant;
+template <typename... Ts> class variant;
 
 //- 20.N.7 element access:
 
 template <size_t I, typename... Ts>
-constexpr bool holds_alternative(const variant<Ts...> &v) noexcept {
+constexpr bool holds_alternative(const variant<Ts...>& v) noexcept {
   return v.index() == I;
 }
 
 template <typename T, typename... Ts>
-constexpr bool holds_alternative(const variant<Ts...> &v) noexcept {
+constexpr bool holds_alternative(const variant<Ts...>& v) noexcept {
   using alternatives = meta::list<Ts...>;
   static_assert(meta::count<alternatives, T>{} == 1, "");
   return holds_alternative<meta::find_index<alternatives, T>{}>(v);
@@ -39,8 +38,7 @@ constexpr bool holds_alternative(const variant<Ts...> &v) noexcept {
 namespace detail {
 
 struct get_if_impl {
-  template <size_t I, typename V>
-  static constexpr auto *get_if(V *v) {
+  template <size_t I, typename V> static constexpr auto* get_if(V* v) {
     using alternatives = meta::as_list<decay_t<V>>;
     static_assert(I < alternatives::size(), "");
     using T = meta::at_c<alternatives, I>;
@@ -52,8 +50,7 @@ struct get_if_impl {
     return &unsafe::get<I>(*v);
   }
 
-  template <typename T, typename V>
-  static constexpr auto *get_if(V *v) {
+  template <typename T, typename V> static constexpr auto* get_if(V* v) {
     using alternatives = meta::as_list<decay_t<V>>;
     static_assert(meta::count<alternatives, T>{} == 1, "");
     return get_if<meta::find_index<alternatives, T>{}>(v);
@@ -63,39 +60,37 @@ struct get_if_impl {
 }  // namespace detail
 
 template <size_t I, typename... Ts>
-constexpr auto *get_if(const variant<Ts...> *v) noexcept {
+constexpr auto* get_if(const variant<Ts...>* v) noexcept {
   return detail::get_if_impl::get_if<I>(v);
 }
 
 template <size_t I, typename... Ts>
-constexpr auto *get_if(variant<Ts...> *v) noexcept {
+constexpr auto* get_if(variant<Ts...>* v) noexcept {
   return detail::get_if_impl::get_if<I>(v);
 }
 
 template <typename T, typename... Ts>
-constexpr auto *get_if(const variant<Ts...> *v) noexcept {
+constexpr auto* get_if(const variant<Ts...>* v) noexcept {
   return detail::get_if_impl::get_if<T>(v);
 }
 
 template <typename T, typename... Ts>
-constexpr auto *get_if(variant<Ts...> *v) noexcept {
+constexpr auto* get_if(variant<Ts...>* v) noexcept {
   return detail::get_if_impl::get_if<T>(v);
 }
 
 namespace detail {
 
 struct get_impl {
-  template <size_t I, typename V>
-  static constexpr auto &&get(V &&v) {
+  template <size_t I, typename V> static constexpr auto&& get(V&& v) {
     using alternatives = meta::as_list<decay_t<V>>;
-    using T = meta::at_c<alternatives, I>;
-    using R = meta::_t<qualify_as<T, V &&>>;
-    auto *result = get_if<I>(&v);
+    using T            = meta::at_c<alternatives, I>;
+    using R            = meta::_t<qualify_as<T, V&&>>;
+    auto* result       = get_if<I>(&v);
     return static_cast<R>(*(result ? result : throw bad_variant_access{}));
   }
 
-  template <typename T, typename V>
-  static constexpr auto &&get(V &&v) {
+  template <typename T, typename V> static constexpr auto&& get(V&& v) {
     using alternatives = meta::as_list<decay_t<V>>;
     static_assert(meta::count<alternatives, T>{} == 1, "");
     return get<meta::find_index<alternatives, T>{}>(forward<V>(v));
@@ -105,42 +100,38 @@ struct get_impl {
 }  // namespace detail
 
 template <size_t I, typename... Ts>
-constexpr auto &&get(const variant<Ts...> &v) {
+constexpr auto&& get(const variant<Ts...>& v) {
+  return detail::get_impl::get<I>(v);
+}
+
+template <size_t I, typename... Ts> constexpr auto&& get(variant<Ts...>& v) {
   return detail::get_impl::get<I>(v);
 }
 
 template <size_t I, typename... Ts>
-constexpr auto &&get(variant<Ts...> &v) {
-  return detail::get_impl::get<I>(v);
-}
-
-template <size_t I, typename... Ts>
-constexpr auto &&get(const variant<Ts...> &&v) {
+constexpr auto&& get(const variant<Ts...>&& v) {
   return detail::get_impl::get<I>(move(v));
 }
 
-template <size_t I, typename... Ts>
-constexpr auto &&get(variant<Ts...> &&v) {
+template <size_t I, typename... Ts> constexpr auto&& get(variant<Ts...>&& v) {
   return detail::get_impl::get<I>(move(v));
 }
 
 template <typename T, typename... Ts>
-constexpr auto &&get(const variant<Ts...> &v) {
+constexpr auto&& get(const variant<Ts...>& v) {
+  return detail::get_impl::get<T>(v);
+}
+
+template <typename T, typename... Ts> constexpr auto&& get(variant<Ts...>& v) {
   return detail::get_impl::get<T>(v);
 }
 
 template <typename T, typename... Ts>
-constexpr auto &&get(variant<Ts...> &v) {
-  return detail::get_impl::get<T>(v);
-}
-
-template <typename T, typename... Ts>
-constexpr auto &&get(const variant<Ts...> &&v) {
+constexpr auto&& get(const variant<Ts...>&& v) {
   return detail::get_impl::get<T>(move(v));
 }
 
-template <typename T, typename... Ts>
-constexpr auto &&get(variant<Ts...> &&v) {
+template <typename T, typename... Ts> constexpr auto&& get(variant<Ts...>&& v) {
   return detail::get_impl::get<T>(move(v));
 }
 

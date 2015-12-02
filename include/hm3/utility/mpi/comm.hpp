@@ -3,11 +3,11 @@
 ///
 /// MPI communicator
 #include <hm3/utility/fmt.hpp>
+#include <hm3/utility/mpi/call.hpp>
 #include <hm3/utility/mpi/config.hpp>
 #include <hm3/utility/mpi/data_type.hpp>
-#include <hm3/utility/mpi/rank.hpp>
-#include <hm3/utility/mpi/call.hpp>
 #include <hm3/utility/mpi/functions.hpp>
+#include <hm3/utility/mpi/rank.hpp>
 
 namespace hm3 {
 namespace mpi {

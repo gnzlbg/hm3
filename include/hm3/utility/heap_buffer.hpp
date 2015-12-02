@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Heap allocated buffer
-#include <vector>
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
+#include <vector>
 
 namespace hm3 {
 namespace memory {
@@ -23,10 +23,10 @@ template <typename T, typename Buffer = buffer> struct view {
 
   view(Buffer& buffer, const uint_t noTs = 0) : buf_(buffer) { resize(noTs); }
   ~view() { buf_.clear(); }
-  view() = delete;
+  view()            = delete;
   view(view const&) = delete;
   view& operator=(view const&) = delete;
-  view(view&&)  = default;
+  view(view&&)                 = default;
   view& operator=(view&&) = default;
 
   /// buffer capacity to hold T's

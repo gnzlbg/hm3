@@ -11,9 +11,9 @@
 ///   their origin (if this happens it is a bug)
 //
 #include "vtkHM3Reader.h"
-#include <iostream>
-#include <hm3/vis/vtk/readers/factory.hpp>
 #include <hm3/utility/exception.hpp>
+#include <hm3/vis/vtk/readers/factory.hpp>
+#include <iostream>
 
 vtkStandardNewMacro(vtkHM3Reader);
 
@@ -152,7 +152,7 @@ int vtkHM3Reader::RequestData(vtkInformation* /*request*/,
   log("Loading file {}...", time_step);
 
   vtkDataObject* data_object = info->Get(vtkDataObject::DATA_OBJECT());
-  vtkMultiBlockDataSet* mb = vtkMultiBlockDataSet::SafeDownCast(data_object);
+  vtkMultiBlockDataSet* mb   = vtkMultiBlockDataSet::SafeDownCast(data_object);
 
   mb->GetInformation()->Set(vtkDataObject::DATA_TIME_STEP(), time_step);
 

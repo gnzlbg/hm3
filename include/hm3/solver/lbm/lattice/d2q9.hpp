@@ -1,5 +1,6 @@
 #pragma once
 /// \file
+#include <hm3/geometry/dimensions.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -16,8 +17,8 @@ namespace lattice {
 ///
 struct d2q9 : dimensional<2> {
   static constexpr suint_t size() noexcept { return 9; }
-  static auto all() noexcept { return view::iota(0, size()); }
-
+  static auto all() noexcept { return view::iota(suint_t{0}, size()); }
+  /*
   // the members of the enum are exported into scope
   enum indices {
     W  = 0,
@@ -33,6 +34,22 @@ struct d2q9 : dimensional<2> {
   static auto without_center() noexcept { return view::iota(0, 8); }
   static auto direct() noexcept { return view::iota(0, 4); }
   static auto diagonal() noexcept { return view::iota(4, 8); }
+  */
+
+  enum indices {
+    W  = 3,
+    E  = 1,
+    S  = 4,
+    N  = 2,
+    NE = 5,
+    SE = 8,
+    SW = 7,
+    NW = 6,
+    C  = 0
+  };
+  static auto without_center() noexcept { return view::iota(1, 9); }
+  static auto direct() noexcept { return view::iota(1, 5); }
+  static auto diagonal() noexcept { return view::iota(5, 9); }
 
   static constexpr suint_t opposite(suint_t d) noexcept {
     suint_t stencil[size()] = {0};
@@ -53,15 +70,31 @@ struct d2q9 : dimensional<2> {
     using dir_t   = std::array<sint_t, 2>;
     dir_t dirs[9] = {{{0, 0}}};
 
-    dirs[W] = dir_t{{-1, 0}};
-    dirs[E] = dir_t{{1, 0}};
-    dirs[S] = dir_t{{0, -1}};
-    dirs[N] = dir_t{{0, 1}};
+    dirs[W]  = dir_t{{-1, 0}};
+    dirs[E]  = dir_t{{1, 0}};
+    dirs[S]  = dir_t{{0, -1}};
+    dirs[N]  = dir_t{{0, 1}};
     dirs[NE] = dir_t{{1, 1}};
     dirs[SE] = dir_t{{1, -1}};
     dirs[SW] = dir_t{{-1, -1}};
     dirs[NW] = dir_t{{-1, 1}};
-    dirs[C] = dir_t{{0, 0}};
+    dirs[C]  = dir_t{{0, 0}};
+    return dirs[d];
+  }
+
+  static constexpr auto periodic_neighbor_dir_x(suint_t d) noexcept {
+    using dir_t   = std::array<sint_t, 2>;
+    dir_t dirs[9] = {{{0, 0}}};
+
+    dirs[W]  = dir_t{{-1, 0}};
+    dirs[E]  = dir_t{{1, 0}};
+    dirs[S]  = dir_t{{0, 0}};
+    dirs[N]  = dir_t{{0, 0}};
+    dirs[NE] = dir_t{{1, 1}};
+    dirs[SE] = dir_t{{1, 1}};
+    dirs[SW] = dir_t{{-1, -1}};
+    dirs[NW] = dir_t{{-1, -1}};
+    dirs[C]  = dir_t{{0, 0}};
     return dirs[d];
   }
 

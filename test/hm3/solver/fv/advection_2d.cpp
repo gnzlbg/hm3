@@ -1,11 +1,11 @@
 #include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
 #include <hm3/solver/fv/advection.hpp>
-#include <hm3/solver/fv/flux/lax_friedrichs.hpp>
-#include <hm3/solver/fv/advection/numerical_flux/upwind.hpp>
-#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/fv/advection/initial_condition/square.hpp>
+#include <hm3/solver/fv/advection/numerical_flux/upwind.hpp>
+#include <hm3/solver/fv/flux/lax_friedrichs.hpp>
 #include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/fv/time_integration.hpp>
 #include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
@@ -59,7 +59,7 @@ void square(mpi::env& env) {
   using solver_t = fv::state<p, tint>;
 
   num_a<nd> vel = num_a<nd>::Zero();
-  vel(0) = 1.0;
+  vel(0)        = 1.0;
   p physics(vel);
 
   auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};

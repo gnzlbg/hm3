@@ -3,12 +3,12 @@
 ///
 /// Paraview's VTK Tree Reader
 #define HM3_PARAVIEW_PLUGIN
+#include <hm3/io/session.hpp>
+#include <hm3/utility/log.hpp>
+#include <hm3/vis/vtk.hpp>
 #include <map>
 #include <memory>
 #include <string>
-#include <hm3/vis/vtk.hpp>
-#include <hm3/io/session.hpp>
-#include <hm3/utility/log.hpp>
 
 class VTK_EXPORT vtkHM3Reader : public vtkMultiBlockDataSetAlgorithm {
  public:

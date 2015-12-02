@@ -6,6 +6,7 @@
 #include <hm3/solver/types.hpp>
 #include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/utility/assert.hpp>
+#include <hm3/utility/bit.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/static_const.hpp>
 #include <meta/meta.hpp>
@@ -338,7 +339,7 @@ struct square_structured_indices : dimensional<Nd> {
 
   constexpr index_t closest_internal_cell(index_t halo) const noexcept {
     HM3_ASSERT(is_halo(halo), "cell {} is not a halo", halo.idx);
-    uint_t o         = 1;
+    sint_t o         = 1;
     index_t neighbor = halo;
 
     while (o <= Nhl) {
@@ -348,6 +349,9 @@ struct square_structured_indices : dimensional<Nd> {
           auto neighbor_x = halo.x;
           auto offset     = m[pos];
           for (auto d : dimensions()) {
+            if (bit::overflows_on_add(neighbor_x[d], offset[d] * o)) {
+              continue;
+            }
             neighbor_x[d] = static_cast<sint_t>(neighbor_x[d]) + offset[d] * o;
             if (neighbor_x[d] <= 0 or neighbor_x[d] >= cells_per_length()) {
               goto next_neighbor;  // overflow, skip this neighbor
@@ -484,7 +488,7 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
     return i;
   }
 
-  constexpr square_structured_grid() = default;
+  constexpr square_structured_grid()                              = default;
   constexpr square_structured_grid(square_structured_grid const&) = default;
   constexpr square_structured_grid& operator=(square_structured_grid const&)
    = default;
@@ -498,7 +502,7 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
 
   constexpr void reinitialize(geometry::square<Nd> bbox) noexcept {
     bounding_box_ = std::move(bbox);
-    cell_length_ = compute_cell_length(geometry::length(bounding_box_));
+    cell_length_  = compute_cell_length(geometry::length(bounding_box_));
     x_first_cell_ = compute_first_cell_coordinates(bounding_box_);
     HM3_ASSERT(cell_length() > 0.,
                "zero cell length in square structured grid with bbox: {}",

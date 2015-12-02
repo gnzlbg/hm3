@@ -13,7 +13,7 @@ namespace fv {
 
 template <typename Physics, typename TimeIntegration,
           typename block_base_t
-          = block_base<Physics::dimension(), Physics::nvars(), 100, 2>>
+          = block_base<Physics::dimension(), Physics::nvars(), 10, 2>>
 using block_t_
  = block<block_base_t,
          decltype(TimeIntegration::state_t(std::declval<block_base_t>()))>;
@@ -49,7 +49,7 @@ struct state
   // }
 
   decltype(auto) variables(cell_idx c) const noexcept {
-    return (this->block(this->block(c))).variables(this->block_cell_idx(c));
+    return (this->block(this->block_i(c))).variables(this->block_cell_idx(c));
   }
 
   friend bool operator==(self const&, self const&) noexcept { return false; }

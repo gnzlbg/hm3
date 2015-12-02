@@ -202,7 +202,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
     CHECK(ar[0] == 1_u);
     CHECK(ar[1] == 2_u);
 
-    a = *shift(a, std::array<int_t, 2>{{-1, 0}});
+    a  = *shift(a, std::array<int_t, 2>{{-1, 0}});
     ar = static_cast<std::array<loc_int, 2>>(a);
     CHECK(ar[0] == 0_u);
     CHECK(ar[1] == 2_u);
@@ -215,7 +215,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
     CHECK(ar[0] == 4_u);
     CHECK(ar[1] == 4_u);
 
-    a = *shift(a, std::array<int_t, 2>{{-1, -1}});
+    a  = *shift(a, std::array<int_t, 2>{{-1, -1}});
     ar = static_cast<std::array<loc_int, 2>>(a);
     CHECK(ar[0] == 3_u);
     CHECK(ar[1] == 3_u);

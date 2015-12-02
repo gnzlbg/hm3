@@ -1,11 +1,12 @@
 #pragma once
 /// \file
 ///
-#include <hm3/solver/lbm/state.hpp>
-#include <hm3/vis/vtk/serialize.hpp>
-#include <hm3/utility/variant.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/square.hpp>
+#include <hm3/solver/lbm/state.hpp>
+#include <hm3/utility/variant.hpp>
+#include <hm3/vis/vtk/geometry.hpp>
+#include <hm3/vis/vtk/serialize.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -13,19 +14,17 @@ namespace lbm {
 
 namespace vtk {
 
-template <typename State>
+template <typename State, typename Solid>
 struct serializable : dimensional<State::dimension()> {
   State const& s;
+  Solid const& solid;
   using block_idx = grid_node_idx;
   block_idx idx   = block_idx{};
 
   using vtk_cell_idx         = cell_idx;
   static constexpr uint_t Nd = State::dimension();
-  using geometries_t = variant<geometry::square<Nd>, geometry::polygon<Nd, 5>>;
 
-  auto geometry(cell_idx c) const noexcept {
-    return geometries_t{s.geometry(c)};
-  }
+  auto geometry(cell_idx c) const noexcept { return s.geometry(c); }
 
   auto nodes() const noexcept {
     return s.all_cells() | view::filter([&](cell_idx c) {
@@ -49,29 +48,36 @@ struct serializable : dimensional<State::dimension()> {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
     cell_data.load("block_idx", [&](cell_idx c, auto&&) {
-      auto n = s.block(c);
+      auto n = s.block_i(c);
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
     cell_data.load("block_cell_idx", [&](cell_idx c, auto&&) {
       auto n = s.block_cell_idx(c);
       return n;  // ? static_cast<int_t>(*n) : int_t{-1};
     });
+    cell_data.load("solid", [&](cell_idx c, auto&&) {
+      auto n   = s.block_cell_idx(c);
+      auto&& b = s.block(s.block_i(c));
+      return int_t{
+       solid(s, b, b.from(n))};  // ? static_cast<int_t>(*n) : int_t{-1};
+    });
+
     if (idx) {
       cell_data.load("is_internal", [&](cell_idx c, auto&&) {
         return static_cast<int_t>(s.is_internal(c));
       });
     }
-    using lattice = typename std::decay_t<State>::lattice_t;
-    lattice::load(s, cell_data);
+    s.physics.load(s, cell_data);
   }
 
-  serializable(State const& s_, block_idx b = block_idx{}) : s(s_), idx{b} {}
+  serializable(State const& s_, Solid const& sol, block_idx b = block_idx{})
+   : s(s_), solid(sol), idx{b} {}
 };
 
-template <typename Ls, typename State>
-struct ls_serializable : serializable<State> {
-  using self = ls_serializable<Ls, State>;
-  using base = serializable<State>;
+template <typename Ls, typename State, typename Solid>
+struct ls_serializable : serializable<State, Solid> {
+  using self = ls_serializable<Ls, State, Solid>;
+  using base = serializable<State, Solid>;
   using base::s;
   using base::idx;
   using block_idx            = typename base::block_idx;
@@ -79,17 +85,10 @@ struct ls_serializable : serializable<State> {
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
-  using geometries_t = variant<geometry::square<Nd>, geometry::polygon<Nd, 5>>;
-
-  geometries_t geometry(cell_idx c) const noexcept {
-    geometries_t v;
+  vis::vtk::geometries<Nd> geometry(cell_idx c) const noexcept {
     auto g = s.geometry(c);
-    if (!ls.is_cut(g)) {
-      v = g;
-      return v;
-    }
-    v = std::get<0>(intersect(g, ls));
-    return v;
+    if (!ls.is_cut(g)) { return g; }
+    return std::get<0>(intersect(g, ls));
   }
 
   auto nodes() const noexcept {
@@ -108,33 +107,35 @@ struct ls_serializable : serializable<State> {
     return f;
   }
 
-  ls_serializable(Ls const& l, State const& s_, block_idx b = block_idx{})
-   : serializable<State>(s_, b), ls(l) {}
+  ls_serializable(Ls const& l, State const& s_, Solid const& sol,
+                  block_idx b = block_idx{})
+   : serializable<State, Solid>(s_, b, sol), ls(l) {}
 };
 
-template <typename State>
-void serialize(State const& state, string file_name, uint_t time_step,
-               grid_node_idx b = grid_node_idx{}) {
+template <typename State, typename Solid>
+void serialize(State const& state, Solid const& solid, string file_name,
+               uint_t time_step, grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
   if (b) { file_name += "_block_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
-  serializable<State> s(state, b);
+  serializable<State, Solid> s(state, solid, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 
-template <typename State, typename Ls>
-void ls_serialize(State const& state, Ls const& ls, string file_name,
-                  uint_t time_step, grid_node_idx b = grid_node_idx{}) {
+template <typename State, typename Solid, typename Ls>
+void ls_serialize(State const& state, Solid const& solid, Ls const& ls,
+                  string file_name, uint_t time_step,
+                  grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
   if (b) { file_name += "_block_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
-  ls_serializable<Ls, State> s(ls, state, b);
+  ls_serializable<Ls, State, Solid> s(ls, state, solid, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 

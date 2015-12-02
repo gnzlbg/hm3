@@ -9,6 +9,7 @@
 #include <hm3/tree/algorithm/node_neighbor.hpp>
 #include <hm3/tree/tree.hpp>
 #include <hm3/utility/log.hpp>
+#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
 namespace hm3 {

@@ -1,7 +1,7 @@
 #pragma once
-#include <iostream>
 #include <hm3/types.hpp>
 #include <hm3/utility/fmt.hpp>
+#include <iostream>
 
 namespace hm3 {
 namespace debug_detail {

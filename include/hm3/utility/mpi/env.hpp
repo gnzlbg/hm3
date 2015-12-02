@@ -3,9 +3,9 @@
 ///
 /// MPI Environment
 #include <hm3/utility/assert.hpp>
-#include <hm3/utility/mpi/config.hpp>
 #include <hm3/utility/mpi/call.hpp>
 #include <hm3/utility/mpi/comm.hpp>
+#include <hm3/utility/mpi/config.hpp>
 #include <hm3/utility/mpi/functions.hpp>
 
 namespace hm3 {

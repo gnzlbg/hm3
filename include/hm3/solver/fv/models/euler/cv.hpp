@@ -102,7 +102,7 @@ struct cv_base : dimensional<Nd>, equation_of_state, indices<Nd> {
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   static constexpr vars to_pv(V&& v, num_t gamma_m1) noexcept {
     vars tmp;
-    rho(tmp) = rho(v);
+    rho(tmp)   = rho(v);
     rho_u(tmp) = rho_u(v) / rho(v);
     rho_E(tmp) = p(v, gamma_m1);
     return tmp;
@@ -116,8 +116,8 @@ struct cv_base : dimensional<Nd>, equation_of_state, indices<Nd> {
                                 num_t gamma_m1) noexcept {
     const num_t p_v = p(v, gamma_m1);
     const num_t u_d = u(v, d);
-    rho(f) = rho_u(v, d);
-    rho_u(f) = rho_u(v) * u_d;
+    rho(f)          = rho_u(v, d);
+    rho_u(f)        = rho_u(v) * u_d;
     rho_u(f, d) += p_v;
     rho_E(f) = u_d * (rho_E(v) + p_v);
   }

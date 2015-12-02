@@ -88,8 +88,8 @@ struct pv_base : dimensional<Nd>, equation_of_state, indices<Nd> {
   static constexpr vars to_cv(V&& v, num_t gamma_m1) noexcept {
     vars tmp;
     rho(tmp) = rho(v);
-    u(tmp) = rho(v) * u(v);
-    p(tmp) = energy_density(gamma_m1, u_mag2(v), rho(v), p(v));
+    u(tmp)   = rho(v) * u(v);
+    p(tmp)   = energy_density(gamma_m1, u_mag2(v), rho(v), p(v));
     return tmp;
   }
 
@@ -100,8 +100,8 @@ struct pv_base : dimensional<Nd>, equation_of_state, indices<Nd> {
   static constexpr void flux_ip(V&& v, F&& f, suint_t d,
                                 num_t gamma_m1) noexcept {
     const num_t u_d = u(v)(d);
-    rho(f) = rho(v) * u_d;
-    u(f) = rho(v) * u(v) * u_d;
+    rho(f)          = rho(v) * u_d;
+    u(f)            = rho(v) * u(v) * u_d;
     u(f)(d) += p(v);
     p(f) = u_d * (rho_E(v, gamma_m1) + p(v));
   }

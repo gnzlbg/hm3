@@ -6,10 +6,10 @@
 // License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <utility>
-#include <string>
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/test.hpp>
+#include <string>
+#include <utility>
 
 using namespace hm3;
 

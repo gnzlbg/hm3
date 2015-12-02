@@ -3,8 +3,8 @@
 ///
 /// Polygon
 #include <hm3/geometry/dimensions.hpp>
-#include <hm3/geometry/point.hpp>
 #include <hm3/geometry/line.hpp>
+#include <hm3/geometry/point.hpp>
 #include <hm3/utility/stack_vector.hpp>
 
 namespace hm3 {

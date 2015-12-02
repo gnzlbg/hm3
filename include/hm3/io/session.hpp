@@ -2,9 +2,9 @@
 /// \file
 ///
 /// IO session
-#include <type_traits>
 #include <hm3/io/file.hpp>
 #include <hm3/io/file_system.hpp>
+#include <type_traits>
 
 namespace hm3 {
 namespace io {
@@ -180,7 +180,7 @@ struct session {
 
   session(mpi::comm comm) : comm_{std::move(comm)} {}
   session(session const& other) = default;
-  session(session&&) = default;
+  session(session&&)            = default;
   session& operator=(session const& other) = default;
   session& operator=(session&&) = default;
 

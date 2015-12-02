@@ -3,10 +3,10 @@
 ///
 /// Utilities for always handling errors when calling MPI
 #include <cstdlib>
-#include <string>
 #include <hm3/utility/at.hpp>
 #include <hm3/utility/likely.hpp>
 #include <hm3/utility/mpi/config.hpp>
+#include <string>
 
 namespace hm3 {
 namespace mpi {

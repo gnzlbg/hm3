@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Serialization to HM3's File I/O
-#include <hm3/tree/serialization/fio.hpp>
 #include <hm3/grid/adaptor/multi.hpp>
+#include <hm3/tree/serialization/fio.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -55,7 +55,7 @@ multi<TreeGrid> from_file_unread(multi<TreeGrid> const&, io::file& f,
 template <typename TreeGrid>
 multi<TreeGrid> from_file(multi<TreeGrid> const&, io::file& f,
                           tree_node_idx node_capacity = tree_node_idx{},
-                          grid_idx grid_capacity = grid_idx{}) {
+                          grid_idx grid_capacity      = grid_idx{}) {
   auto&& t
    = from_file_unread(multi<TreeGrid>{}, f, node_capacity, grid_capacity);
   f.read_arrays();

@@ -2,12 +2,12 @@
 /// \file
 ///
 /// Compute node neighbor algorithm
-#include <hm3/tree/algorithm/shift_location.hpp>
 #include <hm3/tree/algorithm/node_at.hpp>
+#include <hm3/tree/algorithm/shift_location.hpp>
 #include <hm3/tree/concepts.hpp>
-#include <hm3/tree/types.hpp>
-#include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/tree/location/default.hpp>
+#include <hm3/tree/relations/neighbor.hpp>
+#include <hm3/tree/types.hpp>
 #include <hm3/utility/static_const.hpp>
 
 namespace hm3 {

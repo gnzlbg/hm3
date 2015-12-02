@@ -1,6 +1,6 @@
-#include <hm3/utility/test.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/bit.hpp>
+#include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
@@ -112,7 +112,7 @@ int main() {
     uint_t c = 2;
     bool bits[bit::width<uint_t>];
     for (auto&& i : bit::bits<uint_t>()) { bits[i] = false; }
-    bits[1] = true;
+    bits[1]                                        = true;
 
     for (auto&& i : bit::bits<uint_t>()) { CHECK(bit::get(c, i) == bits[i]); }
     CHECK(bit::to_int(c) == 2_u);
@@ -121,8 +121,8 @@ int main() {
     uint_t c = 3;
     bool bits[bit::width<uint_t>];
     for (auto&& i : bit::bits<uint_t>()) { bits[i] = false; }
-    bits[0] = true;
-    bits[1] = true;
+    bits[0]                                        = true;
+    bits[1]                                        = true;
 
     for (auto&& i : bit::bits<uint_t>()) { CHECK(bit::get(c, i) == bits[i]); }
     CHECK(bit::to_int(c) == 3_u);

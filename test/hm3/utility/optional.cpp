@@ -12,9 +12,9 @@
 #pragma clang diagnostic ignored "-Wdeprecated"
 #pragma clang diagnostic ignored "-Wunused"
 
-#include <hm3/utility/optional.hpp>
 #include <complex>
 #include <functional>
+#include <hm3/utility/optional.hpp>
 #include <iostream>
 #include <vector>
 
@@ -88,7 +88,7 @@ struct guard {
   guard() : val{} {}
   explicit guard(std::string s, int = 0) : val(std::move(s)) {}
   guard(const guard&) = delete;
-  guard(guard&&) = delete;
+  guard(guard&&)      = delete;
   void operator=(const guard&) = delete;
   void operator=(guard&&) = delete;
 };
@@ -103,9 +103,9 @@ struct date {
   date() = delete;
   explicit date(int i) : i{i} {};
   date(date&& d) : i(d.i) { d.i = 0; }
-  date(const date&) = delete;
+  date(const date&)             = delete;
   date& operator=(const date&) = delete;
-  date& operator=(date&& d) {
+  date& operator               =(date&& d) {
     i   = d.i;
     d.i = 0;
     return *this;
@@ -218,7 +218,7 @@ template <class T> struct move_awaree {
     rhs.moved = true;
   }
   move_awaree& operator=(move_awaree const&) = delete;
-  move_awaree& operator=(move_awaree&& rhs) {
+  move_awaree& operator                      =(move_awaree&& rhs) {
     val       = (rhs.val);
     moved     = (rhs.moved);
     rhs.moved = true;
@@ -455,7 +455,7 @@ TEST(example_ref) {
 };
 
 template <typename T>
-T get_value(tr2::optional<T> new_val = tr2::nullopt,
+T get_value(tr2::optional<T> new_val     = tr2::nullopt,
             tr2::optional<T&> store_here = tr2::nullopt) {
   T cached{};
 
@@ -899,7 +899,7 @@ TEST(optional_ref) {
 
   int j     = 22;
   auto&& oj = make_optional(std::ref(j));
-  *oj = 23;
+  *oj       = 23;
   assert(&*oj == &j);
   assert(j == 23);
 };

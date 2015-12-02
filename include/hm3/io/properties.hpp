@@ -3,13 +3,13 @@
 ///
 /// I/O properties
 /*
-#include <utility>
-#include <unordered_map>
-#include <type_traits>
 #include <hm3/types.hpp>
 #include <hm3/utility/any.hpp>
 #include <hm3/utility/fatal_error.hpp>
 #include <hm3/utility/range.hpp>
+#include <type_traits>
+#include <unordered_map>
+#include <utility>
 
 namespace hm3 {
 

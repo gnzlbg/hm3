@@ -52,7 +52,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using max_bounds::max_no_cols;
   using max_bounds::max_size;
 
-  using data_container = std::array<T, (max_size() > 0) ? max_size() : 1>;
+  using data_container  = std::array<T, (max_size() > 0) ? max_size() : 1>;
   using iterator        = typename data_container::iterator;
   using const_iterator  = typename data_container::const_iterator;
   using reference       = typename data_container::reference;
@@ -71,7 +71,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   alignas(64) data_container data_;
 
-  constexpr storage() = default;
+  constexpr storage()               = default;
   constexpr storage(storage const&) = default;
 
   constexpr storage(storage&&) = default;
@@ -137,9 +137,9 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using max_bounds::max_no_cols;
   using max_bounds::max_size;
 
-  storage() = default;
+  storage()               = default;
   storage(storage const&) = default;
-  storage(storage&&) = default;
+  storage(storage&&)      = default;
   storage& operator=(storage const&) = default;
   storage& operator=(storage&&) = default;
 
@@ -196,9 +196,9 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   alignas(32) data_container data_;
 
-  constexpr storage() = default;
+  constexpr storage()               = default;
   constexpr storage(storage const&) = default;
-  constexpr storage(storage&&) = default;
+  constexpr storage(storage&&)      = default;
   constexpr storage& operator=(storage const&) = default;
   constexpr storage& operator=(storage&&) = default;
 
@@ -253,9 +253,9 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using max_bounds::max_no_cols;
   using max_bounds::max_size;
 
-  storage() = default;
+  storage()               = default;
   storage(storage const&) = default;
-  storage(storage&&) = default;
+  storage(storage&&)      = default;
   storage& operator=(storage const&) = default;
   storage& operator=(storage&&) = default;
 

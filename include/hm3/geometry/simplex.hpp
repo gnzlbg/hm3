@@ -3,9 +3,9 @@
 ///
 /// Simplices implementations
 #include <array>
-#include <hm3/types.hpp>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/geometry/point.hpp>
+#include <hm3/types.hpp>
 
 namespace hm3 {
 namespace geometry {

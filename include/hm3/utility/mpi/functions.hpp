@@ -2,8 +2,8 @@
 /// \file
 ///
 // MPI Free functions
-#include <hm3/utility/mpi/config.hpp>
 #include <hm3/utility/mpi/call.hpp>
+#include <hm3/utility/mpi/config.hpp>
 
 namespace hm3 {
 namespace mpi {

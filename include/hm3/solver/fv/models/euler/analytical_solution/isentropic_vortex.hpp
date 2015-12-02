@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Analytical solution for an isentropic vortex
-#include <hm3/solver/fv/euler/indices.hpp>
 #include <hm3/geometry/point.hpp>
+#include <hm3/solver/fv/euler/indices.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -36,7 +36,7 @@ struct isentropic_vortex {
   CONCEPT_REQUIRES(Nd == 2)
   var_v operator()(point_t x, num_t t) const noexcept {
     point<Nd> x_t = x() - u() * t;
-    num_t r = (x_t() - x_0()).norm();
+    num_t r       = (x_t() - x_0()).norm();
 
     num_t f0 = std::exp(1. - std::pow(r, 2.));
     num_t f1 = std::exp(2. * f0);

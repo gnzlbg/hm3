@@ -58,9 +58,9 @@ struct serial {
   bool console_output_;
 
  public:
-  serial() = default;
+  serial()                    = default;
   serial(serial const& other) = default;
-  serial(serial&&) = default;
+  serial(serial&&)            = default;
   serial& operator=(serial const&) = default;
   serial& operator=(serial&&) = default;
 
@@ -111,7 +111,7 @@ struct console {
   ~console() { log_.console_output(false); }
   console(console&) = default;
   console& operator=(console&) = default;
-  console(console&&) = default;
+  console(console&&)           = default;
   console& operator=(console&&) = default;
 };
 

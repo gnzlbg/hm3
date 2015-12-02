@@ -37,12 +37,12 @@ struct hierarchical_block_structured_grid : dimensional<Block::dimension()> {
 
   auto blocks() const noexcept {
     return grid() | view::transform(
-                      [&](auto&& idx) -> block_t const& { return block(idx); });
+                     [&](auto&& idx) -> block_t const& { return block(idx); });
   }
 
   auto blocks() noexcept {
     return grid() | view::transform(
-                      [&](auto&& idx) -> block_t& { return block(idx); });
+                     [&](auto&& idx) -> block_t& { return block(idx); });
   }
 
   block_idx push(tree_node_idx n) noexcept {
@@ -84,21 +84,21 @@ struct hierarchical_block_structured_grid : dimensional<Block::dimension()> {
   }
 
   bool is_internal(cell_idx c) const noexcept {
-    auto b   = block(c);
+    auto b   = block_i(c);
     auto bci = block_cell_idx(c);
     return block(b).is_internal(bci);
   }
 
   bool is_in_block(cell_idx c, block_idx b) const noexcept {
-    return block(c) == b;
+    return block_i(c) == b;
   }
 
-  static block_idx block(cell_idx c) noexcept {
+  static block_idx block_i(cell_idx c) noexcept {
     return block_idx{*c / block_t::size()};
   }
 
   static uint_t block_cell_idx(cell_idx c) noexcept {
-    return (*c) - (*block(c)) * block_t::size();
+    return (*c) - (*block_i(c)) * block_t::size();
   }
 
   auto cells() const noexcept {
@@ -112,7 +112,7 @@ struct hierarchical_block_structured_grid : dimensional<Block::dimension()> {
   }
 
   auto geometry(cell_idx c) const noexcept {
-    return block(block(c)).geometry(block_cell_idx(c));
+    return block(block_i(c)).geometry(block_cell_idx(c));
   }
 };
 

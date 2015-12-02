@@ -22,6 +22,7 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
 
   std::array<num_t, distribution_size()> nodes_0;
   std::array<num_t, distribution_size()> nodes_1;
+  std::array<bool, size()> is_boundary_;
 
   static constexpr uint_t dist(sidx_t c, uint_t d) noexcept {
     return Ndist * c + d;
@@ -47,6 +48,11 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
     return nodes_1[dist(c, d)];
   }
   num_t& nodes1(sidx_t c, uint_t d) noexcept { return nodes_1[dist(c, d)]; }
+
+  bool const& is_boundary(index_t c) const noexcept {
+    return is_boundary_[c.idx];
+  }
+  bool& is_boundary(index_t c) noexcept { return is_boundary_[c.idx]; }
 
   block() = default;
 

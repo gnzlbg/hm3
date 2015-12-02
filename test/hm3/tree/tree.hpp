@@ -94,9 +94,9 @@ struct node {
   hm3::opt::optional<std::vector<node_idx>> all_neighbors{};
   hm3::opt::optional<std::vector<num_t>> normalized_coordinates{};
 
-  node() = default;
+  node()            = default;
   node(node const&) = default;
-  node(node&&)  = default;
+  node(node&&)      = default;
   node& operator=(node const&) = default;
   node& operator=(node&&) = default;
 

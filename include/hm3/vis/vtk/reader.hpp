@@ -3,11 +3,11 @@
 ///
 /// VTK Reader interface (implemented by every VTK reader)
 #ifdef HM3_ENABLE_VTK
-#include <hm3/types.hpp>
-#include <hm3/vis/vtk/vtk.hpp>
 #include <hm3/io/client.hpp>
+#include <hm3/types.hpp>
 #include <hm3/utility/log.hpp>
 #include <hm3/utility/optional.hpp>
+#include <hm3/vis/vtk/vtk.hpp>
 #include <map>
 #include <memory>
 #include <string>

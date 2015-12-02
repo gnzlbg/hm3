@@ -69,10 +69,10 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
     for (auto&& d : dimensions()) { x[d] = static_cast<T>(0); }
   }
 
-  fast() = default;
+  fast()            = default;
   fast(fast const&) = default;
   fast& operator=(fast const&) = default;
-  fast(fast&&)  = default;
+  fast(fast&&)                 = default;
   fast& operator=(fast&&) = default;
 
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>

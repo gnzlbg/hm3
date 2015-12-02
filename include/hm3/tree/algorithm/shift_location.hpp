@@ -5,8 +5,8 @@
 #include <array>
 #include <hm3/geometry/point.hpp>
 #include <hm3/tree/concepts.hpp>
-#include <hm3/tree/types.hpp>
 #include <hm3/tree/relations/tree.hpp>
+#include <hm3/tree/types.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/static_const.hpp>
 
