@@ -3,7 +3,7 @@
 ///
 /// Interprets cell variables as conservative variables
 #include <hm3/geometry/dimensions.hpp>
-#include <hm3/solver/fv/heat/indices.hpp>
+#include <hm3/solver/fv/models/heat/indices.hpp>
 
 namespace hm3 {
 namespace solver {

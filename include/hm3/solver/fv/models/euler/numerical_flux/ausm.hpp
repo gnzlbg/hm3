@@ -3,9 +3,9 @@
 ///
 /// Interprets cell variables as conservative variables
 #include <hm3/geometry/dimensions.hpp>
-#include <hm3/solver/fv/euler/equation_of_state.hpp>
-#include <hm3/solver/fv/euler/indices.hpp>
-#include <hm3/solver/fv/euler/state.hpp>
+#include <hm3/solver/fv/models/euler/equation_of_state.hpp>
+#include <hm3/solver/fv/models/euler/indices.hpp>
+#include <hm3/solver/fv/models/euler/state.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <hm3/utility/static_const.hpp>
 

@@ -2,6 +2,8 @@
 /// \file
 ///
 ///
+#include <hm3/types.hpp>
+#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace solver {

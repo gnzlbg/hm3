@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/solver/fv/euler/state.hpp>
+#include <hm3/solver/fv/models/euler/state.hpp>
 #include <hm3/utility/static_const.hpp>
 
 namespace hm3 {

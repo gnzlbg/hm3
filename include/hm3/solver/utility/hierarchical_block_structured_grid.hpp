@@ -3,8 +3,8 @@
 ///
 /// Hierarchical Cartesian Block Structured Solver grids
 #include <hm3/geometry/dimensions.hpp>
-#include <hm3/solver/state/grid.hpp>
-#include <hm3/solver/state/neighbors.hpp>
+#include <hm3/solver/utility/grid.hpp>
+#include <hm3/solver/utility/neighbors.hpp>
 
 namespace hm3 {
 namespace solver {

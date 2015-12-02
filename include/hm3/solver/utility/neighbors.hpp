@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Stores neighbors of solver grid cells
-#include <hm3/solver/state/grid.hpp>
+#include <hm3/solver/utility/grid.hpp>
 #include <hm3/utility/stack_vector.hpp>
 #include <vector>
 

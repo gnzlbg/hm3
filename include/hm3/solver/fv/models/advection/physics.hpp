@@ -4,8 +4,8 @@
 /// Interprets cell variables as conservative variables
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/geometry/square.hpp>
-#include <hm3/solver/fv/advection/indices.hpp>
-#include <hm3/solver/fv/advection/state.hpp>
+#include <hm3/solver/fv/models/advection/indices.hpp>
+#include <hm3/solver/fv/models/advection/state.hpp>
 
 namespace hm3 {
 namespace solver {

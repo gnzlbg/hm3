@@ -5,6 +5,7 @@
 #include <cmath>
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
+#include <hm3/utility/constants.hpp>
 #include <hm3/utility/range.hpp>
 #include <type_traits>
 

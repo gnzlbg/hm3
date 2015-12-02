@@ -3,7 +3,8 @@
 ///
 /// Analytical solution for an isentropic vortex
 #include <hm3/geometry/point.hpp>
-#include <hm3/solver/fv/euler/indices.hpp>
+#include <hm3/solver/fv/models/euler/indices.hpp>
+#include <hm3/solver/fv/models/euler/pv.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -17,7 +18,7 @@ template <uint_t Nd>  //
 struct isentropic_vortex {
   using i       = indices<Nd>;
   using p       = pv_base<Nd>;
-  using point_t = point<Nd>;
+  using point_t = geometry::point<Nd>;
   using var_v   = num_a<i::nvars()>;
 
   num_t beta  = 5.;
@@ -35,21 +36,23 @@ struct isentropic_vortex {
   /// \todo Where is this from? (Nodal Disc. Gal. Methods book?)
   CONCEPT_REQUIRES(Nd == 2)
   var_v operator()(point_t x, num_t t) const noexcept {
-    point<Nd> x_t = x() - u() * t;
-    num_t r       = (x_t() - x_0()).norm();
+    var_v pv;
+
+    constexpr auto pi = math::pi<num_t>;
+
+    point_t x_t = x() - u() * t;
+    num_t r     = (x_t() - x_0()).norm();
 
     num_t f0 = std::exp(1. - std::pow(r, 2.));
     num_t f1 = std::exp(2. * f0);
 
-    var_v pv;
-
     /// \todo u x (beta * f * (x_t - x_0)) / (2pi) ?
-    p::u(pv, 0) = u(0) - beta * f0 * (x_t(1) - x_0(1)) / (2 * math::pi);
-    p::u(pv, 1) = u(1) + beta * f0 * (x_t(0) - x_0(0)) / (2 * math::pi);
+    p::u(pv, 0) = u(0) - beta * f0 * (x_t(1) - x_0(1)) / (2 * pi);
+    p::u(pv, 1) = u(1) + beta * f0 * (x_t(0) - x_0(0)) / (2 * pi);
 
     p::rho(pv) = std::pow((1.
                            - ((gamma - 1.) * std::pow(beta, 2.) * f1)
-                              / (16. * gamma * std::pow(math::pi, 2.))),
+                              / (16. * gamma * std::pow(pi, 2.))),
                           1. / (gamma - 1.));
     p::p(pv) = std::pow(p::rho(pv), gamma);
     return p::to_cv(pv, gamma);

@@ -1,7 +1,7 @@
 #pragma once
 /// \file surface_mesh.hpp
 #include <hm3/geometry/simplex.hpp>
-#include <hm3/solver/state/grid.hpp>
+#include <hm3/solver/utility/grid.hpp>
 
 namespace hm3 {
 namespace geometry {
