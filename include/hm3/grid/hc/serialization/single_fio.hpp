@@ -38,7 +38,7 @@ single<Nd> from_file(single<Nd> const&, io::file& f,
 /// Appends constants and map arrays to file \p f
 template <uint_t Nd> void to_file_unwritten(io::file& f, single<Nd> const& g) {
   to_file_unwritten(f, static_cast<tree::tree<Nd> const&>(g));
-  f.field("root_node_center", geometry::point<Nd>{center(g.bounding_box())})
+  f.field("root_node_center", geometry::point<Nd>{centroid(g.bounding_box())})
    .field("root_node_length", geometry::length(g.bounding_box()));
 }
 

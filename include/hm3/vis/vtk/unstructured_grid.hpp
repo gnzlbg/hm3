@@ -68,7 +68,7 @@ struct unstructured_grid {
       std::experimental::visit(
        [&](auto&& g) {
          using geometry_t  = std::decay_t<decltype(g)>;
-         auto cell_corners = geometry::corners(g);
+         auto cell_corners = corners(g);
          auto&& tmp_cell   = std::get<to_vtk_cell_ptr_t<geometry_t>>(tmp_cells);
          HM3_ASSERT(size(cell_corners) > 0_u,
                     "cells of zero points not supported (see comment below)");
@@ -87,7 +87,7 @@ struct unstructured_grid {
          //      be painful.
          tmp_cell->GetPointIds()->Reset();
          // Append corners to the point set, and store the corner ids:
-         RANGES_FOR (auto&& cIdx, g.corner_positions()) {
+         RANGES_FOR (auto&& cIdx, corner_positions(g)) {
            vtkIdType id;
            auto corner_vtk = to_vtk_point(cell_corners[cIdx]);
            unique_inserter->InsertUniquePoint(corner_vtk.data(), id);

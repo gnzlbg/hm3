@@ -124,7 +124,7 @@ auto make_tuple_of_cells(std::experimental::variant<Ts...> const&)
   return r;
 }
 
-template <int_t Nd>
+template <uint_t Nd>
 constexpr auto to_vtk_point(geometry::point<Nd> p) noexcept
  -> std::array<double, 3> {
   std::array<double, 3> vtk_p{{0.0}};

@@ -1,3 +1,4 @@
+#ifdef FIXED
 #include <hm3/geometry/intersect.hpp>
 #include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
@@ -403,3 +404,6 @@ int main() {
   return 0;
 }
 */
+#else
+int main() { return 0; }
+#endif

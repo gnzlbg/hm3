@@ -14,14 +14,14 @@ namespace fv {
 namespace euler {
 
 template <uint_t Nd>  //
-struct pv_base : dimensional<Nd>, equation_of_state, indices<Nd> {
+struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   using equation_of_state::mach_number;
   using equation_of_state::energy_density;
   using equation_of_state::speed_of_sound;
 
  private:
   using i = indices<Nd>;
-  using d = dimensional<Nd>;
+  using d = geometry::dimensional<Nd>;
 
  public:
   using vars = num_a<i::nvars()>;

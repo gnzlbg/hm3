@@ -24,7 +24,7 @@ struct shift_location_fn {
   auto operator()(Loc loc, std::array<num_t, Nd> offset,
                   uint_t level = Loc::max_level()) const noexcept -> Loc {
     const num_t scale = math::ipow(2, loc.level);
-    for (auto&& d : dimensions(Nd)) { offset[d] += loc[d] / scale; }
+    RANGES_FOR (auto&& d, dimensions(Nd)) { offset[d] += loc[d] / scale; }
     return Loc{offset, level};
   }
 

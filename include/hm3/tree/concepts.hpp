@@ -16,7 +16,7 @@ namespace concepts {
 namespace rc = ranges::concepts;
 
 /// Locational codes model the location concept
-struct location : rc::refines<rc::Regular, geometry::concepts::Dimensioned,
+struct location : rc::refines<rc::Regular, geometry::concepts::Dimensional,
                               rc::TotallyOrdered> {
   template <typename T>  //
   auto requires_(T&& t) -> decltype(

@@ -17,7 +17,7 @@ namespace fv {
 namespace vtk {
 
 template <typename State, typename T>
-struct serializable : dimensional<State::dimension()> {
+struct serializable : geometry::dimensional<State::dimension()> {
   State const& s;
   using block_idx = grid_node_idx;
   block_idx idx   = block_idx{};
@@ -103,7 +103,7 @@ struct ls_serializable : serializable<State, T> {
   template <typename CellData> void load(CellData&& cell_data) const {
     serializable<State, T>::load(cell_data);
     cell_data.load("level_set", [&](cell_idx n, auto&&) {
-      auto x_i = geometry::center(s.geometry(n));
+      auto x_i = geometry::centroid(s.geometry(n));
       return ls(x_i);
     });
     s.physics.load(T{s.physics}, s, cell_data);

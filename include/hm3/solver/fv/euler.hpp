@@ -1,4 +1,4 @@
 #pragma once
-#include <hm3/solver/fv/euler/numerical_flux.hpp>
-#include <hm3/solver/fv/euler/physics.hpp>
-#include <hm3/solver/fv/euler/time_step.hpp>
+#include <hm3/solver/fv/models/euler/numerical_flux.hpp>
+#include <hm3/solver/fv/models/euler/physics.hpp>
+#include <hm3/solver/fv/models/euler/time_step.hpp>

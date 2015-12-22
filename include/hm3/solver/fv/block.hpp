@@ -3,6 +3,7 @@
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/square.hpp>
+#include <hm3/solver/fv/cell_information.hpp>
 #include <hm3/solver/types.hpp>
 #include <hm3/solver/utility/structured_grid.hpp>
 
@@ -78,6 +79,12 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
   /// Gradients
   gradient_t gradients_;
 
+  // /// Cell information
+  // std::vector<cell_type> types_;
+
+  // /// Boundary cell data
+  // std::vector<boundary_cell> boundary_cells_;
+
   ///@}  // Data
 
   /// \name Cell variables
@@ -141,9 +148,13 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
     HM3_ASSERT(*block_level_ >= 0, "negative block level {}", block_level_);
     HM3_ASSERT(block_length > 0., "zero block length in block with bbox: {}",
                bbox);
+    // info_.clear();
+    // info_.resize(size());
   }
 
-  block_base(level_idx block_level_, geometry::square<Nd> bbox) {
+  block_base(level_idx block_level_, geometry::square<Nd> bbox)
+  // : info_(size()) {
+  {
     reinitialize(std::move(block_level_), std::move(bbox));
   }
 

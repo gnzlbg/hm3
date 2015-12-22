@@ -240,11 +240,11 @@ template <int Nd, int M> struct manifold_neighbors;
 // ///
 /// TODO: simplify this and provide a way of constructing custom neighbor search
 /// tables
-template <int Nd, int M> struct manifold_neighbors : dimensional<Nd> {
+template <int Nd, int M> struct manifold_neighbors : geometry::dimensional<Nd> {
   static_assert(Nd >= 0 and Nd <= 3, "");
 
-  using dimensional<Nd>::dimension;
-  using dimensional<Nd>::dimensions;
+  using geometry::dimensional<Nd>::dimension;
+  using geometry::dimensional<Nd>::dimensions;
   static constexpr uint_t rank() noexcept { return M; }
 
   static constexpr uint_t size() noexcept {

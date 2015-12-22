@@ -17,7 +17,7 @@ namespace hm3 {
 namespace tree {
 
 /// Nd-octree data-structure
-template <uint_t Nd> struct tree : dimensional<Nd> {
+template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
   /// \name Data (all member variables of the tree)
   ///
   /// Memory layout: siblings (node with the same parent) are stored
@@ -54,8 +54,8 @@ template <uint_t Nd> struct tree : dimensional<Nd> {
   /// \name Spatial constants
   ///@{
 
-  using dimensional<Nd>::dimension;
-  using dimensional<Nd>::dimensions;
+  using geometry::dimensional<Nd>::dimension;
+  using geometry::dimensional<Nd>::dimensions;
 
   /// Number of children per node
   static constexpr uint_t no_children() noexcept {

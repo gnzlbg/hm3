@@ -28,7 +28,7 @@ struct normalized_coordinates_fn {
     for (auto&& p : loc()) {
       const auto length = node_length_at_level(l) * num_t{0.25};
       const auto&& rcp  = relative_child_position<Nd>(p);
-      for (auto&& d : dimensions(Nd)) { result[d] += rcp[d] * length; }
+      RANGES_FOR (auto&& d, dimensions(Nd)) { result[d] += rcp[d] * length; }
       ++l;
     }
     return result;

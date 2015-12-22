@@ -15,7 +15,7 @@ namespace tree {
 namespace location {
 
 template <uint_t Nd, typename UInt = uint_t>  //
-struct slim : dimensional<Nd> {
+struct slim : geometry::dimensional<Nd> {
   using self = slim<Nd, UInt>;
 
   using value_type     = self;
@@ -28,8 +28,8 @@ struct slim : dimensional<Nd> {
 
   integer_t value = 1;  /// Default constructed to the root node
 
-  using dimensional<Nd>::dimension;
-  using dimensional<Nd>::dimensions;
+  using geometry::dimensional<Nd>::dimension;
+  using geometry::dimensional<Nd>::dimensions;
 
   static constexpr uint_t no_levels() noexcept {
     constexpr auto no_bits  = bit::width<integer_t>;

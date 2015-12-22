@@ -18,12 +18,12 @@ void test_node() {
   using namespace grid;
   using namespace geometry;
 
-  auto pm = point<Nd>::zero();
-  auto pp = point<Nd>::ones();
-  auto xc = point<Nd>::constant(0.5);
+  point<Nd> pm = point<Nd>::zero();
+  point<Nd> pp = point<Nd>::ones();
+  point<Nd> xc = point<Nd>::constant(0.5);
 
-  auto ppw = point<Nd>::ones();
-  ppw(0)   = 1.5;
+  point<Nd> ppw = point<Nd>::ones();
+  ppw(0)        = 1.5;
 
   CHECK(is_square(pm, pp));
   CHECK(is_square(pm, xc));
@@ -33,21 +33,21 @@ void test_node() {
     CHECK(!is_square(xc, ppw));
   }
 
-  CHECK(xc == square_center(pm, pp));
-  CHECK(xc != square_center(pm, xc));
-  CHECK(xc != square_center(xc, pp));
+  CHECK(xc == square_centroid(pm, pp));
+  CHECK(xc != square_centroid(pm, xc));
+  CHECK(xc != square_centroid(xc, pp));
 
   CHECK(square_length(pm, pp) == 1.0);
   CHECK(square_length(pm, xc) == 0.5);
   CHECK(square_length(xc, pp) == 0.5);
 
   hc::node<Nd> n1(pm, pp);
-  hc::node<Nd> n2(square_center(pm, pp), square_length(pm, pp));
+  hc::node<Nd> n2(square_centroid(pm, pp), square_length(pm, pp));
 
   CHECK(length(n1) == length(n2));
   CHECK(volume(n1) == volume(n2));
   CHECK(dimension(n1) == Nd);
-  CHECK(center(n1) == center(n2));
+  CHECK(centroid(n1) == centroid(n2));
   CHECK(volume(square<Nd>(pm, pp)) == 1.0);
 
   CHECK(n1 == n2);

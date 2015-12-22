@@ -1,19 +1,14 @@
 #!/usr/bin/env python
 """Generate HM3's website
-
 Usage:
   generate_website.py <source_dir> <build_dir> [options]
   generate_website.py -h | --help
-
   <source_dir>  Path to the HM3's source directory.
   <build_dir>   Path to the HM3's build directory.
-
 Options:
   -h --help     Show this screen.
   --verbose     Verbose output.
-
   --serve       Starts a server to view the site locally.
-
 """
 from docopt import docopt
 import subprocess

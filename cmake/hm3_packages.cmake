@@ -44,6 +44,7 @@ endif()
 # Fetch from source:
 hm3_pkg(range-v3 "-DRANGES_SUPPRESS_IOTA_WARNING" "")
 hm3_pkg(json "" "")
+hm3_pkg(variant "" "")
 hm3_pkg(spdlog "-DFMT_HEADER_ONLY" "")
 hm3_pkg(Eigen3 "" "")
 

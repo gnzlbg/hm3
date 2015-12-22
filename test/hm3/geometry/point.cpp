@@ -6,6 +6,10 @@
 
 using namespace hm3;
 
+static_assert(Dimensional<point<1>>{}, "");
+static_assert(Dimensional<point<2>>{}, "");
+static_assert(Dimensional<point<3>>{}, "");
+
 int main() {
   using namespace geometry;
 

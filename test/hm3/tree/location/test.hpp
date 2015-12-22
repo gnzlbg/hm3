@@ -19,7 +19,7 @@ void test_location(Loc) {
   static_assert(SemiRegular<Loc>{}, "");
   static_assert(EqualityComparable<Loc>{}, "");
   static_assert(Regular<Loc>{}, "");
-  static_assert(geometry::Dimensioned<Loc>{}, "");
+  static_assert(geometry::Dimensional<Loc>{}, "");
   static_assert(TotallyOrdered<Loc>{}, "");
   static_assert(Location<Loc>{}, "");
   Loc l;

@@ -2,7 +2,7 @@
 ///
 /// Solver grid state tests
 #include <hm3/grid/generation/uniform.hpp>
-#include <hm3/solver/state/grid.hpp>
+#include <hm3/solver/utility/grid.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
   auto max_grid_level = 2;
   auto node_capacity
    = tree_node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<2>::unit();
+  auto bounding_box = geometry::unit(geometry::square<2>{});
   auto no_grids     = 2;
 
   /// Create the grid

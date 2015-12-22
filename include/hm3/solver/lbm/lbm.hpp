@@ -1,5 +1,10 @@
 #pragma once
-/// \file lbm.hpp
+/// \file
+///
+///
+#include <hm3/types.hpp>
+#include <hm3/utility/fmt.hpp>
+#include <hm3/utility/range.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -10,7 +15,7 @@ template <typename State, typename InitialCondition>
 void initialize_variables_to_equilibrium(State&& s, InitialCondition&& ic) {
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
-      auto x    = b.center(c);
+      auto x    = b.centroid(c);
       auto f_eq = s.physics.equilibrium_distribution(ic(x));
       RANGES_FOR (auto&& d, s.physics.all()) {
         b.nodes0(c, d) = f_eq[d];
@@ -47,7 +52,7 @@ void collide(State&& s, Solid&& solid, num_t omega) noexcept {
   // num_t omega
   //  = physics.omega(static_cast<num_t>(max_level), static_cast<num_t>(level));
   // num_t omega = 0.1;
-  std::cout << "omega: " << omega << std::endl;
+  fmt::print("omega: {}", omega);
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
       if (solid(s, b, c)) { return; }
@@ -102,7 +107,7 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
 //         auto nghbr = b.at(c, l::neighbor_offset(d));
 //         if (b.is_halo(nghbr)) { continue; }
 //         // if (nghbr.x[1] == 2 or nghbr.x[1] == 101 or b.is_halo(nghbr)
-//         //     or bcs(b.center(nghbr)) < 0.) {
+//         //     or bcs(b.centroid(nghbr)) < 0.) {
 //         //   continue;
 //         // }
 //         b.nodes1(nghbr, d) = b.nodes0(c, d);

@@ -36,7 +36,8 @@ namespace location {
 /// Right now optimized for insertion but makes it a pain for shifting
 /// coordinates and doing useful stuff with the location hashes
 ///
-template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
+template <uint_t Nd, typename T = uint_t>
+struct fast : geometry::dimensional<Nd> {
   using self           = fast<Nd, T>;
   using opt_self       = compact_optional<self>;
   using value_type     = self;
@@ -49,8 +50,8 @@ template <uint_t Nd, typename T = uint_t> struct fast : dimensional<Nd> {
 
   constexpr level_idx level() const noexcept { return level_; }
 
-  using dimensional<Nd>::dimension;
-  using dimensional<Nd>::dimensions;
+  using geometry::dimensional<Nd>::dimension;
+  using geometry::dimensional<Nd>::dimensions;
 
   static constexpr level_idx max_level() noexcept {
     constexpr auto max = 8 * sizeof(integer_t) - Nd;

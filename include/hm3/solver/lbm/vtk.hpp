@@ -15,7 +15,7 @@ namespace lbm {
 namespace vtk {
 
 template <typename State, typename Solid>
-struct serializable : dimensional<State::dimension()> {
+struct serializable : geometry::dimensional<State::dimension()> {
   State const& s;
   Solid const& solid;
   using block_idx = grid_node_idx;

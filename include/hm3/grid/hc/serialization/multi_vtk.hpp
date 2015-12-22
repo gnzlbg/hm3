@@ -21,7 +21,7 @@ namespace vtk {
 ///  - a bounding_box() method
 ///  - a dimensions() method
 ///  - a for_each_cell(F&&) method
-template <uint_t Nd> struct serializable_multi : dimensional<Nd> {
+template <uint_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
   multi<Nd> const& t_;
   int_t level_ = -1;
 

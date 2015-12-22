@@ -5,9 +5,7 @@
 #include <spdlog/spdlog.h>
 
 namespace hm3 {
-namespace fmt {
 
-using namespace ::fmt;
+namespace fmt = ::fmt;
 
-}  // namespace fmt
 }  // namespace hm3

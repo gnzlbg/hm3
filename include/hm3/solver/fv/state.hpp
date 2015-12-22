@@ -26,8 +26,8 @@ struct state
   using hbsg
    = hierarchical_block_structured_grid<block_t_<Physics, TimeIntegration>>;
   using grid_t = typename hbsg::grid_t;
-  using dimensional<Physics::dimension()>::dimension;
-  using dimensional<Physics::dimension()>::dimensions;
+  using geometry::dimensional<Physics::dimension()>::dimension;
+  using geometry::dimensional<Physics::dimension()>::dimensions;
 
   static constexpr uint_t nvars() noexcept { return Physics::nvars(); }
   static constexpr auto variables() noexcept { return view::iota(0, nvars()); }

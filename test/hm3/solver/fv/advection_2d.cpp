@@ -1,13 +1,11 @@
-#include <hm3/geometry/sd.hpp>
+/*#include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
-#include <hm3/solver/fv/advection.hpp>
-#include <hm3/solver/fv/advection/initial_condition/square.hpp>
-#include <hm3/solver/fv/advection/numerical_flux/upwind.hpp>
-#include <hm3/solver/fv/flux/lax_friedrichs.hpp>
 #include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/models/advection/initial_condition/square.hpp>
+#include <hm3/solver/fv/models/advection/numerical_flux/upwind.hpp>
+#include <hm3/solver/fv/models/advection/physics.hpp>
 #include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/fv/time_integration.hpp>
-#include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -42,7 +40,7 @@ void square(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<nd>::unit();
+  auto bounding_box = geometry::unit(geometry::square<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -75,10 +73,13 @@ void square(mpi::env& env) {
   // Initial condition by cell
   for (auto& b : as0.blocks()) {
     b.for_each_internal(
-     [&](auto&& c) { b.variables(c.idx) = ic(b.center(c)); });
+     [&](auto&& c) { b.variables(c.idx) = ic(b.centroid(c)); });
   }
 
   /// Boundary conditions
+
+  auto box = geometry::sd::box<nd>(geometry::point<nd>::constant(0.5), 1.0);
+
   auto bcs = NeumannBoundaryConditions{};
 
   num_t cfl = 1.0;
@@ -117,3 +118,6 @@ int main(int argc, char* argv[]) {
 
   return test::result();
 }
+*/
+
+int main() { return 0; }

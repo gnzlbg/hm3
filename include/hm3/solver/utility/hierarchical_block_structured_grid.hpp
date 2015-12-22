@@ -10,9 +10,10 @@ namespace hm3 {
 namespace solver {
 
 template <typename Block>
-struct hierarchical_block_structured_grid : dimensional<Block::dimension()> {
+struct hierarchical_block_structured_grid
+ : geometry::dimensional<Block::dimension()> {
   using block_t = Block;
-  using dimensional<Block::dimension()>::dimension;
+  using geometry::dimensional<Block::dimension()>::dimension;
   using block_grid_t = solver::state::grid<dimension()>;
   using grid_t       = typename block_grid_t::tree_t;
   using grid_neighbors_t

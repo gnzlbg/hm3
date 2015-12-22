@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   auto max_grid_level       = min_grid_level + 3;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<2>::unit();
+  auto bounding_box = geometry::unit(geometry::square<2>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -94,10 +94,9 @@ int main(int argc, char* argv[]) {
   /// Generate some time steps
   auto no_time_steps = 4;
   auto time_steps    = view::generate([]() mutable {
-                      using hm3::constant::pi;
                       static num_t next = 0.;
                       auto r            = next;
-                      next += 1. / 4. * pi<num_t>;
+                      next += 1. / 4. * math::pi<num_t>;
                       return r;
                     })
                     | view::take(no_time_steps);
@@ -112,8 +111,8 @@ int main(int argc, char* argv[]) {
   RANGES_FOR (auto&& t, time_steps) {
     string root_name0 = "amr_state_ls0_" + std::to_string(count_);
     // Update sphere centers
-    sphere0.center = sphere_center0(t);
-    sphere1.center = sphere_center1(t);
+    sphere0.centroid = sphere_center0(t);
+    sphere1.centroid = sphere_center1(t);
     ls0.set_node_values(sphere0);
     ls1.set_node_values(sphere1);
 

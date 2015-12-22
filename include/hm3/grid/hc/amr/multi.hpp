@@ -11,7 +11,7 @@ namespace grid {
 namespace hc {
 
 template <uint_t Nd>
-struct multi_amr_target : amr::non_loggable, dimensional<Nd> {
+struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
   using amr_node_idx = tree_node_idx;
 
   multi<Nd>* g_;

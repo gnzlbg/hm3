@@ -12,7 +12,8 @@ namespace solver {
 namespace fv {
 namespace advection {
 
-template <uint_t Nd> struct physics : state<Nd>, dimensional<Nd>, indices<Nd> {
+template <uint_t Nd>
+struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
   using self = physics<Nd>;
 
   template <typename V> static decltype(auto) marker(V&& v) noexcept {

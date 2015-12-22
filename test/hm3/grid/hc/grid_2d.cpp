@@ -40,7 +40,7 @@ struct uniform_grid {
 auto uniform_grid_v = extend(uniform_tree{}, uniform_grid{});
 
 int main() {
-  auto bbox = geometry::square<2>::unit();
+  auto bbox = geometry::unit(geometry::square<2>{});
   grid::hc::single<2> g(21, bbox);
   g.refine(0_n);
   g.refine(1_n);

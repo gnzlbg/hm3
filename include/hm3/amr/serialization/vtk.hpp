@@ -18,7 +18,7 @@ namespace vtk {
 
 /// Adapts an amr::state<Target> to be serializable to a vtkUnstructuredGrid
 template <typename Target>
-struct serializable : dimensional<Target::dimension()> {
+struct serializable : geometry::dimensional<Target::dimension()> {
   state<Target> const& s_;
 
   using vtk_cell_idx = amr_node_idx_t<Target>;

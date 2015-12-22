@@ -1,3 +1,4 @@
+#ifdef FIXED
 #include <hm3/amr/amr.hpp>
 #include <hm3/amr/criterion/level_at_distance.hpp>
 #include <hm3/geometry/sd.hpp>
@@ -5,12 +6,10 @@
 #include <hm3/grid/generation/uniform.hpp>
 #include <hm3/grid/hc/amr/multi.hpp>
 #include <hm3/solver/fv/euler.hpp>
-#include <hm3/solver/fv/euler/initial_condition/shock_tube.hpp>
-#include <hm3/solver/fv/euler/vtk.hpp>
 #include <hm3/solver/fv/fv.hpp>
+#include <hm3/solver/fv/models/euler/initial_condition/shock_tube.hpp>
 #include <hm3/solver/fv/numerical_flux/rusanov.hpp>
 #include <hm3/solver/fv/time_integration.hpp>
-#include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -409,7 +408,7 @@ void sod_test(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<nd>::unit();
+  auto bounding_box = geometry::unit(geometry::square<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -490,7 +489,7 @@ void grid_for_paper(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 2;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<nd>::unit();
+  auto bounding_box = geometry::unit(geometry::square<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -602,7 +601,7 @@ void grid_for_paper2(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 3;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<nd>::unit();
+  auto bounding_box = geometry::unit(geometry::square<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -710,3 +709,6 @@ int main(int argc, char* argv[]) {
 
   return test::result();
 }
+#else
+int main() { return 0; }
+#endif

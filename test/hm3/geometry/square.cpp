@@ -6,6 +6,14 @@
 
 using namespace hm3;
 
+static_assert(Dimensional<square<1>>{}, "");
+static_assert(Dimensional<square<2>>{}, "");
+static_assert(Dimensional<square<3>>{}, "");
+
+static_assert(Polygon<square<1>>{}, "");
+static_assert(Polygon<square<2>>{}, "");
+static_assert(Polygon<square<3>>{}, "");
+
 #define UNWRAP(...) __VA_ARGS__
 
 #define CHECK_UNIT_SQUARE(nd_, pL_, pR_, xc_, corners_)                    \

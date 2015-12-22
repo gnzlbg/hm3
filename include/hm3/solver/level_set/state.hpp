@@ -23,7 +23,7 @@ template <uint_t Nd> string name(state<Nd> const& s) {
   return name(s, s.idx());
 }
 
-template <uint_t Nd> struct state : dimensional<Nd> {
+template <uint_t Nd> struct state : geometry::dimensional<Nd> {
   using grid = ::hm3::solver::state::grid<Nd>;
 
   using tree_t   = typename grid::tree_t;

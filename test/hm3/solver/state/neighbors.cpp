@@ -1,4 +1,4 @@
-#include <hm3/solver/state/neighbors.hpp>
+#include <hm3/solver/utility/neighbors.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;

@@ -65,7 +65,8 @@ template <uint_t Nd> struct multi : adaptor::multi<single<Nd>> {
     if (type_ == type(tree::tree<Nd>{})) {
       auto d = from_file(tree::tree<Nd>{}, f, node_capacity);
       return multi<Nd>{
-       s, base_t{0, single<Nd>{geometry::square<Nd>::unit(), std::move(d)}}};
+       s, base_t{0, single<Nd>{geometry::unit(geometry::square<Nd>{}),
+                               std::move(d)}}};
     }
 
     HM3_FATAL_ERROR(

@@ -17,7 +17,8 @@ template <uint_t Nd> struct line {
 };
 
 /// Line dimension
-template <uint_t Nd> constexpr auto dimension(line<Nd> const&) {
+template <uint_t Nd>
+constexpr std::integral_constant<uint_t, Nd> dimension(line<Nd> const&) {
   return std::integral_constant<uint_t, Nd>{};
 }
 
@@ -26,8 +27,8 @@ template <uint_t Nd> constexpr num_t length(line<Nd> const& l) {
   return (l.x_1() - l.x_0()).norm();
 }
 
-/// Line center
-template <uint_t Nd> constexpr point<Nd> center(line<Nd> const& l) {
+/// Line centroid
+template <uint_t Nd> constexpr point<Nd> centroid(line<Nd> const& l) {
   point<Nd> v;
   v() = l.x_0() + 0.5 * (l.x_1() - l.x_0());
   return v;

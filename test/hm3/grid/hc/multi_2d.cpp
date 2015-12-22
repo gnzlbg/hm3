@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
   auto max_grid_level = min_grid_level + 3;
   auto node_capacity
    = node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<2>::unit();
+  auto bounding_box = geometry::unit(geometry::square<2>{});
   auto no_grids     = 2;
 
   // Create the grid
@@ -77,9 +77,9 @@ int main(int argc, char* argv[]) {
   // Loop over all time steps, moving the sphere, and adapting the grid
   int count_ = 0;
   RANGES_FOR (auto&& t, time_steps) {
-    string root_name     = "amr_state_ts_" + std::to_string(count_);
-    moving_sphere.center = sphere_center(t);
-    int iter_counter     = 0;
+    string root_name       = "amr_state_ts_" + std::to_string(count_);
+    moving_sphere.centroid = sphere_center(t);
+    int iter_counter       = 0;
     while (amr_handler.adapt(amr_action, [&]() {
       // If VTK is enabled write the state of the AMR handler at each iteration
       // to

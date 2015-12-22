@@ -60,6 +60,24 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
   return result;
 }
 
+/// Sign of a floating point number (doesn't handle NaNs)
+template <
+ typename Float,
+ CONCEPT_REQUIRES_(
+  std::is_floating_point<std::remove_reference_t<std::remove_cv_t<Float>>>{})>
+Float sign(Float&& f) {
+  return (f < 0) ? Float{-1} : Float{1};
+}
+
+/// Sign of a floating point number (handles NaNs)
+template <
+ typename Float,
+ CONCEPT_REQUIRES_(
+  std::is_floating_point<std::remove_reference_t<std::remove_cv_t<Float>>>{})>
+Float robust_sign(Float&& f) {
+  return std::signbit(f) ? Float{-1} : Float{1};
+}
+
 /// Computes the factorial of n
 ///
 /// \param n [in] number whose factorial will be computed

@@ -45,6 +45,28 @@ auto use_copy_if_single_pass(Rng&& rng) noexcept {
   return std::forward<Rng>(rng);
 }
 
+struct tuple_for_each_indexed_fn {
+ private:
+  template <typename Tup, typename Fun, std::size_t... Is>
+  static void impl(Tup&& tup, Fun fun, meta::index_sequence<Is...>) {
+    (void)std::initializer_list<int>{
+     (void)fun(Is, std::get<Is>(std::forward<Tup>(tup)))...};
+  }
+
+ public:
+  template <typename Tup, typename Fun>
+  Fun operator()(Tup&& tup, Fun fun) const {
+    tuple_for_each_indexed_fn::impl(std::forward<Tup>(tup), std::ref(fun),
+                                    tuple_indices_t<Tup>{});
+    return fun;
+  }
+};
+
+namespace {
+constexpr auto&& tuple_for_each_indexed
+ = static_const<tuple_for_each_indexed_fn>::value;
+}
+
 }  // namespace hm3
 
 #define HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(Value)  \

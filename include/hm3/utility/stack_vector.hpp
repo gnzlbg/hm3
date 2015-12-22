@@ -234,9 +234,9 @@ struct vector
   /// Construction from Iterator/Sentinel pair
   template <typename It, typename S,
             CONCEPT_REQUIRES_(InputIterator<It>{} and IteratorRange<It, S>{}
-                              and RangeAssignable<range<It, S>>{})>
+                              and RangeAssignable<iterator_range<It, S>>{})>
   constexpr vector(It&& it, S&& s)
-   : vector(range<It, S>{std::forward<It>(it), std::forward<S>(s)}) {}
+   : vector(iterator_range<It, S>{std::forward<It>(it), std::forward<S>(s)}) {}
 
   ///@}
 

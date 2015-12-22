@@ -93,7 +93,7 @@ void exchange_halos(State& s, Limiter&& lim) {
       // If the level is the same: copy neighbor cells into block halos:
       if (b.block_level == bn.block_level) {
         b.for_each_halo([&](auto hc) {
-          auto x_hc = b.center(hc);
+          auto x_hc = b.centroid(hc);
           if (!bn.in_grid(x_hc)) { return; }
           auto nc = bn.at_nh(x_hc);
 
@@ -107,7 +107,7 @@ void exchange_halos(State& s, Limiter&& lim) {
       // TODO: see below, this should be performed later
       if (b.block_level > bn.block_level) {
         b.for_each_halo([&](auto hc) {
-          auto x_hc = b.center(hc);
+          auto x_hc = b.centroid(hc);
           if (!bn.in_grid(x_hc)) { return; }
           auto nc   = bn.at_nh(x_hc);
           b_lhs(hc) = s.time_integration.lhs(bn)(nc);
@@ -119,13 +119,13 @@ void exchange_halos(State& s, Limiter&& lim) {
       if (b.block_level < bn.block_level) {
         // zero the variables
         b.for_each_halo([&](auto hc) {
-          auto x_hc = b.center(hc);
+          auto x_hc = b.centroid(hc);
           if (!bn.in_grid(x_hc)) { return; }
           RANGES_FOR (auto&& v, s.variables()) { b_lhs(hc)(v) = 0.; }
         });
         // zero the variables
         b.for_each_halo([&](auto hc) {
-          auto x_hc = b.center(hc);
+          auto x_hc = b.centroid(hc);
           if (!bn.in_grid(x_hc)) { return; }
           auto nc = bn.at_nh(x_hc);
           b_lhs(hc) += s.time_integration.lhs(bn)(nc);
@@ -142,10 +142,10 @@ void exchange_halos(State& s, Limiter&& lim) {
 
       if (b.block_level > bn.block_level) {
         b.for_each_halo([&](auto hc) {
-          auto x_hc = b.center(hc);
+          auto x_hc = b.centroid(hc);
           if (!bn.in_grid(x_hc)) { return; }
           auto nc   = bn.at_nh(x_hc);
-          auto x_nc = bn.center(nc);
+          auto x_nc = bn.centroid(nc);
           auto dx   = x_hc() - x_nc();
 
           RANGES_FOR (auto&& d, s.dimensions()) {
@@ -177,7 +177,7 @@ void exchange_halos(State& s, Limiter&& lim) {
   //       // block halos
   //       if (b.block_level > bn.block_level) {
   //         n.for_each_halo([&](auto hc) {
-  //           auto x_hc + b.center(hc);
+  //           auto x_hc + b.centroid(hc);
   //           auto nc = bn.at(x_hc);
   //           if (!nc) { return; }
   //           fv::compute_gradients(s, bn, nc);  // gradients of neighbor

@@ -22,9 +22,9 @@ namespace solver {
 /// Nhl: number of of halo layers
 ///
 template <uint_t Nd, uint_t Nic, uint_t Nhl>  //
-struct square_structured_indices : dimensional<Nd> {
-  using dimensional<Nd>::dimension;
-  using dimensional<Nd>::dimensions;
+struct square_structured_indices : geometry::dimensional<Nd> {
+  using geometry::dimensional<Nd>::dimension;
+  using geometry::dimensional<Nd>::dimensions;
 
   /// Coordinates e.g. {i, j, k}
   using coordinates_t       = std::array<suint_t, Nd>;
@@ -409,20 +409,20 @@ struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
   }
 
   /// Center coordinates of cell at index \p i
-  constexpr point_t center(index_t i) const noexcept {
+  constexpr point_t centroid(index_t i) const noexcept {
     auto xc = x_first_cell_;
     for (auto&& d : dimensions()) { xc(d) += i.x[d] * cell_length(); }
     return xc;
   }
 
   /// Center coordinates of cell at index \p i
-  constexpr point_t center(uint_t idx) const noexcept {
-    return center(indices::from(idx));
+  constexpr point_t centroid(uint_t idx) const noexcept {
+    return centroid(indices::from(idx));
   }
 
   /// Geometry of cell at index \p i
   constexpr square_t geometry(index_t i) const noexcept {
-    return {center(std::move(i)), cell_length()};
+    return {centroid(std::move(i)), cell_length()};
   }
 
   /// Geometry of cell at index \p idx
