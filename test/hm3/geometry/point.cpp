@@ -5,10 +5,15 @@
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
+using namespace geometry;
 
 static_assert(Dimensional<point<1>>{}, "");
 static_assert(Dimensional<point<2>>{}, "");
 static_assert(Dimensional<point<3>>{}, "");
+
+static_assert(NDimensional<point<1>, 1>{}, "");
+static_assert(NDimensional<point<2>, 2>{}, "");
+static_assert(NDimensional<point<3>, 3>{}, "");
 
 int main() {
   using namespace geometry;
@@ -26,7 +31,7 @@ int main() {
   {  // check values:
     constexpr auto p1 = point<1>{0.};
     constexpr auto p3 = point<3>{0., 1., 2.};
-    const auto p4     = point<3>::constant(1.);
+    const point<3> p4 = point<3>::constant(1.);
 
     CHECK(p1(0) == 0.);
     CHECK(p3(0) == 0.);
@@ -41,7 +46,7 @@ int main() {
     constexpr auto p1a = point<1>{0.};
     constexpr auto p1b = point<1>{1.};
     constexpr auto p1c = point<1>{2.};
-    const auto p1d     = point<1>::constant(1.);
+    const point<1> p1d = point<1>::constant(1.);
 
     CHECK(length(p1a) == 0.);
     CHECK(length(p1b) == 1.);
@@ -78,9 +83,9 @@ int main() {
     constexpr auto p2 = point<2>{0., 1.};
     constexpr auto p3 = point<3>{0., 1., 2.};
 
-    CHECK(dimension(p1) == 1);
-    CHECK(dimension(p2) == 2);
-    CHECK(dimension(p3) == 3);
+    CHECK(dimension(p1) == 1_u);
+    CHECK(dimension(p2) == 2_u);
+    CHECK(dimension(p3) == 3_u);
 
     static_assert(dimension(p1) == 1, "");
     static_assert(dimension(p2) == 2, "");

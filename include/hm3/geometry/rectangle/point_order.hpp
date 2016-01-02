@@ -3,9 +3,9 @@
 ///
 /// Checks order of points in rectangles (not necesarily square)
 #include <hm3/types.hpp>
+#include <hm3/utility/fatal_error.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
-#include <hm3/utility/fatal_error.hpp>
 
 namespace hm3 {
 namespace geometry {

@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Polygon ostream operator
-#include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/polygon/polygon.hpp>
 
 namespace hm3 {
 namespace geometry {

@@ -5,22 +5,19 @@
 namespace hm3 {
 namespace geometry {
 
-template <uint_t Nd> struct line {
+template <uint_t Nd> struct line : dimensional<Nd> {
   point<Nd> x_0, x_1;
   /// Line that goes through the 2 points \p b and \p e
   static line<Nd> through(point<Nd> b, point<Nd> e) noexcept {
-    return line<Nd>{b, e};
+    line<Nd> tmp;
+    tmp.x_0 = b;
+    tmp.x_1 = e;
+    return tmp;
   }
   auto operator()() const noexcept {
     return Eigen::ParametrizedLine<num_t, Nd>::Through(x_0(), x_1());
   }
 };
-
-/// Line dimension
-template <uint_t Nd>
-constexpr std::integral_constant<uint_t, Nd> dimension(line<Nd> const&) {
-  return std::integral_constant<uint_t, Nd>{};
-}
 
 /// Line length
 template <uint_t Nd> constexpr num_t length(line<Nd> const& l) {

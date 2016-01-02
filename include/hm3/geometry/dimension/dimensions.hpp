@@ -15,7 +15,7 @@ namespace dimensions_detail {
 template <typename T, CONCEPT_REQUIRES_(
                        std::is_convertible<ranges::uncvref_t<T>, uint_t>{})>
 constexpr auto dimensions(T&& t) {
-  return view::iota(0_u, std::forward<T>(t));
+  return view::iota(0_u, static_cast<uint_t>(std::forward<T>(t)));
 }
 
 template <typename T, CONCEPT_REQUIRES_(

@@ -6,36 +6,36 @@
 int main() {
   {
     int c = 0;
-    for (auto&& d : hm3::dimensions(with_member_dimension{})) {
+    RANGES_FOR (auto&& d, hm3::dimensions(with_member_dimension{})) {
       c++;
-      CHECK(d < 2);
+      CHECK(d < (uint)2);
     }
     CHECK(c == 2);
   }
 
   {
     int c = 0;
-    for (auto&& d : hm3::dimensions(with_member_dimension2{})) {
+    RANGES_FOR (auto&& d, hm3::dimensions(with_member_dimension2{})) {
       c++;
-      CHECK(d < 2);
+      CHECK(d < (uint)2);
     }
     CHECK(c == 2);
   }
 
   {
     int c = 0;
-    for (auto&& d : hm3::dimensions(other::with_nonmember_dimension{})) {
+    RANGES_FOR (auto&& d, hm3::dimensions(other::with_nonmember_dimension{})) {
       c++;
-      CHECK(d < 3);
+      CHECK(d < (uint)3);
     }
     CHECK(c == 3);
   }
 
   {
     int c = 0;
-    for (auto&& d : hm3::dimensions(other::with_nonmember_dimension2{})) {
+    RANGES_FOR (auto&& d, hm3::dimensions(other::with_nonmember_dimension2{})) {
       c++;
-      CHECK(d < 3);
+      CHECK(d < (uint)3);
     }
     CHECK(c == 3);
   }

@@ -6,7 +6,6 @@
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/polygon/concept.hpp>
 #include <hm3/geometry/rectangle/bounds.hpp>
-#include <hm3/geometry/vector.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/fatal_error.hpp>

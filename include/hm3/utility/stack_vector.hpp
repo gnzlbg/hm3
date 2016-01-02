@@ -128,7 +128,7 @@ struct vector
   constexpr size_type max_size() const noexcept { return capacity(); }
 
   /// Maximum number of elements that can be allocated in the vector
-  constexpr size_type capacity() const noexcept { return Capacity; }
+  static constexpr size_type capacity() noexcept { return Capacity; }
 
   /// Begin iterator
   constexpr iterator begin() noexcept { return data(); }

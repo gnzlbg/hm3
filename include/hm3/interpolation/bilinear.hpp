@@ -1,7 +1,8 @@
 // #pragma once
 // /// \file
 // ///
-// /// Bi-linear interpolation in n spatial dimensions (n > 1): 4 points required
+// /// Bi-linear interpolation in n spatial dimensions (n > 1): 4 points
+// required
 // #include <hm3/interpolation/linear.hpp>
 
 // namespace hm3 {

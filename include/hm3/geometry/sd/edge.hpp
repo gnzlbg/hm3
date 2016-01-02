@@ -4,7 +4,6 @@
 /// Implicit signed-distance functions for edges
 #include <hm3/geometry/dimension/dimensional.hpp>
 #include <hm3/geometry/point.hpp>
-#include <hm3/geometry/vector.hpp>
 
 namespace hm3 {
 namespace geometry {

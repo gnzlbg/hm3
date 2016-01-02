@@ -3,7 +3,6 @@
 #include <hm3/geometry/rectangle.hpp>
 #include <hm3/geometry/sd/edge.hpp>
 #include <hm3/geometry/square.hpp>
-#include <hm3/geometry/vector.hpp>
 
 #include <hm3/utility/test.hpp>
 
@@ -20,8 +19,6 @@ template <uint_t MaxNp> using poly2d = geometry::polygon<2, MaxNp>;
 
 using edge2d = geometry::sd::fixed_edge<2>;
 
-auto p = geometry::concepts::signed_distance().requires_(
- edge2d{}, std::integral_constant<uint_t, 2>{});
 static_assert(geometry::SignedDistance<edge2d, 2>{}, "");
 
 template <typename Shape, typename SDF, typename RShape>
@@ -47,9 +44,20 @@ int main() {
 
     poly2d<5> inside  = {p2d{.5, 0.}, p2d{1., 0.}, p2d{1., 1.}, p2d{.5, 1.}};
     poly2d<5> outside = {p2d{0., 0.}, p2d{.5, 0.}, p2d{.5, 1.}, p2d{.0, 1.}};
-    poly2d<5> surface = {p2d{.5, 0.}, p2d{.5, .1}};
+    poly2d<5> surface = {p2d{.5, 0.}, p2d{.5, 1.}};
     test_intersect(s, sdf, inside, outside, surface);
   }
+
+  {
+    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto sdf = make_edge(0.5, 1.0, 0.0);
+
+    poly2d<5> inside  = {p2d{.5, 0.}, p2d{1., 0.}, p2d{1., 1.}, p2d{.5, 1.}};
+    poly2d<5> outside = {p2d{0., 0.}, p2d{.5, 0.}, p2d{.5, 1.}, p2d{.0, 1.}};
+    poly2d<5> surface = {p2d{.5, 0.}, p2d{.5, 1.}};
+    test_intersect(s, sdf, inside, outside, surface);
+  }
+
 #ifdef FIXED
   {  // intersect tests
     square<2> s0(point<2>::constant(0.5), 1.0);

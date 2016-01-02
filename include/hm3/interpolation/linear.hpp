@@ -41,16 +41,15 @@ T interpolate(num_t d, line<Nd> l, T const& v0, T const& v1) {
 template <uint_t Nd, typename T>
 num_t distance_to_value(T v, point<Nd> const& x0, point<Nd> const& x1,
                         T const& v0, T const& v1) {
-  HM3_ASSERT(v1 - v0 > 0., "");
+  HM3_ASSERT(v1 - v0 > 0. or v1 - v0 < 0., "");
   return (x1() - x0()).norm() * (v - v0) / (v1 - v0);  // TODO: use .array()
 }
 
 template <uint_t Nd, typename T>
-num_t point_with_value(T v, point<Nd> const& x0, point<Nd> const& x1,
-                       T const& v0, T const& v1) {
-  return x0()
-         + direction(line<Nd>::through(x0, x1))
-            * distance_to_value(v, x0, x1, v0, v1);
+point<Nd> point_with_value(T v, point<Nd> const& x0, point<Nd> const& x1,
+                           T const& v0, T const& v1) {
+  auto dir = direction(line<Nd>::through(x0, x1));
+  return point<Nd>{x0() + dir() * distance_to_value(v, x0, x1, v0, v1)};
 }
 
 template <typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>

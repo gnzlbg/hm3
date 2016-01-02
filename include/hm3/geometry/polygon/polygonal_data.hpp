@@ -35,7 +35,8 @@
 
 // /// Corner positions
 // template <uint_t Nd, uint_t MaxNp, typename PointData>
-// auto corner_positions(polygonal_data<Nd, MaxNp, PointData> const& p) noexcept {
+// auto corner_positions(polygonal_data<Nd, MaxNp, PointData> const& p) noexcept
+// {
 //   return view::iota(std::size_t{0}, p.size());
 // }
 

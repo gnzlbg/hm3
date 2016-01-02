@@ -40,8 +40,7 @@ struct intersection {
 
 template <typename Shape, typename SDFunction, uint_t Nd = Shape::dimension(),
           CONCEPT_REQUIRES_(Polygon<Shape>{}  // and ResizablePolygon<Shape>
-                            and SignedDistance<SDFunction, Nd>{}
-                            ),
+                            and SignedDistance<SDFunction, Nd>{}),
           uint_t MaxNp = Shape::max_points()>
 intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   intersection<Shape> cut;
@@ -56,7 +55,7 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
 
   // Index of the next corner, wraps around for the last corner:
   auto next_corner
-   = [](auto&& cidx) { return (cidx != no_corners - 1) ? cidx + 1 : 0; };
+   = [&](auto&& cidx) { return (cidx != no_corners - 1) ? cidx + 1 : 0; };
 
   suint_t no_cutpoints_found = 0;
   /// Adds corners and cut points to each polygon

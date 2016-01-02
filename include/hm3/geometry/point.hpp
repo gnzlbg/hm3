@@ -53,7 +53,7 @@ OStream& operator<<(OStream& o, point<Nd> const& p) {
 template <uint_t Nd> using vector = point<Nd>;
 
 /// Vector length
-template <int_t Nd> constexpr num_t length(vector<Nd> const& p) {
+template <uint_t Nd> constexpr num_t length(vector<Nd> const& p) {
   return p().norm();
 }
 
