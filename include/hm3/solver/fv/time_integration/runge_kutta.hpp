@@ -4,6 +4,7 @@
 /// Runge Kutta SSP (Strong Stability Preserving) time integration
 ///
 /// It requires an extra copy of the variables per cell.
+#include <array>
 #include <hm3/types.hpp>
 #include <hm3/utility/static_const.hpp>
 

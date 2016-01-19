@@ -74,6 +74,7 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
       cut.outside.push_back(shape_corners[cidx]);
       cut.signum_inside.push_back(corner_sd_sign);
       cut.signum_outside.push_back(corner_sd_sign);
+      cut.surface.push_back(shape_corners[cidx]);
       ++no_cutpoints_found;
       continue;  // we are then done since we found the cut points
     } else if (corner_sd_sign == 1) {
@@ -129,6 +130,10 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
              cut.inside.size());
   HM3_ASSERT(cut.outside.size() > 2 || cut.outside.size() == 0,
              "shape1 size: {}", cut.outside.size());
+
+  HM3_ASSERT(size(cut.surface) == no_cutpoints_found,
+             "{} cut points found but the cut.surface has {} points",
+             no_cutpoints_found, size(cut.surface));
 
   return cut;
 }

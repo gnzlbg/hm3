@@ -5,7 +5,7 @@
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
-#include <hm3/geometry/intersect.hpp>
+#include <hm3/geometry/polygon/intersection.hpp>
 #include <hm3/geometry/polygon.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/utility/variant.hpp>
