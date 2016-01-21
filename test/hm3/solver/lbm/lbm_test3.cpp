@@ -352,7 +352,7 @@ void slip0(State&& s, Obstacle&& obstacle) {
         auto dists = &b.nodes0(cidx, 0);
         num_t rho  = s.physics.rho(dists);
         num_t v    = 0.0;  // s.physics.v(dists);
-        auto f_eq = s.physics.equilibrium_distribution(rho, {{u, v}});
+        auto f_eq  = s.physics.equilibrium_distribution(rho, {{u, v}});
         RANGES_FOR (auto&& d, s.physics.all()) { b.nodes0(cidx, d) = f_eq[d]; }
       }
     });
@@ -370,7 +370,7 @@ void slip1(State&& s, Obstacle&& obstacle) {
         auto dists = &b.nodes1(cidx, 0);
         num_t rho  = s.physics.rho(dists);
         num_t v    = 0.0;  // s.physics.v(dists);
-        auto f_eq = s.physics.equilibrium_distribution(rho, {{u, v}});
+        auto f_eq  = s.physics.equilibrium_distribution(rho, {{u, v}});
         RANGES_FOR (auto&& d, s.physics.all()) { b.nodes1(cidx, d) = f_eq[d]; }
       }
     });

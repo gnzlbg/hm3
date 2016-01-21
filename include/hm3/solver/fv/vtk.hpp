@@ -1,14 +1,13 @@
 #pragma once
 /// \file
 ///
+#include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/polygon/intersection.hpp>
+#include <hm3/geometry/square.hpp>
 #include <hm3/solver/fv/state.hpp>
+#include <hm3/utility/variant.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
-
-#include <hm3/geometry/polygon/intersection.hpp>
-#include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/square.hpp>
-#include <hm3/utility/variant.hpp>
 
 namespace hm3 {
 namespace solver {

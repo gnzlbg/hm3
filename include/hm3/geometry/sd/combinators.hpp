@@ -12,52 +12,38 @@ namespace sd {
 
 /// Inverse of a signed distance field
 template <typename Point, typename SDFunction>
-auto inverse(Point&& x, SDFunction&& f) {
+auto op_inverse(Point&& x, SDFunction&& f) {
   return -f(x);
 }
 
-/// Union of a signed distance field
+/// Union of a signed distance field: OR(f1, f2)
 template <typename Point, typename SDFunction1, typename SDFunction2>
-auto union_(Point&& x, SDFunction1&& f1, SDFunction2&& f2) {
+auto op_union(Point&& x, SDFunction1&& f1, SDFunction2&& f2) {
   return std::min(f1(x), f2(x));
 }
 
-/// Union of a signed distance field
+/// Union of a signed distance field: OR(f1, f2)
 template <typename Point, typename SDFunction1, typename... SDFunctions>
-auto union_(Point&& x, SDFunction1&& f1, SDFunctions&&... fs) {
-  return union_(f1, union_(x, fs...));
+auto op_union(Point&& x, SDFunction1&& f1, SDFunctions&&... fs) {
+  return op_union(f1, op_union(x, fs...));
 }
 
-/// Intersection of a signed distance field
+/// Intersection of a signed distance field: AND(f1, f2)
 template <typename Point, typename SDFunction1, typename SDFunction2>
-auto intersection(Point&& x, SDFunction1& f1, SDFunction2& f2) {
+auto op_intersection(Point&& x, SDFunction1& f1, SDFunction2& f2) {
   return std::max(f1(x), f2(x));
 }
 
-/// Intersection of a signed distance field
+/// Intersection of a signed distance field: AND(f1, f2)
 template <typename Point, typename SDFunction1, typename... SDFunctions>
-auto intersection(Point&& x, SDFunction1&& f1, SDFunctions&&... fs) {
-  return intersection(x, f1, intersection(x, fs...));
+auto op_intersection(Point&& x, SDFunction1&& f1, SDFunctions&&... fs) {
+  return op_intersection(x, f1, op_intersection(x, fs...));
 }
 
-/// Difference of a signed distance field
+/// Difference of a signed distance field: AND(f1, -f2)
 template <typename Point, typename SDFunction1, typename SDFunction2>
-auto difference(Point&& x, SDFunction1& f1, SDFunction2& f2) {
+auto op_difference(Point&& x, SDFunction1& f1, SDFunction2& f2) {
   return std::max(f1(x), -f2(x));
-}
-
-// TODO: how to move a parameter pack into a lambda?
-// TODO: constrain for rvalues only
-// template <typename SDAdaptor, typename... SDFunctions>
-// auto move_adapt(SDAdaptor a, SDFunctions&&... sdfs) {
-//   return [ ma = std::move(a), (msdfs = std::move(sdfs))... ](auto&& x) {
-//     return ma(x, msdfs...);
-//   };
-// }
-
-/// Inverts a signed distance field
-template <typename SDFunction> auto invert(SDFunction&& f) {
-  return [&](auto&& x) { return inverse(x, std::forward<SDFunction>(f)); };
 }
 
 }  // namespace sd

@@ -3,7 +3,6 @@
 ///
 /// Signed-distance function for a rectangle
 #include <hm3/geometry/point.hpp>
-#include <hm3/geometry/vector.hpp>
 #include <hm3/utility/matrix.hpp>
 
 namespace hm3 {

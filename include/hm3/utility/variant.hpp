@@ -6,15 +6,16 @@
 #include <utility>
 
 // workaround missing "is_trivially_copyable" in libstdc++ < 5.0
-#if defined(__GLIBCPP__) &&__GLIBCPP__ < 20150801  // TODO: find version of libstdc++ < 5.0
+// TODO: wrong the version of libstdc++ is probably too high
+#if defined(__GLIBCXX__) && __GLIBCXX__ < 20150801
 namespace std {
 template <typename T>
 struct is_trivially_copyable : integral_constant<bool, __has_trivial_copy(T)> {
 };
 }  // namespace std
-#endif
+#endif  // GLIBCXX macro
 
-#include <variant.hpp>
+#include <experimental/variant.hpp>
 
 namespace hm3 {
 
