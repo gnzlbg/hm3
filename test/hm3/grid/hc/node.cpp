@@ -13,7 +13,7 @@ template struct grid::hc::node<1_u>;
 template struct grid::hc::node<2_u>;
 template struct grid::hc::node<3_u>;
 
-template <int_t Nd>  //
+template <uint_t Nd>  //
 void test_node() {
   using namespace grid;
   using namespace geometry;

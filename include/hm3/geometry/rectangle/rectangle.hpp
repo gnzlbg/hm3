@@ -52,6 +52,10 @@ struct rectangle : dimensional<Nd> {
   }
 };
 
+template <uint_t Nd> constexpr bool empty(rectangle<Nd> const&) {
+  return false;
+}
+
 /// Bounds (min, max)
 template <uint_t Nd>
 constexpr rectangle_bounds<Nd> bounds(rectangle<Nd> const& s) noexcept {

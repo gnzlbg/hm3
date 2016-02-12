@@ -37,7 +37,7 @@ void test_intersect(Shape&& s, SDF&& sdf, RShape&& inside, RShape&& outside,
   // check consistency of the cut of the inverse signed distance function:
   // inside of the inverse equals outside, and vice-verse, while surface remains
   // the same
-  auto&& isdf = geometry::sd::invert(sdf);
+  auto&& isdf = geometry::sd::adapt(geometry::sd::op_inverse, sdf);
   auto ir     = geometry::intersect(s, isdf);
   CHECK(ir.inside == outside);
   CHECK(ir.outside == inside);

@@ -119,6 +119,8 @@ bool operator!=(square<Nd> const& l, square<Nd> const& r) noexcept {
   return !(l == r);
 }
 
+template <uint_t Nd> constexpr bool empty(square<Nd> const&) { return false; }
+
 /// Square centroid coordinates
 template <uint_t Nd> constexpr auto centroid(square<Nd> const& s) noexcept {
   return s.x_centroid_;
@@ -129,7 +131,7 @@ template <uint_t Nd>
 constexpr rectangle_bounds<Nd> bounds(square<Nd> const& s) noexcept {
   rectangle_bounds<Nd> b;
   const num_t length_2 = length(s) / 2.;
-  const auto xc        = centroid(s);
+  const auto xc        = centroid<Nd>(s);
   b.min()              = xc() - point<Nd>::c(length_2);
   b.max()              = xc() + point<Nd>::c(length_2);
   return b;

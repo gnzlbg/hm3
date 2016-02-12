@@ -11,7 +11,7 @@ namespace geometry {
 
 template <typename P, CONCEPT_REQUIRES_(PolygonD<P, 2>{})>
 constexpr bool counter_clock_wise(P&& polygon) {
-  HM3_ASSERT(!polygon.empty(), "polygon is empty");
+  HM3_ASSERT(!empty(polygon), "polygon is empty");
   const auto&& ps = corners(polygon);
   const auto e    = size(ps) - 1;
   num_t tmp       = 0.;

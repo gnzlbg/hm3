@@ -6,15 +6,16 @@
 #include <hm3/geometry/dimension/dimension.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/rectangle/concept.hpp>
+#include <hm3/geometry/rectangle/square.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/fatal_error.hpp>
 
 namespace hm3 {
 namespace geometry {
 
-namespace square_detail {
+namespace rectangle_detail {
 
-/// Square corners relative position (+-1)
+/// Rectangle corners relative position (+-1)
 ///
 /// Order: Counter Clow Wise (CCW):
 ///
@@ -58,7 +59,7 @@ constexpr point<Nd> relative_corner_position(suint_t corner_pos) noexcept {
                                       std::make_integer_sequence<uint_t, Nd>{});
 }
 
-}  // namespace square_detail
+}  // namespace rectangle_detail
 
 /// Rectangle corner positions
 template <typename Shape, CONCEPT_REQUIRES_(Rectangle<Shape>{})>
@@ -75,8 +76,21 @@ constexpr auto corners(Shape const& s) noexcept {
   const auto x_c          = centroid(s);
   RANGES_FOR (auto&& c, corner_positions(s)) {
     const auto x_p
-     = square_detail::relative_corner_position<dimension(Shape())>(c);
+     = rectangle_detail::relative_corner_position<dimension(Shape())>(c);
     corners[c] = x_c().array() + half_lengths.array() * x_p().array();
+  }
+  return corners;
+}
+
+template <uint_t Nd>  // optimization for squares
+constexpr auto corners(square<Nd> const& s) noexcept {
+  std::array<point<Nd>, square<Nd>::no_corners()> corners;
+  const auto l           = length(s);
+  const auto half_length = 0.5 * l;
+  const auto x_c         = centroid(s);
+  RANGES_FOR (auto&& c, corner_positions(s)) {
+    const auto x_p = rectangle_detail::relative_corner_position<Nd>(c);
+    corners[c]     = x_c().array() + half_length * x_p().array();
   }
   return corners;
 }

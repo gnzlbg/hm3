@@ -25,6 +25,11 @@ struct polygon : dimensional<Nd>, stack::vector<point<Nd>, MaxNp> {
   static constexpr sint_t max_points() noexcept { return MaxNp; }
 };
 
+template <uint_t Nd, uint_t MaxNp>  //
+bool empty(polygon<Nd, MaxNp> const& p) {
+  return p.empty();
+}
+
 template <uint_t Nd, uint_t MaxNp>
 bool operator==(polygon<Nd, MaxNp> const& a,
                 polygon<Nd, MaxNp> const& b) noexcept {

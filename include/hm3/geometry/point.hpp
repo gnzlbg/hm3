@@ -20,6 +20,9 @@ struct point : point_base_t<Nd>, dimensional<Nd> {
   using self::operator=;
   point()             = default;
   point(self const& s) : self(s) {}
+  static point constant(num_t v) noexcept {
+    return point{point_base_t<Nd>::constant(v)};
+  }
 };
 
 template <uint_t Nd> bool operator==(point<Nd> const& l, point<Nd> const& r) {

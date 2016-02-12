@@ -3,8 +3,9 @@
 #include "dimension.hpp"
 
 int main() {
-  static_assert(hm3::dimension(with_member_dimension{}) == 2, "");
-  static_assert(hm3::dimension(other::with_nonmember_dimension{}) == 3, "");
+  using hm3::geometry::dimension;
+  static_assert(dimension(with_member_dimension{}) == 2, "");
+  static_assert(dimension(other::with_nonmember_dimension{}) == 3, "");
 
   return hm3::test::result();
 }

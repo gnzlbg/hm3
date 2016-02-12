@@ -2,7 +2,6 @@
 #include <hm3/geometry/polygon.hpp>
 #include <hm3/geometry/rectangle.hpp>
 #include <hm3/geometry/square.hpp>
-#include <hm3/geometry/vector.hpp>
 
 #include <hm3/utility/test.hpp>
 

@@ -23,15 +23,14 @@ using geometry::line;
 ///
 /// Note: x and y can be multi-dimensional
 template <uint_t Nd, typename T>
-T interpolate(point<Nd> const& x, point<Nd> const& x0, point<Nd> const& x1,
-              T const& v0, T const& v1) noexcept {
+T interpolate(point<Nd> x, point<Nd> x0, point<Nd> x1, T v0, T v1) noexcept {
   HM3_ASSERT((x1() - x0()).norm() > 0.,
              "points x0 and x1 must be different! x0: {}, x1: {}", x0, x1);
   return v0 + (v1 - v0) * (x() - x0()).norm() / (x1() - x0()).norm();
 }
 
 template <uint_t Nd, typename T>
-T interpolate(num_t d, line<Nd> l, T const& v0, T const& v1) {
+T interpolate(num_t d, line<Nd> l, T v0, T v1) {
   HM3_ASSERT((l.x_1() - l.x_0()).norm() > 0.,
              "points x0 and x1 must be different! x0: {}, x1: {}", l.x_0,
              l.x_1);
@@ -39,17 +38,30 @@ T interpolate(num_t d, line<Nd> l, T const& v0, T const& v1) {
 }
 
 template <uint_t Nd, typename T>
-num_t distance_to_value(T v, point<Nd> const& x0, point<Nd> const& x1,
-                        T const& v0, T const& v1) {
+T interpolate(num_t d, line<Nd> l, std::array<T, 2> vs) {
+  return interpolate(d, l, vs[0], vs[1]);
+}
+
+template <uint_t Nd, typename T>
+num_t distance_to_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
   HM3_ASSERT(v1 - v0 > 0. or v1 - v0 < 0., "");
   return (x1() - x0()).norm() * (v - v0) / (v1 - v0);  // TODO: use .array()
 }
 
 template <uint_t Nd, typename T>
-point<Nd> point_with_value(T v, point<Nd> const& x0, point<Nd> const& x1,
-                           T const& v0, T const& v1) {
+num_t distance_to_value(T v, line<Nd> l, std::array<T, 2> vs) {
+  return distance_to_value(v, l.x_0, l.x_1, vs[0], vs[1]);
+}
+
+template <uint_t Nd, typename T>
+point<Nd> point_with_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
   auto dir = direction(line<Nd>::through(x0, x1));
   return point<Nd>{x0() + dir() * distance_to_value(v, x0, x1, v0, v1)};
+}
+
+template <uint_t Nd, typename T>
+point<Nd> point_with_value(T v, line<Nd> l, std::array<T, 2> vs) {
+  return point_with_value(v, l.x_0, l.x_1, vs[0], vs[1]);
 }
 
 template <typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
