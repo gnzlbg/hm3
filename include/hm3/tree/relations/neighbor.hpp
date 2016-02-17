@@ -237,7 +237,7 @@ constexpr auto neighbor_lookup_table = neighbor_lookup_table_<Nd, M>::stencil;
 template <int Nd, int M> struct manifold_neighbors;
 
 /// Neighbor of an Nd-dimensional node across a (Nd - M)-dimensional face
-// ///
+///
 /// TODO: simplify this and provide a way of constructing custom neighbor search
 /// tables
 template <int Nd, int M> struct manifold_neighbors : geometry::dimensional<Nd> {

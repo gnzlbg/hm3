@@ -5,11 +5,11 @@
 #include <hm3/geometry/sd.hpp>
 #include <hm3/grid/generation/uniform.hpp>
 #include <hm3/grid/hc/amr/multi.hpp>
-#include <hm3/solver/fv/euler.hpp>
-#include <hm3/solver/fv/fv.hpp>
-#include <hm3/solver/fv/models/euler/initial_condition/shock_tube.hpp>
-#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
-#include <hm3/solver/fv/time_integration.hpp>
+#include <hm3/solver/fv2/euler.hpp>
+#include <hm3/solver/fv2/fv.hpp>
+#include <hm3/solver/fv2/models/euler/initial_condition/shock_tube.hpp>
+#include <hm3/solver/fv2/numerical_flux/rusanov.hpp>
+#include <hm3/solver/fv2/time_integration.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 

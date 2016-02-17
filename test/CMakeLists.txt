@@ -7,9 +7,12 @@
 add_custom_target(test.headers
   COMMENT "Build all the header-inclusion unit tests.")
 
-add_custom_target(tests
-  DEPENDS test.headers
+add_custom_target(test.unit
   COMMENT "Build all the unit tests.")
+
+add_custom_target(tests
+  DEPENDS test.headers test.unit
+  COMMENT "Build all the tests.")
 
 add_custom_target(tests.mpi
   DEPENDS test.headers
@@ -22,7 +25,7 @@ add_custom_target(tests.mpi
 function(hm3_add_unit_test name)
   add_test(${name} ${ARGN})
   hm3_add_packages_to_target(${name})
-  add_dependencies(tests ${name})
+  add_dependencies(test.unit ${name})
   target_link_libraries(${name} ${HM3_LIBS})
 endfunction()
 
