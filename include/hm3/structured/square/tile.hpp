@@ -1,22 +1,20 @@
 #pragma once
 /// \file
 ///
-/// Square structured grid tile
-#include <hm3/structured/square/coordinate.hpp>
+/// Square structured tile
+#include <hm3/structured/square/tile/bounds.hpp>
+#include <hm3/structured/square/tile/coordinate.hpp>
+#include <hm3/structured/square/tile/index.hpp>
+#include <hm3/structured/square/tile/index_type.hpp>
+#include <hm3/structured/square/tile/indexed_coordinate.hpp>
+#include <hm3/structured/square/tile/indices.hpp>
 
 namespace hm3 {
 namespace structured {
 namespace square {
 
-template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
-struct tile {
-  using coordinate_t = coordinate<Nd, Nic, Nhl>;
-  coordinate_t min, max;
-
-  tile(coordinate_t min_, coordinate_t max_) : min(min_), max(max_) {
-    // TODO: validation e.g. is tile within grid
-  }
-};
+/// Square structured tile
+namespace tile {}  // namespace tile
 
 }  // namespace square
 }  // namespace structured
