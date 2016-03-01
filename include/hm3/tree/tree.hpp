@@ -6,8 +6,8 @@
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bounded.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/fmt.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>

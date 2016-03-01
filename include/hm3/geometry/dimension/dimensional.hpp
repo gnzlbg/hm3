@@ -5,8 +5,8 @@
 #include <hm3/geometry/dimension/dimension.hpp>
 #include <hm3/geometry/dimension/dimensions.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {

@@ -2,8 +2,8 @@
 ///
 /// Fast location tests
 /// \todo Remove fast location
-#include "test.hpp"
 #include <hm3/tree/location/fast.hpp>
+#include "test.hpp"
 
 using namespace hm3;
 using namespace tree;

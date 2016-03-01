@@ -8,7 +8,6 @@
 #include <hm3/tree/location/default.hpp>
 #include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace tree {
@@ -23,7 +22,7 @@ struct node_neighbor_fn {
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto location(Loc l, NeighborIdx p) const noexcept {
     static_assert(Loc::dimension() == Manifold::dimension(), "");
-    return shift_location(l, Manifold {}[p]);
+    return shift_location(l, Manifold{}[p]);
   }
 
   template <typename Tree, typename NeighborIdx,

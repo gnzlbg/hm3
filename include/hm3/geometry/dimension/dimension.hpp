@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Dimension of an object
-#include <hm3/utility/static_const.hpp>
+#include <hm3/utility/range.hpp>
 
 namespace hm3 {
 namespace geometry {

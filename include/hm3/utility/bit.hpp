@@ -3,7 +3,7 @@
 ///
 /// Bit manipulation utilities
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 #if defined(HM3_USE_BMI2) || defined(__BMI2__)
@@ -206,7 +206,8 @@ constexpr uint64_t pext(uint64_t source, uint64_t mask) noexcept {
 
 /// Parallel Bits Deposit
 template <typename Integral>
-__attribute__((no_sanitize("integer"))) constexpr Integral deposit_bits(
+
+[[clang::no_sanitize("integer")]] constexpr Integral deposit_bits(
  Integral x, Integral mask) {
 #ifndef HM3_USE_BMI2
   Integral res = 0;
@@ -222,7 +223,7 @@ __attribute__((no_sanitize("integer"))) constexpr Integral deposit_bits(
 
 /// Parallel Bits Extract
 template <typename Integral>
-__attribute__((no_sanitize("integer"))) constexpr Integral extract_bits(
+[[clang::no_sanitize("integer")]] constexpr Integral extract_bits(
  Integral x, Integral mask) {
 #ifndef HM3_USE_BMI2
   Integral res = 0;

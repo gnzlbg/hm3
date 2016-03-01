@@ -5,9 +5,9 @@
 #include <array>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/math.hpp>
 /// Use look-up table for the relative children position instead of arithmetic
 /// operations

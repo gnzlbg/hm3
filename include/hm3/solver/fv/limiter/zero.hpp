@@ -3,7 +3,6 @@
 ///
 /// Zero the slopes (disables the limiter)
 #include <hm3/solver/fv/state.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace solver {

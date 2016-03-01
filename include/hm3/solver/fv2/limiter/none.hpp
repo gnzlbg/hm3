@@ -3,7 +3,6 @@
 ///
 /// No slope limiter (slopes are always multiplied by "ones")
 #include <hm3/solver/fv/state.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace solver {

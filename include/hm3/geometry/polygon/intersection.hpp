@@ -6,7 +6,7 @@
 #include <hm3/geometry/polygon/concept.hpp>
 #include <hm3/geometry/sd/concept.hpp>
 #include <hm3/interpolation/linear.hpp>
-#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/inline_vector.hpp>
 
 namespace hm3 {
 namespace geometry {
@@ -35,7 +35,7 @@ template <typename Shape>  //
 struct intersection {
   Shape inside, outside, surface;
 
-  stack::vector<sint_t, Shape::capacity()> signum_inside, signum_outside;
+  inline_vector<sint_t, Shape::capacity()> signum_inside, signum_outside;
 };
 
 template <typename Shape, typename SDFunction, uint_t Nd = Shape::dimension(),
@@ -50,7 +50,7 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   auto corner_ids          = view::iota(suint_t{0}, no_corners);
 
   // Compute signed distance values at the corners once:
-  stack::vector<num_t, MaxNp> sd_at_corners;
+  inline_vector<num_t, MaxNp> sd_at_corners;
   for (auto c : shape_corners) { sd_at_corners.push_back(sd(c)); }
 
   // Index of the next corner, wraps around for the last corner:

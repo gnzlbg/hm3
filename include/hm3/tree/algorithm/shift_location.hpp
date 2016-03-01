@@ -8,7 +8,6 @@
 #include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/types.hpp>
 #include <hm3/utility/math.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace tree {

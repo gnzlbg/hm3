@@ -9,8 +9,7 @@
 #include <hm3/tree/location/default.hpp>
 #include <hm3/tree/relations/neighbor.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/stack_vector.hpp>
-#include <hm3/utility/static_const.hpp>
+#include <hm3/utility/inline_vector.hpp>
 
 namespace hm3 {
 namespace tree {
@@ -82,9 +81,9 @@ struct node_neighbors_fn {
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Manifold, Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
-   -> stack::vector<node_idx, MaxNoNeighbors> {
+   -> inline_vector<node_idx, MaxNoNeighbors> {
     static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
-    stack::vector<node_idx, MaxNoNeighbors> neighbors;
+    inline_vector<node_idx, MaxNoNeighbors> neighbors;
     (*this)(Manifold{}, t, loc, neighbors, std::forward<UnaryPredicate>(pred));
     return neighbors;
   }
@@ -97,7 +96,7 @@ struct node_neighbors_fn {
             uint_t MaxNoNeighbors = Manifold::no_child_level_neighbors(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Manifold, Tree const& t, node_idx n, Loc l = Loc{}) const
-   noexcept -> stack::vector<node_idx, MaxNoNeighbors> {
+   noexcept -> inline_vector<node_idx, MaxNoNeighbors> {
     static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
     return (*this)(Manifold{}, t, node_location(t, n, l));
   }
@@ -114,8 +113,8 @@ struct node_neighbors_fn {
             uint_t Nd = Tree::dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
-   -> stack::vector<node_idx, max_no_neighbors(Nd)> {
-    stack::vector<node_idx, max_no_neighbors(Nd)> neighbors;
+   -> inline_vector<node_idx, max_no_neighbors(Nd)> {
+    inline_vector<node_idx, max_no_neighbors(Nd)> neighbors;
 
     for_each_neighbor_manifold<Nd>([&](auto m) {
       (*this)(m, t, loc, neighbors, std::forward<UnaryPredicate>(pred));

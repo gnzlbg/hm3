@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/inline_vector.hpp>
 
 namespace hm3 {
 namespace solver {

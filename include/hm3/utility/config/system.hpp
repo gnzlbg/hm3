@@ -12,12 +12,15 @@ struct posix {};
 struct apple : posix {};
 struct linux : posix {};
 
-#ifdef __APPLE__
+#if defined(__APPLE__) && defined(__MACH__)
+#define HM3_SYS_APPLE
+#define HM3_SYS_POSIX
 using tag_t = apple;
-#elif __posix
+#elif defined(_POSIX_VERSION)
+#define HM3_SYS_POSIX
 using tag_t = posix;
 #else
-using tag_t = posix;
+#error Unknown operating system
 #endif
 
 static constexpr tag_t tag{};

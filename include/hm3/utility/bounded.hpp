@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Bounded integer type
-#include <hm3/utility/assert.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {
@@ -18,6 +18,12 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   constexpr bounded(T v = from) : value{v} {
     HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
                from, to);
+  }
+
+  static constexpr bounded invalid() noexcept {
+    bounded b;
+    b.value = std::numeric_limits<T>::max();
+    return b;
   }
 
   constexpr value_type operator*() const noexcept {
@@ -75,7 +81,7 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  self operator++(int) noexcept {
+  self operator++(int)noexcept {
     self tmp(*this);
     ++value;
     HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
@@ -108,7 +114,7 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   friend constexpr OStream& operator<<(OStream& os, self const& a) {
     os << *a;
     return os;
-  };
+  }
 };
 
 }  // namespace hm3

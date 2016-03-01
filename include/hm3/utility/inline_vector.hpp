@@ -1,18 +1,17 @@
 #pragma once
 /// \file
 ///
-/// Stack allocated vector
-#include <hm3/utility/assert.hpp>
+/// Vector whose elements are allocated within the vector object itself (inline)
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/range.hpp>
 #include <type_traits>
 
 namespace hm3 {
 
-namespace stack {
+namespace inline_vector_detail {
 
-namespace stack_detail {
-
-template <typename T, std::size_t Capacity, bool is_trivially_destructible>  //
+template <typename T, std::size_t Capacity,
+          bool is_trivially_destructible>  //
 struct storage {
   static_assert(Capacity != std::size_t{0}, "");
   std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value>
@@ -79,9 +78,9 @@ struct storage<T, 0, true> : empty_storage<T> {};
 template <typename T>  //
 struct storage<T, 0, false> : empty_storage<T> {};
 
-}  // namespace stack_detail
+}  // namespace inline_vector_detail
 
-/// Vector with stack storage
+/// Vector with inline storage
 ///
 /// TODO: this is far from good (but it works for me TM)
 /// - make it actually zero size for capacity == 0
@@ -91,11 +90,13 @@ struct storage<T, 0, false> : empty_storage<T> {};
 /// - make it as exception safe as possible
 /// - document undefined behavior
 template <typename T, std::size_t Capacity>  //
-struct vector
- : stack_detail::storage<T, Capacity, std::is_trivially_destructible<T>{}> {
+struct inline_vector
+ : inline_vector_detail::storage<T, Capacity,
+                                 std::is_trivially_destructible<T>{}> {
  private:
   using base_t
-   = stack_detail::storage<T, Capacity, std::is_trivially_destructible<T>{}>;
+   = inline_vector_detail::storage<T, Capacity,
+                                   std::is_trivially_destructible<T>{}>;
 
  public:
   using base_t::data;
@@ -106,7 +107,7 @@ struct vector
   using base_t::destroy_all;
 
   static_assert(std::is_nothrow_destructible<T>{},
-                "stack::vector requires T to be nothrow destructible");
+                "inline::vector requires T to be nothrow destructible");
 
  public:
   using value_type      = T;
@@ -183,36 +184,39 @@ struct vector
   /// Constructors/Assignment
   ///@{
 
-  constexpr vector() = default;
-  constexpr vector(vector const& other) noexcept(nothrow_copy_constructible{}) {
+  constexpr inline_vector() = default;
+  constexpr inline_vector(inline_vector const& other) noexcept(
+   nothrow_copy_constructible{}) {
     range_assign(other);
   };
-  constexpr vector(vector&& other) noexcept(nothrow_move_constructible{}) {
+  constexpr inline_vector(inline_vector&& other) noexcept(
+   nothrow_move_constructible{}) {
     range_assign(std::move(other));
   };
-  constexpr vector& operator=(vector const& other) noexcept(
+  constexpr inline_vector& operator=(inline_vector const& other) noexcept(
    nothrow_copy_assignable{}) {
     clear();
     range_assign(other);
     return *this;
   }
 
-  constexpr vector& operator=(vector&& other) noexcept(
+  constexpr inline_vector& operator=(inline_vector&& other) noexcept(
    nothrow_move_assignable{}) {
     clear();
     range_assign(std::move(other));
     return *this;
   }
 
-  constexpr vector(size_type count) noexcept(nothrow_move_constructible{}) {
+  constexpr inline_vector(size_type count) noexcept(
+   nothrow_move_constructible{}) {
     while (count != 0) {
       emplace_back(T{});
       --count;
     }
   }
 
-  constexpr vector(size_type count,
-                   T const& value) noexcept(nothrow_copy_constructible{}) {
+  constexpr inline_vector(size_type count, T const& value) noexcept(
+   nothrow_copy_constructible{}) {
     while (count != 0) {
       emplace_back(value);
       --count;
@@ -221,13 +225,13 @@ struct vector
 
   /// Range constructor
   template <typename Rng, CONCEPT_REQUIRES_(RangeAssignable<Rng>{})>
-  constexpr vector(Rng&& rng) {
+  constexpr inline_vector(Rng&& rng) {
     range_assign(std::forward<Rng>(rng));
   }
 
   /// TODO: range assignment
 
-  constexpr vector(std::initializer_list<T> init) {
+  constexpr inline_vector(std::initializer_list<T> init) {
     range_assign(std::move(init));
   }
 
@@ -235,8 +239,9 @@ struct vector
   template <typename It, typename S,
             CONCEPT_REQUIRES_(InputIterator<It>{} and IteratorRange<It, S>{}
                               and RangeAssignable<iterator_range<It, S>>{})>
-  constexpr vector(It&& it, S&& s)
-   : vector(iterator_range<It, S>{std::forward<It>(it), std::forward<S>(s)}) {}
+  constexpr inline_vector(It&& it, S&& s)
+   : inline_vector(
+      iterator_range<It, S>{std::forward<It>(it), std::forward<S>(s)}) {}
 
   ///@}
 
@@ -352,5 +357,4 @@ struct vector
   }
 };
 
-}  // namespace stack
 }  // namespace hm3

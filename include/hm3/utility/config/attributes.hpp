@@ -15,6 +15,9 @@
 #define HM3_DISABLE_FLATTEN
 #define HM3_DISABLE_ALWAYS_INLINE
 #define HM3_DISABLE_HOT
+#define HM3_DISABLE_COLD
+#define HM3_DISABLE_NO_INLINE
+// #define HM3_DISABLE_NO_RETURN // not exclusively an optimization attribute
 #define HM3_DISABLE_ALMOST_PURE
 #define HM3_DISABLE_PURE
 #endif  // HM3_DISABLE_OPTIMIZATION_ATTRIBUTES
@@ -32,7 +35,7 @@
 #else
 
 #if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)
-#define HM3_FLATTEN flatten, gnu::flatten
+#define HM3_FLATTEN gnu::flatten
 #else
 #error HM3_FLATTEN is not implemented for this compiler.
 #endif
@@ -52,7 +55,7 @@
 #else
 
 #if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)
-#define HM3_ALWAYS_INLINE always_inline
+#define HM3_ALWAYS_INLINE gnu::always_inline
 #else
 #error HM3_ALWAYS_INLINE is not implemented for this compiler.
 #endif
@@ -63,7 +66,8 @@
 
 /// \name Hot attribute
 ///
-/// The hot function attribute marks this function as a hot spot
+/// The hot function attribute marks this function as a hot spot (i.e.
+/// a function that gets called often).
 ///@{
 
 #ifdef HM3_DISABLE_HOT
@@ -71,7 +75,7 @@
 #else
 
 #if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)
-#define HM3_HOT hot
+#define HM3_HOT gnu::hot
 #else
 #error HM3_HOT is not implemented for this compiler.
 #endif
@@ -79,6 +83,68 @@
 #endif  // HM3_DISABLE_HOT
 
 ///@}  // Hot attribute
+
+/// \name Cold attribute
+///
+/// The cold function attribute marks this function as a cold spot (i.e. a
+/// a function that is almost never called).
+///
+/// Useful to prevent inlining.
+///
+///@{
+
+#ifdef HM3_DISABLE_COLD
+#define HM3_COLD
+#else
+
+#if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)
+#define HM3_COLD gnu::cold
+#else
+#error HM3_COLD is not implemented for this compiler.
+#endif
+
+#endif  // HM3_DISABLE_COLD
+
+///@}  // Cold attribute
+
+/// \name No inline attribute
+///
+/// The noinline function attribute prevents a function from being inlined by
+/// the compiler.
+///@{
+
+#ifdef HM3_DISABLE_NO_INLINE
+#define HM3_NO_INLINE
+#else
+
+#if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)
+#define HM3_NO_INLINE gnu::noinline
+#else
+#error HM3_NO_INLINE is not implemented for this compiler.
+#endif
+
+#endif  // HM3_DISABLE_NO_INLINE
+
+///@}  // No inline attribute
+
+/// \name No return attribute
+///
+/// The no return function attribute indicates that a function does not return.
+///@{
+
+#ifdef HM3_DISABLE_NO_RETURN
+#define HM3_NO_RETURN
+#else
+
+#if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)
+#define HM3_NO_RETURN noreturn
+#else
+#error HM3_NO_RETURN is not implemented for this compiler.
+#endif
+
+#endif  // HM3_DISABLE_NO_RETURN
+
+///@}  // No return attribute
 
 /// \name Almost Pure attribute
 ///

@@ -6,6 +6,8 @@
 
 namespace hm3 {
 
+template <typename T> using static_const = ranges::static_const<T>;
+
 using namespace ranges;
 
 /// Creates a range of boxed integers (e.g. boxed in a compact_optional or

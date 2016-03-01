@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/inline_vector.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -29,7 +29,7 @@ static constexpr std::size_t max_no_surfaces = 5;
 sidx_t idx;          ///< Boundary cell index
 num_t volume;        ///< Boundary cell volume
 point<Nd> x_center;  ///< Boundary cell center
-stack::vector<surface<Nd>, max_no_surfaces> surfaces;  ///< Boundary surfaces
+inline_vector<surface<Nd>, max_no_surfaces> surfaces;  ///< Boundary surfaces
 };
 */
 }  // namespace fv

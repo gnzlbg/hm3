@@ -7,11 +7,11 @@
 #include <hm3/tree/relations/tree.hpp>
 #include <hm3/tree/tree.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/inline_vector.hpp>
 #include <hm3/utility/math.hpp>
-#include <hm3/utility/stack_vector.hpp>
 /// Use look-up table for the same level neighbors instead of
 /// arithmetic operations
 #define HM3_USE_NEIGHBOR_LOOKUP_TABLE
@@ -50,7 +50,7 @@ static constexpr uint_t no_neighbors(uint_t nd, uint_t m, child_level_tag) {
 ///@{
 
 template <int Nd, int M> struct neighbor_children_sharing_face_ {
-  static constexpr stack::vector<stack::vector<child_pos<Nd>, 0>, 0> stencil() {
+  static constexpr inline_vector<inline_vector<child_pos<Nd>, 0>, 0> stencil() {
     return {};
   }
 };
@@ -158,7 +158,7 @@ template <int Nd> using neighbor_offset = std::array<int_t, Nd>;
 ///@{
 
 template <int Nd, int M> struct neighbor_lookup_table_ {
-  static constexpr stack::vector<neighbor_offset<Nd>, 0> stencil{};
+  static constexpr inline_vector<neighbor_offset<Nd>, 0> stencil{};
 };
 
 /// 1D: across faces
@@ -388,11 +388,10 @@ constexpr auto opposite(NeighborIdx p) -> NeighborIdx {
 
 template <uint_t Nd, typename F> void for_each_neighbor_manifold(F&& f) {
   using manifold_rng = meta::as_list<meta::integer_range<int, 1, Nd + 1>>;
-  meta::for_each(manifold_rng{},
-                 [&](auto m) {
-                   using manifold = manifold_neighbors<Nd, decltype(m){}>;
-                   f(manifold{});
-                 });
+  meta::for_each(manifold_rng{}, [&](auto m) {
+    using manifold = manifold_neighbors<Nd, decltype(m){}>;
+    f(manifold{});
+  });
 }
 
 ///@} Neighbor relations

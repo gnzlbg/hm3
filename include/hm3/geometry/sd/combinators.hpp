@@ -5,7 +5,6 @@
 ///
 #include <hm3/geometry/sd/adapt.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace geometry {

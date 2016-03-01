@@ -3,7 +3,7 @@
 ///
 /// Stores which boundary cells belong to which boundary condition
 #include <hm3/solver/types.hpp>
-#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/inline_vector.hpp>
 #include <vector>
 
 namespace hm3 {
@@ -67,8 +67,8 @@ struct bcs {
   }
 
   /// All boundary conditions that cell \p cidx is a part of:
-  stack::vector<bc_idx, max_bcs_per_cell> boundary_condition(cell_idx cidx) {
-    stack::vector<bc_idx, max_bcs_per_cell> bc_ids;
+  inline_vector<bc_idx, max_bcs_per_cell> boundary_condition(cell_idx cidx) {
+    inline_vector<bc_idx, max_bcs_per_cell> bc_ids;
     for_each_bc([&](bc_idx i) {
       if (has_cell(cidx, i)) { bc_ids.push_back(i); }
     });

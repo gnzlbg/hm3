@@ -5,14 +5,14 @@
 #include <hm3/geometry/dimension/dimensional.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/polygon/concept.hpp>
-#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/inline_vector.hpp>
 
 namespace hm3 {
 namespace geometry {
 
 template <uint_t Nd, uint_t MaxNp>
-struct polygon : dimensional<Nd>, stack::vector<point<Nd>, MaxNp> {
-  using self = stack::vector<point<Nd>, MaxNp>;
+struct polygon : dimensional<Nd>, inline_vector<point<Nd>, MaxNp> {
+  using self = inline_vector<point<Nd>, MaxNp>;
   using self::self;
   using self::operator=;
   polygon()           = default;

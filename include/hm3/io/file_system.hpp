@@ -4,9 +4,9 @@
 /// File system utilities.
 #include <fstream>
 #include <hm3/types.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/config/system.hpp>
 #include <hm3/utility/mpi.hpp>
-#include <hm3/utility/system.hpp>
 #include <streambuf>
 #include <tuple>
 // Filesystem headers:

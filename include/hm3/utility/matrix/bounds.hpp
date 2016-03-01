@@ -3,7 +3,7 @@
 ///
 /// Matrix bounds
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/matrix/traits.hpp>
 
 namespace hm3 {

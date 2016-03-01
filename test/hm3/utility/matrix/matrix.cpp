@@ -113,9 +113,9 @@ template <class Vector> void vector_test(const idx_t n) {
 }
 
 template <template <class> class Vector> void vector_test_all(const idx_t n) {
-  meta::for_each(
-   test_types{},
-   [n](auto v) { vector_test<meta::_t<Vector<decltype(v)>>>(n); });
+  meta::for_each(test_types{}, [n](auto v) {
+    vector_test<meta::_t<Vector<decltype(v)>>>(n);
+  });
 }
 
 template <class T> struct dynamic_vector {
@@ -184,10 +184,9 @@ void matrix_test(const idx_t no_rows, const idx_t no_cols) {
 
 template <template <class> class Matrix>
 void matrix_test_all(const idx_t no_rows, const idx_t no_cols) {
-  meta::for_each(test_types{},
-                 [no_rows, no_cols](auto m) {
-                   matrix_test<meta::_t<Matrix<decltype(m)>>>(no_rows, no_cols);
-                 });
+  meta::for_each(test_types{}, [no_rows, no_cols](auto m) {
+    matrix_test<meta::_t<Matrix<decltype(m)>>>(no_rows, no_cols);
+  });
 }
 
 template <class T> struct dynamic_matrix_rm_ds {

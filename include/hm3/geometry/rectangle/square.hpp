@@ -8,8 +8,8 @@
 #include <hm3/geometry/rectangle/bounds.hpp>
 #include <hm3/geometry/rectangle/concept.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 

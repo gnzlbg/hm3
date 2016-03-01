@@ -5,7 +5,6 @@
 #include <hm3/tree/algorithm/node_level.hpp>
 #include <hm3/tree/algorithm/node_neighbors.hpp>
 #include <hm3/tree/concepts.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace tree {

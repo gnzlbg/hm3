@@ -10,15 +10,15 @@ namespace structured {
 namespace square {
 namespace tile {
 
-/// Index-coordinate pair
+/// Square tile index-coordinate pair
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length
 template <suint_t Nd, suint_t Nc>
 struct indexed_coordinate : geometry::dimensional<Nd> {
-  using index       = index<Nd, Nc>;
-  using coordinate  = coordinate<Nd, Nc>;
-  using offset_type = typename coordinate::offset_type;
+  using index      = index<Nd, Nc>;
+  using coordinate = coordinate<Nd, Nc>;
+  using offset_t   = typename coordinate::offset_t;
   index idx;
   coordinate x;
 
@@ -71,7 +71,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   ///
   /// \pre The resulting coordinate must lie within the tile
   /// \note Faster than `at`
-  constexpr indexed_coordinate offset(offset_type o) const noexcept {
+  constexpr indexed_coordinate offset(offset_t o) const noexcept {
     coordinate n = x.offset(o);
     HM3_ASSERT(n, "offsetting x = {} by {} results in invalid coordinate", x,
                o);
@@ -89,7 +89,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   /// Coordinate at \p offset from this
   ///
   /// Returns invalid if the result lies outside the tile.
-  constexpr indexed_coordinate at(offset_type offset) const noexcept {
+  constexpr indexed_coordinate at(offset_t offset) const noexcept {
     coordinate n = x.offset(offset);
     return n ? indexed_coordinate{n} : indexed_coordinate{index(), n};
   }

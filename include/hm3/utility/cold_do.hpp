@@ -2,12 +2,13 @@
 /// \file
 ///
 /// Performs a cold computation (prevents inlining)
+#include <hm3/utility/config/attributes.hpp>
 
 namespace hm3 {
 
 /// Performs a cold computation preventing inlining and branch prediction
 template <typename F>
-[[ noinline, cold ]] constexpr decltype(auto) cold_do(F&& f) noexcept(
+[[ HM3_NO_INLINE, HM3_COLD ]] constexpr decltype(auto) cold_do(F&& f) noexcept(
  noexcept(f())) {
   return f();
 }

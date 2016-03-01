@@ -2,12 +2,18 @@
 /// \file
 ///
 /// Includes the range-v3 library
+#include <hm3/utility/config/compiler.hpp>
+#ifdef HM3_COMPILER_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"
 #pragma clang diagnostic ignored "-Wunused-parameter"
 #pragma clang diagnostic ignored "-Wdocumentation"
+#endif
 #include <range/v3/all.hpp>
+#ifdef HM3_COMPILER_CLANG
 #pragma clang diagnostic pop
+#endif
+#include <boost/container/static_vector.hpp>
 #include <boost/container/vector.hpp>
 
 /// Extensions:

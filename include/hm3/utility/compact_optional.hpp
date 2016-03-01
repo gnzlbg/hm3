@@ -11,7 +11,7 @@
 /// License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
 /// http://www.boost.org/LICENSE_1_0.txt)
 
-#include <hm3/utility/assert.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/range.hpp>
 #include <utility>
 
@@ -156,7 +156,7 @@ class compact_optional : public detail::compact_optional_base<N> {
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  self operator++(int) noexcept {
+  self operator++(int)noexcept {
     self tmp(*this);
     ++value_;
     return tmp;
@@ -169,7 +169,7 @@ class compact_optional : public detail::compact_optional_base<N> {
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
-  self operator--(int) noexcept {
+  self operator--(int)noexcept {
     self tmp(*this);
     --value_;
     return tmp;

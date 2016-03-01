@@ -3,7 +3,6 @@
 ///
 /// Interprets cell variables as conservative variables
 #include <hm3/utility/matrix.hpp>
-#include <hm3/utility/static_const.hpp>
 
 namespace hm3 {
 namespace solver {

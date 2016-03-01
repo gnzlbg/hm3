@@ -4,15 +4,38 @@
 /// Math utilities
 #include <cmath>
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
-#include <hm3/utility/constants.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/range.hpp>
+#include <limits>
 #include <type_traits>
 
 namespace hm3 {
 
 /// Math utilities
 namespace math {
+
+/// Numeric constants
+namespace constant {
+
+/// Epsilon
+template <typename T>
+static const constexpr T eps = std::numeric_limits<T>::epsilon();
+
+/// Pi
+template <typename T>
+static const constexpr T pi
+ = 3.141592653589793238462643383279502884197169399375105820974944;
+
+/// Euler's number
+template <typename T>
+static const constexpr T e
+ = 2.7182818284590452353602874713526624977572470936999595749669676;
+
+}  // namespace constant
+
+using constant::pi;
+using constant::e;
+using constant::eps;
 
 /// Takes the absolute difference between two unsigned integers (without
 /// wrapping)

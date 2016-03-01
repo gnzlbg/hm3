@@ -4,7 +4,7 @@
 /// VTK data fields
 #ifdef HM3_ENABLE_VTK
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/vis/field.hpp>
 #include <vector>
 

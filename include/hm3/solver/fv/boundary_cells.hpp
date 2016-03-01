@@ -2,7 +2,7 @@
 // /// \file
 // ///
 // ///
-// #include <hm3/utility/stack_vector.hpp>
+// #include <hm3/utility/inline_vector.hpp>
 
 // namespace hm3 {
 // namespace solver {
@@ -24,7 +24,7 @@
 //   num_t volume;        ///< Cut-cell volume
 //   point<Nd> x_center;  ///< Cut-cell center
 //   polygon<Nd> geometry;
-//   stack::vector<surface<Nd>, max_no_surfaces>
+//   inline_vector<surface<Nd>, max_no_surfaces>
 //    surface_data;  ///< Cut-cell surfaces
 // };
 

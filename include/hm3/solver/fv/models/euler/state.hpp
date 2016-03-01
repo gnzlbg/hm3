@@ -3,7 +3,7 @@
 ///
 ///
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
+#include <hm3/utility/config/assert.hpp>
 
 namespace hm3 {
 namespace solver {

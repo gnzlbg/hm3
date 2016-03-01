@@ -8,7 +8,7 @@
 #include <hm3/geometry/rectangle/concept.hpp>
 #include <hm3/geometry/rectangle/square.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 
 namespace hm3 {
 namespace geometry {

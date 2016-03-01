@@ -6,8 +6,8 @@
 #include <hm3/io/file_system.hpp>
 #include <hm3/io/json.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/assert.hpp>
 #include <hm3/utility/compact_optional.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/log.hpp>
 #include <hm3/utility/mpi.hpp>
 #include <hm3/utility/range.hpp>

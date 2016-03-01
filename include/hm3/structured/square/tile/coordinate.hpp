@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Square tile coordinate
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/dimensions.hpp>
 #include <hm3/structured/square/tile/bounds.hpp>
 #include <hm3/structured/square/tile/index.hpp>
 #include <hm3/structured/square/tile/index_type.hpp>
-#include <hm3/utility/attributes.hpp>
+#include <hm3/utility/config/attributes.hpp>
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {
@@ -23,12 +23,12 @@ struct coordinate : geometry::dimensional<Nd> {
   using value_t        = index_type;
   using signed_value_t = std::make_signed_t<value_t>;
   using coordinates_t  = std::array<value_t, Nd>;
-  using offset_type    = std::array<signed_value_t, Nd>;
+  using offset_t       = std::array<signed_value_t, Nd>;
   using index          = index<Nd, Nc>;
   using bounds         = bounds<Nd, Nc>;
   static_assert(sizeof(value_t) == sizeof(signed_value_t), "");
 
-  coordinates_type xs;
+  coordinates_t xs;
 
   /// \name Array of invalid coordinates
   ///@{
@@ -36,15 +36,15 @@ struct coordinate : geometry::dimensional<Nd> {
     return std::numeric_limits<value_t>::max();
   }
   CONCEPT_REQUIRES(Nd == 1)
-  static constexpr coordinates_type invalid_xs_() noexcept {
+  static constexpr coordinates_t invalid_xs_() noexcept {
     return {{invalid_x_()}};
   }
   CONCEPT_REQUIRES(Nd == 2)
-  static constexpr coordinates_type invalid_xs_() noexcept {
-    return {{invalid_x_(), invalid_x_(), invalid_x_()}};
+  static constexpr coordinates_t invalid_xs_() noexcept {
+    return {{invalid_x_(), invalid_x_()}};
   }
   CONCEPT_REQUIRES(Nd == 3)
-  static constexpr coordinates_type invalid_xs_() noexcept {
+  static constexpr coordinates_t invalid_xs_() noexcept {
     return {{invalid_x_(), invalid_x_(), invalid_x_()}};
   }
   ///@} // Array of invalid coordinates
@@ -269,16 +269,59 @@ struct coordinate : geometry::dimensional<Nd> {
     }
     return n;
   }
+
+  /// Prints a coordinate to an output stream (for debugging)
+  template <typename OStream>
+  friend OStream& operator<<(OStream& os, coordinate const& x) {
+    os << "{" << x[0];
+    for (value_t d = 1; d < Nd; ++d) { os << ", " << x[d]; }
+    os << "}";
+    return os;
+  }
+
+  /// \name Comparison operators
+  ///
+  /// Convert coordinates to indices and compare them.
+  ///
+  ///@{
+
+  friend constexpr bool operator==(coordinate const& a, coordinate const& b) {
+    return a.idx() == b.idx();
+  }
+
+  friend constexpr bool operator!=(coordinate const& a, coordinate const& b) {
+    return !(a == b);
+  }
+
+  friend constexpr bool operator<(coordinate const& a, coordinate const& b) {
+    return a.idx() < b.idx();
+  }
+
+  friend constexpr bool operator<=(coordinate const& a, coordinate const& b) {
+    return a.idx() <= b.idx();
+  }
+
+  friend constexpr bool operator>(coordinate const& a, coordinate const& b) {
+    return !(a <= b);
+  }
+
+  friend constexpr bool operator>=(coordinate const& a, coordinate const& b) {
+    return !(a < b);
+  }
+
+  ///@}  // Comparison operators
 };
 
 /// Square distance between the coordinates \p a and \p b
 ///
 /// \pre Both coordinates must be valid
-constexpr value_t distance_square(coordinate const& a,
-                                  coordinate const& b) noexcept {
+template <suint_t Nd, suint_t Nc>
+constexpr auto distance_square(coordinate<Nd, Nc> const& a,
+                               coordinate<Nd, Nc> const& b) noexcept {
   HM3_ASSERT(a, "invalid coordinate {}", a);
   HM3_ASSERT(b, "invalid coordinate {}", b);
-  value_t dist = 0;
+  using value_t = typename coordinate<Nd, Nc>::value_t;
+  value_t dist  = 0;
   for (value_t d = 0; d < Nd; ++d) {
     dist += math::ipow(math::absdiff(b.xs[d], a.xs[d]), value_t{2});
   }
@@ -288,53 +331,13 @@ constexpr value_t distance_square(coordinate const& a,
 /// Distance between the coordinates \p a and \p b
 ///
 /// \pre Both coordinates must be valid
-constexpr num_t distance(coordinate const& a, coordinate const& b) noexcept {
+template <suint_t Nd, suint_t Nc>
+constexpr auto distance(coordinate<Nd, Nc> const& a,
+                        coordinate<Nd, Nc> const& b) noexcept {
   HM3_ASSERT(a, "invalid coordinate {}", a);
   HM3_ASSERT(b, "invalid coordinate {}", b);
   return std::sqrt(static_cast<num_t>(distance_square(a, b)));
 }
-
-/// Prints a coordinate to an output stream (for debugging)
-template <typename OStream>
-OStream& operator<<(OStream& os, coordinate const& x) {
-  os << "{" << x[0];
-  for (value_t d = 1; d < Nd; ++d) { os << ", " << x[d]; }
-  os << "}";
-  return os;
-}
-
-/// \name Comparison operators
-///
-/// Convert coordinates to indices and compare them.
-///
-///@{
-
-///
-constexpr bool operator==(coordinate const& a, coordinate const& b) {
-  return a.idx() == b.idx();
-}
-
-constexpr bool operator!=(coordinate const& a, coordinate const& b) {
-  return !(a == b);
-}
-
-constexpr bool operator<(coordinate const& a, coordinate const& b) {
-  return a.idx() < b.idx();
-}
-
-constexpr bool operator<=(coordinate const& a, coordinate const& b) {
-  return a.idx() <= b.idx();
-}
-
-constexpr bool operator>(coordinate const& a, coordinate const& b) {
-  return !(a <= b);
-}
-
-constexpr bool operator>=(coordinate const& a, coordinate const& b) {
-  return !(a < b);
-}
-
-///@}  // Comparison operators
 
 }  // namespace tile
 }  // namespace square

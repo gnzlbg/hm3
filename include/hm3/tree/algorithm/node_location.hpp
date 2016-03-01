@@ -6,8 +6,7 @@
 #include <hm3/tree/concepts.hpp>
 #include <hm3/tree/location/default.hpp>
 #include <hm3/tree/types.hpp>
-#include <hm3/utility/assert.hpp>
-#include <hm3/utility/static_const.hpp>
+#include <hm3/utility/config/assert.hpp>
 
 namespace hm3 {
 namespace tree {

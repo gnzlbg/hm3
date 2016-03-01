@@ -3,7 +3,7 @@
 ///
 /// Checks order of points in rectangles (not necesarily square)
 #include <hm3/types.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 

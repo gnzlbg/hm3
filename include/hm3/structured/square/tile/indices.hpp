@@ -5,6 +5,8 @@
 #include <hm3/structured/square/tile/bounds.hpp>
 #include <hm3/structured/square/tile/coordinate.hpp>
 #include <hm3/structured/square/tile/index.hpp>
+#include <hm3/tree/relations/neighbor.hpp>
+#include <hm3/utility/config/attributes.hpp>
 
 namespace hm3 {
 namespace structured {
@@ -16,7 +18,7 @@ namespace tile {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
 template <suint_t Nd, suint_t Nc>  //
-struct indices : geometry::dimensional<Nd>, bounds<Nd, Nc> {
+struct indices : geometry::dimensional<Nd>, tile::bounds<Nd, Nc> {
   using self               = indices<Nd, Nc>;
   using index              = index<Nd, Nc>;
   using coordinate         = coordinate<Nd, Nc>;
@@ -28,7 +30,7 @@ struct indices : geometry::dimensional<Nd>, bounds<Nd, Nc> {
   /// Executes \p f for each cell in the tile
   template <typename F, CONCEPT_REQUIRES_(Nd == 1)>  //
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
-    constexpr auto l = length();
+    constexpr auto l = self::length();
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
@@ -40,7 +42,7 @@ struct indices : geometry::dimensional<Nd>, bounds<Nd, Nc> {
   /// Executes \p f for each cell in the tile
   template <typename F, CONCEPT_REQUIRES_(Nd == 2)>  //
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
-    constexpr auto l = length();
+    constexpr auto l = self::length();
     for (index_type j = 0; j < l; ++j) {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
@@ -54,7 +56,7 @@ struct indices : geometry::dimensional<Nd>, bounds<Nd, Nc> {
   /// Executes \p f for each cell in the tile
   template <typename F, CONCEPT_REQUIRES_(Nd == 3)>  //
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
-    constexpr auto l = length();
+    constexpr auto l = self::length();
     for (index_type k = 0; k < l; ++k) {
       for (index_type j = 0; j < l; ++j) {
 #ifdef HM3_COMPILER_CLANG
@@ -383,7 +385,7 @@ struct indices : geometry::dimensional<Nd>, bounds<Nd, Nc> {
 
   [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto
    all() noexcept {
-    return view::iota(index_type{0}, size());
+    return view::iota(index_type{0}, self::size());
   }
 
   /// Sub-tile view

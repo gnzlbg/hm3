@@ -5,10 +5,9 @@
 #include <hm3/geometry/square.hpp>
 #include <hm3/solver/types.hpp>
 #include <hm3/tree/relations/neighbor.hpp>
-#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bit.hpp>
+#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/math.hpp>
-#include <hm3/utility/static_const.hpp>
 #include <meta/meta.hpp>
 
 namespace hm3 {

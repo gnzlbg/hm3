@@ -3,8 +3,8 @@
 ///
 /// Includes the json library and adds some utilities for HM3's File I/O
 #include <hm3/types.hpp>
-#include <hm3/utility/exception.hpp>
-#include <hm3/utility/fatal_error.hpp>
+#include <hm3/utility/config/exception.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 #include <json.hpp>
 
 namespace hm3 {

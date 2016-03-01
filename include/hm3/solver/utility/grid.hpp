@@ -145,7 +145,7 @@ template <uint_t Nd> struct grid {
   /// Neighbors of grid node \p n in grid
   auto neighbors(grid_node_idx n) const noexcept {
     auto ns = tree_neighbors(n);
-    stack::vector<grid_node_idx, ns.capacity()> gs(ns.size());
+    inline_vector<grid_node_idx, ns.capacity()> gs(ns.size());
     RANGES_FOR (auto&& p, view::zip(ns, gs)) {
       std::get<1>(p) = in_tree(std::get<0>(p));
     }

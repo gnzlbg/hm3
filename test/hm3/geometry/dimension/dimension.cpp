@@ -1,6 +1,6 @@
+#include "dimension.hpp"
 #include <hm3/geometry/dimension/dimension.hpp>
 #include <hm3/utility/test.hpp>
-#include "dimension.hpp"
 
 int main() {
   using hm3::geometry::dimension;

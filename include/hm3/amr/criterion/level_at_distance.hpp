@@ -71,10 +71,9 @@ template <typename Step> struct multiple {
 
   template <typename Grid, typename SD, typename Node>
   amr::action operator()(Grid&& g, SD&& d_fn, Node n) const {
-    return accumulate(
-     steps, action::coarsen,
-     [ g = std::forward<Grid>(g), d_fn = std::forward<SD>(d_fn), n ](
-      auto&& acc, auto a) { return combine(acc, a(g, d_fn, n)); });
+    return accumulate(steps, action::coarsen, [
+      g = std::forward<Grid>(g), d_fn = std::forward<SD>(d_fn), n
+    ](auto&& acc, auto a) { return combine(acc, a(g, d_fn, n)); });
   }
 };
 

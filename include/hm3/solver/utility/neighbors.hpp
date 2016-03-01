@@ -3,7 +3,7 @@
 ///
 /// Stores neighbors of solver grid cells
 #include <hm3/solver/utility/grid.hpp>
-#include <hm3/utility/stack_vector.hpp>
+#include <hm3/utility/inline_vector.hpp>
 #include <vector>
 
 namespace hm3 {
@@ -12,7 +12,7 @@ namespace state {
 
 template <uint_t neighbor_capacity>  //
 struct neighbors {
-  using neighbor_vector = stack::vector<grid_node_idx, neighbor_capacity>;
+  using neighbor_vector = inline_vector<grid_node_idx, neighbor_capacity>;
 
   std::vector<neighbor_vector> data_;
 

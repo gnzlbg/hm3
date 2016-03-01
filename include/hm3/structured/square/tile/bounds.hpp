@@ -16,7 +16,7 @@ constexpr index_type length(index_type nc) { return nc; }
 
 /// Square tile size
 constexpr index_type size(index_type nd, index_type nc) {
-  return math::ipow(nd, nc);
+  return math::ipow(nc, nd);
 }
 
 /// Square tile bounds
