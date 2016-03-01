@@ -15,7 +15,7 @@
 ///
 /// The syntax is: <type HM3_RESTRICT variable name ...>
 ///
-#include <hm3/utility/compiler.hpp>
+#include <hm3/utility/config/compiler.hpp>
 
 #ifdef HM3_DISABLE_RESTRICT_MACRO
 #define HM3_RESTRICT  // Disables restrict

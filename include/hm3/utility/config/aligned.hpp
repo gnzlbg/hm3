@@ -15,7 +15,7 @@
 ///   // with align and aligned to sizeof(remove_ptr_t<decltype(other_ptr)>)
 ///   double* ptr = HM3_ALIGNED_PTR(other_ptr);
 ///
-#include <hm3/utility/compiler.hpp>
+#include <hm3/utility/config/compiler.hpp>
 
 #ifdef HM3_DISABLE_ALIGNED_POINTER_MACRO
 // Disable aligned pointer:

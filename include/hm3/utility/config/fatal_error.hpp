@@ -2,7 +2,9 @@
 /// \file
 ///
 /// Fatal error
-#include <hm3/utility/at.hpp>
+///
+/// TODO: this should be configurable to e.g. throw instead of terminate.
+#include <hm3/utility/config/at.hpp>
 #include <hm3/utility/fmt.hpp>
 
 // This requires the gnu/clang zero-variadic-macro-arguments language extension

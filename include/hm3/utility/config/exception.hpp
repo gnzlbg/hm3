@@ -1,5 +1,5 @@
 #pragma once
-#include <hm3/utility/at.hpp>
+#include <hm3/utility/config/at.hpp>
 
 /// Reports any exceptions thrown to stderr at the interface between the plugin
 /// and paraview (usefull when the log might be dead:

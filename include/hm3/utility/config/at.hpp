@@ -21,7 +21,7 @@ struct source_location {
 /// defined.
 #define HM3_AT_ ::hm3::source_location(__PRETTY_FUNCTION__, __FILE__, __LINE__)
 
-#else
+#else  // ifdef HM3_DISABLE_ASSERTIONS
 
 struct source_location {
   const char* const function_name = "";
@@ -31,7 +31,7 @@ struct source_location {
 
 #define HM3_AT_ ::hm3::source_location()
 
-#endif
+#endif  // HM3_DISABLE_ASSERTIONS
 
 }  // namespace hm3
 
