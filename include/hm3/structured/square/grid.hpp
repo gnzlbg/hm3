@@ -3,6 +3,7 @@
 ///
 /// Square structured grid
 #include <hm3/structured/square/grid/bounds.hpp>
+#include <hm3/structured/square/grid/coordinate.hpp>
 #include <hm3/structured/square/grid/halos.hpp>
 #include <hm3/structured/square/grid/indices.hpp>
 

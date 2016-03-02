@@ -113,7 +113,7 @@ using vtk_cell_ptr_types_t
 
 template <typename... Ts>
 using vtk_cell_ptr_tuple_t
- = meta::apply_list<meta::quote<std::tuple>, vtk_cell_ptr_types_t<Ts...>>;
+ = meta::apply<meta::quote<std::tuple>, vtk_cell_ptr_types_t<Ts...>>;
 
 template <typename... Ts>
 auto make_tuple_of_cells(std::experimental::variant<Ts...> const&)

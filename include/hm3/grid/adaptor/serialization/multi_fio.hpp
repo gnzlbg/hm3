@@ -3,7 +3,7 @@
 ///
 /// Serialization to HM3's File I/O
 #include <hm3/grid/adaptor/multi.hpp>
-#include <hm3/tree/serialization/fio.hpp>
+#include <hm3/grid/hierarchical/tree/serialization/fio.hpp>
 
 namespace hm3 {
 namespace grid {

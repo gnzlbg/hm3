@@ -158,8 +158,8 @@ struct inline_vector
   /// Move/Copy constructed from the range's elements
   template <typename Rng>
   using RangeAssignable
-   = meta::fast_and<InputRange<Rng>,
-                    meta::fast_or<MoveConstructible<T>, CopyConstructible<T>>>;
+   = meta::strict_and<InputRange<Rng>, meta::strict_or<MoveConstructible<T>,
+                                                       CopyConstructible<T>>>;
 
   /// Assign from range: if the range is not an rvalue, always copy assign
   ///

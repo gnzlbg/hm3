@@ -1,0 +1,16 @@
+#pragma once
+/// \file
+///
+/// Tree algorithms
+#include <hm3/grid/hierarchical/tree/algorithm/balanced_refine.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/dfs_sort.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_at.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_length.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_location.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_neighbor.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_or_parent_at.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/normalized_coordinates.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/root_traversal.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/shift_location.hpp>

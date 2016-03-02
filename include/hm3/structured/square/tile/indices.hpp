@@ -5,7 +5,8 @@
 #include <hm3/structured/square/tile/bounds.hpp>
 #include <hm3/structured/square/tile/coordinate.hpp>
 #include <hm3/structured/square/tile/index.hpp>
-#include <hm3/tree/relations/neighbor.hpp>
+#include <hm3/structured/square/tile/indexed_coordinate.hpp>
+#include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/utility/config/attributes.hpp>
 
 namespace hm3 {

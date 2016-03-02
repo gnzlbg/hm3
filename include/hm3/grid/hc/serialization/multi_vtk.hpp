@@ -5,8 +5,8 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/square.hpp>
 #include <hm3/grid/hc/multi.hpp>
-#include <hm3/tree/algorithm/node_level.hpp>
-#include <hm3/tree/algorithm/node_neighbor.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_neighbor.hpp>
 #include <hm3/utility/log.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>

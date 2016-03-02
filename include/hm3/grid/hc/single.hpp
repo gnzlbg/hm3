@@ -3,10 +3,10 @@
 ///
 /// Single hierarchical Cartesian grid
 #include <hm3/grid/hc/node.hpp>
-#include <hm3/tree/algorithm/node_level.hpp>
-#include <hm3/tree/algorithm/node_neighbors.hpp>
-#include <hm3/tree/algorithm/normalized_coordinates.hpp>
-#include <hm3/tree/tree.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/normalized_coordinates.hpp>
+#include <hm3/grid/hierarchical/tree/tree.hpp>
 
 namespace hm3 {
 namespace grid {

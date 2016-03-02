@@ -4,7 +4,7 @@
 /// Structured grid utilities
 #include <hm3/geometry/square.hpp>
 #include <hm3/solver/types.hpp>
-#include <hm3/tree/relations/neighbor.hpp>
+#include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/utility/bit.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/math.hpp>

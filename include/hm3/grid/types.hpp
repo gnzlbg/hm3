@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Grid types
-#include <hm3/tree/types.hpp>
+#include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/compact_optional.hpp>
 

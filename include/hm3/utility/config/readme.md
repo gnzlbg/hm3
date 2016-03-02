@@ -29,11 +29,23 @@ invariants are true.
 
 ### `debug_print`:
 
-TODO: document how to use the OUTPUT macro
+The macro `OUTPUT(var0, ..., varN)` prints `var0= var0_value, ..., varN=
+varN_value`. It works with any types that can be feeded to an ostream.
 
-### `at`:
+### `at`: source file locations (file, line function)
 
-### `debug_trap`:
+The macros:
+
+- `HM3_AT_`: returns a source location (a struct with members: `function_name`,
+  `file_name`, and `line_number`).
+- `HM3_FMT_AT(source_location)`: formats a source location into a `string`.
+- `HM3_PRINT_AT(AT)`: prints a source location to `stdout`.
+
+### `debug_trap`: in source break points
+
+`HM3_DEBUG_TRAP();` traps (stops like a break point) the program at a particular execution point. The trap
+can then, e.g., be catched in a debugger where the user can decide to inspect a
+back trace or continue execution.
 
 ## Error Handling
 
@@ -49,6 +61,10 @@ memory won't be freed by the program (but by the operating system), buffered i/o
 won't be flushed...
 
 ### `exception`
+
+- `HM3_REPORT_EXCEPTIONS` can be used after a function definition to print
+  to `stderr` all exceptions thrown by a particular function (the exceptions get
+  then rethrown). This is very useful when writting/debugging ParaView plugins.
 
 ## Optimization/Analysis hints
 
@@ -77,11 +93,24 @@ expression is likely/unlikely to be true.
 
 ### `assume`:
 
-### `restrict`:
+`HM3_ASSUME(bool-expr)` tells the compiler that it can assume  the result of the
+boolean expression to be true.
 
-### `aligned`:
+### `restrict`: pointer aliasing
 
-**TODO**: `__builtin_prefetch`
+`HM3_RESTRICT ptr/reference` indicates that the memory a given pointer/reference
+point to can only be accesses through this particular pointer/reference until
+the end of its lifetime.
+
+### `aligned`: pointer alignment
+
+`HM3_ALIGNED_PTR(ptr)`/`HM3_ALIGNED_PTR_TO(ptr, alignment)` indicate the
+alignment of a given pointer. This information is required for enabling
+auto-vectorization of a piece of code in most compilers.
+
+### `prefetch`
+
+**TODO**: implement/document `__builtin_prefetch`.
 
 ## Platform detection/support
 

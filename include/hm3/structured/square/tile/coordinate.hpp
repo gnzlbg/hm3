@@ -95,9 +95,15 @@ struct coordinate : geometry::dimensional<Nd> {
   ///@}  // Constructors from constant value
 
   /// Access \p d -th coordinate component
-  constexpr value_t operator[](value_t d) const noexcept { return xs[d]; }
+  constexpr value_t operator[](value_t d) const noexcept {
+    HM3_ASSERT(d < Nd, "index {} is out-of-bounds [0, {})", d, Nd);
+    return xs[d];
+  }
   /// Access \p d -th coordinate component
-  constexpr value_t& operator[](value_t d) noexcept { return xs[d]; }
+  constexpr value_t& operator[](value_t d) noexcept {
+    HM3_ASSERT(d < Nd, "index {} is out-of-bounds [0, {})", d, Nd);
+    return xs[d];
+  }
 
   /// Returns true if the coordinate is within the tile bounds, false
   /// otherwise

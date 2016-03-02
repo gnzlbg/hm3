@@ -16,9 +16,11 @@ namespace tile {
 /// \tparam Nc number of cells per tile length
 template <suint_t Nd, suint_t Nc>
 struct indexed_coordinate : geometry::dimensional<Nd> {
-  using index      = index<Nd, Nc>;
-  using coordinate = coordinate<Nd, Nc>;
-  using offset_t   = typename coordinate::offset_t;
+  using index          = index<Nd, Nc>;
+  using coordinate     = coordinate<Nd, Nc>;
+  using offset_t       = typename coordinate::offset_t;
+  using value_t        = typename coordinate::value_t;
+  using signed_value_t = typename coordinate::signed_value_t;
   index idx;
   coordinate x;
 
@@ -46,7 +48,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   constexpr explicit operator coordinate() const noexcept { return x; }
 
   /// \p d -th coordinate component
-  constexpr auto const& operator[](suint_t d) const noexcept {
+  constexpr auto operator[](suint_t d) const noexcept {
     HM3_ASSERT(x, "invalid coordinate {}", x);
     return x[d];
   }
@@ -92,6 +94,11 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   constexpr indexed_coordinate at(offset_t offset) const noexcept {
     coordinate n = x.offset(offset);
     return n ? indexed_coordinate{n} : indexed_coordinate{index(), n};
+  }
+
+  /// Constructor from constant value
+  static constexpr indexed_coordinate constant(value_t i) noexcept {
+    return coordinate::constant(i);
   }
 
   /// Prints a coordinate to an output stream (for debugging)
