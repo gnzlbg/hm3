@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Solver types
-#include <hm3/grid/types.hpp>
+#include <hm3/grid/hierarchical/types.hpp>
 
 namespace hm3 {
 namespace solver {

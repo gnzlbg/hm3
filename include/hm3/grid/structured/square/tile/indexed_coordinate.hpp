@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Square tile indexed coordinate
-#include <hm3/structured/square/tile/coordinate.hpp>
-#include <hm3/structured/square/tile/index.hpp>
+#include <hm3/grid/structured/square/tile/coordinate.hpp>
+#include <hm3/grid/structured/square/tile/index.hpp>
 
 namespace hm3 {
 namespace structured {

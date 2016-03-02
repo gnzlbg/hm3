@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Serialization to HM3's File I/O
-#include <hm3/grid/adaptor/multi.hpp>
+#include <hm3/grid/hierarchical/adaptor/multi.hpp>
 #include <hm3/grid/hierarchical/tree/serialization/fio.hpp>
 
 namespace hm3 {

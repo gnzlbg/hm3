@@ -3,7 +3,7 @@
 /// Tests hierarchical Cartesian grid node
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/square.hpp>
-#include <hm3/grid/hc/node.hpp>
+#include <hm3/grid/hierarchical/cartesian/node.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <hm3/utility/test.hpp>
 

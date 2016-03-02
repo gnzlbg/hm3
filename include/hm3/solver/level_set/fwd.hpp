@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Forward declarations of level-set solver
-#include <hm3/grid/types.hpp>
+#include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/types.hpp>
 
 namespace hm3 {

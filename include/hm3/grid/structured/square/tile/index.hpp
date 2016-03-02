@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Square tile index
-#include <hm3/structured/square/tile/bounds.hpp>
-#include <hm3/structured/square/tile/index_type.hpp>
+#include <hm3/grid/structured/square/tile/bounds.hpp>
+#include <hm3/grid/structured/square/tile/index_type.hpp>
 #include <hm3/utility/bounded.hpp>
 
 namespace hm3 {

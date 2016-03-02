@@ -8,7 +8,7 @@
 #include <hm3/solver/level_set/state.hpp>
 #include <hm3/solver/utility.hpp>
 #ifdef HM3_ENABLE_VTK
-#include <hm3/grid/hc/serialization/multi_vtk.hpp>
+#include <hm3/grid/hierarchical/cartesian/serialization/multi_vtk.hpp>
 #include <hm3/grid/hierarchical/amr/serialization/vtk.hpp>
 #endif
 

@@ -3,7 +3,7 @@
 ///
 /// Adaptive mesh refinement for the level-set solver
 #include <hm3/grid/hierarchical/amr/amr.hpp>
-#include <hm3/grid/types.hpp>
+#include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/solver/level_set/state.hpp>
 
 namespace hm3 {

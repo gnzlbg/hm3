@@ -4,7 +4,7 @@
 /// Grid node type
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/square.hpp>
-#include <hm3/grid/types.hpp>
+#include <hm3/grid/hierarchical/types.hpp>
 
 namespace hm3 {
 namespace grid {

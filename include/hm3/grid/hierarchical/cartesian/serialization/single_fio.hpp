@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Serialization of single hierarchical Cartesian grid to HM3's File I/O
-#include <hm3/grid/hc/single.hpp>
+#include <hm3/grid/hierarchical/cartesian/single.hpp>
 #include <hm3/grid/hierarchical/tree/serialization/fio.hpp>
 
 namespace hm3 {

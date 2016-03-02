@@ -4,9 +4,9 @@
 /// VTK Grid reader
 #ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/square.hpp>
-#include <hm3/grid/hc/multi.hpp>
-#include <hm3/grid/hc/serialization/multi_vtk.hpp>
-#include <hm3/grid/types.hpp>
+#include <hm3/grid/hierarchical/cartesian/multi.hpp>
+#include <hm3/grid/hierarchical/cartesian/serialization/multi_vtk.hpp>
+#include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/vis/vtk/readers/grid/types.hpp>
 /// VTK:
 #include <hm3/vis/field.hpp>

@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Multiple hierarchical Cartesian Grids
-#include <hm3/grid/adaptor/multi.hpp>
-#include <hm3/grid/adaptor/serialization/multi_fio.hpp>
-#include <hm3/grid/hc/serialization/single_fio.hpp>
-#include <hm3/grid/hc/single.hpp>
+#include <hm3/grid/hierarchical/adaptor/multi.hpp>
+#include <hm3/grid/hierarchical/adaptor/serialization/multi_fio.hpp>
+#include <hm3/grid/hierarchical/cartesian/serialization/single_fio.hpp>
+#include <hm3/grid/hierarchical/cartesian/single.hpp>
 
 namespace hm3 {
 namespace grid {

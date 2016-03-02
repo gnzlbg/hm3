@@ -1,8 +1,8 @@
 /// \file
 ///
 /// Test multi hierarchical Cartesian grid 2D
-#include <hm3/grid/hc/amr/multi.hpp>
-#include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/hierarchical/cartesian/amr/multi.hpp>
+#include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/amr/amr.hpp>
 #include <hm3/grid/hierarchical/amr/criterion/level_at_distance.hpp>
 #ifdef HM3_ENABLE_VTK

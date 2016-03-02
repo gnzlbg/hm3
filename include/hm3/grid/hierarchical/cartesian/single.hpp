@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Single hierarchical Cartesian grid
-#include <hm3/grid/hc/node.hpp>
+#include <hm3/grid/hierarchical/cartesian/node.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/normalized_coordinates.hpp>

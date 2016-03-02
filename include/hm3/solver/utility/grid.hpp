@@ -3,7 +3,7 @@
 ///
 ///
 /// Stores a solver grid in sync with the tree
-#include <hm3/grid/grid.hpp>
+#include <hm3/grid/hierarchical/grid.hpp>
 #include <hm3/solver/types.hpp>
 
 namespace hm3 {

@@ -3,9 +3,9 @@
 ///
 /// Square tile coordinate
 #include <hm3/geometry/dimensions.hpp>
-#include <hm3/structured/square/tile/bounds.hpp>
-#include <hm3/structured/square/tile/index.hpp>
-#include <hm3/structured/square/tile/index_type.hpp>
+#include <hm3/grid/structured/square/tile/bounds.hpp>
+#include <hm3/grid/structured/square/tile/index.hpp>
+#include <hm3/grid/structured/square/tile/index_type.hpp>
 #include <hm3/utility/config/attributes.hpp>
 #include <hm3/utility/math.hpp>
 
