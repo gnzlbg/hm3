@@ -2,12 +2,12 @@
 /// \file
 ///
 /// Adapts a grid to store multiple solver grids inside
-#include <hm3/grid/types.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/balanced_coarsen.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/balanced_refine.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/dfs_sort.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_location.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
+#include <hm3/grid/types.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/matrix.hpp>
 

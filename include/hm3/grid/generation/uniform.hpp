@@ -3,8 +3,8 @@
 ///
 /// Uniform grid generation
 #include <hm3/grid/generation/generic.hpp>
-#include <hm3/grid/types.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
+#include <hm3/grid/types.hpp>
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {

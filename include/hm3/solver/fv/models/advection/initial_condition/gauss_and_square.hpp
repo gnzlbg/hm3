@@ -5,7 +5,7 @@
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/solver/fv/models/advection/indices.hpp>
-#include <hm3/utility/constants.hpp>
+#include <hm3/utility/math.hpp>
 
 namespace hm3 {
 namespace solver {

@@ -3,6 +3,8 @@
 ///
 ///
 #include <hm3/types.hpp>
+#include <hm3/utility/math.hpp>
+#include <hm3/utility/range.hpp>
 
 namespace hm3 {
 namespace solver {

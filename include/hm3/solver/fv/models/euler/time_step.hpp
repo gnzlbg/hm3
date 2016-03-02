@@ -3,6 +3,7 @@
 ///
 ///
 #include <hm3/solver/fv/models/euler/state.hpp>
+#include <hm3/utility/range.hpp>
 
 namespace hm3 {
 namespace solver {
