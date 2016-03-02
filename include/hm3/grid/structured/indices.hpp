@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Indices into a square structured grid
-#include <hm3/grid/structured/square/grid/coordinate.hpp>
-#include <hm3/grid/structured/square/grid/halos.hpp>
-#include <hm3/grid/structured/square/tile.hpp>
+#include <hm3/grid/structured/grid/coordinate.hpp>
+#include <hm3/grid/structured/grid/halos.hpp>
+#include <hm3/grid/structured/tile.hpp>
 
 namespace hm3 {
 namespace structured {
