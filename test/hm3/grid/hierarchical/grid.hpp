@@ -4,7 +4,7 @@
 /// Test utilities for hierarchical Cartesian grids
 #include <hm3/grid/hierarchical/cartesian/serialization/single_fio.hpp>
 #include <hm3/grid/hierarchical/cartesian/single.hpp>
-#include "../../tree/tree.hpp"
+#include "tree/tree.hpp"
 
 namespace hm3 {
 namespace test {
