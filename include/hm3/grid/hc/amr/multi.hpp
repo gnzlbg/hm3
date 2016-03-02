@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Adaptive Mesh Refinement target for hc::multi<Nd>
-#include <hm3/amr/target.hpp>
 #include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/hierarchical/amr/target.hpp>
 #include <hm3/grid/types.hpp>
 
 namespace hm3 {

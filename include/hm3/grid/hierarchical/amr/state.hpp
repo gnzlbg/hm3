@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Adaptive mesh refinement state
-#include <hm3/amr/action.hpp>
-#include <hm3/amr/target.hpp>
+#include <hm3/grid/hierarchical/amr/action.hpp>
+#include <hm3/grid/hierarchical/amr/target.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <vector>
 

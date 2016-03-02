@@ -3,7 +3,7 @@
 ///
 /// Cells at a given distance from the boundary are refined until they are at a
 /// given level
-#include <hm3/amr/action.hpp>
+#include <hm3/grid/hierarchical/amr/action.hpp>
 #include <hm3/grid/types.hpp>
 #include <type_traits>
 #include <utility>
