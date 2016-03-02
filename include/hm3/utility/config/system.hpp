@@ -3,6 +3,12 @@
 ///
 /// System detection macros/types/tags
 
+/// Is the OS unix-like?
+#if !defined(_WIN32) && (defined(__unix__) || defined(__unix) \
+                         || (defined(__APPLE__) && defined(__MACH__)))
+#include <unistd.h>  // This defines the POSIX macros
+#endif
+
 namespace hm3 {
 
 /// Operating system utilities

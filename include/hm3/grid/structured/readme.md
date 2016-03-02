@@ -1,5 +1,7 @@
 # Square structured grid utilities
 
+Note: right now only square structured grids are supported
+
 ## Tile
 
 A `tile::indices<Nd, Nc>` is a square tensor of rank `Nd` and per-rank-length `Nc` that

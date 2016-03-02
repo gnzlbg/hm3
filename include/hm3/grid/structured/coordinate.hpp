@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square structured grid coordinate
-#include <hm3/grid/structured/grid/bounds.hpp>
+#include <hm3/grid/structured/bounds.hpp>
 #include <hm3/grid/structured/tile/indexed_coordinate.hpp>
 namespace hm3 {
 namespace structured {

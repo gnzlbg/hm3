@@ -2,7 +2,7 @@
 ///
 /// Hierarchical Cartesian Grid 1D tests
 #include "grid.hpp"
-#include "../../tree/tree_1d.hpp"
+#include "tree/tree_1d.hpp"
 
 using namespace hm3;
 using namespace test;

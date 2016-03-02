@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Test square structured grid indices
-#include <hm3/structured/square/grid/indices.hpp>
+#include <hm3/grid/structured/indices.hpp>
 #include <hm3/utility/test.hpp>
 #include "print_grid.hpp"
 

@@ -3,10 +3,10 @@
 ///
 /// Square tile indices for iterating over a square tile
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
-#include <hm3/grid/structured/square/tile/bounds.hpp>
-#include <hm3/grid/structured/square/tile/coordinate.hpp>
-#include <hm3/grid/structured/square/tile/index.hpp>
-#include <hm3/grid/structured/square/tile/indexed_coordinate.hpp>
+#include <hm3/grid/structured/tile/bounds.hpp>
+#include <hm3/grid/structured/tile/coordinate.hpp>
+#include <hm3/grid/structured/tile/index.hpp>
+#include <hm3/grid/structured/tile/indexed_coordinate.hpp>
 #include <hm3/utility/config/attributes.hpp>
 
 namespace hm3 {

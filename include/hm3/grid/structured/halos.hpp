@@ -3,7 +3,7 @@
 ///
 /// Square structured grid halo-cell relations
 #include <array>
-#include <hm3/grid/structured/grid/bounds.hpp>
+#include <hm3/grid/structured/bounds.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/compact_optional.hpp>
 

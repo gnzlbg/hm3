@@ -1,4 +1,4 @@
-#include <hm3/structured/square/tile.hpp>
+#include <hm3/grid/structured/tile.hpp>
 #include <hm3/utility/test.hpp>
 
 /// Enables HM3_BENCHMARKS

@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Indices into a square structured grid
-#include <hm3/grid/structured/grid/coordinate.hpp>
-#include <hm3/grid/structured/grid/halos.hpp>
+#include <hm3/grid/structured/coordinate.hpp>
+#include <hm3/grid/structured/halos.hpp>
 #include <hm3/grid/structured/tile.hpp>
 
 namespace hm3 {
