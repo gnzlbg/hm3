@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Test multi hierarchical Cartesian grid 1D
-#include <hm3/grid/hc/multi.hpp>
+#include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/utility/test.hpp>
 
 /// Explicit instantiate it

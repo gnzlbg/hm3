@@ -1,10 +1,10 @@
 #ifdef FIXED
 #include <hm3/geometry/sd.hpp>
 #include <hm3/geometry/sd.hpp>
-#include <hm3/grid/generation/uniform.hpp>
-#include <hm3/grid/hierarchical/cartesian/amr/multi.hpp>
 #include <hm3/grid/hierarchical/amr/amr.hpp>
 #include <hm3/grid/hierarchical/amr/criterion/level_at_distance.hpp>
+#include <hm3/grid/hierarchical/cartesian/amr/multi.hpp>
+#include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/fv2/euler.hpp>
 #include <hm3/solver/fv2/fv.hpp>
 #include <hm3/solver/fv2/models/euler/initial_condition/shock_tube.hpp>

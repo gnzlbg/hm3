@@ -1,5 +1,5 @@
 /*#include <hm3/geometry/sd.hpp>
-#include <hm3/grid/generation/uniform.hpp>
+#include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/fv/models/advection/initial_condition/square.hpp>
 #include <hm3/solver/fv/models/advection/numerical_flux/upwind.hpp>

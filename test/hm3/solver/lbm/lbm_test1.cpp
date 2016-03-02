@@ -435,7 +435,7 @@ int main() {
 /*
 #include <hm3/geometry/intersect.hpp>
 #include <hm3/geometry/sd.hpp>
-#include <hm3/grid/generation/uniform.hpp>
+#include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/io/session.hpp>
 #include <hm3/solver/lbm/lattice/d2q9.hpp>
 #include <hm3/solver/lbm/lbm.hpp>

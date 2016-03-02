@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Solver grid state tests
-#include <hm3/grid/generation/uniform.hpp>
+#include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/utility/grid.hpp>
 #include <hm3/utility/test.hpp>
 

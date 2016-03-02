@@ -1,5 +1,5 @@
 /*
-#include <hm3/grid/generation/uniform.hpp>
+#include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/fv/advection.hpp>
 #include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/utility.hpp>
