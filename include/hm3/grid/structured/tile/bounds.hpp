@@ -7,8 +7,8 @@
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {
+namespace grid {
 namespace structured {
-namespace square {
 namespace tile {
 
 /// Square tile length
@@ -36,6 +36,6 @@ struct bounds {
 };
 
 }  // namespace tile
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

@@ -3,25 +3,15 @@
 /// Test halo tile indices
 #include <hm3/grid/structured/halos.hpp>
 #include <hm3/utility/test.hpp>
-#include <iomanip>
+#include "print_grid.hpp"
 
-void print_2d_grid() {
-  for (int j = 0; j < 14; ++j) {
-    for (int i = 0; i < 14; ++i) {
-      std::cout << std::setw(3) << (j * 10 + i) << " ";
-      if (i == 1 || i == 11) { std::cout << "  "; }
-    }
-    std::cout << std::endl;
-    if (j == 1 or j == 11) { std::cout << std::endl; }
-  }
-}
+using namespace hm3;
 
 int main() {
   /// Test lookup tables:
 
   {  // 1D, 10Cells, 2 Halo layers, Rank 0 (across faces)
-    using fn_t
-     = hm3::structured::square::grid::halo_tiles_lookup_table<1, 0, 10, 2>;
+    using fn_t = grid::structured::halo_tiles_lookup_table<1, 0, 10, 2>;
     static constexpr fn_t fn{};
 
     static_assert(fn.indices[0].from[0] == 0, "");
@@ -33,8 +23,7 @@ int main() {
 
   {  // 2D, 10Cells, 2 Halo layers, Rank 0
     // print_2d_grid();
-    using fn_t
-     = hm3::structured::square::grid::halo_tiles_lookup_table<2, 0, 10, 2>;
+    using fn_t = grid::structured::halo_tiles_lookup_table<2, 0, 10, 2>;
     static constexpr fn_t fn{};
 
     // face neighbor 0:
@@ -61,8 +50,7 @@ int main() {
     static_assert(fn.indices[3].to[0] == 11, "");
     static_assert(fn.indices[3].to[1] == 13, "");
 
-    using en_t
-     = hm3::structured::square::grid::halo_tiles_lookup_table<2, 1, 10, 2>;
+    using en_t = grid::structured::halo_tiles_lookup_table<2, 1, 10, 2>;
     static constexpr en_t en{};
 
     // edge neighbor 0:
@@ -91,8 +79,7 @@ int main() {
   }
 
   {  // 3D, 10Cells, 2 Halo layers, Rank 0
-    using fn_t
-     = hm3::structured::square::grid::halo_tiles_lookup_table<3, 0, 10, 2>;
+    using fn_t = grid::structured::halo_tiles_lookup_table<3, 0, 10, 2>;
     static constexpr fn_t fn{};
 
     // face neighbor 0:
@@ -138,8 +125,7 @@ int main() {
     static_assert(fn.indices[5].to[1] == 11, "");
     static_assert(fn.indices[5].to[2] == 13, "");
 
-    using en_t
-     = hm3::structured::square::grid::halo_tiles_lookup_table<3, 1, 10, 2>;
+    using en_t = grid::structured::halo_tiles_lookup_table<3, 1, 10, 2>;
     static constexpr en_t en{};
     // edge neighbor 0:
     static_assert(en.indices[0].from[0] == 0, "");
@@ -226,8 +212,7 @@ int main() {
     static_assert(en.indices[11].to[1] == 13, "");
     static_assert(en.indices[11].to[2] == 13, "");
 
-    using cn_t
-     = hm3::structured::square::grid::halo_tiles_lookup_table<3, 2, 10, 2>;
+    using cn_t = grid::structured::halo_tiles_lookup_table<3, 2, 10, 2>;
     static constexpr cn_t cn{};
     // corner neighbor 0:
     static_assert(cn.indices[0].from[0] == 0, "");

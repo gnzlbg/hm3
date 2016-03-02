@@ -8,12 +8,11 @@
 #include <hm3/grid/structured/indices.hpp>
 
 namespace hm3 {
-namespace structured {
-namespace square {
+namespace grid {
 
-/// Square structured grid
-namespace grid {}  // namespace grid
+/// Square structured grid algorithms
+namespace structured {}  // namespace structured
 
-}  // namespace square
-}  // namespace structured
+}  // namespace grid
+
 }  // namespace hm3

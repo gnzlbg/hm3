@@ -10,12 +10,13 @@
 #include <hm3/grid/structured/tile/indices.hpp>
 
 namespace hm3 {
+namespace grid {
+
 namespace structured {
-namespace square {
 
 /// Square structured tile
 namespace tile {}  // namespace tile
 
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

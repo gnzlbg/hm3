@@ -6,9 +6,8 @@
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {
-namespace structured {
-namespace square {
 namespace grid {
+namespace structured {
 
 namespace detail {
 
@@ -122,7 +121,6 @@ struct bounds : geometry::dimensional<Nd> {
   static constexpr auto lhr = last_halo_right();
 };
 
-}  // namespace grid
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

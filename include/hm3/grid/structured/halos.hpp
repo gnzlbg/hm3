@@ -8,9 +8,8 @@
 #include <hm3/utility/compact_optional.hpp>
 
 namespace hm3 {
-namespace structured {
-namespace square {
 namespace grid {
+namespace structured {
 
 template <suint_t Nd> struct halo_tile { std::array<suint_t, Nd> from, to; };
 
@@ -201,7 +200,6 @@ constexpr auto halo_tile_bounds(Neighbor pos, Bounds) noexcept {
   return halo_tiles_lookup_table<nd, rank, nic, nhl>::indices[*pos];
 }
 
-}  // namespace grid
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

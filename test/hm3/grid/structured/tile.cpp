@@ -8,7 +8,7 @@ using namespace hm3;
 
 template <typename I, typename X>
 void coordinate_tests(I index, suint_t length, const X x) {
-  using namespace hm3::structured::square;
+  using namespace hm3::grid::structured;
   {
     X a;
     CHECK(!a);
@@ -131,7 +131,7 @@ void closest_cell_tests() {
 
 void tile_tests() {
   {  // 1x1 tile
-    using tile_t = structured::square::tile::indices<1, 1>;
+    using tile_t = grid::structured::tile::indices<1, 1>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     static_assert(t.size() == 1, "");
@@ -173,7 +173,7 @@ void tile_tests() {
 
   {
     // 1x10 tile
-    using tile_t = structured::square::tile::indices<1, 10>;
+    using tile_t = grid::structured::tile::indices<1, 10>;
     using x_t    = typename tile_t::coordinate;
 
     auto f = x_t(4);
@@ -200,7 +200,7 @@ void tile_tests() {
     closest_cell_tests<tile_t>();
   }
   {  // 4x4 tile
-    using tile_t = structured::square::tile::indices<2, 4>;
+    using tile_t = grid::structured::tile::indices<2, 4>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     static_assert(t.size() == 16, "");
@@ -303,7 +303,7 @@ void tile_tests() {
   }
 
   {  // 5x5x5 tile
-    using tile_t = structured::square::tile::indices<3, 5>;
+    using tile_t = grid::structured::tile::indices<3, 5>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     static_assert(t.size() == 125, "");
@@ -437,7 +437,7 @@ void tile_tests() {
   }
 
   {  // 6x6x6 tile
-    using tile_t = structured::square::tile::indices<3, 6>;
+    using tile_t = grid::structured::tile::indices<3, 6>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
 
@@ -479,7 +479,7 @@ void tile_benchs() {
   };
 
   auto fe = [](auto const& v_) {
-    using tile_t = structured::square::tile::indices<3, 100>;
+    using tile_t = grid::structured::tile::indices<3, 100>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     unsigned val = 0;
@@ -490,7 +490,7 @@ void tile_benchs() {
   };
 
   auto fi = [](auto const& v_) {
-    using tile_t = structured::square::tile::indices<3, 100>;
+    using tile_t = grid::structured::tile::indices<3, 100>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     unsigned val = 0;

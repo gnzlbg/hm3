@@ -5,9 +5,8 @@
 #include <hm3/grid/structured/bounds.hpp>
 #include <hm3/grid/structured/tile/indexed_coordinate.hpp>
 namespace hm3 {
-namespace structured {
-namespace square {
 namespace grid {
+namespace structured {
 
 /// Square structured grid coordinate
 ///
@@ -71,7 +70,6 @@ struct coordinate
   }
 };
 
-}  // namespace grid
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

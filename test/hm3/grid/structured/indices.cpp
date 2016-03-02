@@ -8,7 +8,7 @@ using namespace hm3;
 
 template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
 void test_indices() {
-  using g = structured::square::grid::indices<Nd, Nic, Nhl>;
+  using g = grid::structured::indices<Nd, Nic, Nhl>;
   static_assert(std::is_literal_type<g>{}, "");
 
   // Size tests:

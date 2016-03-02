@@ -6,8 +6,8 @@
 #include <hm3/grid/structured/tile/index.hpp>
 
 namespace hm3 {
+namespace grid {
 namespace structured {
-namespace square {
 namespace tile {
 
 /// Square tile index-coordinate pair
@@ -116,6 +116,6 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
 };
 
 }  // namespace tile
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

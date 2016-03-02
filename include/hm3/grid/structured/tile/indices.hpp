@@ -10,8 +10,8 @@
 #include <hm3/utility/config/attributes.hpp>
 
 namespace hm3 {
+namespace grid {
 namespace structured {
-namespace square {
 namespace tile {
 
 /// Square tile indices for iterating over a square tile
@@ -444,6 +444,6 @@ struct indices : geometry::dimensional<Nd>, tile::bounds<Nd, Nc> {
 };
 
 }  // namespace tile
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3

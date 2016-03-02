@@ -7,9 +7,8 @@
 #include <hm3/grid/structured/tile.hpp>
 
 namespace hm3 {
-namespace structured {
-namespace square {
 namespace grid {
+namespace structured {
 
 /// Square structured grid indices
 ///
@@ -123,7 +122,6 @@ struct indices : bounds<Nd, Nic, Nhl>,
   }
 };
 
-}  // namespace grid
-}  // namespace square
 }  // namespace structured
+}  // namespace grid
 }  // namespace hm3
