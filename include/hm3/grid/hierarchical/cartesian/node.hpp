@@ -8,7 +8,8 @@
 
 namespace hm3 {
 namespace grid {
-namespace hc {
+namespace hierarchical {
+namespace cartesian {
 
 /// Hierarchical Cartesian grid node
 template <uint_t Nd>  //
@@ -47,6 +48,7 @@ constexpr bool operator!=(node<Nd> const& a, node<Nd> const& b) noexcept {
   return !(a == b);
 }
 
-}  // namespace hc
+}  // namespace cartesian
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

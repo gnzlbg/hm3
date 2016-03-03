@@ -3,23 +3,24 @@
 ///
 /// Square tile indices for iterating over a square tile
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
-#include <hm3/grid/structured/tile/bounds.hpp>
-#include <hm3/grid/structured/tile/coordinate.hpp>
-#include <hm3/grid/structured/tile/index.hpp>
-#include <hm3/grid/structured/tile/indexed_coordinate.hpp>
+#include <hm3/grid/structured/tile/cell/bounds.hpp>
+#include <hm3/grid/structured/tile/cell/coordinate.hpp>
+#include <hm3/grid/structured/tile/cell/index.hpp>
+#include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
 #include <hm3/utility/config/attributes.hpp>
 
 namespace hm3 {
 namespace grid {
 namespace structured {
 namespace tile {
+namespace cell {
 
-/// Square tile indices for iterating over a square tile
+/// Indices for iterating over the cells of a square tile
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
 template <suint_t Nd, suint_t Nc>  //
-struct indices : geometry::dimensional<Nd>, tile::bounds<Nd, Nc> {
+struct indices : bounds<Nd, Nc> {
   using self               = indices<Nd, Nc>;
   using index              = index<Nd, Nc>;
   using coordinate         = coordinate<Nd, Nc>;
@@ -93,7 +94,8 @@ struct indices : geometry::dimensional<Nd>, tile::bounds<Nd, Nc> {
   /// for (index_type k = from[2]; k <= to[2]; ++k) {
   ///   for (index_type j = from[1]; j <= to[1]; ++j) {
   ///     for (index_type i = from[0]; i <= to[0]; ++i) {
-  ///       f(indexed_coordinate(coordinate(i, j, k)));  // index from x
+  ///       // computes index from coordinate indices:
+  ///       f(indexed_coordinate(coordinate(i, j, k)));
   ///     }
   ///   }
   /// }
@@ -338,7 +340,7 @@ struct indices : geometry::dimensional<Nd>, tile::bounds<Nd, Nc> {
   ///@}  // Internal iterators
 
   /// Finds the closest cell to \p x that satisfied the predicate \p b with an
-  /// upperbound distance of \p max_cell_distance (in number of cells away
+  /// upperbound distance of \p max_distance (in number of cells away
   /// from
   /// \p x).
   ///
@@ -443,6 +445,7 @@ struct indices : geometry::dimensional<Nd>, tile::bounds<Nd, Nc> {
   ///@}  // External iterators
 };
 
+}  // namespace cell
 }  // namespace tile
 }  // namespace structured
 }  // namespace grid

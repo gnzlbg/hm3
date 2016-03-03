@@ -13,7 +13,7 @@
 #endif
 
 using namespace hm3;
-using grid::operator"" _g;
+using hierarchical::operator"" _g;
 
 int main(int argc, char* argv[]) {
   /// Initialize MPI
@@ -34,14 +34,14 @@ int main(int argc, char* argv[]) {
   auto bounding_box = geometry::unit(geometry::square<2>{});
 
   // Create the grid
-  grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
+  hierarchical::cm<nd> g(s, node_capacity, no_grids, bounding_box);
 
   // Refine the grid up to the minimum leaf node level
-  grid::generation::uniform(g, min_grid_level);
+  hierarchical::generation::uniform(g, min_grid_level);
 
   //.Make level set state for solvers 0 and 1:
-  auto solver_node_capacity
-   = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
+  auto solver_node_capacity = hierarchical::grid_node_idx{
+   tree::no_nodes_at_uniform_level(nd, max_grid_level)};
   auto ls0 = solver::level_set::state<nd>{g, 0_g, solver_node_capacity, s};
   auto ls1 = solver::level_set::state<nd>{g, 1_g, solver_node_capacity, s};
 
@@ -122,8 +122,9 @@ int main(int argc, char* argv[]) {
       string fname = root_name0 + "_it_" + std::to_string(iter_counter);
       amr::vtk::serialize(amr_handler0, fname);
 
-      grid::hc::vtk::serialize(g, "ls_grid_" + std::to_string(count_) + "_"
-                                   + std::to_string(iter_counter));
+      hierarchical::cartesian::vtk::serialize(
+       g, "ls_grid_" + std::to_string(count_) + "_"
+           + std::to_string(iter_counter));
 #endif
       iter_counter++;
     })) {

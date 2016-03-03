@@ -9,8 +9,8 @@
 
 namespace hm3 {
 namespace grid {
-
-namespace hc {
+namespace hierarchical {
+namespace cartesian {
 
 /// Multiple hierarchical Cartesian Grids
 ///
@@ -69,9 +69,9 @@ template <uint_t Nd> struct multi : adaptor::multi<single<Nd>> {
                                std::move(d)}}};
     }
 
-    HM3_FATAL_ERROR(
-     "Cannot read block of type {} and name {} into a grid::hc::multi", type_,
-     name_);
+    HM3_FATAL_ERROR("Cannot read block of type {} and name {} into a "
+                    "grid::hierarchical::cartesian::multi",
+                    type_, name_);
   }
 };
 
@@ -94,6 +94,7 @@ bool operator!=(multi<Nd> const& a, multi<Nd> const& b) noexcept {
   return !(a == b);
 }
 
-}  // namespace hc
+}  // namespace cartesian
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

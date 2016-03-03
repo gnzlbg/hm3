@@ -8,6 +8,7 @@
 using namespace hm3;
 
 using namespace grid;
+using namespace hierarchical;
 
 int main(int argc, char* argv[]) {
   /// \name Setup
@@ -29,10 +30,10 @@ int main(int argc, char* argv[]) {
   auto no_grids     = 2;
 
   /// Create the grid
-  grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
+  cartesian::multi<nd> g(s, node_capacity, no_grids, bounding_box);
 
   /// Refine the grid up to the maximum leaf node level
-  grid::generation::uniform(g, max_grid_level);
+  generation::uniform(g, max_grid_level);
   ///@}  // Setup
 
   solver::state::grid<nd> grid_state0(g, 0_g, *node_capacity);

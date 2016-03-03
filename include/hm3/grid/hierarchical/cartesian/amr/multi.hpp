@@ -1,14 +1,15 @@
 #pragma once
 /// \file
 ///
-/// Adaptive Mesh Refinement target for hc::multi<Nd>
+/// Adaptive Mesh Refinement target for hierarchical::cartesian::multi<Nd>
 #include <hm3/grid/hierarchical/amr/target.hpp>
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
 
 namespace hm3 {
 namespace grid {
-namespace hc {
+namespace hierarchical {
+namespace cartesian {
 
 template <uint_t Nd>
 struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
@@ -47,7 +48,7 @@ multi_amr_target<Nd> make_amr_target(multi<Nd>& g) noexcept {
   return multi_amr_target<Nd>(g);
 };
 
-}  // namespace hc
-
+}  // namespace cartesian
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

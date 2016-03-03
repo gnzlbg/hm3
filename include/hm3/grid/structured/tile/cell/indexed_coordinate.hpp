@@ -1,21 +1,23 @@
 #pragma once
 /// \file
 ///
-/// Square tile indexed coordinate
-#include <hm3/grid/structured/tile/coordinate.hpp>
-#include <hm3/grid/structured/tile/index.hpp>
+/// Square tile cell indexed coordinate
+#include <hm3/grid/structured/tile/cell/coordinate.hpp>
+#include <hm3/grid/structured/tile/cell/index.hpp>
 
 namespace hm3 {
 namespace grid {
 namespace structured {
 namespace tile {
+namespace cell {
 
-/// Square tile index-coordinate pair
+/// Square tile cell index-coordinate pair
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length
 template <suint_t Nd, suint_t Nc>
 struct indexed_coordinate : geometry::dimensional<Nd> {
+  using self           = indexed_coordinate;
   using index          = index<Nd, Nc>;
   using coordinate     = coordinate<Nd, Nc>;
   using offset_t       = typename coordinate::offset_t;
@@ -62,7 +64,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   ///
   /// \pre The resulting coordinate must lie within the tile
   /// \note Faster than `at`
-  constexpr indexed_coordinate offset(suint_t d, sint_t o) const noexcept {
+  constexpr self offset(suint_t d, sint_t o) const noexcept {
     coordinate n = x.offset(d, o);
     HM3_ASSERT(n, "offsetting x = {} by ({}, {}) results in invalid coordinate",
                x, d, o);
@@ -73,7 +75,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   ///
   /// \pre The resulting coordinate must lie within the tile
   /// \note Faster than `at`
-  constexpr indexed_coordinate offset(offset_t o) const noexcept {
+  constexpr self offset(offset_t o) const noexcept {
     coordinate n = x.offset(o);
     HM3_ASSERT(n, "offsetting x = {} by {} results in invalid coordinate", x,
                o);
@@ -83,27 +85,27 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   /// Coordinate at \p offset along the \p d -th component from this
   ///
   /// Returns invalid if the result lies outside the tile.
-  constexpr indexed_coordinate at(suint_t d, sint_t offset) const noexcept {
+  constexpr self at(suint_t d, sint_t offset) const noexcept {
     coordinate n = x.offset(d, offset);
-    return n ? indexed_coordinate{n} : indexed_coordinate{index(), n};
+    return n ? self{n} : self{index(), n};
   }
 
   /// Coordinate at \p offset from this
   ///
   /// Returns invalid if the result lies outside the tile.
-  constexpr indexed_coordinate at(offset_t offset) const noexcept {
+  constexpr self at(offset_t offset) const noexcept {
     coordinate n = x.offset(offset);
-    return n ? indexed_coordinate{n} : indexed_coordinate{index(), n};
+    return n ? self{n} : self{index(), n};
   }
 
   /// Constructor from constant value
-  static constexpr indexed_coordinate constant(value_t i) noexcept {
+  static constexpr self constant(value_t i) noexcept {
     return coordinate::constant(i);
   }
 
   /// Prints a coordinate to an output stream (for debugging)
   template <typename OStream>
-  friend OStream& operator<<(OStream& os, indexed_coordinate const& ic) {
+  friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.idx << " : " << ic.x[0];
       for (suint_t d = 1; d < Nd; ++d) { os << ", " << ic.x[d]; }
@@ -115,6 +117,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   }
 };
 
+}  // namespace cell
 }  // namespace tile
 }  // namespace structured
 }  // namespace grid

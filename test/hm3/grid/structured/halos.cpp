@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Test halo tile indices
-#include <hm3/grid/structured/halos.hpp>
+#include <hm3/grid/structured/cell_halos.hpp>
 #include <hm3/utility/test.hpp>
 #include "print_grid.hpp"
 

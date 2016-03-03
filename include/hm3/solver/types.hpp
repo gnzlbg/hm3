@@ -7,11 +7,11 @@
 namespace hm3 {
 namespace solver {
 
-using grid::tree_node_idx;
-using grid::grid_node_idx;
-using grid::grid_idx;
-using grid::operator""_gn;
-using grid::operator""_g;
+using hierarchical::tree_node_idx;
+using hierarchical::grid_node_idx;
+using hierarchical::grid_idx;
+using hierarchical::operator""_gn;
+using hierarchical::operator""_g;
 
 using tree::level_idx;
 

@@ -3,8 +3,7 @@
 ///
 /// VTK Grid read types
 #ifdef HM3_ENABLE_VTK
-#include <hm3/grid/hierarchical/cartesian/multi.hpp>
-#include <hm3/grid/hierarchical/cartesian/single.hpp>
+#include <hm3/grid/hierarchical/grid.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
 
@@ -14,8 +13,12 @@ namespace vtk {
 namespace grid {
 
 inline string tree_type() { return type(tree::tree<1>{}); }
-inline string single_type() { return type(::hm3::grid::hc::single<1>{}); }
-inline string multi_type() { return type(::hm3::grid::hc::multi<1>{}); }
+inline string single_type() {
+  return type(::hm3::hierarchical::cartesian::single<1>{});
+}
+inline string multi_type() {
+  return type(::hm3::hierarchical::cartesian::multi<1>{});
+}
 
 }  // namespace grid
 }  // namespace vtk

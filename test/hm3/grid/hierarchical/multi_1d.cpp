@@ -5,10 +5,11 @@
 #include <hm3/utility/test.hpp>
 
 /// Explicit instantiate it
-template struct hm3::grid::hc::multi<1>;
+template struct hm3::hierarchical::cartesian::multi<1>;
 
 using namespace hm3;
 using namespace grid;
+using namespace hierarchical;
 
 int main(int argc, char* argv[]) {
   mpi::env env(argc, argv);
@@ -17,7 +18,7 @@ int main(int argc, char* argv[]) {
   io::session s(io::create, "hc_multi_1d", comm);
 
   auto bbox = geometry::unit(geometry::square<1>{});
-  hc::multi<1> g(s, 20, 2, bbox);
+  cartesian::multi<1> g(s, 20, 2, bbox);
 
   g.refine(0_n);
   g.refine(1_n);

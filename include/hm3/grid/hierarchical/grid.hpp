@@ -8,11 +8,18 @@
 namespace hm3 {
 namespace grid {
 
+/// Hierarchical grids data-structures and algorithms
+namespace hierarchical {
+
 /// Single hierarchical Cartesian Grid
-template <uint_t Nd> using shc = hc::single<Nd>;
+template <uint_t Nd> using cs = cartesian::single<Nd>;
 
 /// Multi hierarchical Cartesian Grid
-template <uint_t Nd> using mhc = hc::multi<Nd>;
+template <uint_t Nd> using cm = cartesian::multi<Nd>;
 
+}  // namespace hierarchical
 }  // namespace grid
+
+using namespace grid;
+
 }  // namespace hm3

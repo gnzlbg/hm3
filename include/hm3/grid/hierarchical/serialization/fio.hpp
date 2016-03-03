@@ -9,6 +9,7 @@
 
 namespace hm3 {
 namespace grid {
+namespace hierarchical {
 
 /// Reads Grid from file \p file_name
 template <typename Grid> Grid from_file(Grid const&, string const& file_name) {
@@ -35,5 +36,9 @@ template <typename Grid> void to_file(Grid const& g, string const& file_name) {
   c.write(f);
 }
 
+}  // namespace hierarchical
 }  // namespace grid
+
+using namespace grid;
+
 }  // namespace hm3

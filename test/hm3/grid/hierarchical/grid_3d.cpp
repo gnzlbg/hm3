@@ -8,7 +8,7 @@ using namespace hm3;
 using namespace test;
 
 /// Explicit instantiate it
-template struct hm3::grid::hc::single<3>;
+template struct hm3::hierarchical::cartesian::single<3>;
 
 struct uniform_grid {
   std::vector<grid_node> nodes{
@@ -37,7 +37,7 @@ auto uniform_grid_v = extend(uniform_tree{}, uniform_grid{});
 
 int main() {
   auto bbox = geometry::unit(geometry::square<3>{});
-  grid::hc::single<3> g(73, bbox);
+  hierarchical::cartesian::single<3> g(73, bbox);
   g.refine(0_n);
   g.refine(1_n);
   g.refine(2_n);

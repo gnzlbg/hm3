@@ -36,8 +36,8 @@ void coordinate_tests(I index, suint_t length, const X x) {
     const auto w = x.offset(d, 1);
     if (x[d] < length - 1) {
       CHECK(w);
-      CHECK(tile::distance(x, w) == 1.);
-      CHECK(tile::distance(x, w) == tile::distance(w, x));
+      CHECK(tile::cell::distance(x, w) == 1.);
+      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
       CHECK(distance_square(x, w) == suint_t{1});
       CHECK(distance_square(x, w) == distance_square(w, x));
     } else {
@@ -50,8 +50,8 @@ void coordinate_tests(I index, suint_t length, const X x) {
     auto w = x.offset(d, -1);
     if (x[d] > 0) {
       CHECK(w);
-      CHECK(tile::distance(x, w) == 1.);
-      CHECK(tile::distance(x, w) == tile::distance(w, x));
+      CHECK(tile::cell::distance(x, w) == 1.);
+      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
       CHECK(distance_square(x, w) == suint_t{1});
       CHECK(distance_square(x, w) == distance_square(w, x));
     } else {
@@ -67,8 +67,8 @@ void coordinate_tests(I index, suint_t length, const X x) {
     auto w = x.offset(o);
     if (x[d] < length - 1) {
       CHECK(w);
-      CHECK(tile::distance(x, w) == 1.);
-      CHECK(tile::distance(x, w) == tile::distance(w, x));
+      CHECK(tile::cell::distance(x, w) == 1.);
+      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
       CHECK(distance_square(x, w) == suint_t{1});
       CHECK(distance_square(x, w) == distance_square(w, x));
     } else {
@@ -84,8 +84,8 @@ void coordinate_tests(I index, suint_t length, const X x) {
     auto w = x.offset(o);
     if (x[d] > 0) {
       CHECK(w);
-      CHECK(tile::distance(x, w) == 1.);
-      CHECK(tile::distance(x, w) == tile::distance(w, x));
+      CHECK(tile::cell::distance(x, w) == 1.);
+      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
       CHECK(distance_square(x, w) == suint_t{1});
       CHECK(distance_square(x, w) == distance_square(w, x));
     } else {
@@ -131,7 +131,7 @@ void closest_cell_tests() {
 
 void tile_tests() {
   {  // 1x1 tile
-    using tile_t = grid::structured::tile::indices<1, 1>;
+    using tile_t = grid::structured::tile::cell::indices<1, 1>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     static_assert(t.size() == 1, "");
@@ -173,7 +173,7 @@ void tile_tests() {
 
   {
     // 1x10 tile
-    using tile_t = grid::structured::tile::indices<1, 10>;
+    using tile_t = grid::structured::tile::cell::indices<1, 10>;
     using x_t    = typename tile_t::coordinate;
 
     auto f = x_t(4);
@@ -200,7 +200,7 @@ void tile_tests() {
     closest_cell_tests<tile_t>();
   }
   {  // 4x4 tile
-    using tile_t = grid::structured::tile::indices<2, 4>;
+    using tile_t = grid::structured::tile::cell::indices<2, 4>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     static_assert(t.size() == 16, "");
@@ -303,7 +303,7 @@ void tile_tests() {
   }
 
   {  // 5x5x5 tile
-    using tile_t = grid::structured::tile::indices<3, 5>;
+    using tile_t = grid::structured::tile::cell::indices<3, 5>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     static_assert(t.size() == 125, "");
@@ -437,7 +437,7 @@ void tile_tests() {
   }
 
   {  // 6x6x6 tile
-    using tile_t = grid::structured::tile::indices<3, 6>;
+    using tile_t = grid::structured::tile::cell::indices<3, 6>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
 
@@ -452,7 +452,7 @@ void tile_tests() {
         ++c;
         if (c == 86 || c == 92 || c == 122 || c == 128) { c += 2; }
       };
-      tile_t::for_each_ring(f, l, check_one, 1);
+      t.for_each_ring(f, l, check_one, 1);
       CHECK(c == 216);
     }
   }
@@ -479,7 +479,7 @@ void tile_benchs() {
   };
 
   auto fe = [](auto const& v_) {
-    using tile_t = grid::structured::tile::indices<3, 100>;
+    using tile_t = grid::structured::tile::cell::indices<3, 100>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     unsigned val = 0;
@@ -490,7 +490,7 @@ void tile_benchs() {
   };
 
   auto fi = [](auto const& v_) {
-    using tile_t = grid::structured::tile::indices<3, 100>;
+    using tile_t = grid::structured::tile::cell::indices<3, 100>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     unsigned val = 0;

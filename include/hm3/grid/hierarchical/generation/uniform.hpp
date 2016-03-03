@@ -9,6 +9,7 @@
 
 namespace hm3 {
 namespace grid {
+namespace hierarchical {
 namespace generation {
 
 /// Refines the grid until all the leaf nodes are at the target level
@@ -32,5 +33,6 @@ auto&& uniform = static_const<uniform_fn>::value;
 }  // namespace
 
 }  // namespace generation
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

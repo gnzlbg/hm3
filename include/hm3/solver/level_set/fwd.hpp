@@ -11,9 +11,9 @@ namespace solver {
 /// Level-set solver
 namespace level_set {
 
-using grid::grid_idx;
-using grid::grid_node_idx;
-using grid::tree_node_idx;
+using hierarchical::grid_idx;
+using hierarchical::grid_node_idx;
+using hierarchical::tree_node_idx;
 
 template <uint_t Nd> struct state;
 

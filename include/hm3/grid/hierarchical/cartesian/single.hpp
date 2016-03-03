@@ -10,9 +10,10 @@
 
 namespace hm3 {
 namespace grid {
+namespace hierarchical {
 
 //// Hierarchical Cartesian grids
-namespace hc {
+namespace cartesian {
 
 /// Hierarchical Cartesian grid
 template <uint_t Nd>  //
@@ -140,6 +141,7 @@ template <uint_t Nd> string name(single<Nd> const&) {
   return type(single<Nd>{}) + "_" + std::to_string(Nd) + "D";
 }
 
-}  // namespace hc
+}  // namespace cartesian
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

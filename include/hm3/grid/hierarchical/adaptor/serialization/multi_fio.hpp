@@ -7,6 +7,7 @@
 
 namespace hm3 {
 namespace grid {
+namespace hierarchical {
 namespace adaptor {
 
 /// Maps arrays in the file descriptor to memory addresses
@@ -46,12 +47,13 @@ multi<TreeGrid> from_file_unread(multi<TreeGrid> const&, io::file& f,
 
   // Move the hierarchical cartesian grid out of the function:
   static_assert(std::is_move_constructible<multi<TreeGrid>>{},
-                "if hc::multi is not move constructible mapping the arrays "
-                "fails (they will be mapped to the wrong addresses in memory)");
+                "if hierarchical::cartesian::multi is not move constructible "
+                "mapping the arrays fails (they will be mapped to the wrong "
+                "addresses in memory)");
   return t;
 }
 
-/// Reads hc::multi from file descriptor \p f
+/// Reads hierarchical::cartesian::multi from file descriptor \p f
 template <typename TreeGrid>
 multi<TreeGrid> from_file(multi<TreeGrid> const&, io::file& f,
                           tree_node_idx node_capacity = tree_node_idx{},
@@ -71,5 +73,6 @@ void to_file_unwritten(io::file& f, multi<TreeGrid> const& t) {
 }
 
 }  // namespace adaptor
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

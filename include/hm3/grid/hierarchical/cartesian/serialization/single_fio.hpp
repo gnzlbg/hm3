@@ -7,7 +7,8 @@
 
 namespace hm3 {
 namespace grid {
-namespace hc {
+namespace hierarchical {
+namespace cartesian {
 
 /// Returns a yet to be read grid from a file descriptor \p f
 template <uint_t Nd>
@@ -42,6 +43,7 @@ template <uint_t Nd> void to_file_unwritten(io::file& f, single<Nd> const& g) {
    .field("root_node_length", geometry::length(g.bounding_box()));
 }
 
-}  // namespace hc
+}  // namespace cartesian
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

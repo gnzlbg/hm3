@@ -4,7 +4,7 @@
 ///
 /// VTK Reader factory for grid types
 ///
-/// \todo Reader for a grid::hc::single is missing
+/// \todo Reader for a grid::hierarchical::cartesian::single is missing
 #include <hm3/vis/vtk/readers/grid/tree.hpp>
 // #include <hm3/vis/vtk/readers/grid/single.hpp>
 #include <hm3/vis/vtk/readers/grid/multi.hpp>

@@ -8,6 +8,7 @@
 
 namespace hm3 {
 namespace grid {
+namespace hierarchical {
 
 using tree::level_idx;
 using tree_node_idx = tree::node_idx;
@@ -36,5 +37,9 @@ constexpr node_idx operator"" _gn(unsigned long long int i) {
 
 using grid_node_idx = node_idx;
 
+}  // namespace hierarchical
 }  // namespace grid
+
+using namespace grid;
+
 }  // namespace hm3

@@ -13,7 +13,7 @@
 
 namespace hm3 {
 namespace grid {
-
+namespace hierarchical {
 namespace adaptor {
 
 /// Stores multiple grids inside a tree-like grid
@@ -235,5 +235,6 @@ template <typename TreeGrid> string name(multi<TreeGrid> const&) {
 }
 
 }  // namespace adaptor
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

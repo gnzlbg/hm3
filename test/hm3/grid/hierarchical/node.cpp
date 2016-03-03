@@ -9,14 +9,15 @@
 
 using namespace hm3;
 
-template struct grid::hc::node<1_u>;
-template struct grid::hc::node<2_u>;
-template struct grid::hc::node<3_u>;
+template struct hierarchical::cartesian::node<1_u>;
+template struct hierarchical::cartesian::node<2_u>;
+template struct hierarchical::cartesian::node<3_u>;
 
 template <uint_t Nd>  //
 void test_node() {
   using namespace grid;
   using namespace geometry;
+  using namespace hierarchical;
 
   point<Nd> pm = point<Nd>::zero();
   point<Nd> pp = point<Nd>::ones();
@@ -41,8 +42,8 @@ void test_node() {
   CHECK(square_length(pm, xc) == 0.5);
   CHECK(square_length(xc, pp) == 0.5);
 
-  hc::node<Nd> n1(pm, pp);
-  hc::node<Nd> n2(square_centroid(pm, pp), square_length(pm, pp));
+  cartesian::node<Nd> n1(pm, pp);
+  cartesian::node<Nd> n2(square_centroid(pm, pp), square_length(pm, pp));
 
   CHECK(length(n1) == length(n2));
   CHECK(volume(n1) == volume(n2));
@@ -53,9 +54,9 @@ void test_node() {
   CHECK(n1 == n2);
   CHECK(!(n1 != n2));
 
-  hc::node<Nd> n3(pm, pp, tree_node_idx{3});
-  hc::node<Nd> n4(pm, pp, tree_node_idx{4});
-  hc::node<Nd> n5(pm, pp, tree_node_idx{3});
+  cartesian::node<Nd> n3(pm, pp, tree_node_idx{3});
+  cartesian::node<Nd> n4(pm, pp, tree_node_idx{4});
+  cartesian::node<Nd> n5(pm, pp, tree_node_idx{3});
 
   CHECK(n3 == n5);
   CHECK(n4 != n3);

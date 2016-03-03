@@ -1,7 +1,7 @@
 #pragma once
 /// \file
 ///
-/// VTK Reader for grid::hc::multi
+/// VTK Reader for grid::hierarchical::cartesian::multi
 #ifdef HM3_ENABLE_VTK
 #include <hm3/vis/vtk/readers/grid/tree.hpp>
 
@@ -13,7 +13,7 @@ namespace grid {
 /// Multi hierarchical Cartesian grid reader
 template <uint_t Nd> struct multi : tree<Nd> {
   using tree<Nd>::grid;
-  using grid_idx = ::hm3::grid::grid_idx;
+  using grid_idx = ::hm3::hierarchical::grid_idx;
 
   using tree<Nd>::cell_data;
 
@@ -51,9 +51,9 @@ auto make_multi(uint_t ng) -> std::unique_ptr<::hm3::vis::vtk::reader> {
 inline auto make_multi(io::json const& b) {
   string block_type = io::read_field(b, "type", HM3_AT_);
   if (block_type != multi_type()) {
-    HM3_FATAL_ERROR(
-     "Cannot 1make a hm3::grid::hc::multi reader from a block of type \"{}\"",
-     block_type);
+    HM3_FATAL_ERROR("Cannot 1make a hm3::grid::hierarchical::cartesian::multi "
+                    "reader from a block of type \"{}\"",
+                    block_type);
   }
 
   if (b["files"].empty()) {

@@ -35,10 +35,11 @@ int main(int argc, char* argv[]) {
   auto no_grids     = 2;
 
   // Create the grid
-  grid::hc::multi<nd> g(s, node_capacity, no_grids, bounding_box);
+  hierarchical::cartesian::multi<nd> g(s, node_capacity, no_grids,
+                                       bounding_box);
 
   // Refine the grid up to the minimum leaf node level
-  grid::generation::uniform(g, min_grid_level);
+  hierarchical::generation::uniform(g, min_grid_level);
 
   // Resort and write the initial grid (file idx: 0)
   g.sort();

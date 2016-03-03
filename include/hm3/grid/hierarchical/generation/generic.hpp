@@ -7,6 +7,7 @@
 
 namespace hm3 {
 namespace grid {
+namespace hierarchical {
 namespace generation {
 
 struct generic_fn {
@@ -33,5 +34,6 @@ auto&& generic = static_const<generic_fn>::value;
 }  // namespace
 
 }  // namespace generation
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3

@@ -433,13 +433,13 @@ Tree check_io(Tree tree, string file_name, Location = Location{}) {
   io::session::remove(file_name, comm);
 
   // write tree to disk:
-  grid::to_file(tree, file_name);
+  hierarchical::to_file(tree, file_name);
   std::cerr << "HERE0" << std::endl;
   consistency_checks(tree, Location{});
   std::cerr << "HERE1" << std::endl;
 
   // read tree from disk
-  auto input = grid::from_file(Tree{}, file_name);
+  auto input = hierarchical::from_file(Tree{}, file_name);
   consistency_checks(input, Location{});
 
   CHECK(tree == input);  // both trees should be identical in memory
@@ -448,7 +448,7 @@ Tree check_io(Tree tree, string file_name, Location = Location{}) {
   // write new tree back to disk
   string input_fn = file_name + "_after_read";
   io::session::remove(input_fn, comm);
-  grid::to_file(input, input_fn);
+  hierarchical::to_file(input, input_fn);
 
   CHECK(tree == input);  // both trees should still be identical in memory
   CHECK(input == tree);  // both trees should still be identical in memory

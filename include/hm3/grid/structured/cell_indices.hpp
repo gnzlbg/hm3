@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Indices into a square structured grid
-#include <hm3/grid/structured/coordinate.hpp>
-#include <hm3/grid/structured/halos.hpp>
+#include <hm3/grid/structured/cell_coordinate.hpp>
+#include <hm3/grid/structured/cell_halos.hpp>
 #include <hm3/grid/structured/tile.hpp>
 
 namespace hm3 {
@@ -16,14 +16,14 @@ namespace structured {
 /// \tparam Nic number of cells per dimension
 /// \tparam Nhl number of halo layers
 template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
-struct indices : bounds<Nd, Nic, Nhl>,
-                 tile::indices<Nd, bounds<Nd, Nic, Nhl>::size()> {
+struct cell_indices : bounds<Nd, Nic, Nhl>,
+                      tile::cell::indices<Nd, bounds<Nd, Nic, Nhl>::size()> {
   static_assert(Nhl > 0, "zero halo layers not supported");
   using bounds          = bounds<Nd, Nic, Nhl>;
   using index_type      = typename tile::index_type;
-  using tile            = tile::indices<Nd, Nic + 2 * Nhl>;
+  using tile            = tile::cell::indices<Nd, Nic + 2 * Nhl>;
   using index           = typename tile::index;
-  using coordinate      = coordinate<Nd, Nic, Nhl>;
+  using coordinate      = cell_coordinate<Nd, Nic, Nhl>;
   using tile_coordinate = typename tile::coordinate;
   /// Sizes
   ///@{

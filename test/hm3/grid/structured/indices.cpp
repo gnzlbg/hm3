@@ -1,14 +1,14 @@
 /// \file
 ///
 /// Test square structured grid indices
-#include <hm3/grid/structured/indices.hpp>
+#include <hm3/grid/structured/cell_indices.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
 template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
 void test_indices() {
-  using g = grid::structured::indices<Nd, Nic, Nhl>;
+  using g = grid::structured::cell_indices<Nd, Nic, Nhl>;
   static_assert(std::is_literal_type<g>{}, "");
 
   // Size tests:

@@ -19,7 +19,7 @@ namespace state {
 /// \note Solver grid nodes do not necessarily need to be part of the grid
 /// tree. For example ghost nodes might not exist within the tree.
 template <uint_t Nd> struct grid {
-  using tree_t = ::hm3::grid::mhc<Nd>;
+  using tree_t = ::hm3::hierarchical::cartesian::multi<Nd>;
 
  private:
   using tree_node_ids

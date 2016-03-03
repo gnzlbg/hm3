@@ -3,8 +3,8 @@
 
 using namespace hm3;
 
-using grid::grid_node_idx;
-using grid::operator""_gn;
+using hierarchical::grid_node_idx;
+using hierarchical::operator""_gn;
 
 /// Explicit instantiate it
 template struct hm3::solver::state::neighbors<6>;

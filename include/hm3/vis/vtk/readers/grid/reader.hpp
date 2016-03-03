@@ -38,7 +38,7 @@ namespace grid {
 /// are cached inside the reader.
 ///
 template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
-  using grid_t       = ::hm3::grid::hc::multi<Nd>;
+  using grid_t       = ::hm3::grid::hierarchical::cartesian::multi<Nd>;
   using vtk_cell_idx = tree::node_idx;
 
  protected:
@@ -181,7 +181,7 @@ template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
       log("Reader grid topology changed...");
       cell_data.unload_all();
 
-      ::hm3::grid::hc::vtk::serializable_multi<Nd> s(*grid);
+      ::hm3::hierarchical::cartesian::vtk::serializable_multi<Nd> s(*grid);
 
       for_each_cell([&](auto&& nodes) { vtk_grid.reinitialize(nodes, s); });
       status = reader_status::topology_ready;

@@ -1,7 +1,7 @@
 #pragma once
 /// \file
 ///
-/// Serialization of grid::hc::multi to VKT
+/// Serialization of grid::hierarchical::cartesian::multi to VKT
 #ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/square.hpp>
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
@@ -13,7 +13,10 @@
 
 namespace hm3 {
 namespace grid {
-namespace hc {
+namespace hierarchical {
+namespace cartesian {
+
+/// Serialization to VTK
 namespace vtk {
 
 /// Adapts a tree<Nd> to be Serializable to a vtkUnstructuredGrid
@@ -79,7 +82,8 @@ void serialize(multi<Nd> const& t, string const& fname_, int_t level = -1) {
 }
 
 }  // namespace vtk
-}  // namespace hc
+}  // namespace cartesian
+}  // namespace hierarchical
 }  // namespace grid
 }  // namespace hm3
 #endif  // HM3_ENABLE_VTK

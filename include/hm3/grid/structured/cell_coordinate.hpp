@@ -3,7 +3,7 @@
 ///
 /// Square structured grid coordinate
 #include <hm3/grid/structured/bounds.hpp>
-#include <hm3/grid/structured/tile/indexed_coordinate.hpp>
+#include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
 namespace hm3 {
 namespace grid {
 namespace structured {
@@ -14,10 +14,13 @@ namespace structured {
 /// \tparam Nic number of internal cells.
 /// \tparam Nhl number of halo layers.
 template <suint_t Nd, suint_t Nic, suint_t Nhl>
-struct coordinate
- : tile::indexed_coordinate<Nd, bounds<Nd, Nic, Nhl>::cells_per_length()> {
-  using bounds  = bounds<Nd, Nic, Nhl>;
-  using tile_ic = tile::indexed_coordinate<Nd, bounds::cells_per_length()>;
+struct cell_coordinate
+ : tile::cell::indexed_coordinate<Nd,
+                                  bounds<Nd, Nic, Nhl>::cells_per_length()> {
+  using self   = cell_coordinate;
+  using bounds = bounds<Nd, Nic, Nhl>;
+  using tile_ic
+   = tile::cell::indexed_coordinate<Nd, bounds::cells_per_length()>;
 
   using value_t        = typename tile_ic::value_t;
   using signed_value_t = typename tile_ic::signed_value_t;
@@ -26,7 +29,7 @@ struct coordinate
   using tile_ic::tile_ic;
   using tile_ic::operator=;
 
-  constexpr coordinate(tile_ic x) : tile_ic(std::move(x)) {}
+  constexpr cell_coordinate(tile_ic x) : tile_ic(std::move(x)) {}
   explicit operator tile_ic() { return static_cast<tile_ic>(*this); }
 
   /// Is the coordinate an internal cell.
@@ -44,28 +47,26 @@ struct coordinate
   constexpr bool is_halo() const noexcept { return !is_internal(); }
 
   /// Constructs a grid coordinate from a constant index.
-  static constexpr coordinate constant(value_t i) noexcept {
-    return coordinate(tile_ic::constant(i));
+  static constexpr self constant(value_t i) noexcept {
+    return self(tile_ic::constant(i));
   }
 
   /// Construct a grid coordinate from a cell index.
-  static constexpr coordinate from(index i) noexcept {
-    return {tile_ic::from(i)};
-  }
+  static constexpr self from(index i) noexcept { return {tile_ic::from(i)}; }
 
-  constexpr coordinate offset(value_t d, signed_value_t o) const noexcept {
+  constexpr self offset(value_t d, signed_value_t o) const noexcept {
     return tile_ic::offset(d, o);
   }
 
-  constexpr coordinate offset(offset_t o) const noexcept {
+  constexpr self offset(offset_t o) const noexcept {
     return tile_ic::offset(o);
   }
 
-  constexpr coordinate offset(signed_value_t o) const noexcept {
+  constexpr self offset(signed_value_t o) const noexcept {
     return tile_ic::offset(o);
   }
 
-  constexpr coordinate offset_if_valid(signed_value_t o) const noexcept {
+  constexpr self offset_if_valid(signed_value_t o) const noexcept {
     return tile_ic::offset_if_valid(o);
   }
 };

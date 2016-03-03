@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Test square structured grid indices
-#include <hm3/grid/structured/indices.hpp>
+#include <hm3/grid/structured/cell_indices.hpp>
 #include <hm3/utility/test.hpp>
 #include "print_grid.hpp"
 
@@ -49,13 +49,13 @@ template <typename G> void test_grid(G) {
 }
 
 int main() {
-  using g1d1 = grid::structured::indices<1, 10, 1>;
-  using g2d1 = grid::structured::indices<2, 10, 1>;
-  using g3d1 = grid::structured::indices<3, 10, 1>;
+  using g1d1 = grid::structured::cell_indices<1, 10, 1>;
+  using g2d1 = grid::structured::cell_indices<2, 10, 1>;
+  using g3d1 = grid::structured::cell_indices<3, 10, 1>;
 
-  using g1d2 = grid::structured::indices<1, 10, 2>;
-  using g2d2 = grid::structured::indices<2, 10, 2>;
-  using g3d2 = grid::structured::indices<3, 10, 2>;
+  using g1d2 = grid::structured::cell_indices<1, 10, 2>;
+  using g2d2 = grid::structured::cell_indices<2, 10, 2>;
+  using g3d2 = grid::structured::cell_indices<3, 10, 2>;
 
   test_grid(g1d1{});
   test_grid(g2d1{});
