@@ -98,7 +98,8 @@ struct matrix : bounds<NoRows, NoCols>,
     }
   }
 
-  template <typename Other> void element_wise_assign(Other&& o) {
+  template <typename Other>  //
+  constexpr void element_wise_assign(Other&& o) {
     if (std::is_same<Order, col_major_t>{}) {
       for (uint_t c = 0, ce = no_cols(); c != ce; ++c) {
         for (uint_t r = 0, re = no_rows(); r != re; ++r) {
@@ -117,7 +118,7 @@ struct matrix : bounds<NoRows, NoCols>,
   /// Construct from Eigen expression:
   template <typename Expr, int Rows, int Cols, bool I,
             CONCEPT_REQUIRES_(!is_bit())>
-  matrix(Eigen::Block<Expr, Rows, Cols, I> const& view)
+  constexpr matrix(Eigen::Block<Expr, Rows, Cols, I> const& view)
    : bounds(view.rows(), view.cols()), storage(view.rows(), view.cols()) {
     HM3_ASSERT(Rows == no_rows() && Cols == no_cols(),
                "dimension mismatch | rows (runtime: {}, compile-time: {}) | "
@@ -129,7 +130,7 @@ struct matrix : bounds<NoRows, NoCols>,
   /// Construct from Eigen expression:
   template <typename Expr, int Rows, int Cols, bool I,
             CONCEPT_REQUIRES_(!is_bit())>
-  matrix& operator=(Eigen::Block<Expr, Rows, Cols, I> const& view) {
+  constexpr matrix& operator=(Eigen::Block<Expr, Rows, Cols, I> const& view) {
     HM3_ASSERT(Rows == no_rows() && Cols == no_cols(),
                "dimension mismatch | rows (runtime: {}, compile-time: {}) | "
                "cols (runtime: {}, compile-time: {})!",
@@ -140,31 +141,31 @@ struct matrix : bounds<NoRows, NoCols>,
 
   /// Construct from Eigen expression:
   CONCEPT_REQUIRES(!is_bit())  // this can be relaxed
-  matrix(Eigen::Matrix<T, NoRows, NoCols> const& other)
+  constexpr matrix(Eigen::Matrix<T, NoRows, NoCols> const& other)
    : storage(other.rows(), other.cols()) {
     element_wise_assign(other);
   }
 
   /// Construct from Eigen expression:
   CONCEPT_REQUIRES(!is_bit())  // this can be relaxed
-  matrix& operator=(Eigen::Matrix<T, NoRows, NoCols> const& other) {
+  constexpr matrix& operator=(Eigen::Matrix<T, NoRows, NoCols> const& other) {
     element_wise_assign(other);
     return *this;
   }
 
   /// Returns an Eigen view of the matrix
   CONCEPT_REQUIRES(!is_bit())
-  auto operator()() & -> eigen_map_type {
+  constexpr auto operator()() & -> eigen_map_type {
     return eigen_map_type{this->data(), static_cast<int_t>(no_rows()),
                           static_cast<int_t>(no_cols())};
   }
 
   CONCEPT_REQUIRES(!is_bit())
-  auto operator()() && -> eigen_map_type = delete;
+  constexpr auto operator()() && -> eigen_map_type = delete;
 
   /// Returns an Eigen view of the matrix
   CONCEPT_REQUIRES(!is_bit())
-  auto operator()() const& -> const_eigen_map_type {
+  constexpr auto operator()() const& -> const_eigen_map_type {
     return const_eigen_map_type{this->data(), static_cast<int_t>(no_rows()),
                                 static_cast<int_t>(no_cols())};
   }
@@ -219,6 +220,11 @@ struct matrix : bounds<NoRows, NoCols>,
   CONCEPT_REQUIRES(!is_bit())
   static constexpr auto constant(T value) noexcept {
     return matrix{eigen_map_type::Constant(value)};
+  }
+
+  CONCEPT_REQUIRES(!is_bit())
+  static constexpr auto unit(suint_t d) noexcept {
+    return matrix{eigen_map_type::Unit(d)};
   }
 
   CONCEPT_REQUIRES(!is_bit())

@@ -32,8 +32,7 @@ template <uint_t Nd> struct sphere_t : dimensional<Nd> {
   num_t radius;
   constexpr sphere_t() = default;
   constexpr sphere_t(point<Nd> centroid_, const num_t radius_) noexcept
-   : centroid(std::move(centroid_)),
-     radius(radius_) {}
+   : centroid(std::move(centroid_)), radius(radius_) {}
   num_t operator()(point<Nd> const& x) const noexcept {
     return sphere(x, centroid, radius);
   }

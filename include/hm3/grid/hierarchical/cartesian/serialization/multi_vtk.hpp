@@ -31,8 +31,7 @@ template <uint_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
   using vtk_cell_idx = tree_node_idx;
 
   serializable_multi(multi<Nd> const& s, int_t level = -1) noexcept
-   : t_{s},
-     level_{level} {}
+   : t_{s}, level_{level} {}
 
   auto geometry(tree_node_idx n) const noexcept { return t_.geometry(n); }
 

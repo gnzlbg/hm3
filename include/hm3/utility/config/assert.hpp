@@ -7,6 +7,7 @@
 #include <hm3/utility/config/compiler.hpp>
 #include <hm3/utility/config/debug_trap.hpp>
 #include <hm3/utility/config/likely.hpp>
+#include <hm3/utility/config/unreachable.hpp>
 #include <hm3/utility/fmt.hpp>
 #include <type_traits>
 
@@ -49,7 +50,7 @@
 #define HM3_ASSERT_AT(condition, message, AT, ...)                         \
   do {                                                                     \
     if (false && HM3_UNLIKELY(!(condition))) {                             \
-      __builtin_unreachable();                                             \
+      HM3_UNREACHABLE();                                                   \
       /* still type check everything: */                                   \
       ::hm3::fmt::print(                                                   \
        stderr,                                                             \

@@ -54,10 +54,46 @@ constexpr auto&& op_union = static_const<detail::op_union_t>::value;
 
 namespace detail {
 /// Union of a signed distance field: OR(f1, f2)
+///
+/// \note this is the union of the "negative regions" of the signed distance
+/// field
 struct add_t {
   template <typename... SDFunctions>
   constexpr auto operator()(SDFunctions&&... fs) const {
     return adapt(op_union, std::forward<SDFunctions>(fs)...);
+  }
+};
+}  // namespace detail
+
+constexpr auto&& add = static_const<detail::add_t>::value;
+
+namespace detail {
+struct op_union_plus_t {
+  template <typename Point, typename SDFunction1, typename SDFunction2>
+  constexpr auto operator()(Point&& x, SDFunction1&& f1,
+                            SDFunction2&& f2) const {
+    return -std::max(-f1(x), -f2(x));
+  }
+
+  /// Union of a signed distance field: OR(f1, f2)
+  template <typename Point, typename SDFunction1, typename... SDFunctions>
+  constexpr auto operator()(Point&& x, SDFunction1&& f1,
+                            SDFunctions&&... fs) const {
+    return (*this)(f1, op_union_plus(x, fs...));
+  }
+};
+}  // namespace detail
+
+constexpr auto&& op_union_plus = static_const<detail::op_union_plus_t>::value;
+
+namespace detail {
+/// Union of a signed distance field: OR(f1, f2)
+///
+/// \note union of the "positive" regions of the signed distance field
+struct add_plus_t {
+  template <typename... SDFunctions>
+  constexpr auto operator()(SDFunctions&&... fs) const {
+    return adapt(op_union_plus, std::forward<SDFunctions>(fs)...);
   }
 };
 }  // namespace detail

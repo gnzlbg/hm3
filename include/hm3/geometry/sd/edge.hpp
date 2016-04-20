@@ -25,8 +25,7 @@ template <int_t Nd> struct fixed_edge : dimensional<Nd> {
   constexpr fixed_edge() = default;
 
   constexpr fixed_edge(point<Nd> centroid_, vector<Nd> normal_) noexcept
-   : centroid(std::move(centroid_)),
-     normal(std::move(normal_)) {}
+   : centroid(std::move(centroid_)), normal(std::move(normal_)) {}
 
   inline num_t operator()(point<Nd> const& x) const noexcept {
     return edge(x, centroid, normal);

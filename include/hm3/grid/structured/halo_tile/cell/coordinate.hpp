@@ -1,26 +1,26 @@
 #pragma once
 /// \file
 ///
-/// Square structured grid coordinate
-#include <hm3/grid/structured/bounds.hpp>
+/// Square structured halo tile coordinate
+#include <hm3/grid/structured/halo_tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
 namespace hm3 {
 namespace grid {
 namespace structured {
+namespace halo_tile {
+namespace cell {
 
-/// Square structured grid coordinate
+/// Square structured grid cell coordinate
 ///
-/// \tparam Nd number of spatial dimensions.
+/// \tparam Nd  number of spatial dimensions.
 /// \tparam Nic number of internal cells.
 /// \tparam Nhl number of halo layers.
 template <suint_t Nd, suint_t Nic, suint_t Nhl>
-struct cell_coordinate
- : tile::cell::indexed_coordinate<Nd,
-                                  bounds<Nd, Nic, Nhl>::cells_per_length()> {
-  using self   = cell_coordinate;
-  using bounds = bounds<Nd, Nic, Nhl>;
-  using tile_ic
-   = tile::cell::indexed_coordinate<Nd, bounds::cells_per_length()>;
+struct coordinate
+ : tile::cell::indexed_coordinate<Nd, bounds<Nd, Nic, Nhl>::length()> {
+  using self    = coordinate;
+  using bounds  = bounds<Nd, Nic, Nhl>;
+  using tile_ic = tile::cell::indexed_coordinate<Nd, bounds::length()>;
 
   using value_t        = typename tile_ic::value_t;
   using signed_value_t = typename tile_ic::signed_value_t;
@@ -29,7 +29,13 @@ struct cell_coordinate
   using tile_ic::tile_ic;
   using tile_ic::operator=;
 
-  constexpr cell_coordinate(tile_ic x) : tile_ic(std::move(x)) {}
+  constexpr coordinate()                  = default;
+  constexpr coordinate(coordinate const&) = default;
+  constexpr coordinate(coordinate&&)      = default;
+  constexpr coordinate& operator=(coordinate const&) = default;
+  constexpr coordinate& operator=(coordinate&&) = default;
+
+  constexpr coordinate(tile_ic x) : tile_ic(std::move(x)) {}
   explicit operator tile_ic() { return static_cast<tile_ic>(*this); }
 
   /// Is the coordinate an internal cell.
@@ -71,6 +77,8 @@ struct cell_coordinate
   }
 };
 
+}  // namespace cell
+}  // namespace halo_tile
 }  // namespace structured
 }  // namespace grid
 }  // namespace hm3

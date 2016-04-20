@@ -1,52 +1,38 @@
-# Square structured grid utilities
+# (Square) Structured grids
 
-Note: right now only square structured grids are supported
+> Note: right now only square structured grids are supported
 
-## Tile
+## Tiles
 
-A `tile::indices<Nd, Nc>` is a square tensor of rank `Nd` and per-rank-length `Nc` that
-is useful to abstract over `Nd`-dimensional square grids with `Nc`-cells per
-side.
+Two different types of `Tile`s are implemented:
 
-It provides abstractions over tile coordinates and indices, conversions between
-them, iteration over sub-tiles and neighbors of a given cell, as well as some
-algorithms like finding the closest cell that satisfies a predicate.
+- `tile`: without halo cells
+- `halo_tile`: with `Nhl` halo layers.
+    
+A tile is made of 3 components:
 
-- tile coordinates,
-- tile indices,
-- iteration over sub-tiles,
-- iteration over the neighbors of cells within the tile.
+- `cells`: indices for interating over the tile's cells (cells, sub-tiles,
+  halos, cell neighbors, ...)
+- `surfaces`: indices for iterating over the tile surfaces (over all cells, in a
+  single cell, per dimension, in a sub tile, ...)
+- `geometry`: tile geometry for computing spatial information (cell/surface
+  centroid, length/area/volume, ...) and/or performing spatial queries (is point
+  x inside the tile? in which cell?...)
 
-These are useful for building up abstractions over more complex types of grids.
-
-**TODO**:
-
-- a `tile::tile<Nd, Nc>` data-type that stores a tile length and
-implements algorithms for computing the coordinates of a given cell as well
-as neighbor/sub-tile iteration based on lengths.
-
-- iteration over cell surfaces
-
-For more information see tile's documentation.
+The iteration indices traverse the tile _in a particular order_ (for now linear)
+and use the following two abstractions:
+- tile `bounds`: number of cells/surfaces per length, in total, ...
+- tile `coordinates`: position of a cell/surface within the tile
+  (multidimensional indices, linear index, ...)
 
 ## Grid
 
-A `grid::indices<Nd, Nic, Nhl>` is an abstraction over an `Nd`-dimensional
-square structured grid with `Nic` internal cells and `Nhl` halo layers.
-
-**THIS IS WIP**
-
-It provides:
-
-- iteration over internal and halo cells,
-- iteration over sub-block of halo-cells,
-- finding overlapping cells.
+The grid type is just an alias for a type of `Tile`. The `cell` and `surface`
+abstractions wrap a `coordinate` and a tile's `geometry` to allow obtaining
+cell/surface properties like the cell volume on demand.
 
 **TODO**:
 
-- a `grid::grid<Nd, Nic, Nhl>` type analogous to `tile<Nd, Nc>` that
-  knows the grid length and can compute cell coordinates.
-
-- iteration over cell surfaces
-
-For more information see grid's documentation.
+- (Student Task): iteration over surfaces using an order that maximizes temporal
+  cache locality.
+- iteration over corner points.

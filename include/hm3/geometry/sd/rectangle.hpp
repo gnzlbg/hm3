@@ -37,16 +37,16 @@ num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
     return distance().norm();
   } else if (no_pos_values < 2) {  // direct neighbors and inside
     return distance().maxCoeff();
-  } else if (Nd == 3) {     // shorter distanceance is to edges
-    if (distance(0) < 0) {  // parallel x
+  } else if (Nd == 3) {             // shorter distance is to edges
+    if (distance(0) < num_t{0.}) {  // parallel x
       return std::sqrt(std::pow(distance(1), 2) + std::pow(distance(2), 2));
-    } else if (distance(1) < 0) {  // parallel y
+    } else if (distance(1) < num_t{0.}) {  // parallel y
       return std::sqrt(std::pow(distance(0), 2) + std::pow(distance(2), 2));
-    } else if (distance(2) < 0) {  // parallel z
+    } else if (distance(2) < num_t{0.}) {  // parallel z
       return std::sqrt(std::pow(distance(0), 2) + std::pow(distance(1), 2));
     }
   }
-  HM3_FATAL_ERROR("unreachable");
+  HM3_FATAL_ERROR("unreachable: x: {}, x_c: {}, l: {}", x, x_c, l);
 }
 
 template <int_t Nd> struct fixed_rectangle {

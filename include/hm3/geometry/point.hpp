@@ -18,22 +18,40 @@ struct point : point_base_t<Nd>, dimensional<Nd> {
   using self = point_base_t<Nd>;
   using self::self;
   using self::operator=;
-  point()             = default;
-  point(self const& s) : self(s) {}
-  static point constant(num_t v) noexcept {
+  constexpr point()   = default;
+  constexpr point(self const& s) : self(s) {}
+  constexpr static point constant(num_t v) noexcept {
     return point{point_base_t<Nd>::constant(v)};
+  }
+  constexpr static point unit(suint_t d) noexcept {
+    HM3_ASSERT(d < Nd,
+               "cannot create point with unit at {} for {}-spatial-dimension",
+               d, Nd);
+    return point{point_base_t<Nd>::unit(d)};
   }
 };
 
-template <uint_t Nd> bool operator==(point<Nd> const& l, point<Nd> const& r) {
-  for (sint_t d = 0; d != Nd; ++d) {
+template <uint_t Nd>
+bool operator==(point<Nd> const& l, point<Nd> const& r) noexcept {
+  for (suint_t d = 0; d < Nd; ++d) {
     if (!math::approx(l(d), r(d))) { return false; }
   }
   return true;
 }
 
-template <uint_t Nd> bool operator!=(point<Nd> const& l, point<Nd> const& r) {
+template <uint_t Nd>
+bool operator!=(point<Nd> const& l, point<Nd> const& r) noexcept {
   return !(l == r);
+}
+
+template <uint_t Nd>
+bool operator<(point<Nd> const& l, point<Nd> const& r) noexcept {
+  return (l().array() < r().array()).all();
+}
+
+template <uint_t Nd>
+bool operator>(point<Nd> const& l, point<Nd> const& r) noexcept {
+  return (l().array() > r().array()).all();
 }
 
 /// Distance between two points

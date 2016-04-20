@@ -59,8 +59,7 @@ struct coordinate : geometry::dimensional<Nd> {
   constexpr self& operator=(self&&) = default;
 
   /// Constructs a coordinate from the index
-  constexpr coordinate(index i) noexcept
-   : coordinate(from(std::move(i))) {}
+  constexpr coordinate(index i) noexcept : coordinate(from(std::move(i))) {}
 
   /// \name Constructors from coordinate indices {i,j,k}
   ///@{
@@ -75,6 +74,8 @@ struct coordinate : geometry::dimensional<Nd> {
   CONCEPT_REQUIRES(Nd == 3)
   constexpr coordinate(value_t i, value_t j, value_t k) noexcept
    : xs{{std::move(i), std::move(j), std::move(k)}} {}
+
+  constexpr coordinate(coordinates_t i) noexcept : xs{std::move(i)} {}
 
   ///@}  // Constructors from coordinate indices {i,j,k}
 

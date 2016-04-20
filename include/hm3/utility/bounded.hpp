@@ -15,9 +15,9 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   using reference_type = value_type&;
   value_type value;
 
-  constexpr bounded(T v = from) : value{v} {
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+  constexpr bounded(T v = from) : value{std::move(v)} {
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
   }
 
   static constexpr bounded invalid() noexcept {
@@ -27,13 +27,13 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   }
 
   constexpr value_type operator*() const noexcept {
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
     return value;
   }
   constexpr reference_type operator*() noexcept {
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
     return value;
   }
   constexpr explicit operator bool() const noexcept {
@@ -75,8 +75,8 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   self& operator++() noexcept {
     ++value;
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
     return (*this);
   }
 
@@ -84,29 +84,30 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
   self operator++(int)noexcept {
     self tmp(*this);
     ++value;
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
     return tmp;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   friend self operator+(self const& a, self const& b) noexcept {
     self v{(*a) + (*b)};
+    return v;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   self& operator+=(self const& other) noexcept {
     value += *other;
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
     return *this;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   self& operator-=(self const& other) noexcept {
     value -= *other;
-    HM3_ASSERT(value >= from and value < to, "value is out-of-bounds [{}, {})",
-               from, to);
+    HM3_ASSERT(value >= from and value < to,
+               "value {} is out-of-bounds [{}, {})", value, from, to);
     return *this;
   }
 

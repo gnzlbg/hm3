@@ -1,7 +1,7 @@
 #pragma once
 /// \file
 ///
-/// Square tile indices for iterating over a square tile
+/// Indices for iterating over a square tile cells'
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/coordinate.hpp>
@@ -15,10 +15,10 @@ namespace structured {
 namespace tile {
 namespace cell {
 
-/// Indices for iterating over the cells of a square tile
+/// Square structured tile cell indices
 ///
 /// \tparam Nd number of spatial dimensions
-/// \tparam Nc length (per dimension)
+/// \tparam Nc number of cells per dimension
 template <suint_t Nd, suint_t Nc>  //
 struct indices : bounds<Nd, Nc> {
   using self               = indices<Nd, Nc>;
@@ -74,8 +74,10 @@ struct indices : bounds<Nd, Nc> {
   /// Asserts that from is smaller or equal to to, and that both are within the
   /// tile
   static void assert_from_to(coordinate from, coordinate to) noexcept {
-    HM3_ASSERT(from, "from {} is not within the tile", from);
-    HM3_ASSERT(to, "to {} is not within the tile", to);
+    HM3_ASSERT(from, "from {} is not within the tile (length: {})", from,
+               self::length());
+    HM3_ASSERT(to, "to {} is not within the tile (length: {})", to,
+               self::length());
     for (index_type d = 0; d < Nd; ++d) {
       HM3_ASSERT(to[d] >= from[d], "to[{}] = {} is not >= from[{}] = {}", d,
                  to[d], d, from[d]);

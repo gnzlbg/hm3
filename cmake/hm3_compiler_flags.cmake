@@ -27,6 +27,7 @@ hm3_append_flag(HM3_HAS_WUNUSED_LABEL -Wunused-label)
 hm3_append_flag(HM3_HAS_WUNUSED_PARAMETER -Wunused-parameter)
 hm3_append_flag(HM3_HAS_WUNUSED_VALUE -Wunused-value)
 hm3_append_flag(HM3_HAS_WUNUSED_VARIABLE -Wunused-variable)
+hm3_append_flag(HM3_HAS_WMICROSOFT -Wmicrosoft)
 
 # Warning flags:
 hm3_append_flag(HM3_HAS_WALL -Wall)
@@ -112,6 +113,9 @@ endif()
 
 if (HM3_ENABLE_DEBUG_INFORMATION)
   hm3_append_flag(HM3_HAS_G3 -g3)
+  # Optimize debug info for gdb:
+  # TODO: control this with flags: HM3_ENABLE_GDB_DEBUG_INFORMATION/ _LLDB_...
+  hm3_append_flag(HM3_HAS_GGDB -ggdb)
 else()
   hm3_append_flag(HM3_HAS_G0 -g0)
 endif()
@@ -135,13 +139,16 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
   hm3_append_flag(HM3_HAS_EIGEN_FAST_MATH0 "-DEIGEN_FAST_MATH=0")
   hm3_append_flag(HM3_HAS_EIGEN_DONT_VECTORIZE -DEIGEN_DONT_VECTORIZE)
   hm3_append_flag(HM3_HAS_EIGEN_DONT_PARALLELIZE -DEIGEN_DONT_PARALLELIZE)
+  hm3_append_flag(HM3_HAS_NO_STRICT_ALIASING -fno-strict-aliasing)
 endif()
 
 # Optimization flags: release
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
   hm3_append_flag(HM3_HAS_OFAST -Ofast)
+  hm3_append_flag(HM3_HAS_OFAST -fstrict-vtable-pointers)
   hm3_append_flag(HM3_HAS_EIGEN_FAST_MATH "-DEIGEN_FAST_MATH=1")
   hm3_append_flag(HM3_HAS_DEFINE_FAST_MATH "-D__FAST_MATH__")
+  hm3_append_flag(HM3_HAS_SIZED_DEALLOCATION -fsized-deallocation)
   set(HM3_POLLY_FLAGS "-mllvm -polly -mllvm -polly-vectorizer=stripmine")
   check_cxx_compiler_flag($HM3_POLLY_FLAGS HM3_HAS_POLLY)
   if(HM3_HAS_POLLY)

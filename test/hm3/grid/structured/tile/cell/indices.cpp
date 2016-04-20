@@ -1,98 +1,10 @@
 #include <hm3/grid/structured/tile.hpp>
 #include <hm3/utility/test.hpp>
-
+#include "coordinate.hpp"
 /// Enables HM3_BENCHMARKS
 //#define HM3_ENABLE_BENCHMARKS
 
 using namespace hm3;
-
-template <typename I, typename X>
-void coordinate_tests(I index, suint_t length, const X x) {
-  using namespace hm3::grid::structured;
-  {
-    X a;
-    CHECK(!a);
-  }
-  X y(index);
-  CHECK(y.idx() == index);
-  CHECK(I(y) == index);
-  CHECK(x == y);
-  CHECK(!(x != y));
-  CHECK(x <= y);
-  CHECK(x >= y);
-
-  if (index < length - 1) {
-    X z(++index);
-    CHECK(x != z);
-    CHECK(!(x == z));
-    CHECK(x < z);
-    CHECK(x <= z);
-    CHECK(z > x);
-    CHECK(z >= x);
-  }
-
-  // Single offset +1
-  for (auto&& d : X::dimensions()) {
-    const auto w = x.offset(d, 1);
-    if (x[d] < length - 1) {
-      CHECK(w);
-      CHECK(tile::cell::distance(x, w) == 1.);
-      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
-      CHECK(distance_square(x, w) == suint_t{1});
-      CHECK(distance_square(x, w) == distance_square(w, x));
-    } else {
-      CHECK(!w);
-    }
-  }
-
-  // Single offset -1
-  for (auto&& d : X::dimensions()) {
-    auto w = x.offset(d, -1);
-    if (x[d] > 0) {
-      CHECK(w);
-      CHECK(tile::cell::distance(x, w) == 1.);
-      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
-      CHECK(distance_square(x, w) == suint_t{1});
-      CHECK(distance_square(x, w) == distance_square(w, x));
-    } else {
-      CHECK(!w);
-    }
-  }
-
-  // Array offset +1
-  for (auto&& d : X::dimensions()) {
-    std::array<sint_t, X::dimension()> o;
-    o.fill(0);
-    o[d]   = 1;
-    auto w = x.offset(o);
-    if (x[d] < length - 1) {
-      CHECK(w);
-      CHECK(tile::cell::distance(x, w) == 1.);
-      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
-      CHECK(distance_square(x, w) == suint_t{1});
-      CHECK(distance_square(x, w) == distance_square(w, x));
-    } else {
-      CHECK(!w);
-    }
-  }
-
-  // Array offset -1
-  for (auto&& d : X::dimensions()) {
-    std::array<sint_t, X::dimension()> o;
-    o.fill(0);
-    o[d]   = -1;
-    auto w = x.offset(o);
-    if (x[d] > 0) {
-      CHECK(w);
-      CHECK(tile::cell::distance(x, w) == 1.);
-      CHECK(tile::cell::distance(x, w) == tile::cell::distance(w, x));
-      CHECK(distance_square(x, w) == suint_t{1});
-      CHECK(distance_square(x, w) == distance_square(w, x));
-    } else {
-      CHECK(!w);
-    }
-  }
-}
 
 // find all cells from each cell
 template <typename Tile>  //
@@ -129,7 +41,7 @@ void closest_cell_tests() {
   }
 }
 
-void tile_tests() {
+void tile_cell_indices_tests() {
   {  // 1x1 tile
     using tile_t = grid::structured::tile::cell::indices<1, 1>;
     using x_t    = typename tile_t::coordinate;
@@ -458,7 +370,7 @@ void tile_tests() {
   }
 }
 
-void tile_benchs() {
+void tile_cell_indices_bench() {
   std::vector<unsigned> v(1000000);
   srand(time(NULL));
   for (auto& e : v) { e = rand(); }
@@ -573,9 +485,9 @@ void tile_benchs() {
 }
 
 int main() {
-  tile_tests();
+  tile_cell_indices_tests();
 #ifdef HM3_ENABLE_BENCHMARKS
-  tile_benchs();
+  tile_cell_indices_bench();
 #endif
   return test::result();
 }

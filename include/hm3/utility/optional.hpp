@@ -303,8 +303,7 @@ template <typename T> struct optional_base {
   constexpr optional_base() noexcept : init_(false), storage_(trivial_init){};
 
   constexpr explicit optional_base(only_set_initialized_t, bool init) noexcept
-   : init_(init),
-     storage_(trivial_init){};
+   : init_(init), storage_(trivial_init){};
 
   explicit constexpr optional_base(const T& v) : init_(true), storage_(v) {}
 
@@ -331,13 +330,12 @@ template <typename T> struct constexpr_optional_base {
   bool init_;
   constexpr_storage_t<T> storage_;
 
-  constexpr constexpr_optional_base() noexcept : init_(false),
-                                                 storage_(trivial_init){};
+  constexpr constexpr_optional_base() noexcept
+   : init_(false), storage_(trivial_init){};
 
   constexpr explicit constexpr_optional_base(only_set_initialized_t,
                                              bool init) noexcept
-   : init_(init),
-     storage_(trivial_init){};
+   : init_(init), storage_(trivial_init){};
 
   explicit constexpr constexpr_optional_base(const T& v)
    : init_(true), storage_(v) {}

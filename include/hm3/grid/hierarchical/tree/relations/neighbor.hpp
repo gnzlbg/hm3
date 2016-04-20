@@ -116,7 +116,7 @@ static constexpr auto neighbor_children_sharing_face
 
 /// Normalized displacement from node center to node neighbor. The unit length
 /// is the length of the node.
-template <int Nd> using neighbor_offset = std::array<int_t, Nd>;
+template <int Nd> using neighbor_offset = std::array<sint_t, Nd>;
 
 /// \name Neighbor lookup tables
 ///
@@ -240,26 +240,28 @@ template <int Nd, int M> struct manifold_neighbors;
 ///
 /// TODO: simplify this and provide a way of constructing custom neighbor search
 /// tables
-template <int Nd, int M> struct manifold_neighbors : geometry::dimensional<Nd> {
+template <int Nd, int M>  //
+struct manifold_neighbors : geometry::dimensional<Nd> {
   static_assert(Nd >= 0 and Nd <= 3, "");
 
   using geometry::dimensional<Nd>::dimension;
   using geometry::dimensional<Nd>::dimensions;
   static constexpr uint_t rank() noexcept { return M; }
+  static constexpr uint_t face_dimension() noexcept { return Nd - M; }
 
   static constexpr uint_t size() noexcept {
-    return no_neighbors(Nd, Nd - M, same_level_tag{});
+    return no_neighbors(Nd, face_dimension(), same_level_tag{});
   }
 
   using neighbor_idx = bounded<uint_t, 0_u, size(), manifold_neighbors<Nd, M>>;
 
 #ifdef HM3_USE_NEIGHBOR_LOOKUP_TABLE
   static constexpr auto same_level_stencil() noexcept {
-    return neighbor_lookup_table<Nd, Nd - M>;
+    return neighbor_lookup_table<Nd, face_dimension()>;
   }
 #endif
   static constexpr auto child_level_stencil() noexcept {
-    return neighbor_children_sharing_face<Nd, Nd - M>;
+    return neighbor_children_sharing_face<Nd, face_dimension()>;
   }
 
   static neighbor_idx idx(uint_t i) noexcept { return neighbor_idx(i); }

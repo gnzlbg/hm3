@@ -2,6 +2,9 @@
 /// \file
 ///
 /// Tree relations
+///
+/// TODO: update tree indices from uint_t to suint_t
+/// TODO: move some of these like no_faces to geometry square
 #include <array>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>

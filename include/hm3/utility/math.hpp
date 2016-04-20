@@ -9,6 +9,8 @@
 #include <limits>
 #include <type_traits>
 
+//#define HM3_IPOW_LOOKUP
+
 namespace hm3 {
 
 /// Math utilities
@@ -73,7 +75,7 @@ static constexpr sint_t signum(const T& x) noexcept {
 /// Computes integer pow using exponentiation by squaring
 /// Complexiy O(log(e))
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
-[[clang::no_sanitize("integer")]] constexpr Int ipow(Int b, Int e) {
+[[clang::no_sanitize("integer")]] constexpr Int ipow_impl(Int b, Int e) {
   Int result = 1;
   while (e) {
     if (e & 1) { result *= b; }
@@ -81,6 +83,42 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
     b *= b;
   }
   return result;
+}
+
+template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
+[[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]] constexpr Int lookup_ipow2(
+ Int e) {
+  constexpr unsigned ipow2_v[] = {1, 2, 4};
+  HM3_ASSERT(e < std::extent<decltype(ipow2_v)>::value,
+             "ipow2 exponent {} is out of bounds [0, {})", e,
+             std::extent<decltype(ipow2_v)>::value);
+  HM3_ASSERT(ipow2_v[e] == ipow_impl(Int{2}, e),
+             "ipow2[{}] is {} but should be {}", e, ipow2_v[e],
+             ipow_impl(Int{2}, e));
+  return ipow2_v[e];
+}
+
+/// Computes integer pow
+template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
+[[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]]  //
+ constexpr Int
+ ipow(Int b, Int e) {
+#ifdef HM3_IPOW_LOOKUP
+  switch (b) {
+    case 0: {
+      return 0;
+    }
+    case 1: {
+      return 1;
+    }
+    case 2: {
+      return lookup_ipow2(e);
+    }
+  }
+  HM3_ASSERT(false, "unknown base {}", b);
+#else
+  return ipow_impl(b, e);
+#endif
 }
 
 /// Sign of a floating point number (doesn't handle NaNs)
