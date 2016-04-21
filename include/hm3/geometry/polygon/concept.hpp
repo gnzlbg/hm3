@@ -6,6 +6,7 @@
 /// Some types look like polygons but aren't (e.g. a 3D box).
 /// The trait `is_polygon` can be specialized to false for those types.
 #include <hm3/geometry/dimension/concept.hpp>
+#include <hm3/geometry/polygon/types.hpp>
 
 namespace hm3 {
 namespace geometry {
@@ -30,7 +31,7 @@ using Polygon = polygon;
 template <typename T>
 using Polygon = concepts::rc::models<concepts::Polygon, ranges::uncvref_t<T>>;
 
-template <typename T, uint_t Nd>
+template <typename T, dim_t Nd>
 using PolygonD
  = meta::and_c<concepts::rc::models<concepts::Polygon, ranges::uncvref_t<T>>{},
                NDimensional<T, Nd>{}>;

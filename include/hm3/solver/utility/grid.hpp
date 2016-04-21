@@ -18,7 +18,7 @@ namespace state {
 /// \note The solver grid is allowed to have holes in it.
 /// \note Solver grid nodes do not necessarily need to be part of the grid
 /// tree. For example ghost nodes might not exist within the tree.
-template <uint_t Nd> struct grid {
+template <dim_t Nd> struct grid {
   using tree_t = ::hm3::hierarchical::cartesian::multi<Nd>;
 
  private:
@@ -488,28 +488,28 @@ template <uint_t Nd> struct grid {
   }
 };
 
-template <uint_t Nd> bool operator==(grid<Nd> const& a, grid<Nd> const& b) {
+template <dim_t Nd> bool operator==(grid<Nd> const& a, grid<Nd> const& b) {
   return a.idx() == b.idx() && a.size() == b.size()
          // compare the grids in the tree as well ?
          && equal(a.in_use(), b.in_use());
 }
-template <uint_t Nd> bool operator!=(grid<Nd> const& a, grid<Nd> const& b) {
+template <dim_t Nd> bool operator!=(grid<Nd> const& a, grid<Nd> const& b) {
   return !(a == b);
 }
 
 /// \name Solver-grid I/O
 ///@{
-template <uint_t Nd> void map_arrays(io::file& f, grid<Nd> const& g) {
+template <dim_t Nd> void map_arrays(io::file& f, grid<Nd> const& g) {
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
   HM3_ASSERT(no_nodes == g.size(), "mismatching number of grid nodes");
   f.field("tree_nodes", reinterpret_cast<const idx_t*>(g.data()), *no_nodes);
 }
 
-template <uint_t Nd, typename Tree = typename grid<Nd>::tree_t>
+template <dim_t Nd, typename Tree = typename grid<Nd>::tree_t>
 grid<Nd> from_file_unread(grid<Nd> const&, io::file& f, Tree& t,
                           grid_node_idx node_capacity) {
-  auto idx      = grid_idx{f.constant("grid_idx", suint_t{})};
-  auto nd       = uint_t{f.constant("spatial_dimension", suint_t{})};
+  auto idx      = grid_idx{f.constant("grid_idx", hierarchical::gidx_t{})};
+  auto nd       = dim_t{f.constant("spatial_dimension", dim_t{})};
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
   if (Nd != nd) {
     HM3_FATAL_ERROR("spatial_dimension mismatch, type {} vs file {}", Nd, nd);

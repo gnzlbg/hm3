@@ -73,7 +73,7 @@ struct ausm_fn {
   /// Phys., Vol. 107, 23-39, 1993.
   template <typename V, typename VT, typename State,
             typename var_v = num_a<std::decay_t<VT>::nvars()>>
-  constexpr var_v operator()(VT&& vt, V&& v_l, V&& v_r, suint_t d,
+  constexpr var_v operator()(VT&& vt, V&& v_l, V&& v_r, dim_t d,
                              State&& s) const noexcept {
     using ausm_detail::interface_mach;
     using ausm_detail::interface_pressure;

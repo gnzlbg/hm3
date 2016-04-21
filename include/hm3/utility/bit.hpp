@@ -155,6 +155,7 @@ constexpr int clz(UInt n) noexcept {
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clz(n);
 #else
 #pragma message "error compiler doesn't support clz(unsigned)"
+// TODO: provide a fall back
 #endif
 }
 
@@ -168,6 +169,7 @@ constexpr int clz(UInt n) noexcept {
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzl(n);
 #else
 #pragma message "error compiler doesn't support clz(unsigned long)"
+// TODO: provide a fall back
 #endif
 }
 
@@ -181,6 +183,7 @@ constexpr int clz(UInt n) noexcept {
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzll(n);
 #else
 #pragma message "error compiler doesn't support clz(unsigned long long)"
+// TODO: provide a fall back
 #endif
 }
 

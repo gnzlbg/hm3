@@ -8,7 +8,7 @@
 // namespace solver {
 // namespace fv {
 
-// template <uint_t Nd>  //
+// template <dim_t Nd>  //
 // struct surface {
 //   point<Nd> x_center;       ///< Surface centroid
 //   num_t area;               ///< Surfae area
@@ -17,7 +17,7 @@
 //   bc_idx bc;                ///< Boundary condition, if any
 // };
 
-// template <uint_t Nd>  //
+// template <dim_t Nd>  //
 // struct cut_cell {
 //   static constexpr std::size_t max_no_surfaces = 5;
 //   block_cell_idx idx;  ///< Cut-cell index

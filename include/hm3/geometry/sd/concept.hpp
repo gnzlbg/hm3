@@ -24,10 +24,10 @@ using SignedDistance = signed_distance;
 
 }  // namespace concepts
 
-template <typename T, uint_t Nd>
+template <typename T, dim_t Nd>
 using SignedDistance
  = concepts::rc::models<concepts::SignedDistance, ranges::uncvref_t<T>,
-                        std::integral_constant<uint_t, Nd>>;
+                        std::integral_constant<dim_t, Nd>>;
 
 }  // namespace geometry
 }  // namespace hm3

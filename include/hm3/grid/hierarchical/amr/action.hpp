@@ -5,6 +5,8 @@
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {
+namespace grid {
+namespace hierarchical {
 namespace amr {
 
 /// Adaptive mesh refinement action
@@ -34,4 +36,6 @@ constexpr auto&& combine = static_const<combine_fn>::value;
 }  // namespace
 
 }  // namespace amr
+}  // namespace hierarchical
+}  // namespace grid
 }  // namespace hm3

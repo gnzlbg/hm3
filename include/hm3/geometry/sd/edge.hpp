@@ -11,7 +11,7 @@ namespace sd {
 
 /// Signed distance function for an edge at point \p p with normal vector \p
 /// n. The signed distance is positive in positive normal direction.
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr num_t edge(point<Nd> x, point<Nd> p, vector<Nd> n) noexcept {
   return n().dot(x() - p());
 }

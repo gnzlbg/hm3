@@ -10,7 +10,7 @@
 namespace hm3 {
 namespace geometry {
 
-template <uint_t Nd, uint_t MaxNp>
+template <dim_t Nd, ppidx_t MaxNp>
 struct polygon : dimensional<Nd>, inline_vector<point<Nd>, MaxNp> {
   using self = inline_vector<point<Nd>, MaxNp>;
   using self::self;
@@ -25,31 +25,31 @@ struct polygon : dimensional<Nd>, inline_vector<point<Nd>, MaxNp> {
   static constexpr sint_t max_points() noexcept { return MaxNp; }
 };
 
-template <uint_t Nd, uint_t MaxNp>  //
+template <dim_t Nd, ppidx_t MaxNp>  //
 bool empty(polygon<Nd, MaxNp> const& p) {
   return p.empty();
 }
 
-template <uint_t Nd, uint_t MaxNp>
+template <dim_t Nd, ppidx_t MaxNp>
 bool operator==(polygon<Nd, MaxNp> const& a,
                 polygon<Nd, MaxNp> const& b) noexcept {
   return equal(a, b);
 }
 
-template <uint_t Nd, uint_t MaxNp>
+template <dim_t Nd, ppidx_t MaxNp>
 bool operator!=(polygon<Nd, MaxNp> const& a,
                 polygon<Nd, MaxNp> const& b) noexcept {
   return !(a == b);
 }
 
 /// Corner points
-template <uint_t Nd, uint_t MaxNp>
+template <dim_t Nd, ppidx_t MaxNp>
 constexpr auto corners(polygon<Nd, MaxNp> p) noexcept {
   return p;
 }
 
 /// Corner positions
-template <uint_t Nd, uint_t MaxNp>
+template <dim_t Nd, ppidx_t MaxNp>
 auto corner_positions(polygon<Nd, MaxNp> const& p) noexcept {
   return view::iota(std::size_t{0}, p.size());
 }

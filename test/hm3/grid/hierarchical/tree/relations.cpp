@@ -152,7 +152,7 @@ int main() {
     CHECK(size(fn()) == 0_u);
     static_assert(fn.size() == 0, "");
     auto o = fn.offsets();
-    auto m = neighbor_lookup_table<1, -1>;
+    auto m = neighbor_lookup_table<1, 100>;
     test::check_equal(o, m);
   }
 
@@ -196,7 +196,7 @@ int main() {
     constexpr auto fn = corner_neighbors<1>{};
     static_assert(fn.size() == 0, "");
     CHECK(size(fn()) == 0_u);
-    test::check_equal(fn.offsets(), neighbor_lookup_table<1, -2>);
+    test::check_equal(fn.offsets(), neighbor_lookup_table<1, 100>);
   }
 
   /// Check corner neighbors: 2D
@@ -204,7 +204,7 @@ int main() {
     constexpr auto fn = corner_neighbors<2>{};
     static_assert(fn.size() == 0, "");
     CHECK(size(fn()) == 0_u);
-    test::check_equal(fn.offsets(), neighbor_lookup_table<2, -1>);
+    test::check_equal(fn.offsets(), neighbor_lookup_table<2, 100>);
   }
 
   /// Check corner neighbors: 3D
@@ -221,6 +221,51 @@ int main() {
     test::check_equal(fn[6], neighbor_offset<3>{{-1, 1, 1}});
     test::check_equal(fn[7], neighbor_offset<3>{{1, 1, 1}});
     test::check_equal(fn.offsets(), neighbor_lookup_table<3, 0>);
+  }
+
+  /// Check all neighbors: 1D
+  {
+    int manifold_count = 0;
+    for_each_neighbor_manifold<1>([&](auto m) {
+      CHECK(m.rank() == 1_u);
+      CHECK(m.size() == 2_u);
+      ++manifold_count;
+    });
+    CHECK(manifold_count == 1);
+  }
+
+  /// Check all neighbors: 2D
+  {
+    int manifold_count = 0;
+    for_each_neighbor_manifold<2>([&](auto m) {
+      if (m.rank() == 1_u) {
+        CHECK(m.size() == 4_u);
+      } else if (m.rank() == 2_u) {
+        CHECK(m.size() == 4_u);
+      } else {
+        CHECK(false);
+      }
+      ++manifold_count;
+    });
+    CHECK(manifold_count == 2);
+  }
+
+  /// Check all neighbors: 3D
+  {
+    int manifold_count = 0;
+    for_each_neighbor_manifold<3>([&](auto m) {
+      if (m.rank() == 1_u) {
+        CHECK(m.size() == 6_u);
+      } else if (m.rank() == 2_u) {
+        CHECK(m.size() == 12_u);
+      } else if (m.rank() == 3_u) {
+        CHECK(m.size() == 8_u);
+      } else {
+        CHECK(false);
+      }
+      ++manifold_count;
+    });
+    CHECK(manifold_count == 3);
   }
 
   /// Test max no neighbors

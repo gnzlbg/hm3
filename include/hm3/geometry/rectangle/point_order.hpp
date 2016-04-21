@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Checks order of points in rectangles (not necesarily square)
+#include <hm3/geometry/rectangle/concept.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/math.hpp>
@@ -12,9 +13,9 @@ namespace geometry {
 
 template <typename Points, CONCEPT_REQUIRES_(RandomAccessRange<Points>{})>
 bool are_rectangle_points_in_ccw_order(Points&& ps) {
-  using point_t                = decltype(*begin(ps));
-  static constexpr uint_t nd   = dimension(point_t{});
-  static constexpr uint_t nreq = math::ipow(2_u, nd);
+  using point_t                 = decltype(*begin(ps));
+  static constexpr dim_t nd     = dimension(point_t{});
+  static constexpr ppidx_t nreq = math::ipow(ppidx_t{2}, ppidx_t{nd});
 
   auto&& np = size(ps);
   HM3_ASSERT(np == nreq, "{} points required but {} provided", nreq, np);
@@ -45,9 +46,9 @@ bool are_rectangle_points_in_ccw_order(Points&& ps) {
 
 template <typename Points, CONCEPT_REQUIRES_(RandomAccessRange<Points>{})>
 bool are_rectangle_points_in_z_order(Points&& ps) {
-  using point_t                = decltype(*begin(ps));
-  static constexpr uint_t nd   = dimension(point_t{});
-  static constexpr uint_t nreq = math::ipow(2_u, nd);
+  using point_t                 = decltype(*begin(ps));
+  static constexpr dim_t nd     = dimension(point_t{});
+  static constexpr suint_t nreq = math::ipow(suint_t{2}, suint_t{nd});
 
   auto&& np = size(ps);
   HM3_ASSERT(np == nreq, "{} points required but {} provided", nreq, np);

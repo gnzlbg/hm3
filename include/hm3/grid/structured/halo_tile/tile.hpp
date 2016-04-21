@@ -3,8 +3,8 @@
 ///
 /// Square structured halo tile
 #include <hm3/grid/structured/halo_tile/cell.hpp>
+#include <hm3/grid/structured/halo_tile/geometry.hpp>
 #include <hm3/grid/structured/halo_tile/surface.hpp>
-#include <hm3/grid/structured/tile/geometry.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -20,7 +20,7 @@ template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
 struct tile : geometry::dimensional<Nd> {
   using cell_indices_t    = cell::indices<Nd, Nic, Nhl>;
   using surface_indices_t = surface::indices<Nd, Nic, Nhl>;
-  using geometry_t        = tile::geometry<Nd, Nc>;
+  using geometry_t        = tile_geometry<Nd, Nic, Nhl>;
 
   geometry_t geometry_;
 

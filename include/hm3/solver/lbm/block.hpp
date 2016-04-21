@@ -6,7 +6,7 @@ namespace hm3 {
 namespace solver {
 namespace lbm {
 
-template <uint_t Nd, uint_t Ndist, uint_t Nic, uint_t Nhl>
+template <dim_t Nd, uint_t Ndist, uint_t Nic, uint_t Nhl>
 struct block : square_structured_grid<Nd, Nic, Nhl> {
   using grid_t = square_structured_grid<Nd, Nic, Nhl>;
   using grid_t::dimension;

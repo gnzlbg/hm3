@@ -17,12 +17,12 @@ namespace hm3 {
 namespace geometry {
 
 /// Is the box spanned by \p x_min and \p x_max square?
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr bool is_square(point<Nd> const& x_min, point<Nd> const& x_max) {
   auto lengths = (x_max() - x_min()).eval();
   HM3_ASSERT(
    [=]() {
-     for (suint_t d = 0; d != Nd; ++d) {
+     for (dim_t d = 0; d < Nd; ++d) {
        HM3_ASSERT(lengths(d) > 0,
                   "Negative length! Box's length '{}' < 0 along dimension '{}'",
                   lengths(d), d);
@@ -34,7 +34,7 @@ constexpr bool is_square(point<Nd> const& x_min, point<Nd> const& x_max) {
 }
 
 /// Centroid coordinates of square the box spanned by \p x_min and \p x_max
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr point<Nd> square_centroid(point<Nd> const& x_min,
                                     point<Nd> const& x_max) {
   HM3_ASSERT(is_square(x_min, x_max),
@@ -44,7 +44,7 @@ constexpr point<Nd> square_centroid(point<Nd> const& x_min,
 }
 
 //// Length of the square box spanned by \p x_min and \p x_max
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr num_t square_length(point<Nd> const& x_min, point<Nd> const& x_max) {
   HM3_ASSERT(is_square(x_min, x_max),
              "shape spanned by points min: {} and max: {} is not a square!",
@@ -53,7 +53,7 @@ constexpr num_t square_length(point<Nd> const& x_min, point<Nd> const& x_max) {
 }
 
 /// Square
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct square : dimensional<Nd> {
   using point_t = point<Nd>;
 
@@ -76,25 +76,25 @@ struct square : dimensional<Nd> {
    : x_centroid_(std::move(x_centroid)), length_(length) {}
 
   /// Number of m-dimensional edges
-  static constexpr auto no_edges(uint_t m) noexcept -> suint_t {
+  static constexpr auto no_edges(dim_t m) noexcept -> dim_t {
     if (Nd < m || m < 0) { return 0; }
-    return math::ipow(uint_t{2}, Nd - m) * math::binomial_coefficient(Nd, m);
+    return math::ipow(dim_t{2}, Nd - m) * math::binomial_coefficient(Nd, m);
   }
 
   /// Number of corners (one-dimensional edges)
-  static constexpr auto no_corners() noexcept -> suint_t {
-    return math::ipow(uint_t{2}, Nd);
+  static constexpr ppidx_t no_corners() noexcept {
+    return math::ipow(dim_t{2}, Nd);
   }
 };
 
 /// Square length
-template <uint_t Nd>
-constexpr num_t length(square<Nd> const& s, uint_t = 0) noexcept {
+template <dim_t Nd>
+constexpr num_t length(square<Nd> const& s, dim_t = 0) noexcept {
   return s.length_;
 }
 
 /// Square lengths (they all equal the same value)
-template <uint_t Nd> constexpr point<Nd> lengths(square<Nd> const& s) noexcept {
+template <dim_t Nd> constexpr point<Nd> lengths(square<Nd> const& s) noexcept {
   return point<Nd>::constant(length(s));
 }
 
@@ -104,30 +104,30 @@ namespace concepts {
 template <> struct is_polygon<::hm3::geometry::square<3>> : std::false_type {};
 
 /// Squares are not only rectangles but also squares:
-template <uint_t Nd>
+template <dim_t Nd>
 struct is_square<::hm3::geometry::square<Nd>> : std::true_type {};
 
 }  // namespace concepts
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator==(square<Nd> const& l, square<Nd> const& r) noexcept {
   return math::approx(length(l), length(r)) && centroid(l) == centroid(r);
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator!=(square<Nd> const& l, square<Nd> const& r) noexcept {
   return !(l == r);
 }
 
-template <uint_t Nd> constexpr bool empty(square<Nd> const&) { return false; }
+template <dim_t Nd> constexpr bool empty(square<Nd> const&) { return false; }
 
 /// Square centroid coordinates
-template <uint_t Nd> constexpr auto centroid(square<Nd> const& s) noexcept {
+template <dim_t Nd> constexpr auto centroid(square<Nd> const& s) noexcept {
   return s.x_centroid_;
 }
 
 /// Bounds (min, max)
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr rectangle_bounds<Nd> bounds(square<Nd> const& s) noexcept {
   rectangle_bounds<Nd> b;
   const num_t length_2 = length(s) / 2.;
@@ -137,11 +137,11 @@ constexpr rectangle_bounds<Nd> bounds(square<Nd> const& s) noexcept {
   return b;
 }
 
-template <uint_t Nd> constexpr point<Nd> x_min(square<Nd> const& s) noexcept {
+template <dim_t Nd> constexpr point<Nd> x_min(square<Nd> const& s) noexcept {
   return bounds(s).min;
 }
 
-template <uint_t Nd> constexpr point<Nd> x_max(square<Nd> const& s) noexcept {
+template <dim_t Nd> constexpr point<Nd> x_max(square<Nd> const& s) noexcept {
   return bounds(s).max;
 }
 

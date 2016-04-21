@@ -1,4 +1,4 @@
-#include <hm3/grid/structured/tile.hpp>
+#include <hm3/grid/structured/tile/cell/indices.hpp>
 #include <hm3/utility/test.hpp>
 #include "coordinate.hpp"
 /// Enables HM3_BENCHMARKS

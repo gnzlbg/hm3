@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace hm3 {
+namespace grid {
+namespace hierarchical {
 namespace amr {
 namespace criterion {
 
@@ -26,7 +28,7 @@ namespace criterion {
 ///
 struct level_till_distance {
   num_t target_distance;
-  uint_t target_level;
+  level_idx target_level;
 
   level_till_distance()                           = default;
   level_till_distance(level_till_distance const&) = default;
@@ -34,7 +36,7 @@ struct level_till_distance {
   level_till_distance& operator=(level_till_distance const&) = default;
   level_till_distance& operator=(level_till_distance&&) = default;
 
-  level_till_distance(num_t d_t, uint_t l_t)
+  level_till_distance(num_t d_t, level_idx l_t)
    : target_distance(d_t), target_level(l_t) {}
 
   template <typename Grid, typename SD, typename Node>
@@ -80,8 +82,8 @@ template <typename Step> struct multiple {
 struct level_till_cell_distances {
  private:
   struct step {
-    uint_t no_cells;
-    uint_t target_level;
+    nidx_t no_cells;
+    level_idx target_level;
   };
 
   multiple<level_till_distance> r_;
@@ -107,4 +109,6 @@ struct level_till_cell_distances {
 
 }  // namespace criterion
 }  // namespace amr
+}  // namespace hierarchical
+}  // namespace grid
 }  // namespace hm3

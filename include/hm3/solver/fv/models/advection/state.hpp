@@ -11,7 +11,7 @@ namespace solver {
 namespace fv {
 namespace advection {
 
-template <uint_t Nd> struct state {
+template <dim_t Nd> struct state {
   using point_t = geometry::point<Nd>;
   using var_v   = num_a<Nd>;
   /// Advection velocity

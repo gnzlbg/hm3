@@ -12,7 +12,7 @@ namespace solver {
 namespace fv {
 namespace advection {
 
-template <uint_t Nd>
+template <dim_t Nd>
 struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
   using self = physics<Nd>;
 
@@ -21,11 +21,11 @@ struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
   }
 
   template <typename V>
-  decltype(auto) max_wave_speed(V&& v, suint_t d) const noexcept {
+  decltype(auto) max_wave_speed(V&& v, dim_t d) const noexcept {
     return std::abs(this->velocity(d));
   }
 
-  template <typename V> num_a<1> flux(V&& v, suint_t d) const noexcept {
+  template <typename V> num_a<1> flux(V&& v, dim_t d) const noexcept {
     using vars = num_a<1>;
     vars f     = vars::Zero();
     f(0)       = this->velocity(d) * v(0);

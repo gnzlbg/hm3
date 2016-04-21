@@ -15,7 +15,7 @@ using hierarchical::grid_idx;
 using hierarchical::grid_node_idx;
 using hierarchical::tree_node_idx;
 
-template <uint_t Nd> struct state;
+template <dim_t Nd> struct state;
 
 }  // namespace level_set
 }  // namespace solver

@@ -1,6 +1,8 @@
 #pragma once
 /// \file
 ///
+/// Serialization of FV solver to VTK
+#ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/polygon.hpp>
 #include <hm3/geometry/polygon/intersection.hpp>
 #include <hm3/geometry/square.hpp>
@@ -71,8 +73,8 @@ struct ls_serializable : serializable<State, T> {
   using base = serializable<State, T>;
   using base::s;
   using base::idx;
-  using block_idx            = typename base::block_idx;
-  static constexpr uint_t Nd = State::dimension();
+  using block_idx           = typename base::block_idx;
+  static constexpr dim_t Nd = State::dimension();
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
@@ -143,3 +145,4 @@ void ls_serialize(State const& state, Ls const& ls, string file_name,
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3
+#endif  // HM3_ENABLE_VTK

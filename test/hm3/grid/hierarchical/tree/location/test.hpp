@@ -24,7 +24,7 @@ void test_location(Loc) {
   static_assert(Location<Loc>{}, "");
   Loc l;
   static_assert(l.dimension() == Nd, "");
-  static_assert(l.no_levels() == NoLevels, "");
+  static_assert(l.max_no_levels() == NoLevels, "");
   static_assert(*l.max_level() == NoLevels - 1, "");
   test::check_equal(l.dimensions(), dimensions(Nd));
   {
@@ -54,16 +54,20 @@ void test_location(Loc) {
     CHECK(c == a);
     CHECK(a.level() == a.max_level());
     {
-      using loc_int = loc_int_t<Loc>;
-      auto a_uint   = static_cast<loc_int>(a);
-      std::cerr << "HERE_A" << std::endl;
-      auto a_uint_should = math::ipow(loc_int{2}, loc_int{Nd * *a.max_level()});
-      std::cerr << "HERE_B" << std::endl;
+      using morton_idx = morton_idx_t<Loc>;
+      auto a_uint      = static_cast<morton_idx>(a);
 #ifdef HM3_TEST_DEBUG_OUTPUT
+      std::cerr << "HERE_A" << std::endl;
+#endif
+      auto a_uint_should
+       = math::ipow(morton_idx{2}, morton_idx{Nd * *a.max_level()});
+#ifdef HM3_TEST_DEBUG_OUTPUT
+      std::cerr << "HERE_B" << std::endl;
       std::cout << "sizeof(uint_t): " << sizeof(uint_t)
                 << " max_level: " << a.max_level() << std::endl;
 #endif
       CHECK(a_uint == a_uint_should);
+      CHECK(a_uint == a.morton_idx());
     }
 
     {
@@ -100,7 +104,7 @@ void test_location(Loc) {
     auto a = l;
     while (a.level() != a.max_level()) { a.push(no_children(Nd) - 1_u); }
     CHECK(a.level() == a.max_level());
-    loc_int_t<Loc> r = 0;
+    morton_idx_t<Loc> r = 0;
     for (auto&& lvl : a.levels()) {
       for (auto&& d : dimensions(Nd)) {
         bit::set(r, (*lvl - 1) * Nd + d, true);
@@ -108,7 +112,8 @@ void test_location(Loc) {
     }
     bit::set(r, *a.level() * Nd, true);
 
-    CHECK(static_cast<loc_int_t<Loc>>(a) == r);
+    CHECK(static_cast<morton_idx_t<Loc>>(a) == r);
+    CHECK(a.morton_idx() == r);
 
     {
       auto b = a;
@@ -180,45 +185,59 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   }
 
   {
-    auto a        = Loc<2>({3, 2});
-    using loc_int = loc_int_t<Loc<2>>;
-    CHECK(static_cast<loc_int>(a) == 30_u);
-    std::array<loc_int, 2> ar(a);
+    auto a           = Loc<2>({3, 2});
+    using morton_idx = morton_idx_t<Loc<2>>;
+    CHECK(static_cast<morton_idx>(a) == 30_u);
+    CHECK(a.morton_idx() == 30_u);
+    std::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 2_u);
     CHECK(ar[1] == 3_u);
     CHECK(a.level() == 2_u);
     auto k = shift(a, std::array<int_t, 2>{{1, 0}});
     CHECK(!(!k));
     a  = *k;
-    ar = static_cast<std::array<loc_int, 2>>(a);
+    ar = static_cast<std::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 3_u);
     CHECK(ar[1] == 3_u);
+    CHECK(ar[0] == a.morton_x()[0]);
+    CHECK(ar[1] == a.morton_x()[1]);
+
     CHECK(a == Loc<2>({3, 3}));
   }
   {  // test to_int coordinate-wise
-    auto a        = Loc<2>({2, 1});
-    using loc_int = loc_int_t<Loc<2>>;
-    std::array<loc_int, 2> ar(a);
+    auto a           = Loc<2>({2, 1});
+    using morton_idx = morton_idx_t<Loc<2>>;
+    std::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 1_u);
     CHECK(ar[1] == 2_u);
+    CHECK(a.morton_x()[0] == 1_u);
+    CHECK(a.morton_x()[1] == 2_u);
+
 
     a  = *shift(a, std::array<int_t, 2>{{-1, 0}});
-    ar = static_cast<std::array<loc_int, 2>>(a);
+    ar = static_cast<std::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 0_u);
     CHECK(ar[1] == 2_u);
+    CHECK(a.morton_x()[0] == 0_u);
+    CHECK(a.morton_x()[1] == 2_u);
+
     CHECK(a == Loc<2>({2, 0}));
   }
   {  // test to_int coordinate-wise
-    auto a        = Loc<2>({3, 0, 0});
-    using loc_int = loc_int_t<Loc<2>>;
-    std::array<loc_int, 2> ar(a);
+    auto a           = Loc<2>({3, 0, 0});
+    using morton_idx = morton_idx_t<Loc<2>>;
+    std::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 4_u);
     CHECK(ar[1] == 4_u);
+    CHECK(a.morton_x()[0] == 4_u);
+    CHECK(a.morton_x()[1] == 4_u);
 
     a  = *shift(a, std::array<int_t, 2>{{-1, -1}});
-    ar = static_cast<std::array<loc_int, 2>>(a);
+    ar = static_cast<std::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 3_u);
     CHECK(ar[1] == 3_u);
+    CHECK(a.morton_x()[0] == 3_u);
+    CHECK(a.morton_x()[1] == 3_u);
 
     CHECK(a == Loc<2>({0, 3, 3}));
   }
@@ -229,21 +248,26 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   }
 
   {  // test to_int coordinate-wise
-    auto a        = Loc<2>({1, 1, 2});
-    using loc_int = loc_int_t<Loc<2>>;
-    std::array<loc_int, 2> ar(a);
+    auto a           = Loc<2>({1, 1, 2});
+    using morton_idx = morton_idx_t<Loc<2>>;
+    std::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 6_u);
     CHECK(ar[1] == 1_u);
+    CHECK(a.morton_x()[0] == 6_u);
+    CHECK(a.morton_x()[1] == 1_u);
   }
 
   {  // test to_int coordinate-wise
-    auto a        = Loc<3>({6, 5});
-    using loc_int = loc_int_t<Loc<3>>;
-    std::array<loc_int, 3> ar(a);
+    auto a           = Loc<3>({6, 5});
+    using morton_idx = morton_idx_t<Loc<3>>;
+    std::array<morton_idx, 3> ar(a);
     CHECK(a.level() == 2_u);
     CHECK(ar[0] == 1_u);
     CHECK(ar[1] == 2_u);
     CHECK(ar[2] == 3_u);
+    CHECK(a.morton_x()[0] == 1_u);
+    CHECK(a.morton_x()[1] == 2_u);
+    CHECK(a.morton_x()[2] == 3_u);
   }
 
   // test float from Loc

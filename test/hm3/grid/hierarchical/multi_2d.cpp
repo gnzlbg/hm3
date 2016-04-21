@@ -61,6 +61,8 @@ int main(int argc, char* argv[]) {
     return point<nd>{point<nd>::c(0.5) + point<nd>::c(0.25 * std::sin(step))};
   };
 
+  namespace amr = hierarchical::amr;
+
   // Create an adaptive mesh refinement handler for adapting the grid
   auto amr_handler = amr::make(g);
 

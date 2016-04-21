@@ -19,7 +19,7 @@ template <suint_t Nd, suint_t Nc>  //
 struct tile : geometry::dimensional<Nd> {
   using cell_indices_t    = cell::indices<Nd, Nc>;
   using surface_indices_t = surface::indices<Nd, Nc>;
-  using geometry_t        = geometry<Nd, Nc>;
+  using geometry_t        = tile_geometry<Nd, Nc>;
 
   geometry_t geometry_;
 

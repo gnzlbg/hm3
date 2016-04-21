@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Square structured grid
-#include <hm3/grid/structured/halo_tile.hpp>
-#include <hm3/grid/structured/tile.hpp>
+//#include <hm3/grid/structured/halo_tile.hpp>
+//#include <hm3/grid/structured/tile.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -20,12 +20,12 @@ namespace structured {
 /// \note A square structured grid is by default a square structured tile with
 /// halo layers in case they are needed.
 ///
-template <suint_t Nd, suint_t Nic, suint_t Nhl = 0>
-using grid
- = std::conditional_t<(Nhl > 0),  // if it has halo layers, then halo tile:
-                      halo_tile<Nd, Nic, Nhl>,
-                      // otherwise, just a tile:
-                      tile<Nd, Nic>>;
+// template <suint_t Nd, suint_t Nic, suint_t Nhl = 0>
+// using grid
+//  = std::conditional_t<(Nhl > 0),  // if it has halo layers, then halo tile:
+//                       halo_tile<Nd, Nic, Nhl>,
+//                       // otherwise, just a tile:
+//                       tile<Nd, Nic>>;
 
 // /// Square structured grid
 // ///

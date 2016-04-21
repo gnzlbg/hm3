@@ -11,7 +11,7 @@ namespace hm3 {
 namespace solver {
 namespace fv {
 
-template <uint_t Nd, uint_t Nv, uint_t Nic, uint_t Nhl>  //
+template <dim_t Nd, uint_t Nv, uint_t Nic, uint_t Nhl>  //
 struct block_base : square_structured_grid<Nd, Nic, Nhl> {
   static_assert(Nic >= Nhl, "");
   using grid_t = square_structured_grid<Nd, Nic, Nhl>;
@@ -111,14 +111,14 @@ struct block_base : square_structured_grid<Nd, Nic, Nhl> {
   ///@{
   auto& gradients() noexcept { return gradients_; }
   auto const& gradients() const noexcept { return gradients_; }
-  auto gradient(sidx_t c, suint_t d) noexcept {
+  auto gradient(sidx_t c, dim_t d) noexcept {
     return gradients_().row(c).template segment<nvars()>(d * nvars());
   }
-  auto gradient(sidx_t c, suint_t d) const noexcept {
+  auto gradient(sidx_t c, dim_t d) const noexcept {
     return gradients_().row(c).template segment<nvars()>(d * nvars());
   }
-  auto gradient(index_t c, suint_t d) noexcept { return gradient(c.idx, d); }
-  auto gradient(index_t c, suint_t d) const noexcept {
+  auto gradient(index_t c, dim_t d) noexcept { return gradient(c.idx, d); }
+  auto gradient(index_t c, dim_t d) const noexcept {
     return gradient(c.idx, d);
   }
 

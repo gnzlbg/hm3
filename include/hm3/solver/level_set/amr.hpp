@@ -11,7 +11,7 @@ namespace solver {
 namespace level_set {
 
 /// Adaptive mesh refinement target for the level set solver
-template <uint_t Nd> struct amr : geometry::dimensional<Nd> {
+template <dim_t Nd> struct amr : geometry::dimensional<Nd> {
   using amr_node_idx = grid_node_idx;
 
   state<Nd>* ls_;
@@ -54,7 +54,8 @@ template <uint_t Nd> struct amr : geometry::dimensional<Nd> {
 
 /// Creates an adaptive mesh refinement handler for the level-set solver state
 /// \p s
-template <uint_t Nd>::hm3::amr::state<amr<Nd>> make_amr(state<Nd>& s) noexcept {
+template <dim_t Nd>
+::hm3::hierarchical::amr::state<amr<Nd>> make_amr(state<Nd>& s) noexcept {
   return amr<Nd>{s};
 }
 

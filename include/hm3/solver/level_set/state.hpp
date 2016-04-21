@@ -11,19 +11,17 @@ namespace solver {
 namespace level_set {
 
 /// Solver-state type-name
-template <uint_t Nd> string type(state<Nd> const&) { return "level_set"; }
+template <dim_t Nd> string type(state<Nd> const&) { return "level_set"; }
 
 /// Name of the level-set solver state
-template <uint_t Nd> string name(state<Nd> const& s, grid_idx idx) {
+template <dim_t Nd> string name(state<Nd> const& s, grid_idx idx) {
   using std::to_string;
   return type(s) + "_" + to_string(*idx);
 }
 
-template <uint_t Nd> string name(state<Nd> const& s) {
-  return name(s, s.idx());
-}
+template <dim_t Nd> string name(state<Nd> const& s) { return name(s, s.idx()); }
 
-template <uint_t Nd> struct state : geometry::dimensional<Nd> {
+template <dim_t Nd> struct state : geometry::dimensional<Nd> {
   using grid = ::hm3::solver::state::grid<Nd>;
 
   using tree_t   = typename grid::tree_t;
@@ -89,14 +87,14 @@ template <uint_t Nd> struct state : geometry::dimensional<Nd> {
   template <typename ChildrenRange>
   void interpolate_from_children_to_parent(cell_idx parent,
                                            ChildrenRange&& children) noexcept {
-    uint_t count            = 0;
+    suint_t count           = 0;
     signed_distance(parent) = 0;
     for (auto&& child : children) {
       signed_distance(parent) += signed_distance(child);
       ++count;
     }
     HM3_ASSERT(count != 0, "count cannot be equal to zero");
-    signed_distance(parent) /= count;
+    signed_distance(parent) /= static_cast<num_t>(count);
   }
 
   /// Coarsens the sibling grid nodes of \p n
@@ -146,11 +144,11 @@ template <uint_t Nd> struct state : geometry::dimensional<Nd> {
   }
 };
 
-template <uint_t Nd> bool operator==(state<Nd> const& a, state<Nd> const& b) {
+template <dim_t Nd> bool operator==(state<Nd> const& a, state<Nd> const& b) {
   return a.g == b.g and equal(a.signed_distance, b.signed_distance);
 }
 
-template <uint_t Nd> bool operator!=(state<Nd> const& a, state<Nd> const& b) {
+template <dim_t Nd> bool operator!=(state<Nd> const& a, state<Nd> const& b) {
   return !(a == b);
 }
 

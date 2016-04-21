@@ -30,8 +30,8 @@ namespace rectangle_detail {
 ///     *-------*           *------> x(0)
 ///     0       1
 ///
-constexpr sint_t relative_corner_position(sidx_t corner_pos,
-                                          sidx_t dimension) noexcept {
+constexpr sint_t relative_corner_position(ppidx_t corner_pos,
+                                          dim_t dimension) noexcept {
   switch (dimension) {
     case 0: {
       return (corner_pos + 1) / 2 % 2 ? 1 : -1;
@@ -46,17 +46,17 @@ constexpr sint_t relative_corner_position(sidx_t corner_pos,
   }
 }
 
-template <uint_t Nd, uint_t... Is>
+template <dim_t Nd, dim_t... Is>
 constexpr point<Nd> relative_corner_position(
- suint_t corner_pos, std::integer_sequence<uint_t, Is...>) noexcept {
+ suint_t corner_pos, std::integer_sequence<dim_t, Is...>) noexcept {
   return point<Nd>{
    static_cast<num_t>(relative_corner_position(corner_pos, Is))...};
 }
 
-template <uint_t Nd>
-constexpr point<Nd> relative_corner_position(suint_t corner_pos) noexcept {
+template <dim_t Nd>
+constexpr point<Nd> relative_corner_position(ppidx_t corner_pos) noexcept {
   return relative_corner_position<Nd>(corner_pos,
-                                      std::make_integer_sequence<uint_t, Nd>{});
+                                      std::make_integer_sequence<dim_t, Nd>{});
 }
 
 }  // namespace rectangle_detail
@@ -64,7 +64,7 @@ constexpr point<Nd> relative_corner_position(suint_t corner_pos) noexcept {
 /// Rectangle corner positions
 template <typename Shape, CONCEPT_REQUIRES_(Rectangle<Shape>{})>
 constexpr auto corner_positions(Shape const&) noexcept {
-  return view::iota(suint_t{0}, Shape::no_corners());
+  return view::iota(ppidx_t{0}, Shape::no_corners());
 }
 
 /// Corners
@@ -82,7 +82,7 @@ constexpr auto corners(Shape const& s) noexcept {
   return corners;
 }
 
-template <uint_t Nd>  // optimization for squares
+template <dim_t Nd>  // optimization for squares
 constexpr auto corners(square<Nd> const& s) noexcept {
   std::array<point<Nd>, square<Nd>::no_corners()> corners;
   const auto l           = length(s);

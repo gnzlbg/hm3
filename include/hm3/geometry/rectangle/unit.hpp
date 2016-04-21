@@ -10,7 +10,7 @@ namespace geometry {
 
 template <typename Shape, CONCEPT_REQUIRES_(Rectangle<Shape>{})>
 auto unit(Shape) noexcept {
-  static constexpr uint_t nd = dimension(Shape());
+  static constexpr dim_t nd = dimension(Shape());
   return Shape{point<nd>::constant(0.), point<nd>::constant(1.)};
 }
 

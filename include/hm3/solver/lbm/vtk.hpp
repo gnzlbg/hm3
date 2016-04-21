@@ -1,6 +1,8 @@
 #pragma once
 /// \file
 ///
+/// Serialization of LBM solver to VTK
+#ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/polygon.hpp>
 #include <hm3/geometry/square.hpp>
 #include <hm3/solver/lbm/state.hpp>
@@ -21,8 +23,8 @@ struct serializable : geometry::dimensional<State::dimension()> {
   using block_idx = grid_node_idx;
   block_idx idx   = block_idx{};
 
-  using vtk_cell_idx         = cell_idx;
-  static constexpr uint_t Nd = State::dimension();
+  using vtk_cell_idx        = cell_idx;
+  static constexpr dim_t Nd = State::dimension();
 
   auto geometry(cell_idx c) const noexcept { return s.geometry(c); }
 
@@ -80,8 +82,8 @@ struct ls_serializable : serializable<State, Solid> {
   using base = serializable<State, Solid>;
   using base::s;
   using base::idx;
-  using block_idx            = typename base::block_idx;
-  static constexpr uint_t Nd = State::dimension();
+  using block_idx           = typename base::block_idx;
+  static constexpr dim_t Nd = State::dimension();
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
@@ -144,3 +146,4 @@ void ls_serialize(State const& state, Solid const& solid, Ls const& ls,
 }  // namespace lbm
 }  // namespace solver
 }  // namespace hm3
+#endif  // HM3_ENABLE_VTK

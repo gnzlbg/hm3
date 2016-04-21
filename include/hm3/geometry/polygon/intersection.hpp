@@ -15,10 +15,11 @@ template <typename Shape, typename SDFunction,
           CONCEPT_REQUIRES_(Polygon<Shape>{})>
 bool is_intersected(Shape const& s, SDFunction&& sd) noexcept {
   const auto shape_corners = corners(s);
-  const suint_t no_corners = size(shape_corners);
+  const auto no_corners    = size(shape_corners);
+  using cpidx_t            = decltype(no_corners);
 
   auto sg = math::signum(sd(shape_corners[0]));
-  for (suint_t c = 1; c != no_corners; ++c) {
+  for (cpidx_t c = 1; c < no_corners; ++c) {
     auto sg_c = math::signum(sd(shape_corners[c]));
     if (sg == 0) { sg = sg_c; }
     if (sg != sg_c) { return true; }
@@ -38,15 +39,15 @@ struct intersection {
   inline_vector<sint_t, Shape::capacity()> signum_inside, signum_outside;
 };
 
-template <typename Shape, typename SDFunction, uint_t Nd = Shape::dimension(),
+template <typename Shape, typename SDFunction, dim_t Nd = Shape::dimension(),
           CONCEPT_REQUIRES_(Polygon<Shape>{}  // and ResizablePolygon<Shape>
                             and SignedDistance<SDFunction, Nd>{}),
-          uint_t MaxNp = Shape::max_points()>
+          ppidx_t MaxNp = Shape::max_points()>
 intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   intersection<Shape> cut;
 
   const auto shape_corners = corners(s);
-  const suint_t no_corners = size(shape_corners);
+  const auto no_corners    = size(shape_corners);
   auto corner_ids          = view::iota(suint_t{0}, no_corners);
 
   // Compute signed distance values at the corners once:
@@ -57,7 +58,7 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   auto next_corner
    = [&](auto&& cidx) { return (cidx != no_corners - 1) ? cidx + 1 : 0; };
 
-  suint_t no_cutpoints_found = 0;
+  ppidx_t no_cutpoints_found = 0;
   /// Adds corners and cut points to each polygon
   for (auto cidx : corner_ids) {
     const auto corner_sd           = sd_at_corners[cidx];

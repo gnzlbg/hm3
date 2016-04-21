@@ -7,10 +7,10 @@
 namespace hm3 {
 namespace geometry {
 
-template <typename OStream, uint_t Nd, uint_t MaxNp>
+template <typename OStream, dim_t Nd, ppidx_t MaxNp>
 OStream& operator<<(OStream& os, polygon<Nd, MaxNp> const& pol) {
   os << "[";
-  uint_t c = 0;
+  ppidx_t c = 0;
 
   for (auto&& p : pol) {
     os << "x_" << c << "{ ";

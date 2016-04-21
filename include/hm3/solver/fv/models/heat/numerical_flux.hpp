@@ -16,8 +16,8 @@ namespace flux {
 struct three_point_fn {
   template <typename V, typename VT, typename State,
             typename var_v = num_a<std::decay_t<VT>::nvars()>>
-  constexpr var_v operator()(VT&& vt, V&& v_l, V&& v_r, suint_t,
-                             State&& s) const noexcept {
+  constexpr var_v operator()(VT&& vt, V&& v_l, V&& v_r, dim_t, State&& s) const
+   noexcept {
     var_v f;
     f(0) = (vt.temperature(v_l) - vt.temperature(v_r)) / s.dx;
     return f;

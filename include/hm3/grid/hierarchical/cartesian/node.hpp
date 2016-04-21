@@ -12,7 +12,7 @@ namespace hierarchical {
 namespace cartesian {
 
 /// Hierarchical Cartesian grid node
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct node : geometry::square<Nd>, tree_node_idx {
   using point_t               = geometry::point<Nd>;
   constexpr node()            = default;
@@ -36,14 +36,14 @@ struct node : geometry::square<Nd>, tree_node_idx {
    : geometry::square<Nd>{std::move(square)}, tree_node_idx{std::move(i)} {}
 };
 
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr bool operator==(node<Nd> const& a, node<Nd> const& b) noexcept {
   return static_cast<tree_node_idx>(a) == static_cast<tree_node_idx>(b)
          and static_cast<geometry::square<Nd>>(a)
               == static_cast<geometry::square<Nd>>(b);
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr bool operator!=(node<Nd> const& a, node<Nd> const& b) noexcept {
   return !(a == b);
 }

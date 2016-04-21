@@ -11,7 +11,7 @@ int main() {
     constexpr auto size_ps  = 1_u;
     constexpr auto size_pd  = 2_u;
     constexpr auto size_    = 2_u;
-    constexpr auto size_pc   = 2_u;
+    constexpr auto size_pc  = 2_u;
     CHECK(b.sides_per_dir() == sides_pd);
     CHECK(b.size_per_side() == size_ps);
     CHECK(b.size_per_dir() == size_pd);
@@ -31,7 +31,7 @@ int main() {
     constexpr auto size_ps  = 1_u;
     constexpr auto size_pd  = 2_u;
     constexpr auto size_    = 4_u;
-    constexpr auto size_pc   = 4_u;
+    constexpr auto size_pc  = 4_u;
     CHECK(b.sides_per_dir() == sides_pd);
     CHECK(b.size_per_side() == size_ps);
     CHECK(b.size_per_dir() == size_pd);
@@ -51,7 +51,7 @@ int main() {
     constexpr auto size_ps  = 1_u;
     constexpr auto size_pd  = 2_u;
     constexpr auto size_    = 6_u;
-    constexpr auto size_pc   = 6_u;
+    constexpr auto size_pc  = 6_u;
     CHECK(b.sides_per_dir() == sides_pd);
     CHECK(b.size_per_side() == size_ps);
     CHECK(b.size_per_dir() == size_pd);

@@ -3,8 +3,8 @@
 ///
 /// Tree relations
 ///
-/// TODO: update tree indices from uint_t to suint_t
-/// TODO: move some of these like no_faces to geometry square
+/// TODO: move some of these to grid relations since they are also needed by
+/// structured grids
 #include <array>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
@@ -29,8 +29,8 @@ namespace tree {
 ///
 /// Formula: \f$ 2^{nd} \f$
 ///
-static constexpr uint_t no_children(uint_t nd) noexcept {
-  return math::ipow(2_u, nd);
+static constexpr cpidx_t no_children(dim_t nd) noexcept {
+  return math::ipow(cpidx_t{2}, cpidx_t{nd});
 }
 
 /// Number of siblings of a node
@@ -41,7 +41,7 @@ static constexpr uint_t no_children(uint_t nd) noexcept {
 ///
 /// Formula: \f$ 2^{nd} \f$
 ///
-static constexpr uint_t no_siblings(uint_t nd) noexcept {
+static constexpr cpidx_t no_siblings(dim_t nd) noexcept {
   return no_children(nd);
 }
 
@@ -52,8 +52,8 @@ static constexpr uint_t no_siblings(uint_t nd) noexcept {
 ///
 /// Formula: \f$ 2 ^ {m} \f$ for \f$ m >= m \f$ otherwise 0.
 ///
-static constexpr uint_t no_nodes_sharing_face(uint_t nd, uint_t m) noexcept {
-  return (nd >= m) ? math::ipow(2_u, m) : 0_u;
+static constexpr npidx_t no_nodes_sharing_face(dim_t nd, dim_t m) noexcept {
+  return (nd >= m) ? math::ipow(npidx_t{2}, npidx_t{m}) : npidx_t{0};
 }
 
 /// Number of nodes sharing a single face at a given level
@@ -64,12 +64,14 @@ static constexpr uint_t no_nodes_sharing_face(uint_t nd, uint_t m) noexcept {
 ///
 /// Formula: \f$ (2^{m})^{l} \f$
 ///
-static constexpr uint_t no_nodes_sharing_face_at_level(
- uint_t nd, uint_t m, level_idx level) noexcept {
+/// \note The result can be very big => nidx_t type.
+///
+static constexpr nidx_t no_nodes_sharing_face_at_level(
+ dim_t nd, dim_t m, level_idx level) noexcept {
   const auto nsf = no_nodes_sharing_face(nd, m);
-  return nsf == 0_u and *level == 0_u
-          ? 0_u
-          : math::ipow(nsf, static_cast<uint_t>(*level));
+  return nsf == npidx_t{0} and *level == lidx_t{0}
+          ? nidx_t{0}
+          : math::ipow(nidx_t{nsf}, static_cast<nidx_t>(*level));
 }
 
 /// Number of node faces
@@ -79,9 +81,11 @@ static constexpr uint_t no_nodes_sharing_face_at_level(
 ///
 /// Formula: \f$\ 2^{n_d - m} \begin{pmatrix} n_d // m \end{pmatrix} \f$
 ///
-static constexpr uint_t no_faces(uint_t nd, uint_t m) noexcept {
-  return m <= nd ? math::ipow(2_u, nd - m) * math::binomial_coefficient(nd, m)
-                 : 0_u;
+static constexpr npidx_t no_faces(dim_t nd, dim_t m) noexcept {
+  return m <= nd
+          ? math::ipow(npidx_t{2}, npidx_t{nd - m})
+             * math::binomial_coefficient(nd, m)
+          : npidx_t{0};
 }
 
 /// Number of nodes at an uniformly refined level \p level
@@ -91,8 +95,11 @@ static constexpr uint_t no_faces(uint_t nd, uint_t m) noexcept {
 ///
 /// Formula \f$\ (2^{n_d})^{\mathrm{level}} \f$
 ///
-static constexpr uint_t no_nodes_at_uniform_level(uint_t nd, level_idx level) {
-  return math::ipow(math::ipow(2_u, nd), static_cast<uint_t>(*level));
+/// \note The result can be very big => nidx_t type.
+///
+static constexpr nidx_t no_nodes_at_uniform_level(dim_t nd, level_idx level) {
+  return math::ipow(math::ipow(nidx_t{2}, nidx_t{nd}),
+                    static_cast<nidx_t>(*level));
 }
 
 /// Number of nodes in a tree with a uniformly refined level \p level
@@ -102,40 +109,42 @@ static constexpr uint_t no_nodes_at_uniform_level(uint_t nd, level_idx level) {
 ///
 /// Formula \f$\ \sum_{l = 0}^{level} (2^{n_d})^{\mathrm{l}} \f$
 ///
-static constexpr uint_t no_nodes_until_uniform_level(uint_t nd,
+/// \note The result can be very big => nidx_t type.
+///
+static constexpr nidx_t no_nodes_until_uniform_level(dim_t nd,
                                                      level_idx level) {
-  uint_t no_nodes = 0;
-  for (suint_t l = 0, e = *level; l <= e; ++l) {
+  nidx_t no_nodes = 0;
+  for (lidx_t l = 0, e = *level; l <= e; ++l) {
     no_nodes += no_nodes_at_uniform_level(nd, l);
   }
   return no_nodes;
 }
 
 /// Normalized length of a node at level \p l (for a root node of length = 1)
-static constexpr num_t node_length_at_level(const level_idx l) {
-  return num_t{1} / math::ipow(2_u, static_cast<uint_t>(*l));
+static constexpr num_t node_length_at_level(level_idx l) {
+  return num_t{1.} / math::ipow(nidx_t{2}, static_cast<nidx_t>(*l));
 }
 
-template <int Nd> struct relative_child_positions_ {
-  static constexpr std::array<std::array<int_t, 0>, 0> stencil{{}};
+template <dim_t Nd> struct relative_child_positions_ {
+  static constexpr std::array<std::array<rcpidx_t, 0>, 0> stencil{{}};
 };
 
 template <> struct relative_child_positions_<1> {
-  static constexpr std::array<std::array<int_t, 1>, 2> stencil{{
+  static constexpr std::array<std::array<rcpidx_t, 1>, 2> stencil{{
    {{-1}}, {{1}}
    //
   }};
 };
 
 template <> struct relative_child_positions_<2> {
-  static constexpr std::array<std::array<int_t, 2>, 4> stencil{{
+  static constexpr std::array<std::array<rcpidx_t, 2>, 4> stencil{{
    {{-1, -1}}, {{1, -1}}, {{-1, 1}}, {{1, 1}}
    //
   }};
 };
 
 template <> struct relative_child_positions_<3> {
-  static constexpr std::array<std::array<int_t, 3>, 8> stencil{{
+  static constexpr std::array<std::array<rcpidx_t, 3>, 8> stencil{{
    {{-1, -1, -1}},
    {{1, -1, -1}},
    {{-1, 1, -1}},
@@ -149,7 +158,7 @@ template <> struct relative_child_positions_<3> {
 };
 
 namespace {
-template <int Nd>
+template <dim_t Nd>
 static constexpr auto relative_child_position_stencil
  = relative_child_positions_<Nd>::stencil;
 }  // namespace
@@ -183,15 +192,15 @@ static constexpr auto relative_child_position_stencil
 ///
 ///
 ///
-template <int Nd>
+template <dim_t Nd>
 static constexpr auto relative_child_position(const child_pos<Nd> p)
- -> const std::array<int_t, Nd> {
+ -> const offset_t<Nd> {
 #ifdef HM3_USE_CHILDREN_LOOKUP_TABLE
   return relative_child_position_stencil<Nd>[*p];
 #else
-  std::array<int_t, Nd> r;
+  offset_t<Nd> r;
   for (auto&& d : dimensions(Nd)) {
-    r[d] = (*p / math::ipow(2_u, d)) % 2 ? 1 : -1;
+    r[d] = (*p / math::ipow(coidx_t{2}, coidx_t{d})) % 2 ? 1 : -1;
   }
   return r;
 #endif

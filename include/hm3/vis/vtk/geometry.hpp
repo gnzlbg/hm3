@@ -10,7 +10,7 @@ namespace hm3 {
 namespace vis {
 namespace vtk {
 
-template <uint_t Nd> struct supported_geometries {
+template <dim_t Nd> struct supported_geometries {
   using type = std::experimental::variant<geometry::square<Nd>>;
 };
 
@@ -19,7 +19,7 @@ template <> struct supported_geometries<2_u> {
                                           geometry::polygon<2_u, 5>>;
 };
 
-template <uint_t Nd> using geometries = typename supported_geometries<Nd>::type;
+template <dim_t Nd> using geometries = typename supported_geometries<Nd>::type;
 
 }  // namespace vtk
 }  // namespace vis

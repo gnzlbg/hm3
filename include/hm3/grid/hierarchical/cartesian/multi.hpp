@@ -15,7 +15,7 @@ namespace cartesian {
 /// Multiple hierarchical Cartesian Grids
 ///
 ///
-template <uint_t Nd> struct multi : adaptor::multi<single<Nd>> {
+template <dim_t Nd> struct multi : adaptor::multi<single<Nd>> {
   using base_t = adaptor::multi<single<Nd>>;
   io::client io_;
   hm3::log::serial log;
@@ -75,21 +75,21 @@ template <uint_t Nd> struct multi : adaptor::multi<single<Nd>> {
   }
 };
 
-template <uint_t Nd> string name(multi<Nd>) {
+template <dim_t Nd> string name(multi<Nd>) {
   return name(typename multi<Nd>::base_t{});
 }
 
-template <uint_t Nd> string type(multi<Nd>) {
+template <dim_t Nd> string type(multi<Nd>) {
   return type(typename multi<Nd>::base_t{});
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator==(multi<Nd> const& a, multi<Nd> const& b) noexcept {
   using base_t = typename multi<Nd>::base_t const&;
   return static_cast<base_t>(a) == static_cast<base_t>(b);
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator!=(multi<Nd> const& a, multi<Nd> const& b) noexcept {
   return !(a == b);
 }

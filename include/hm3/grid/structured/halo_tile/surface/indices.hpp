@@ -23,15 +23,15 @@ struct indices
  : tile::surface::indices<Nd, cell::bounds<Nd, Nic, Nhl>::size()> {
   using self            = indices<Nd, Nic, Nhl>;
   using cell_bounds     = cell::bounds<Nd, Nic, Nhl>;
-  using tile            = tile<Nd, Nic, Nhl>;
-  using tile_coordinate = typename tile::coordinate;
+  using cell_indices    = cell::indices<Nd, Nic, Nhl>;
+  using cell_coordinate = typename cell_indices::coordinate;
 
   /// For each surface of the internal cells in the tile with normal component
   /// in direction \p d
   template <typename F>
   static constexpr void for_each_internal(F&& f, suint_t d) noexcept {
-    self::for_each(tile_coordinate::constant(cell_bounds::first_internal()),
-                   tile_coordinate::constant(cell_bounds::last_internal()),
+    self::for_each(cell_coordinate::constant(cell_bounds::first_internal()),
+                   cell_coordinate::constant(cell_bounds::last_internal()),
                    std::forward<F>(f), d);
   }
 
@@ -40,8 +40,8 @@ struct indices
   [[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]]  //
    static constexpr void
    for_each_internal(F&& f) noexcept {
-    self::for_each(tile_coordinate::constant(cell_bounds::first_internal()),
-                   tile_coordinate::constant(cell_bounds::last_internal()),
+    self::for_each(cell_coordinate::constant(cell_bounds::first_internal()),
+                   cell_coordinate::constant(cell_bounds::last_internal()),
                    std::forward<F>(f));
   }
 };

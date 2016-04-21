@@ -37,7 +37,7 @@ namespace grid {
 /// The current vtk grid displayed as well as the cell data
 /// are cached inside the reader.
 ///
-template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
+template <dim_t Nd> struct reader : ::hm3::vis::vtk::reader {
   using grid_t       = ::hm3::grid::hierarchical::cartesian::multi<Nd>;
   using vtk_cell_idx = tree::node_idx;
 

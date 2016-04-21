@@ -17,10 +17,10 @@ namespace tile {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
 template <suint_t Nd, suint_t Nc>  //
-struct geometry : ::hm3::geometry::dimensional<Nd> {
+struct tile_geometry : geometry::dimensional<Nd> {
   using bounds          = cell::bounds<Nd, Nc>;
-  using point_t         = ::hm3::geometry::point<Nd>;
-  using square_t        = ::hm3::geometry::square<Nd>;
+  using point_t         = geometry::point<Nd>;
+  using square_t        = geometry::square<Nd>;
   using cell_indices    = cell::indices<Nd, Nc>;
   using cell_coordinate = typename cell_indices::coordinate;
 
@@ -57,7 +57,9 @@ struct geometry : ::hm3::geometry::dimensional<Nd> {
     return x_tile_center;
   }
   /// Tile center
-  constexpr point_t tile_center() const noexcept { return tile_center(tile_length()); }
+  constexpr point_t tile_center() const noexcept {
+    return tile_center(tile_length());
+  }
 
   /// Tile cell center
   constexpr point_t cell_center(cell_coordinate x) const noexcept {
@@ -85,22 +87,22 @@ struct geometry : ::hm3::geometry::dimensional<Nd> {
 
   /// Compute the cell length from the tile bounding box
   static constexpr num_t cell_length(square_t bbox) noexcept {
-    return cell_length(::hm3::geometry::length(bbox));
+    return cell_length(geometry::length(bbox));
   }
 
   /// Computes first cell center coordinates (idx = 0) from tile bounding box
   static constexpr point_t x_first_cell(square_t bbox) noexcept {
-    HM3_ASSERT(::hm3::geometry::length(bbox) > 0.,
+    HM3_ASSERT(geometry::length(bbox) > 0.,
                "bounding box length must be positive, bbox {}", bbox);
-    auto x_min  = ::hm3::geometry::bounds(bbox).min;
-    auto cell_l = cell_length(::hm3::geometry::length(bbox));
+    auto x_min  = geometry::bounds(bbox).min;
+    auto cell_l = cell_length(geometry::length(bbox));
     for (suint_t d = 0; d < Nd; ++d) { x_min(d) += cell_l / 2.; }
     return x_min;
   }
 
   /// Lies point \p x inside the tile?
   constexpr bool contains(point_t x) const noexcept {
-    return ::hm3::geometry::contains(tile_bounding_box(), x);
+    return geometry::contains(tile_bounding_box(), x);
   }
 
   /// Cell containing the point \p x
@@ -120,22 +122,22 @@ struct geometry : ::hm3::geometry::dimensional<Nd> {
   }
 
   /// Returns a tile geometry from the tile's bounding box
-  static constexpr geometry from(square_t bounding_box) noexcept {
-    geometry g;
-    g.cell_length_  = geometry::cell_length(bounding_box);
-    g.x_first_cell_ = geometry::x_first_cell(bounding_box);
+  static constexpr tile_geometry from(square_t bounding_box) noexcept {
+    tile_geometry g;
+    g.cell_length_  = tile_geometry::cell_length(bounding_box);
+    g.x_first_cell_ = tile_geometry::x_first_cell(bounding_box);
     return g;
   }
 
-  constexpr geometry()                = default;
-  constexpr geometry(geometry const&) = default;
-  constexpr geometry(geometry&&)      = default;
-  constexpr geometry& operator=(geometry const&) = default;
-  constexpr geometry& operator=(geometry&&) = default;
+  constexpr tile_geometry()                     = default;
+  constexpr tile_geometry(tile_geometry const&) = default;
+  constexpr tile_geometry(tile_geometry&&)      = default;
+  constexpr tile_geometry& operator=(tile_geometry const&) = default;
+  constexpr tile_geometry& operator=(tile_geometry&&) = default;
 
   /// Constructs a tile geometry from its bounding box
-  constexpr geometry(square_t bounding_box)
-   : geometry(from(std::move(bounding_box))) {}
+  constexpr tile_geometry(square_t bounding_box)
+   : tile_geometry(from(std::move(bounding_box))) {}
 };
 
 }  // namespace tile

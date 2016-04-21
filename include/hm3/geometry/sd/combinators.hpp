@@ -98,7 +98,7 @@ struct add_plus_t {
 };
 }  // namespace detail
 
-constexpr auto&& add = static_const<detail::add_t>::value;
+constexpr auto&& add_plus = static_const<detail::add_plus_t>::value;
 
 namespace detail {
 struct op_intersection_t {

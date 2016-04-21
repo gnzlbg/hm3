@@ -12,13 +12,13 @@ namespace level_set {
 /// \name Level-set  I/O
 ///@{
 
-template <uint_t Nd> void map_arrays(io::file& f, state<Nd> const& s) {
+template <dim_t Nd> void map_arrays(io::file& f, state<Nd> const& s) {
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
   HM3_ASSERT(no_nodes == s.g.size(), "mismatching number of grid nodes");
   f.field("signed_distance", s.signed_distance.data(), *no_nodes);
 }
 
-template <uint_t Nd, typename Tree = typename state<Nd>::tree_t>
+template <dim_t Nd, typename Tree = typename state<Nd>::tree_t>
 state<Nd> from_file_unread(state<Nd> const&, io::file& f, Tree& t,
                            io::session& s_, grid_node_idx node_capacity) {
   auto g
@@ -28,12 +28,12 @@ state<Nd> from_file_unread(state<Nd> const&, io::file& f, Tree& t,
   return s;
 }
 
-template <uint_t Nd> void to_file_unwritten(io::file& f, state<Nd> const& s) {
+template <dim_t Nd> void to_file_unwritten(io::file& f, state<Nd> const& s) {
   to_file_unwritten(f, s.g);
   map_arrays(f, s);
 }
 
-template <uint_t Nd, typename Tree = typename state<Nd>::tree_t>
+template <dim_t Nd, typename Tree = typename state<Nd>::tree_t>
 state<Nd> from_file(state<Nd> const&, io::file& f, Tree& t, io::session& s,
                     grid_node_idx node_capacity = grid_node_idx{}) {
   auto ls = from_file_unread(state<Nd>{}, f, t, s, node_capacity);

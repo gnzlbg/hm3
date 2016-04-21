@@ -9,6 +9,7 @@
 /// compile-time for general shapes but only for some particular types.
 /// The `is_square` trait is opt-in.
 #include <hm3/geometry/dimension/concept.hpp>
+#include <hm3/geometry/polygon/types.hpp>
 
 namespace hm3 {
 namespace geometry {

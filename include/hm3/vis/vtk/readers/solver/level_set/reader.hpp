@@ -13,7 +13,7 @@ namespace vis {
 namespace vtk {
 namespace level_set {
 
-template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
+template <dim_t Nd> struct reader : ::hm3::vis::vtk::reader {
   using grid_reader_t = ::hm3::vis::vtk::grid::reader<Nd>;
   using level_set_s   = ::hm3::solver::level_set::state<Nd>;
 
@@ -133,7 +133,7 @@ template <uint_t Nd> struct reader : ::hm3::vis::vtk::reader {
 };
 
 /// Makes a level_set reader of dimension `Nd`
-template <uint_t Nd>
+template <dim_t Nd>
 auto make_level_set() -> std::unique_ptr<::hm3::vis::vtk::reader> {
   return std::make_unique<reader<Nd>>();
 }
@@ -147,7 +147,7 @@ inline auto make(io::json const& b)
     HM3_FATAL_ERROR(
      "Cannot make a level_set reader from a block of type \"{}\"", block_type);
   }
-  suint_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
+  dim_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
   switch (nd) {
     case 1: {
       return make_level_set<1>();

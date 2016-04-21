@@ -1,8 +1,7 @@
 #pragma once
+/// \file
 ///
-/// TODO:
-/// - replace static_cast<int_t> with static_cast<uint_t>
-///
+/// n-dimensional octree data structure
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
@@ -17,7 +16,7 @@ namespace hm3 {
 namespace tree {
 
 /// Nd-octree data-structure
-template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
+template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
   /// \name Data (all member variables of the tree)
   ///
   /// Memory layout: siblings (node with the same parent) are stored
@@ -58,7 +57,7 @@ template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
   using geometry::dimensional<Nd>::dimensions;
 
   /// Number of children per node
-  static constexpr uint_t no_children() noexcept {
+  static constexpr cpidx_t no_children() noexcept {
     return hm3::tree::no_children(Nd);
   }
 
@@ -66,7 +65,7 @@ template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
   ///
   /// \post n == child(parent(n), position_in_parent(n))
   ///
-  static constexpr uint_t position_in_parent(node_idx n) noexcept {
+  static constexpr cpidx_t position_in_parent(node_idx n) noexcept {
     return ((*n) - 1_u) % no_children();
     // post-condition is recursive and cannot be asserted
   }
@@ -80,7 +79,7 @@ template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
   /// Index of the sibling group of node \p n
   static constexpr siblings_idx sibling_group(node_idx n) noexcept {
     HM3_ASSERT(n, "cannot compute sibling group of invalid node");
-    return siblings_idx{static_cast<int_t>(
+    return siblings_idx{static_cast<sgidx_t>(
      math::floor((*n + no_children() - 1.f) / no_children()))};
   }
 
@@ -114,7 +113,7 @@ template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
     return parent(sibling_group(n));
   }
 
-  /// Child position type is a uint_t bounded in [0, no_children)
+  /// Child position type. Bounded: [0, `no_children()`).
   using child_pos = ::hm3::tree::child_pos<Nd>;
 
  private:
@@ -281,7 +280,7 @@ template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
   bool is_leaf(node_idx n) const noexcept { return !first_child(n); }
 
   /// Number of childrens of the node \p n
-  uint_t no_children(node_idx n) const noexcept {
+  cpidx_t no_children(node_idx n) const noexcept {
     return is_leaf(n) ? 0 : no_children();
   }
 
@@ -536,7 +535,7 @@ template <uint_t Nd> struct tree : geometry::dimensional<Nd> {
 ///
 /// Two trees are equal if their parent-child graph is the same.
 ///
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator==(tree<Nd> const& a, tree<Nd> const& b) noexcept {
   if (size(a) != size(b)) { return false; }
 
@@ -549,7 +548,7 @@ bool operator==(tree<Nd> const& a, tree<Nd> const& b) noexcept {
   return true;
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator!=(tree<Nd> const& a, tree<Nd> const& b) noexcept {
   return !(a == b);
 }
@@ -563,9 +562,9 @@ using quad_tree = tree<2>;
 /// Oct-tree
 using oct_tree = tree<3>;
 
-template <uint_t Nd> string type(tree<Nd> const&) { return "tree"; }
+template <dim_t Nd> string type(tree<Nd> const&) { return "tree"; }
 
-template <uint_t Nd> string name(tree<Nd> const&) {
+template <dim_t Nd> string name(tree<Nd> const&) {
   return type(tree<Nd>{}) + "_" + std::to_string(Nd) + "D";
 }
 

@@ -13,9 +13,9 @@ template <typename P, CONCEPT_REQUIRES_(PolygonD<P, 2>{})>
 constexpr num_t signed_area(P&& polygon) noexcept {
   num_t a         = 0.;
   const auto& ps  = corners(polygon);
-  const suint_t e = size(ps) - 1;
+  const ppidx_t e = size(ps) - 1;
   a += ps[0](0) * (ps[1](1) - ps[e](1));
-  for (suint_t i = 1; i != e; ++i) {
+  for (ppidx_t i = 1; i != e; ++i) {
     a += ps[i](0) * (ps[i + 1](1) - ps[i - 1](1));
   }
   a += ps[e](0) * (ps[0](1) - ps[e - 1](1));

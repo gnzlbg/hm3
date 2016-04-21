@@ -12,7 +12,7 @@ namespace tree {
 namespace dot {
 
 /// Serializes the tree \p t to dot format
-template <typename OStream, uint_t Nd>  //
+template <typename OStream, dim_t Nd>  //
 OStream& operator<<(OStream&& os, tree<Nd> const& t) {
   using namespace hm3;
   using std::to_string;

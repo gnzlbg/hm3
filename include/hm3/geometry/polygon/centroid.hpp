@@ -22,7 +22,7 @@ constexpr auto centroid(P&& polygon) noexcept -> point<dimension_t<P>{}> {
     return (ps[l](0) * ps[r](1) - ps[r](0) * ps[l](1)) * (ps[l]() + ps[r]());
   };
 
-  for (suint_t i = 0; i != e; ++i) { x() += kernel(i, i + 1); }
+  for (ppidx_t i = 0; i < e; ++i) { x() += kernel(i, i + 1); }
   {  // wrap around
     x() += kernel(e, 0);
   }

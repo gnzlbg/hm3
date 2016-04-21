@@ -24,9 +24,9 @@ namespace vtk {
 ///  - a bounding_box() method
 ///  - a dimensions() method
 ///  - a for_each_cell(F&&) method
-template <uint_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
+template <dim_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
   multi<Nd> const& t_;
-  int_t level_ = -1;
+  sint_t level_ = -1;
 
   using vtk_cell_idx = tree_node_idx;
 
@@ -38,7 +38,7 @@ template <uint_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
   auto nodes() const noexcept {
     return t_.nodes() | view::filter([&](tree_node_idx n) {
              return (level_ < 0) ? t_.is_leaf(n)
-                                 : t_.level(n) == static_cast<uint_t>(level_);
+                                 : t_.level(n) == static_cast<lidx_t>(level_);
            });
   }
 
@@ -71,8 +71,8 @@ template <uint_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
   }
 };
 
-template <uint_t Nd>
-void serialize(multi<Nd> const& t, string const& fname_, int_t level = -1) {
+template <dim_t Nd>
+void serialize(multi<Nd> const& t, string const& fname_, sint_t level = -1) {
   using serializable = serializable_multi<Nd>;
   hm3::log::serial log("multi-tree<Nd>-vtk-dump");
 

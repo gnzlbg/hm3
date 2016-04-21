@@ -16,7 +16,7 @@ boundary_neighbor = 2,
 unknown           = 3
 };
 
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct surface : line<Nd> {
 point<Nd> x_center;  ///< Surface centroid
 num_t area;          ///< Surfae area

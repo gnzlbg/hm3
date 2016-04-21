@@ -19,7 +19,7 @@ struct node_level_fn {
   /// Space complexity: O(1)
   template <typename Tree>
   auto operator()(Tree const& tree, node_idx n) const noexcept -> level_idx {
-    uint_t l = 0;
+    lidx_t l = 0;
     root_traversal(tree, tree.parent(n), [&](node_idx) {
       ++l;
       return true;
@@ -45,7 +45,7 @@ struct node_level_fn {
   ///
   /// Time complexity: O(logN) per node, applied to a range of N nodes O(NlogN)
   /// Space complexity: O(1)
-  template <typename Tree> static auto filter(Tree const& t, uint_t level) {
+  template <typename Tree> static auto filter(Tree const& t, level_idx level) {
     return view::filter(
      [&t, level](node_idx n) { return node_level_fn{}(t, n) == level; });
   }

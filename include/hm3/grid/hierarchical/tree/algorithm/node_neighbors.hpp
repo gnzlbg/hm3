@@ -77,7 +77,7 @@ struct node_neighbors_fn {
   /// \returns stack allocated vector containing the neighbors
   template <typename Manifold, typename Tree, typename Loc,
             typename UnaryPredicate = always_true_pred,
-            uint_t MaxNoNeighbors   = Manifold::no_child_level_neighbors(),
+            npidx_t MaxNoNeighbors  = Manifold::no_child_level_neighbors(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Manifold, Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
@@ -92,8 +92,8 @@ struct node_neighbors_fn {
   ///
   /// \returns stack allocated vector containing the neighbors
   template <typename Manifold, typename Tree,
-            typename Loc          = loc_t<Tree::dimension()>,
-            uint_t MaxNoNeighbors = Manifold::no_child_level_neighbors(),
+            typename Loc           = loc_t<Tree::dimension()>,
+            npidx_t MaxNoNeighbors = Manifold::no_child_level_neighbors(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Manifold, Tree const& t, node_idx n, Loc l = Loc{}) const
    noexcept -> inline_vector<node_idx, MaxNoNeighbors> {
@@ -110,23 +110,19 @@ struct node_neighbors_fn {
   ///
   template <typename Tree, typename Loc,
             typename UnaryPredicate = always_true_pred,
-            uint_t Nd = Tree::dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
+            dim_t Nd = Tree::dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
    -> inline_vector<node_idx, max_no_neighbors(Nd)> {
     inline_vector<node_idx, max_no_neighbors(Nd)> neighbors;
 
     for_each_neighbor_manifold<Nd>([&](auto m) {
-      (*this)(m, t, loc, neighbors, std::forward<UnaryPredicate>(pred));
+      // should be:
+      // (*this)(m, t, loc, neighbors, pred);
+      // seems like a BUG in clang 3.9
+      constexpr node_neighbors_fn nnf;
+      nnf(m, t, loc, neighbors, pred);
     });
-    // // For each surface manifold append the neighbors
-    // using manifold_rng = meta::as_list<meta::integer_range<int, 1, Nd + 1>>;
-    // meta::for_each(manifold_rng{},
-    //                [&](auto m_) {
-    //                  using manifold = manifold_neighbors<Nd, decltype(m_){}>;
-    //                  (*this)(manifold{}, t, loc, neighbors,
-    //                          std::forward<UnaryPredicate>(pred));
-    //                });
 
     // sort them and remove dupplicates
     ranges::sort(neighbors);

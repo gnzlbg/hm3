@@ -10,7 +10,7 @@ namespace solver {
 namespace fv {
 namespace advection {
 
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct indices {
   static constexpr suint_t nvars() noexcept { return 1; }
   static constexpr auto variables() noexcept { return view::iota(0, nvars()); }

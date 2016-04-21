@@ -13,7 +13,7 @@ namespace solver {
 namespace fv {
 namespace euler {
 
-template <uint_t Nd>
+template <dim_t Nd>
 struct physics : state, geometry::dimensional<Nd>, indices<Nd> {
   physics(num_t gamma) : state{std::move(gamma)} {}
 

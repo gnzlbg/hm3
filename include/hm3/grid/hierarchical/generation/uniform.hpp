@@ -15,15 +15,15 @@ namespace generation {
 /// Refines the grid until all the leaf nodes are at the target level
 struct uniform_fn {
   template <typename TreeGrid>
-  auto operator()(TreeGrid& tree, const uint_t target_level) const noexcept {
-    uint_t level = 0;
+  auto operator()(TreeGrid& tree, const level_idx target_level) const noexcept {
+    level_idx level{0};
     generic(
      [&]() {
        return tree.nodes() | tree.leaf()
               | tree::node_level.filter(tree, level++);
      },
      [&](auto n) { tree.refine(n); },
-     [&](auto) { return (level == target_level + 1) ? false : true; },
+     [&](auto) { return (level == target_level + 1_l) ? false : true; },
      []() { /* sort the grid ? */ });
   }
 };

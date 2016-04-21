@@ -11,7 +11,7 @@ namespace vtk {
 namespace grid {
 
 /// Tree grid reader
-template <uint_t Nd> struct tree : reader<Nd> {
+template <dim_t Nd> struct tree : reader<Nd> {
   using typename reader<Nd>::grid_t;
   using child_pos = ::hm3::tree::child_pos<grid_t::dimension()>;
 
@@ -30,7 +30,7 @@ template <uint_t Nd> struct tree : reader<Nd> {
     /// Parent nodes:
     cell_data.push("parent", [&](auto&& i) { return *grid->parent(i); });
     /// Node children:
-    auto compute_children = [&](auto&& i, suint_t p) {
+    auto compute_children = [&](auto&& i, tree::cpidx_t p) {
       const auto c = grid->child(i, child_pos{p});
       return c ? *c : -1;
     };
@@ -71,7 +71,7 @@ template <uint_t Nd> struct tree : reader<Nd> {
 };
 
 /// Makes a tree grid reader of dimension `nd`
-template <uint_t Nd>
+template <dim_t Nd>
 auto make_tree() -> std::unique_ptr<::hm3::vis::vtk::reader> {
   return std::make_unique<tree<Nd>>();
 }
@@ -90,7 +90,7 @@ inline auto make_tree(io::json const& b)
     HM3_FATAL_ERROR("tree contains no files:\n\n{}\n\n", b.dump(2));
   }
 
-  uint_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
+  dim_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
   switch (nd) {
     case 1: {
       return make_tree<1>();

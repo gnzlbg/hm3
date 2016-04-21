@@ -12,14 +12,14 @@ namespace geometry {
 
 namespace dimensions_detail {
 
-template <typename T, CONCEPT_REQUIRES_(
-                       std::is_convertible<ranges::uncvref_t<T>, uint_t>{})>
+template <typename T,
+          CONCEPT_REQUIRES_(std::is_convertible<ranges::uncvref_t<T>, dim_t>{})>
 constexpr auto dimensions(T&& t) {
-  return view::iota(0_u, static_cast<uint_t>(std::forward<T>(t)));
+  return view::iota(dim_t{0}, static_cast<dim_t>(std::forward<T>(t)));
 }
 
 template <typename T, CONCEPT_REQUIRES_(
-                       !std::is_convertible<ranges::uncvref_t<T>, uint_t>{})>
+                       !std::is_convertible<ranges::uncvref_t<T>, dim_t>{})>
 constexpr auto dimensions(T&& t) {
   return dimensions(dimension(t));
 }
@@ -54,8 +54,8 @@ using geometry::dimensions;
 /// Range of spatial dimensions: [0, \p nd)
 ///
 /// TODO: make constexpr when view::iota is constexpr
-HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions(1_u));
-HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions(2_u));
-HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions(3_u));
+HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions(1_su));
+HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions(2_su));
+HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(dimensions(3_su));
 
 }  // namespace hm3

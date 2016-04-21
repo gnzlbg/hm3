@@ -11,7 +11,7 @@ namespace grid {
 namespace hierarchical {
 namespace cartesian {
 
-template <uint_t Nd>
+template <dim_t Nd>
 struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
   using amr_node_idx = tree_node_idx;
 
@@ -24,7 +24,7 @@ struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
     return g_->siblings(n) | g_->leaf();
   }
   /// Max number of siblings at the same level within the grid
-  constexpr int_t no_siblings() const noexcept { return g_->no_children(); }
+  constexpr cpidx_t no_siblings() const noexcept { return g_->no_children(); }
 
   /// Neighbors of node \p n within the grid
   auto neighbors(amr_node_idx n) const { return g_->neighbors(n); }
@@ -43,7 +43,7 @@ struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
   geometry::square<Nd> bounding_box() const { return g_->bounding_box(); }
 };
 
-template <uint_t Nd>
+template <dim_t Nd>
 multi_amr_target<Nd> make_amr_target(multi<Nd>& g) noexcept {
   return multi_amr_target<Nd>(g);
 };

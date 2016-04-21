@@ -10,7 +10,7 @@ namespace solver {
 namespace fv {
 namespace heat {
 
-template <uint_t Nd> struct physics : geometry::dimensional<Nd>, indices<Nd> {
+template <dim_t Nd> struct physics : geometry::dimensional<Nd>, indices<Nd> {
   using self = physics<Nd>;
 
   template <typename V> static decltype(auto) temperature(V&& v) noexcept {

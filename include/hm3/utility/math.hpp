@@ -445,5 +445,27 @@ static constexpr bool approx(T const& a, U const& b) noexcept {
   return approx(num_t(a), num_t(b));
 }
 
+/// Adds a signed integral to an unsigned integral
+///
+/// If the integer is positive, it casts it into unsigned and adds it If the
+/// integer is negative, it makes it positive, then cast it into unsigned and
+/// finally substract it.
+///
+/// This avoids signed integer overflow (which happens when casting to unsigned
+/// if the integer is negative) and thus Undefined Behavior.
+///
+template <typename SignedInt, typename UnsignedInt,
+          CONCEPT_REQUIRES_(SignedIntegral<SignedInt>{}
+                            and UnsignedIntegral<UnsignedInt>{})>
+static constexpr SignedInt add_signed_to_unsigned(SignedInt s,
+                                                  UnsignedInt u) noexcept {
+  if (s > 0) {
+    u += static_cast<UnsignedInt>(s);
+  } else {
+    u -= static_cast<UnsignedInt>(-s);
+  }
+  return u;
+}
+
 }  // namespace math
 }  // namespace hm3

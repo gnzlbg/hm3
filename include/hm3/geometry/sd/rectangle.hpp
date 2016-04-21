@@ -20,12 +20,12 @@ namespace sd {
 /// x_c = (x,y,z)^T
 ///
 /// TODO: implement rotation phi
-template <int_t Nd>
+template <dim_t Nd>
 num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
                 vector<Nd> const& l) noexcept {
   auto l_2           = .5 * l();
   num_a<Nd> distance = x_c() - l_2 - x();  // x(d) < x_c(d)
-  for (suint_t d = 0; d < Nd; ++d) {
+  for (dim_t d = 0; d < Nd; ++d) {
     if (x(d) > x_c(d)) {
       distance(d) = x(d) - (x_c(d) + l_2(d));  // pos if outside, neg if inside
     }
@@ -49,7 +49,7 @@ num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
   HM3_FATAL_ERROR("unreachable: x: {}, x_c: {}, l: {}", x, x_c, l);
 }
 
-template <int_t Nd> struct fixed_rectangle {
+template <dim_t Nd> struct fixed_rectangle {
   point<Nd> x_c;
   vector<Nd> l;
 

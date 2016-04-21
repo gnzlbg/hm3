@@ -16,7 +16,7 @@ namespace hierarchical {
 namespace cartesian {
 
 /// Hierarchical Cartesian grid
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct single : tree::tree<Nd> {
   using tree_t                  = tree::tree<Nd>;
   using node_geometry_t         = geometry::square<Nd>;
@@ -121,23 +121,23 @@ struct single : tree::tree<Nd> {
   }
 };
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator==(single<Nd> const& a, single<Nd> const& b) noexcept {
   using tree_t = tree::tree<Nd> const&;
   return a.bounding_box() == b.bounding_box()
          && static_cast<tree_t>(a) == static_cast<tree_t>(b);
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator!=(single<Nd> const& a, single<Nd> const& b) noexcept {
   return !(a == b);
 }
 
-template <uint_t Nd> string type(single<Nd> const&) {
+template <dim_t Nd> string type(single<Nd> const&) {
   return "hierarchical_cartesian_grid";
 }
 
-template <uint_t Nd> string name(single<Nd> const&) {
+template <dim_t Nd> string name(single<Nd> const&) {
   return type(single<Nd>{}) + "_" + std::to_string(Nd) + "D";
 }
 

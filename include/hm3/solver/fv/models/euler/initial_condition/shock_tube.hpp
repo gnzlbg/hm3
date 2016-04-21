@@ -18,7 +18,7 @@ namespace ic {
 /// Initial condition for shock tube problems
 ///
 /// Can be customized along 2 directions only (x0, y1).
-template <uint_t Nd> struct shock_tube {
+template <dim_t Nd> struct shock_tube {
   using i       = indices<Nd>;
   using p       = pv_base<Nd>;
   using var_v   = num_a<i::nvars()>;
@@ -106,7 +106,7 @@ template <uint_t Nd> struct shock_tube {
 /// Nonlinear Hyperbolic Conservation Laws", Journal of Computational Physics,
 /// 27:1-31, 1978.
 ///
-template <uint_t Nd> auto sod_shock_tube() {
+template <dim_t Nd> auto sod_shock_tube() {
   return shock_tube<Nd>(1.0, 0.0, 1.0,   // left state
                         0.125, 0.0, 0.1  // right state
                         );
@@ -124,7 +124,7 @@ template <uint_t Nd> auto sod_shock_tube() {
 /// \note this is a really easy problem. If something goes wrong here,
 /// something fundamental is wrong.
 ///
-template <uint_t Nd> auto modified_sod_shock_tube() {
+template <dim_t Nd> auto modified_sod_shock_tube() {
   return shock_tube<Nd>(1.0, 0.75, 1.0,   // left state
                         0.125, 0.0, 0.1,  // right state
                         0.3);
@@ -143,7 +143,7 @@ template <uint_t Nd> auto modified_sod_shock_tube() {
 /// flows. The checks for negative density/pressure should fail before anything
 /// goes wrong here.
 ///
-template <uint_t Nd> auto one_two_three_shock_tube() {
+template <dim_t Nd> auto one_two_three_shock_tube() {
   return shock_tube<Nd>(1.0, -2.0, 0.4,  // left state
                         1.0, 2.0, 0.4    // right state
                         );

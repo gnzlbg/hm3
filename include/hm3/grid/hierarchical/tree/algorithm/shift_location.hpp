@@ -18,11 +18,11 @@ struct shift_location_fn {
   ///
   /// TODO: if offset is out of bounds -> undefined behavior (right now
   /// an assertion triggers in location's constructor)
-  template <typename Loc, int Nd = Loc::dimension(),
+  template <typename Loc, dim_t Nd = Loc::dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Loc loc, std::array<num_t, Nd> offset,
-                  uint_t level = Loc::max_level()) const noexcept -> Loc {
-    const num_t scale = math::ipow(2, loc.level);
+                  lidx_t level = Loc::max_level()) const noexcept -> Loc {
+    const num_t scale = math::ipow(lidx_t{2}, loc.level);
     RANGES_FOR (auto&& d, dimensions(Nd)) { offset[d] += loc[d] / scale; }
     return Loc{offset, level};
   }
@@ -31,9 +31,9 @@ struct shift_location_fn {
   ///
   /// If the resulting location is out-of-bounds the optional_location won't
   /// contain a valid value.
-  template <typename Loc, std::size_t Nd = Loc::dimension(),
+  template <typename Loc, dim_t Nd = Loc::dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
-  auto operator()(Loc loc, std::array<int_t, Nd> offset) const noexcept
+  auto operator()(Loc loc, offset_t<Nd> offset) const noexcept
    -> compact_optional<Loc> {
     return shift(loc, offset);
   }

@@ -16,11 +16,11 @@ constexpr auto volume(Shape const& s) noexcept {
   return vol;
 }
 
-template <uint_t Nd>  // optimization for squares
+template <dim_t Nd>  // optimization for squares
 constexpr auto volume(square<Nd> const& s) noexcept {
   auto vol     = length(s);
   const auto l = vol;
-  for (suint_t d = 1; d != Nd; ++d) { vol *= l; }
+  for (dim_t d = 1; d < Nd; ++d) { vol *= l; }
   return vol;
 }
 

@@ -16,7 +16,7 @@ namespace hm3 {
 namespace geometry {
 
 /// Rectangle
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct rectangle : dimensional<Nd> {
   using point_t  = point<Nd>;
   using vector_t = vector<Nd>;
@@ -41,61 +41,57 @@ struct rectangle : dimensional<Nd> {
   }
 
   /// Number of m-dimensional edges
-  static constexpr auto no_edges(uint_t m) noexcept -> suint_t {
+  static constexpr auto no_edges(dim_t m) noexcept -> dim_t {
     if (Nd < m || m < 0) { return 0; }
-    return math::ipow(uint_t{2}, Nd - m) * math::binomial_coefficient(Nd, m);
+    return math::ipow(dim_t{2}, Nd - m) * math::binomial_coefficient(Nd, m);
   }
 
   /// Number of corners (one-dimensional edges)
   static constexpr auto no_corners() noexcept -> suint_t {
-    return math::ipow(uint_t{2}, Nd);
+    return math::ipow(dim_t{2}, Nd);
   }
 };
 
-template <uint_t Nd> constexpr bool empty(rectangle<Nd> const&) {
-  return false;
-}
+template <dim_t Nd> constexpr bool empty(rectangle<Nd> const&) { return false; }
 
 /// Bounds (min, max)
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr rectangle_bounds<Nd> bounds(rectangle<Nd> const& s) noexcept {
   return {s.x_min_, s.x_max_};
 }
 
-template <uint_t Nd>
-constexpr point<Nd> x_min(rectangle<Nd> const& s) noexcept {
+template <dim_t Nd> constexpr point<Nd> x_min(rectangle<Nd> const& s) noexcept {
   return s.x_min_;
 }
 
-template <uint_t Nd>
-constexpr point<Nd> x_max(rectangle<Nd> const& s) noexcept {
+template <dim_t Nd> constexpr point<Nd> x_max(rectangle<Nd> const& s) noexcept {
   return s.x_max_;
 }
 
 /// Rectangle length
-template <uint_t Nd>
-constexpr num_t length(rectangle<Nd> const& s, uint_t d) noexcept {
+template <dim_t Nd>
+constexpr num_t length(rectangle<Nd> const& s, dim_t d) noexcept {
   return s.x_max_(d) - s.x_min_(d);
 }
 
 /// Square lengths (they all equal the same value)
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr vector<Nd> lengths(rectangle<Nd> const& s) noexcept {
   return vector<Nd>(s.x_max_() - s.x_min_());
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator==(rectangle<Nd> const& l, rectangle<Nd> const& r) noexcept {
   return l.x_min_ == r.x_min_ and l.x_max_ == r.x_max_;
 }
 
-template <uint_t Nd>
+template <dim_t Nd>
 bool operator!=(rectangle<Nd> const& l, rectangle<Nd> const& r) noexcept {
   return !(l == r);
 }
 
 /// Rectangle centroid coordinates
-template <uint_t Nd>
+template <dim_t Nd>
 constexpr point<Nd> centroid(rectangle<Nd> const& s) noexcept {
   return point<Nd>(s.x_min_() + .5 * (s.x_max_() - s.x_min_()));
 }

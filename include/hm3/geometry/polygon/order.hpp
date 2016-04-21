@@ -15,7 +15,7 @@ constexpr bool counter_clock_wise(P&& polygon) {
   const auto&& ps = corners(polygon);
   const auto e    = size(ps) - 1;
   num_t tmp       = 0.;
-  for (suint_t i = 0; i != e; ++i) {
+  for (ppidx_t i = 0; i < e; ++i) {
     tmp += (ps[i + 1](0) - ps[i](0)) * (ps[i + 1](1) + ps[i](1));
   }
   {  // wrap around

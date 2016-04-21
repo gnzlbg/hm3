@@ -35,7 +35,7 @@
 // ///  3---2
 // ///  |   |
 // ///  0---1
-// template <uint_t Nd, typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
+// template <dim_t Nd, typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
 // auto ccw_interpolate(point<Nd> const& x, D const& d) {
 //   assert_is_valid_ccw_dataset(d);
 
@@ -79,7 +79,7 @@
 // ///  2---3
 // ///  |   |
 // ///  0---1
-// template <uint_t Nd, typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
+// template <dim_t Nd, typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
 // auto z_interpolate(point<Nd> const& x, D const& d) {
 //   assert_is_valid_dataset(d);
 

@@ -85,19 +85,19 @@ template <typename T> auto make_array() {
 template <typename T> struct cell_t {};
 template <> struct cell_t<geometry::square<1>> {
   using type = vtkLine;
-  static constexpr int value() { return VTK_LINE; }
+  static constexpr auto value() { return VTK_LINE; }
 };
 template <> struct cell_t<geometry::square<2>> {
   using type = vtkQuad;
-  static constexpr int value() { return VTK_QUAD; }
+  static constexpr auto value() { return VTK_QUAD; }
 };
 template <> struct cell_t<geometry::square<3>> {
   using type = vtkHexahedron;
-  static constexpr int value() { return VTK_HEXAHEDRON; }
+  static constexpr auto value() { return VTK_HEXAHEDRON; }
 };
-template <uint_t Nd, uint_t MaxNp> struct cell_t<geometry::polygon<Nd, MaxNp>> {
+template <dim_t Nd, suint_t MaxNp> struct cell_t<geometry::polygon<Nd, MaxNp>> {
   using type = vtkPolygon;
-  static constexpr int value() { return VTK_POLYGON; }
+  static constexpr auto value() { return VTK_POLYGON; }
 };
 
 template <typename T> using to_vtk_cell_t     = typename cell_t<T>::type;
@@ -124,11 +124,12 @@ auto make_tuple_of_cells(std::experimental::variant<Ts...> const&)
   return r;
 }
 
-template <uint_t Nd>
-constexpr auto to_vtk_point(geometry::point<Nd> p) noexcept
- -> std::array<double, 3> {
-  std::array<double, 3> vtk_p{{0.0}};
-  for (uint_t d = 0; d != Nd; ++d) { vtk_p[d] = p(d); }
+using vtk_point_t = std::array<double, 3>;
+
+template <dim_t Nd>
+constexpr auto to_vtk_point(geometry::point<Nd> p) noexcept -> vtk_point_t {
+  vtk_point_t vtk_p{{0.0, 0.0, 0.0}};
+  for (dim_t d = 0; d < Nd; ++d) { vtk_p[d] = p(d); }
   return vtk_p;
 }
 

@@ -13,7 +13,7 @@ namespace solver {
 namespace fv {
 namespace euler {
 
-template <uint_t Nd>  //
+template <dim_t Nd>  //
 struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   using equation_of_state::mach_number;
   using equation_of_state::energy_density;
@@ -38,7 +38,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
   /// Velocity
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
-  static constexpr decltype(auto) u(V&& v, suint_t d) noexcept {
+  static constexpr decltype(auto) u(V&& v, dim_t d) noexcept {
     return v(i::u(d));
   }
 
@@ -66,7 +66,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
   /// Momentum density
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
-  static constexpr decltype(auto) rho_u(V&& v, suint_t d) noexcept {
+  static constexpr decltype(auto) rho_u(V&& v, dim_t d) noexcept {
     return v(i::u(d)) * v(i::rho());
   }
   /// Energy density
@@ -97,7 +97,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   /// dimension
   template <typename V, typename F,
             CONCEPT_REQUIRES_(!rvref<V&&> and !rvref<F&&>)>
-  static constexpr void flux_ip(V&& v, F&& f, suint_t d,
+  static constexpr void flux_ip(V&& v, F&& f, dim_t d,
                                 num_t gamma_m1) noexcept {
     const num_t u_d = u(v)(d);
     rho(f)          = rho(v) * u_d;
@@ -109,7 +109,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   /// Inplace flux across a surface whose normal points in the d-th spatial
   /// dimension
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
-  static constexpr vars flux(V&& v, suint_t d, num_t gamma_m1) noexcept {
+  static constexpr vars flux(V&& v, dim_t d, num_t gamma_m1) noexcept {
     vars f;
     flux_ip(v, f, d, gamma_m1);
     return f;
@@ -121,7 +121,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
 
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
-  static constexpr num_t mach_number(V&& v, suint_t d, num_t gamma) noexcept {
+  static constexpr num_t mach_number(V&& v, dim_t d, num_t gamma) noexcept {
     return mach_number(u(v)(d).abs(), speed_of_sound(v, gamma));
   }
 
@@ -131,7 +131,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
 };
 
-template <uint_t Nd> struct pv : pv_base<Nd>, state {
+template <dim_t Nd> struct pv : pv_base<Nd>, state {
   using b = pv_base<Nd>;
   using state::gamma;
   using state::gamma_m1;
@@ -162,14 +162,14 @@ template <uint_t Nd> struct pv : pv_base<Nd>, state {
   /// dimension
   template <typename V, typename F,
             CONCEPT_REQUIRES_(!rvref<V&&> and !rvref<F&&>)>
-  constexpr void flux_ip(V&& v, F&& f, suint_t d) const noexcept {
+  constexpr void flux_ip(V&& v, F&& f, dim_t d) const noexcept {
     b::flux_ip(v, std::forward<F>(f), d, gamma_m1);
   }
 
   /// Inplace flux across a surface whose normal points in the d-th spatial
   /// dimension
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
-  constexpr vars flux(V&& v, suint_t d) const noexcept {
+  constexpr vars flux(V&& v, dim_t d) const noexcept {
     return b::flux(v, d, gamma_m1);
   }
 
@@ -181,7 +181,7 @@ template <uint_t Nd> struct pv : pv_base<Nd>, state {
   template <typename V,
             CONCEPT_REQUIRES_(
              !rvref<V&&> and !std::is_floating_point<std::decay_t<V>>{})>
-  constexpr num_t mach_number(V&& v, suint_t d) const noexcept {
+  constexpr num_t mach_number(V&& v, dim_t d) const noexcept {
     return b::mach_number(v, d, gamma);
   }
 

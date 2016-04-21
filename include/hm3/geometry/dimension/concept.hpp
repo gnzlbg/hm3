@@ -16,7 +16,7 @@ namespace rc = ranges::concepts;
 struct dimensional {
   template <typename T>
   auto requires_(T&& t) -> decltype(
-   rc::valid_expr(rc::convertible_to<uint_t>(dimension(t)),           //
+   rc::valid_expr(rc::convertible_to<dim_t>(dimension(t)),            //
                   rc::model_of<rc::RandomAccessRange>(dimensions(t))  //
                   ));
 };
@@ -29,7 +29,7 @@ template <typename T>
 using Dimensional
  = concepts::rc::models<concepts::Dimensional, ranges::uncvref_t<T>>;
 
-template <typename T, uint_t Nd>
+template <typename T, dim_t Nd>
 using NDimensional
  = meta::and_<Dimensional<T>,
               meta::bool_<decltype(dimension(ranges::uncvref_t<T>())){} == Nd>>;

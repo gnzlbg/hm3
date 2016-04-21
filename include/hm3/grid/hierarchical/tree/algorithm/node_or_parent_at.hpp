@@ -12,7 +12,7 @@ namespace tree {
 struct node_or_parent_at_fn {
   struct node {
     node_idx idx{};
-    level_idx level{0_u};
+    level_idx level{lidx_t{0}};
   };
 
   /// Index of smallest node containing \p loc with level <= loc.level
@@ -26,7 +26,7 @@ struct node_or_parent_at_fn {
   template <typename Tree, typename Loc, CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc) const noexcept -> node {
     static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
-    node result{0_n, 0_u};
+    node result{0_n, lidx_t{0}};
     for (auto&& p : loc()) {
       auto m = t.child(result.idx, child_pos_t<Tree>(p));
       if (!m) { break; }

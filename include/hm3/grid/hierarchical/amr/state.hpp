@@ -8,6 +8,8 @@
 #include <vector>
 
 namespace hm3 {
+namespace grid {
+namespace hierarchical {
 namespace amr {
 
 /// Adaptive mesh refinement algorithm
@@ -274,4 +276,6 @@ auto make(Targetable& t) {
 }
 
 }  // namespace amr
+}  // namespace hierarchical
+}  // namespace grid
 }  // namespace hm3

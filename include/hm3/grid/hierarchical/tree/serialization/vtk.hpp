@@ -22,9 +22,9 @@ namespace vtk {
 ///  - a bounding_box() method
 ///  - a dimensions() method
 ///  - a for_each_cell(F&&) method
-template <uint_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
+template <dim_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
   tree<Nd> const& t_;
-  int_t level_ = -1;
+  sint_t level_ = -1;
 
   using vtk_cell_idx = node_idx;
 
@@ -41,7 +41,7 @@ template <uint_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
     return t_.nodes() | view::filter([&](node_idx n) {
              return (level_ < 0)
                      ? t_.is_leaf(n)
-                     : node_level(t_, n) == static_cast<uint_t>(level_);
+                     : node_level(t_, n) == static_cast<lidx_t>(level_);
            });
   }
 
@@ -96,8 +96,8 @@ template <uint_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
   }
 };
 
-template <uint_t Nd>
-void serialize(tree<Nd> const& t, string const& fname_, int_t level = -1) {
+template <dim_t Nd>
+void serialize(tree<Nd> const& t, string const& fname_, sint_t level = -1) {
   using serializable = serializable_tree<Nd>;
   string fname       = fname_ + ".vtu";
   hm3::log::serial log("tree<Nd>-vtk-dump");

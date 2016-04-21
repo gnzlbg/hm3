@@ -33,7 +33,7 @@ template <typename State> void clear_halos(State& s) {
 }
 
 template <typename State, typename Block, typename CIdx, typename Limiter>
-auto compute_structured_gradient(State& s, Block& b, CIdx c, suint_t d,
+auto compute_structured_gradient(State& s, Block& b, CIdx c, dim_t d,
                                  Limiter& limiter) {
   using vars = num_a<std::decay_t<State>::nvars()>;
   vars grad;

@@ -19,12 +19,12 @@ namespace halo_tile {
 /// \tparam Nd  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
-struct geometry
- : private tile::geometry<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
+template <dim_t Nd, suint_t Nic, suint_t Nhl>  //
+struct tile_geometry
+ : private tile::tile_geometry<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
   using bounds                 = cell::bounds<Nd, Nic, Nhl>;
-  using external_tile_geometry = tile::geometry<Nd, bounds::length()>;
-  using internal_tile_geometry = tile::geometry<Nd, Nic>;
+  using external_tile_geometry = tile::tile_geometry<Nd, bounds::length()>;
+  using internal_tile_geometry = tile::tile_geometry<Nd, Nic>;
   using cell_coordinate        = cell::coordinate<Nd, Nic, Nhl>;
   using point_t                = typename external_tile_geometry::point_t;
   using square_t               = typename external_tile_geometry::square_t;
@@ -37,27 +37,28 @@ struct geometry
   using external_tile_geometry::contains;
   using external_tile_geometry::cell_containing;
 
-  constexpr geometry()                = default;
-  constexpr geometry(geometry const&) = default;
-  constexpr geometry(geometry&&)      = default;
-  constexpr geometry& operator=(geometry const&) = default;
-  constexpr geometry& operator=(geometry&&) = default;
+  constexpr tile_geometry()                     = default;
+  constexpr tile_geometry(tile_geometry const&) = default;
+  constexpr tile_geometry(tile_geometry&&)      = default;
+  constexpr tile_geometry& operator=(tile_geometry const&) = default;
+  constexpr tile_geometry& operator=(tile_geometry&&) = default;
 
   /// Construct a halo tile geometry from the bounding box of the internal cells
-  static constexpr geometry from(square_t internal_bbox) noexcept {
+  static constexpr tile_geometry from(square_t internal_bbox) noexcept {
     auto cell_length = internal_tile_geometry::cell_length(internal_bbox);
     auto external_tile_length          = cell_length * bounds::length();
     auto external_tile_bounding_box    = internal_bbox;
     external_tile_bounding_box.length_ = external_tile_length;
-    return geometry(external_tile_geometry(external_tile_bounding_box));
+    return tile_geometry(external_tile_geometry(external_tile_bounding_box));
   }
 
   /// Constructs a halo tile geometry from the bounding box of the internal
   /// cells
-  constexpr geometry(square_t internal_bbox) : geometry(from(internal_bbox)) {}
+  constexpr tile_geometry(square_t internal_bbox)
+   : tile_geometry(from(internal_bbox)) {}
   /// Constructs a halo tile geometry from a non-halo tile geometry (the same
   /// bounding box is used)
-  constexpr geometry(external_tile_geometry g)
+  constexpr tile_geometry(external_tile_geometry g)
    : external_tile_geometry(std::move(g)) {}
 
   /// Internal cell containing the point \p x
