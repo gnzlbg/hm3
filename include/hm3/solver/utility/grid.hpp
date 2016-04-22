@@ -18,7 +18,8 @@ namespace state {
 /// \note The solver grid is allowed to have holes in it.
 /// \note Solver grid nodes do not necessarily need to be part of the grid
 /// tree. For example ghost nodes might not exist within the tree.
-template <dim_t Nd> struct grid {
+template <dim_t Nd>  //
+struct grid {
   using tree_t = ::hm3::hierarchical::cartesian::multi<Nd>;
 
  private:

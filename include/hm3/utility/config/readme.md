@@ -2,16 +2,16 @@
 
 Most of the utilities here can be split into:
 
-- Debugging.
-- Error handling.
-- Platform detection/support (compiler, os, ...).
-- Optimization/analysis hints.
+- [Debugging](#Debugging).
+- [Error handling](#Error-Handling).
+- [Optimization hints](#Optimization-hints).
+- [Architecture dependent code](#Architecture-dependent-code).
 
 ## Debugging
 
 ### `assert`:
 
-[Assertions](http://blog.regehr.org/archives/1091:
+[Assertions](http://blog.regehr.org/archives/1091):
 
 > An assertion is a Boolean expression at a specific point in a program (that
   may or may not be evaluated) which will be true unless there is a bug in the
@@ -21,11 +21,11 @@ You can use it to check pre-conditions, post-conditions, and invariants:
 
 ```c++
 HM3_ASSERT(condition, message); // perform checks in debug mode
-HM3_ASSERT([&]() -> bool { /* executes in debug mode */ }(), message);
+HM3_ASSERT([&]() -> bool { /* executes in debug mode, avoid side-effects */ }(), message);
 ```
 
-**Note:** assertions are used in release mode to hint the compiler that some
-invariants are true.
+**Note:** assertions are used in release mode to _hint_ the compiler that some
+invariants are true (so they better remain true in release mode!).
 
 ### `debug_print`:
 
@@ -66,7 +66,7 @@ won't be flushed...
   to `stderr` all exceptions thrown by a particular function (the exceptions get
   then rethrown). This is very useful when writting/debugging ParaView plugins.
 
-## Optimization/Analysis hints
+## Optimization hints
 
 ### `attributes`: function attributes
 
@@ -112,7 +112,7 @@ auto-vectorization of a piece of code in most compilers.
 
 **TODO**: implement/document `__builtin_prefetch`.
 
-## Platform detection/support
+## Architecture dependent code
 
 ### `compiler`:
 
