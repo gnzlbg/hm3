@@ -2,10 +2,10 @@
 
 Most of the utilities here can be split into:
 
-- [Debugging](#Debugging).
-- [Error handling](#Error-Handling).
-- [Optimization hints](#Optimization-hints).
-- [Architecture dependent code](#Architecture-dependent-code).
+- [Debugging](#debugging).
+- [Error handling](#error-handling).
+- [Optimization hints](#optimization-hints).
+- [Architecture dependent code](#architecture-dependent-code).
 
 ## Debugging
 
