@@ -52,10 +52,10 @@ void tile_cell_indices_tests() {
     suint_t c      = 0;
     auto check_all = [&](auto i) {
       // hm3::fmt::print("{}\n", i);
-      CHECK(i.idx == i.x.idx());
-      CHECK(*i.idx == c);
-      CHECK(i.x[0] == c);
-      coordinate_tests(i.idx, t.length(), i.x);
+      CHECK(i.idx() == i.x().idx());
+      CHECK(*i.idx() == c);
+      CHECK(i.x()[0] == c);
+      coordinate_tests(i.idx(), t.length(), i.x());
       ++c;
     };
     t.for_each(check_all);
@@ -65,10 +65,10 @@ void tile_cell_indices_tests() {
 
     auto check = [&c](auto i) {
       // hm3::fmt::print("{}\n", i);
-      CHECK(i.idx == i.x.idx());
-      CHECK(*i == *i.x.idx());
-      CHECK(*i.idx == c);
-      CHECK(i.x[0] == c);
+      CHECK(i.idx() == i.x().idx());
+      CHECK(*i == *i.x().idx());
+      CHECK(*i.idx() == c);
+      CHECK(i.x()[0] == c);
       ++c;
     };
     auto x_min = x_t(0);
@@ -124,10 +124,10 @@ void tile_cell_indices_tests() {
 
     auto check_all = [&](auto i) {
       // hm3::fmt::print("{}\n", i);
-      CHECK(i.idx == i.x.idx());
-      CHECK(*i.idx == c);
-      CHECK(i.x[0] == x_i);
-      CHECK(i.x[1] == x_j);
+      CHECK(i.idx() == i.x().idx());
+      CHECK(*i.idx() == c);
+      CHECK(i.x()[0] == x_i);
+      CHECK(i.x()[1] == x_j);
       ++c;
       if (c % t.length() == 0) {
         x_i = 0_u;
@@ -135,7 +135,7 @@ void tile_cell_indices_tests() {
       } else {
         ++x_i;
       }
-      coordinate_tests(i.idx, t.length(), i.x);
+      coordinate_tests(i.idx(), t.length(), i.x());
     };
     t.for_each(check_all);
     CHECK(c == t.size());
@@ -155,10 +155,10 @@ void tile_cell_indices_tests() {
     x_j        = 1_u;
     auto check = [&](auto i) {
       // hm3::fmt::print("{}\n", i);
-      CHECK(i.idx == i.x.idx());
-      CHECK(*i.idx == c);
-      CHECK(i.x[0] == x_i);
-      CHECK(i.x[1] == x_j);
+      CHECK(i.idx() == i.x().idx());
+      CHECK(*i.idx() == c);
+      CHECK(i.x()[0] == x_i);
+      CHECK(i.x()[1] == x_j);
 
       if (x_i == 2_u) {
         x_i = 1;
@@ -227,11 +227,11 @@ void tile_cell_indices_tests() {
     suint_t x_k    = 0;
     auto check_all = [&](auto i) {
       // hm3::fmt::print("{}\n", i);
-      CHECK(i.idx == i.x.idx());
-      CHECK(*i.idx == c);
-      CHECK(i.x[0] == x_i);
-      CHECK(i.x[1] == x_j);
-      CHECK(i.x[2] == x_k);
+      CHECK(i.idx() == i.x().idx());
+      CHECK(*i.idx() == c);
+      CHECK(i.x()[0] == x_i);
+      CHECK(i.x()[1] == x_j);
+      CHECK(i.x()[2] == x_k);
       ++c;
 
       if (c % t.length() == 0) {
@@ -245,7 +245,7 @@ void tile_cell_indices_tests() {
         x_j = 0;
         x_k++;
       }
-      coordinate_tests(i.idx, t.length(), i.x);
+      coordinate_tests(i.idx(), t.length(), i.x());
     };
     t.for_each(check_all);
     CHECK(c == t.size());
@@ -271,11 +271,11 @@ void tile_cell_indices_tests() {
     x_k        = 1_u;
     auto check = [&](auto i) {
       // hm3::fmt::print("{}\n", i);
-      CHECK(i.idx == i.x.idx());
-      CHECK(*i.idx == c);
-      CHECK(i.x[0] == x_i);
-      CHECK(i.x[1] == x_j);
-      CHECK(i.x[2] == x_k);
+      CHECK(i.idx() == i.x().idx());
+      CHECK(*i.idx() == c);
+      CHECK(i.x()[0] == x_i);
+      CHECK(i.x()[1] == x_j);
+      CHECK(i.x()[2] == x_k);
 
       if (x_i == 3_u) {
         x_i = 1;
@@ -396,7 +396,7 @@ void tile_cell_indices_bench() {
     constexpr tile_t t{};
     unsigned val = 0;
     RANGES_FOR (auto&& i, t.sub_tile(x_t(10, 10, 10), x_t(90, 90, 90))) {
-      val += v_[*i.idx];
+      val += v_[*i.idx()];
     }
     return val;
   };
@@ -407,7 +407,7 @@ void tile_cell_indices_bench() {
     constexpr tile_t t{};
     unsigned val = 0;
     t.for_each(x_t(10, 10, 10), x_t(90, 90, 90),
-               [&](auto&& i) { val += v_[*i.idx]; });
+               [&](auto&& i) { val += v_[*i.idx()]; });
     return val;
   };
 

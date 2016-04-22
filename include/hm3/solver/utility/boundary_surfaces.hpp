@@ -6,7 +6,7 @@
 namespace hm3 {
 namespace solver {
 
-// template <uint_t Nd>  //
+// template <dim_t Nd>  //
 // struct boundary_surface : geometry::simplex<Nd> {
 //   int boundary_condition_idx;
 //   suint_t cell_idx;

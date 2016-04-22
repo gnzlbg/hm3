@@ -16,8 +16,8 @@ namespace surface {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of surfaces per tile length
-template <suint_t Nd, suint_t Nc>  //
-using index = bounded<index_type, index_type{0}, bounds<Nd, Nc>::size(),
+template <dim_t Nd, tidx_t Nc>  //
+using index = bounded<tidx_t, tidx_t{0}, bounds<Nd, Nc>::size(),
                       struct tile_surface_index_tag>;
 
 }  // namespace surface

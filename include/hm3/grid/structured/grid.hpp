@@ -20,7 +20,7 @@ namespace structured {
 /// \note A square structured grid is by default a square structured tile with
 /// halo layers in case they are needed.
 ///
-// template <suint_t Nd, suint_t Nic, suint_t Nhl = 0>
+// template <dim_t Nd, suint_t Nic, suint_t Nhl = 0>
 // using grid
 //  = std::conditional_t<(Nhl > 0),  // if it has halo layers, then halo tile:
 //                       halo_tile<Nd, Nic, Nhl>,
@@ -32,7 +32,7 @@ namespace structured {
 // /// \tparam Nd number of spatial dimensions
 // /// \tparam Nic number of internal cells per length
 // /// \tparam Nhl number of halo layers
-// template <suint_t Nd, suint_t Nic, suint_t Nhl>
+// template <dim_t Nd, suint_t Nic, suint_t Nhl>
 // struct grid : geometry::dimensional<Nd> {
 //   using cell_indices = cell_indices<Nd, Nic, Nhl>;
 //   using cell_t       = cell<Nd, Nic, Nhl>;

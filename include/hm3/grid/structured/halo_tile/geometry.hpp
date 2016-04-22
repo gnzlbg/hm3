@@ -19,7 +19,7 @@ namespace halo_tile {
 /// \tparam Nd  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 struct tile_geometry
  : private tile::tile_geometry<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
   using bounds                 = cell::bounds<Nd, Nic, Nhl>;
@@ -66,8 +66,11 @@ struct tile_geometry
   /// \warning returns invalid coordinate if \p x doesn't lie in the internal
   /// part of the tile
   constexpr cell_coordinate internal_cell_containing(point_t x) const noexcept {
-    cell_coordinate x_c(external_tile_geometry::cell_containing(x));
-    if (x_c and x_c.is_internal()) { return x_c; }
+    auto tmp = external_tile_geometry::cell_containing(x);
+    if (tmp) {
+      cell_coordinate x_c(tmp);
+      if (x_c.is_internal()) { return x_c; }
+    }
     return cell_coordinate();
   }
 
@@ -76,8 +79,11 @@ struct tile_geometry
   /// \warning returns invalid coordinate if \p x doesn't lie in the halo
   /// part of the tile
   constexpr cell_coordinate halo_cell_containing(point_t x) const noexcept {
-    cell_coordinate x_c(external_tile_geometry::cell_containing(x));
-    if (x_c and x_c.is_halo()) { return x_c; }
+    auto tmp = external_tile_geometry::cell_containing(x);
+    if (tmp) {
+      cell_coordinate x_c(tmp);
+      if (x_c.is_halo()) { return x_c; }
+    }
     return cell_coordinate();
   }
 

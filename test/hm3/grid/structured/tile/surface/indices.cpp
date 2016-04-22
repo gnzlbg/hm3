@@ -2,7 +2,9 @@
 
 using namespace hm3;
 
-template <suint_t Nd, suint_t Nc>
+using tidx_t = grid::structured::tile::tidx_t;
+
+template <dim_t Nd, tidx_t Nc>
 using surfaces = grid::structured::tile::surface::indices<Nd, Nc>;
 
 int main() {

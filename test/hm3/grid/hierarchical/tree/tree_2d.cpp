@@ -121,8 +121,8 @@ template <template <hm3::uint_t, class...> class Loc> void test_tree() {
 }
 
 int main() {
-  test_tree<location::fast>();
-  test_tree<location::slim>();
+  test_tree<location::interleaved>();
+  test_tree<location::deinterleaved>();
 
   return test::result();
 }

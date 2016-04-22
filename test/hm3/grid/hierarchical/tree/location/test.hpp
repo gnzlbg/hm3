@@ -213,7 +213,6 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
     CHECK(a.morton_x()[0] == 1_u);
     CHECK(a.morton_x()[1] == 2_u);
 
-
     a  = *shift(a, std::array<int_t, 2>{{-1, 0}});
     ar = static_cast<std::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 0_u);

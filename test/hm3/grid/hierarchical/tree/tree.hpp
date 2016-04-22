@@ -15,8 +15,8 @@
 #endif
 #include <hm3/grid/hierarchical/serialization/fio.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm.hpp>
-#include <hm3/grid/hierarchical/tree/location/fast.hpp>
-#include <hm3/grid/hierarchical/tree/location/slim.hpp>
+#include <hm3/grid/hierarchical/tree/location/deinterleaved.hpp>
+#include <hm3/grid/hierarchical/tree/location/interleaved.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/serialization/fio.hpp>
 #include <hm3/utility/optional.hpp>

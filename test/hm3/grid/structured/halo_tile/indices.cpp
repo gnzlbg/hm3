@@ -7,8 +7,9 @@
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
+using tidx_t = grid::structured::halo_tile::tidx_t;
 
-template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 void test_indices() {
   using ci_t = grid::structured::halo_tile::cell::indices<Nd, Nic, Nhl>;
   static_assert(std::is_literal_type<ci_t>{}, "");
@@ -83,9 +84,9 @@ int main() {
   {
     // 1D 1.1
     //
-    static constexpr suint_t nd  = 1;
-    static constexpr suint_t nic = 1;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 1;
+    static constexpr tidx_t nic = 1;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -93,9 +94,9 @@ int main() {
   {
     // 1D 2.1
     //
-    static constexpr suint_t nd  = 1;
-    static constexpr suint_t nic = 2;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 1;
+    static constexpr tidx_t nic = 2;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -103,9 +104,9 @@ int main() {
   {
     // 1D 1.2
     //
-    static constexpr suint_t nd  = 1;
-    static constexpr suint_t nic = 1;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 1;
+    static constexpr tidx_t nic = 1;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -113,9 +114,9 @@ int main() {
   {
     // 1D 2.2
     //
-    static constexpr suint_t nd  = 1;
-    static constexpr suint_t nic = 2;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 1;
+    static constexpr tidx_t nic = 2;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
   }
@@ -123,9 +124,9 @@ int main() {
   {
     // 1D 4.2
     //
-    static constexpr suint_t nd  = 1;
-    static constexpr suint_t nic = 4;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 1;
+    static constexpr tidx_t nic = 4;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
   }
@@ -133,9 +134,9 @@ int main() {
   {
     // 2D 1.1
     //
-    static constexpr suint_t nd  = 2;
-    static constexpr suint_t nic = 1;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 2;
+    static constexpr tidx_t nic = 1;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -143,9 +144,9 @@ int main() {
   {
     // 2D 2.1
     //
-    static constexpr suint_t nd  = 2;
-    static constexpr suint_t nic = 2;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 2;
+    static constexpr tidx_t nic = 2;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -153,9 +154,9 @@ int main() {
   {
     // 2D 1.2
     //
-    static constexpr suint_t nd  = 2;
-    static constexpr suint_t nic = 1;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 2;
+    static constexpr tidx_t nic = 1;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -163,9 +164,9 @@ int main() {
   {
     // 2D 2.2
     //
-    static constexpr suint_t nd  = 2;
-    static constexpr suint_t nic = 2;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 2;
+    static constexpr tidx_t nic = 2;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
   }
@@ -173,24 +174,24 @@ int main() {
   {
     // 2D 4.2
     //
-    static constexpr suint_t nd  = 2;
-    static constexpr suint_t nic = 4;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 2;
+    static constexpr tidx_t nic = 4;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
   }
 
   {  // 2D 10.2
-    static constexpr suint_t nd  = 2;
-    static constexpr suint_t nic = 10;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 2;
+    static constexpr tidx_t nic = 10;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
     using ci_t = grid::structured::halo_tile::cell::indices<nd, nic, nhl>;
     constexpr ci_t ci;
 
     // test all halo cells
-    using halo_cells = std::vector<std::vector<suint_t>>;
+    using halo_cells = std::vector<std::vector<tidx_t>>;
     {  // face halos:
       using nidx = tree::neighbor_idx_t<tree::face_neighbors<2>>;
       halo_cells face_halos;
@@ -208,9 +209,9 @@ int main() {
                             184, 185, 186, 187, 188, 189, 190, 191, 192, 193});
 
       for (auto p : nidx::rng()) {
-        suint_t c = 0;
+        tidx_t c = 0;
         ci.for_each_halo(p, [&](auto x) {
-          CHECK(face_halos[*p][c] == *x.idx);
+          CHECK(face_halos[*p][c] == *x.idx());
           ++c;
         });
         CHECK(c == face_halos[*p].size());
@@ -229,9 +230,9 @@ int main() {
       face_halos.push_back({180, 181, 194, 195});
 
       for (auto p : nidx::rng()) {
-        suint_t c = 0;
+        tidx_t c = 0;
         ci.for_each_halo(p, [&](auto x) {
-          CHECK(face_halos[*p][c] == *x.idx);
+          CHECK(face_halos[*p][c] == *x.idx());
           ++c;
         });
         CHECK(c == face_halos[*p].size());
@@ -242,9 +243,9 @@ int main() {
   {
     // 3D 1.1
     //
-    static constexpr suint_t nd  = 3;
-    static constexpr suint_t nic = 1;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 3;
+    static constexpr tidx_t nic = 1;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -252,9 +253,9 @@ int main() {
   {
     // 3D 2.1
     //
-    static constexpr suint_t nd  = 3;
-    static constexpr suint_t nic = 2;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 3;
+    static constexpr tidx_t nic = 2;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -262,9 +263,9 @@ int main() {
   {
     // 3D 1.2
     //
-    static constexpr suint_t nd  = 3;
-    static constexpr suint_t nic = 1;
-    static constexpr suint_t nhl = 1;
+    static constexpr dim_t nd   = 3;
+    static constexpr tidx_t nic = 1;
+    static constexpr tidx_t nhl = 1;
 
     test_indices<nd, nic, nhl>();
   }
@@ -272,9 +273,9 @@ int main() {
   {
     // 3D 2.2
     //
-    static constexpr suint_t nd  = 3;
-    static constexpr suint_t nic = 2;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 3;
+    static constexpr tidx_t nic = 2;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
   }
@@ -282,9 +283,9 @@ int main() {
   {
     // 3D 4.2
     //
-    static constexpr suint_t nd  = 3;
-    static constexpr suint_t nic = 4;
-    static constexpr suint_t nhl = 2;
+    static constexpr dim_t nd   = 3;
+    static constexpr tidx_t nic = 4;
+    static constexpr tidx_t nhl = 2;
 
     test_indices<nd, nic, nhl>();
   }

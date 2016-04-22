@@ -18,7 +18,7 @@ namespace surface {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 struct indices
  : tile::surface::indices<Nd, cell::bounds<Nd, Nic, Nhl>::size()> {
   using self            = indices<Nd, Nic, Nhl>;
@@ -29,7 +29,7 @@ struct indices
   /// For each surface of the internal cells in the tile with normal component
   /// in direction \p d
   template <typename F>
-  static constexpr void for_each_internal(F&& f, suint_t d) noexcept {
+  static constexpr void for_each_internal(F&& f, dim_t d) noexcept {
     self::for_each(cell_coordinate::constant(cell_bounds::first_internal()),
                    cell_coordinate::constant(cell_bounds::last_internal()),
                    std::forward<F>(f), d);

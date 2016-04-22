@@ -4,9 +4,10 @@
 using namespace hm3;
 
 int main() {
-  constexpr suint_t nd = 2;
+  constexpr dim_t nd = 2;
 
-  using tile_geometry = grid::structured::halo_tile::geometry<nd, 2, 2>;
+  using tile_geometry = grid::structured::halo_tile::tile_geometry<nd, 2, 2>;
+  using tidx_t        = grid::structured::halo_tile::tidx_t;
 
   using p_t = geometry::point<nd>;
 
@@ -36,8 +37,8 @@ int main() {
   CHECK(g.contains(x_h));
   CHECK(!g.contains(x_o));
 
-  suint_t idx_i = 14;
-  suint_t idx_h = 7;
+  tidx_t idx_i = 14;
+  tidx_t idx_h = 7;
 
   CHECK(g.cell_containing(x_i).idx() == idx_i);
   CHECK(g.cell_containing(x_h).idx() == idx_h);

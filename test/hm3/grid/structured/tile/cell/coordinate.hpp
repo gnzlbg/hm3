@@ -1,8 +1,10 @@
 #include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
 
+using namespace hm3;
+
 template <typename I, typename X>
 void coordinate_tests(I index, suint_t length, const X x) {
-  using namespace hm3::grid::structured;
+  using namespace grid::structured;
   {
     X a;
     CHECK(!a);

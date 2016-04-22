@@ -19,10 +19,10 @@ namespace cell {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per length
-template <suint_t Nd, suint_t Nc>
+template <dim_t Nd, tidx_t Nc>  //
 struct coordinate : geometry::dimensional<Nd> {
   using self           = coordinate;
-  using value_t        = index_type;
+  using value_t        = tidx_t;
   using signed_value_t = std::make_signed_t<value_t>;
   using coordinates_t  = std::array<value_t, Nd>;
   using offset_t       = std::array<signed_value_t, Nd>;
@@ -319,7 +319,7 @@ struct coordinate : geometry::dimensional<Nd> {
 /// Square distance between the coordinates \p a and \p b
 ///
 /// \pre Both coordinates must be valid
-template <suint_t Nd, suint_t Nc>
+template <dim_t Nd, tidx_t Nc>
 constexpr auto distance_square(coordinate<Nd, Nc> const& a,
                                coordinate<Nd, Nc> const& b) noexcept {
   HM3_ASSERT(a, "invalid coordinate {}", a);
@@ -335,7 +335,7 @@ constexpr auto distance_square(coordinate<Nd, Nc> const& a,
 /// Distance between the coordinates \p a and \p b
 ///
 /// \pre Both coordinates must be valid
-template <suint_t Nd, suint_t Nc>
+template <dim_t Nd, tidx_t Nc>
 constexpr auto distance(coordinate<Nd, Nc> const& a,
                         coordinate<Nd, Nc> const& b) noexcept {
   HM3_ASSERT(a, "invalid coordinate {}", a);

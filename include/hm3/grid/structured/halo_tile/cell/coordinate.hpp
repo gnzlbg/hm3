@@ -15,7 +15,7 @@ namespace cell {
 /// \tparam Nd  number of spatial dimensions.
 /// \tparam Nic number of internal cells.
 /// \tparam Nhl number of halo layers.
-template <suint_t Nd, suint_t Nic, suint_t Nhl>
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 struct coordinate
  : tile::cell::indexed_coordinate<Nd, bounds<Nd, Nic, Nhl>::length()> {
   using self    = coordinate;
@@ -40,7 +40,7 @@ struct coordinate
 
   /// Is the coordinate an internal cell.
   constexpr bool is_internal() const noexcept {
-    for (suint_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Nd; ++d) {
       const auto i = (*this)[d];
       if (i < bounds::first_internal() or i > bounds::last_internal()) {
         return false;

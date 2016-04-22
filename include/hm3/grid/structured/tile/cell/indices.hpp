@@ -19,7 +19,7 @@ namespace cell {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per dimension
-template <suint_t Nd, suint_t Nc>  //
+template <dim_t Nd, tidx_t Nc>  //
 struct indices : bounds<Nd, Nc> {
   using self               = indices<Nd, Nc>;
   using index              = index<Nd, Nc>;
@@ -36,7 +36,7 @@ struct indices : bounds<Nd, Nc> {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
-    for (index_type i = 0; i < l; ++i) {
+    for (tidx_t i = 0; i < l; ++i) {
       f(indexed_coordinate(index(i), coordinate(i)));
     }
   }
@@ -45,11 +45,11 @@ struct indices : bounds<Nd, Nc> {
   template <typename F, CONCEPT_REQUIRES_(Nd == 2)>  //
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
-    for (index_type j = 0; j < l; ++j) {
+    for (tidx_t j = 0; j < l; ++j) {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
-      for (index_type i = 0; i < l; ++i) {
+      for (tidx_t i = 0; i < l; ++i) {
         f(indexed_coordinate(coordinate(i, j)));
       }
     }
@@ -59,12 +59,12 @@ struct indices : bounds<Nd, Nc> {
   template <typename F, CONCEPT_REQUIRES_(Nd == 3)>  //
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
-    for (index_type k = 0; k < l; ++k) {
-      for (index_type j = 0; j < l; ++j) {
+    for (tidx_t k = 0; k < l; ++k) {
+      for (tidx_t j = 0; j < l; ++j) {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
-        for (index_type i = 0; i < l; ++i) {
+        for (tidx_t i = 0; i < l; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
@@ -78,7 +78,7 @@ struct indices : bounds<Nd, Nc> {
                self::length());
     HM3_ASSERT(to, "to {} is not within the tile (length: {})", to,
                self::length());
-    for (index_type d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Nd; ++d) {
       HM3_ASSERT(to[d] >= from[d], "to[{}] = {} is not >= from[{}] = {}", d,
                  to[d], d, from[d]);
     }
@@ -93,9 +93,9 @@ struct indices : bounds<Nd, Nc> {
   /// linearly increasing the index using these iteration offsets. So instead
   /// of:
   ///
-  /// for (index_type k = from[2]; k <= to[2]; ++k) {
-  ///   for (index_type j = from[1]; j <= to[1]; ++j) {
-  ///     for (index_type i = from[0]; i <= to[0]; ++i) {
+  /// for (tidx_t k = from[2]; k <= to[2]; ++k) {
+  ///   for (tidx_t j = from[1]; j <= to[1]; ++j) {
+  ///     for (tidx_t i = from[0]; i <= to[0]; ++i) {
   ///       // computes index from coordinate indices:
   ///       f(indexed_coordinate(coordinate(i, j, k)));
   ///     }
@@ -105,10 +105,10 @@ struct indices : bounds<Nd, Nc> {
   /// one writes the following instead:
   ///
   /// const auto os = offsets(from, to);
-  /// index_type c = 0;
-  /// for (index_type k = from[2]; k <= to[2]; ++k) {
-  ///   for (index_type j = from[1]; j <= to[1]; ++j) {
-  ///     for (index_type i = from[0]; i <= to[0]; ++i, ++c) {
+  /// tidx_t c = 0;
+  /// for (tidx_t k = from[2]; k <= to[2]; ++k) {
+  ///   for (tidx_t j = from[1]; j <= to[1]; ++j) {
+  ///     for (tidx_t i = from[0]; i <= to[0]; ++i, ++c) {
   ///       f(indexed_coordinate(index(c), coordinate(i, j, k)));
   ///     }
   ///     c += os[1];
@@ -123,23 +123,23 @@ struct indices : bounds<Nd, Nc> {
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
   CONCEPT_REQUIRES(Nd == 1)
-  static constexpr std::array<index_type, Nd> offsets(coordinate, coordinate) {
-    return {{index_type{1}}};
+  static constexpr std::array<tidx_t, Nd> offsets(coordinate, coordinate) {
+    return {{tidx_t{1}}};
   }
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
   CONCEPT_REQUIRES(Nd == 2)
-  static constexpr std::array<index_type, Nd> offsets(coordinate from,
-                                                      coordinate to) {
-    return {{index_type{1}, index_type{Nc - (to[0] - from[0]) - 1}}};
+  static constexpr std::array<tidx_t, Nd> offsets(coordinate from,
+                                                  coordinate to) {
+    return {{tidx_t{1}, tidx_t{Nc - (to[0] - from[0]) - 1}}};
   }
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
   CONCEPT_REQUIRES(Nd == 3)
-  static constexpr std::array<index_type, Nd> offsets(coordinate from,
-                                                      coordinate to) {
-    return {{index_type{1}, index_type{Nc - (to[0] - from[0]) - 1},
-             index_type{Nc * (Nc - (to[1] - from[1]) - 1)}}};
+  static constexpr std::array<tidx_t, Nd> offsets(coordinate from,
+                                                  coordinate to) {
+    return {{tidx_t{1}, tidx_t{Nc - (to[0] - from[0]) - 1},
+             tidx_t{Nc * (Nc - (to[1] - from[1]) - 1)}}};
   }
   ///@}  // Iteration offsets for sub-tiles
 
@@ -151,7 +151,7 @@ struct indices : bounds<Nd, Nc> {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
-    for (index_type i = from[0]; i <= to[0]; ++i) {
+    for (tidx_t i = from[0]; i <= to[0]; ++i) {
       f(indexed_coordinate(index(i), coordinate(i)));
     }
   }
@@ -161,11 +161,11 @@ struct indices : bounds<Nd, Nc> {
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(
    const coordinate from, const coordinate to, F&& f) noexcept {
     assert_from_to(from, to);
-    for (index_type j = from[1]; j <= to[1]; ++j) {
+    for (tidx_t j = from[1]; j <= to[1]; ++j) {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
-      for (index_type i = from[0]; i <= to[0]; ++i) {
+      for (tidx_t i = from[0]; i <= to[0]; ++i) {
         f(indexed_coordinate(coordinate(i, j)));
       }
     }
@@ -176,12 +176,12 @@ struct indices : bounds<Nd, Nc> {
   [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto for_each(
    const coordinate from, const coordinate to, F&& f) noexcept {
     assert_from_to(from, to);
-    for (index_type k = from[2]; k <= to[2]; ++k) {
-      for (index_type j = from[1]; j <= to[1]; ++j) {
+    for (tidx_t k = from[2]; k <= to[2]; ++k) {
+      for (tidx_t j = from[1]; j <= to[1]; ++j) {
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
 #endif
-        for (index_type i = from[0]; i <= to[0]; ++i) {
+        for (tidx_t i = from[0]; i <= to[0]; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
@@ -196,16 +196,17 @@ struct indices : bounds<Nd, Nc> {
   /// All the neighbors provided are within the tile.
   ///
   /// \pre \p x must be a valid coordinate
-
   template <typename F, typename Manifold>
   static constexpr void for_each_neighbor(coordinate x, Manifold m, F&& f,
-                                          sint_t dist = 1) {
+                                          tidx_t dist = 1) {
     HM3_ASSERT(x, "invalid coordinate: {}", x);
     for (auto pos : m()) {
       auto x_neighbor = x;
       auto offset     = m[pos];
-      for (index_type d = 0; d < Nd; ++d) { offset[d] *= dist; }
-      x_neighbor        = x_neighbor.at(offset);
+      for (tidx_t d = 0; d < Nd; ++d) {
+        offset[d] *= static_cast<noffset_t>(dist);
+      }
+      x_neighbor = x_neighbor.at(offset);
       if (x_neighbor) { f(indexed_coordinate(x_neighbor)); }
     }
   }
@@ -220,7 +221,7 @@ struct indices : bounds<Nd, Nc> {
   /// \pre \p x must be a valid coordinate
   template <typename F>
   static constexpr void for_each_neighbor(coordinate x, F&& f,
-                                          sint_t dist = 1) noexcept {
+                                          tidx_t dist = 1) noexcept {
     HM3_ASSERT(x, "invalid coordinate: {}", x);
     tree::for_each_neighbor_manifold<Nd>(
      [&](auto m) { for_each_neighbor(x, m, std::forward<F>(f), dist); });
@@ -235,8 +236,8 @@ struct indices : bounds<Nd, Nc> {
 
   static constexpr void assert_from_to_w_ring(const coordinate from,
                                               const coordinate to,
-                                              const index_type w) noexcept {
-    for (index_type d = 0; d < Nd; ++d) {
+                                              const tidx_t w) noexcept {
+    for (dim_t d = 0; d < Nd; ++d) {
       HM3_ASSERT((to[d] - w) > (from[d] + w),
                  "d: {}, from[{}]: {}, to[{}]: {}, w: {} | (to[{}] - w) > "
                  "(from[{}] + w): {} > {} is false => the rings cells overlap "
@@ -248,12 +249,12 @@ struct indices : bounds<Nd, Nc> {
   template <typename F, CONCEPT_REQUIRES_(Nd == 1)>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
-                                      index_type w = 0) noexcept {
+                                      tidx_t w = 0) noexcept {
     assert_from_to_w_ring(from, to, w);
-    for (index_type i = from[0]; i <= from[0] + w; ++i) {
+    for (tidx_t i = from[0]; i <= from[0] + w; ++i) {
       f(indexed_coordinate(index(i), coordinate(i)));
     }
-    for (index_type i = to[0] - w; i <= to[0]; ++i) {
+    for (tidx_t i = to[0] - w; i <= to[0]; ++i) {
       f(indexed_coordinate(index(i), coordinate(i)));
     }
   }
@@ -261,28 +262,28 @@ struct indices : bounds<Nd, Nc> {
   template <typename F, CONCEPT_REQUIRES_(Nd == 2)>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
-                                      index_type w = 0) noexcept {
+                                      tidx_t w = 0) noexcept {
     assert_from_to_w_ring(from, to, w);
     // bottom:
-    for (index_type j = from[1]; j <= from[1] + w; ++j) {
-      for (index_type i = from[0]; i <= to[0]; ++i) {
+    for (tidx_t j = from[1]; j <= from[1] + w; ++j) {
+      for (tidx_t i = from[0]; i <= to[0]; ++i) {
         f(indexed_coordinate(coordinate(i, j)));
       }
     }
 
     // sides:
-    for (index_type j = from[1] + w + 1; j <= to[1] - w - 1; ++j) {
-      for (index_type i = from[0]; i <= from[0] + w; ++i) {
+    for (tidx_t j = from[1] + w + 1; j <= to[1] - w - 1; ++j) {
+      for (tidx_t i = from[0]; i <= from[0] + w; ++i) {
         f(indexed_coordinate(coordinate(i, j)));
       }
-      for (index_type i = to[0] - w; i <= to[0]; ++i) {
+      for (tidx_t i = to[0] - w; i <= to[0]; ++i) {
         f(indexed_coordinate(coordinate(i, j)));
       }
     }
 
     // top:
-    for (index_type j = to[1] - w; j <= to[1]; ++j) {
-      for (index_type i = from[0]; i <= to[0]; ++i) {
+    for (tidx_t j = to[1] - w; j <= to[1]; ++j) {
+      for (tidx_t i = from[0]; i <= to[0]; ++i) {
         f(indexed_coordinate(coordinate(i, j)));
       }
     }
@@ -291,46 +292,46 @@ struct indices : bounds<Nd, Nc> {
   template <typename F, CONCEPT_REQUIRES_(Nd == 3)>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
-                                      index_type w = 0) noexcept {
+                                      tidx_t w = 0) noexcept {
     assert_from_to_w_ring(from, to, w);
     // front:
-    for (index_type k = from[2]; k <= from[2] + w; ++k) {
-      for (index_type j = from[1]; j <= to[1]; ++j) {
-        for (index_type i = from[0]; i <= to[0]; ++i) {
+    for (tidx_t k = from[2]; k <= from[2] + w; ++k) {
+      for (tidx_t j = from[1]; j <= to[1]; ++j) {
+        for (tidx_t i = from[0]; i <= to[0]; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
     }
 
     // sides:
-    for (index_type k = from[2] + w + 1; k <= to[2] - w - 1; ++k) {
+    for (tidx_t k = from[2] + w + 1; k <= to[2] - w - 1; ++k) {
       // bottom:
-      for (index_type j = from[1]; j <= from[1] + w; ++j) {
-        for (index_type i = from[0]; i <= to[0]; ++i) {
+      for (tidx_t j = from[1]; j <= from[1] + w; ++j) {
+        for (tidx_t i = from[0]; i <= to[0]; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
       // sides:
-      for (index_type j = from[1] + w + 1; j <= to[1] - w - 1; ++j) {
-        for (index_type i = from[0]; i <= from[0] + w; ++i) {
+      for (tidx_t j = from[1] + w + 1; j <= to[1] - w - 1; ++j) {
+        for (tidx_t i = from[0]; i <= from[0] + w; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
-        for (index_type i = to[0] - w; i <= to[0]; ++i) {
+        for (tidx_t i = to[0] - w; i <= to[0]; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
       // top:
-      for (index_type j = to[1] - w; j <= to[1]; ++j) {
-        for (index_type i = from[0]; i <= to[0]; ++i) {
+      for (tidx_t j = to[1] - w; j <= to[1]; ++j) {
+        for (tidx_t i = from[0]; i <= to[0]; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
     }
 
     // back:
-    for (index_type k = to[2] - w; k <= to[2]; ++k) {
-      for (index_type j = from[1]; j <= to[1]; ++j) {
-        for (index_type i = from[0]; i <= to[0]; ++i) {
+    for (tidx_t k = to[2] - w; k <= to[2]; ++k) {
+      for (tidx_t j = from[1]; j <= to[1]; ++j) {
+        for (tidx_t i = from[0]; i <= to[0]; ++i) {
           f(indexed_coordinate(coordinate(i, j, k)));
         }
       }
@@ -353,18 +354,18 @@ struct indices : bounds<Nd, Nc> {
   /// lvalue ref and can push multiple found cells to it.
   template <typename P>
   static constexpr indexed_coordinate closest_cell(coordinate x, P&& p,
-                                                   index_type max_cell_distance
+                                                   tidx_t max_cell_distance
                                                    = self::length()) noexcept {
-    index_type ring = 1;
+    tidx_t ring = 1;
     indexed_coordinate x_closest;
-    index_type d                  = std::numeric_limits<index_type>::max();
-    coordinate min                = x.offset_if_valid(-1);
-    coordinate max                = x.offset_if_valid(1);
-    index_type count_min_distance = 0;
+    tidx_t d                  = std::numeric_limits<tidx_t>::max();
+    coordinate min            = x.offset_if_valid(-1);
+    coordinate max            = x.offset_if_valid(1);
+    tidx_t count_min_distance = 0;
     while (!x_closest and ring <= max_cell_distance) {
       for_each_ring(min, max, [&](auto&& i) {
         if (i and p(i)) {
-          auto new_d = distance_square(x, i.x);
+          auto new_d = distance_square(x, i.x());
           if (new_d == d) {
             ++count_min_distance;
           } else if (new_d < d) {
@@ -390,15 +391,17 @@ struct indices : bounds<Nd, Nc> {
 
   [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto
    all() noexcept {
-    return view::iota(index_type{0}, self::size());
+    return view::iota(tidx_t{0}, self::size());
   }
 
   /// Sub-tile view
+  ///
+  /// \warning This is very slow and doesn't get vectorized.
+  /// TODO: make random access?
   struct subtile_view : view_facade<subtile_view, cardinality::finite> {
-   private:
     friend range_access;
 
-    const coordinate from_, to_;
+    coordinate from_, to_;
     coordinate current_;
     bool done_ = false;
 
@@ -409,7 +412,7 @@ struct indices : bounds<Nd, Nc> {
 
     [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] constexpr void
      next() noexcept {
-      for (index_type d = 0; d < Nd; ++d) {
+      for (dim_t d = 0; d < Nd; ++d) {
         if (current_[d] < to_[d]) {
           ++current_[d];
           return;
@@ -431,7 +434,6 @@ struct indices : bounds<Nd, Nc> {
              and that.to_ == to_;
     }
 
-    // TODO: make random access?
    public:
     [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] subtile_view() = default;
     [[ HM3_ALWAYS_INLINE, HM3_FLATTEN,

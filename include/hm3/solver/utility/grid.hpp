@@ -521,7 +521,7 @@ grid<Nd> from_file_unread(grid<Nd> const&, io::file& f, Tree& t,
   return g;
 }
 
-template <uint_t Nd> void to_file_unwritten(io::file& f, grid<Nd> const& g) {
+template <dim_t Nd> void to_file_unwritten(io::file& f, grid<Nd> const& g) {
   HM3_ASSERT(g.is_compact(), "cannot write non-compact solver grid");
   f.field("grid_idx", *g.idx())
    .field("spatial_dimension", Nd)

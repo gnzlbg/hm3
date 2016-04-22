@@ -74,12 +74,12 @@ int main(int argc, char* argv[]) {
   /// Adaptive mesh refinement around the spheres
   // Create an amr action to adapt the grid around the moving sphere ensuring a
   // minimum grid level up to a certain distance:
-  auto amr_criterion
-   = amr::criterion::level_till_cell_distances{g,
-                                               {{10000, min_grid_level},
-                                                {5, min_grid_level + 1},
-                                                {5, min_grid_level + 2},
-                                                {5, min_grid_level + 3}}};
+  auto amr_criterion = hierarchical::amr::criterion::level_till_cell_distances{
+   g,
+   {{10000, min_grid_level},
+    {5, min_grid_level + 1},
+    {5, min_grid_level + 2},
+    {5, min_grid_level + 3}}};
 
   /// Create the AMR actions to perform
   auto amr_action0

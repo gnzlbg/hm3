@@ -16,7 +16,7 @@ namespace tile {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
-template <suint_t Nd, suint_t Nc>  //
+template <dim_t Nd, tidx_t Nc>  //
 struct tile_geometry : geometry::dimensional<Nd> {
   using bounds          = cell::bounds<Nd, Nc>;
   using point_t         = geometry::point<Nd>;
@@ -53,7 +53,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
     point_t x_tile_center = x_first_cell();
     const auto tl         = tile_length;
     const auto l          = cell_length();
-    for (suint_t d = 0; d < Nd; ++d) { x_tile_center[d] += 0.5 * (tl - l); }
+    for (dim_t d = 0; d < Nd; ++d) { x_tile_center[d] += 0.5 * (tl - l); }
     return x_tile_center;
   }
   /// Tile center
@@ -66,7 +66,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
     HM3_ASSERT(x, "cannot compute center of invalid coordinate {}", x);
     point_t r    = x_first_cell();
     const auto l = cell_length();
-    for (suint_t d = 0; d < Nd; ++d) { r[d] += x[d] * l; }
+    for (dim_t d = 0; d < Nd; ++d) { r[d] += x[d] * l; }
 
     return r;
   }
@@ -96,7 +96,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
                "bounding box length must be positive, bbox {}", bbox);
     auto x_min  = geometry::bounds(bbox).min;
     auto cell_l = cell_length(geometry::length(bbox));
-    for (suint_t d = 0; d < Nd; ++d) { x_min(d) += cell_l / 2.; }
+    for (dim_t d = 0; d < Nd; ++d) { x_min(d) += cell_l / 2.; }
     return x_min;
   }
 
@@ -114,7 +114,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
     x() /= cell_length();
 
     cell_coordinate i;
-    for (suint_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Nd; ++d) {
       auto v = x[d];
       i[d]   = std::lround(v);
     }

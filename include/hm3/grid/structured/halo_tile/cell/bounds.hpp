@@ -4,8 +4,8 @@
 /// Square structured halo tile bounds
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
+#include <hm3/grid/structured/halo_tile/index_type.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
-#include <hm3/grid/structured/tile/index_type.hpp>
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {
@@ -16,30 +16,30 @@ namespace cell {
 
 namespace detail {
 
-constexpr suint_t cells_per_length(suint_t nic, suint_t nhl) noexcept {
+constexpr tidx_t cells_per_length(tidx_t nic, tidx_t nhl) noexcept {
   return 2 * nhl + nic;
 }
-constexpr suint_t first_halo_left(suint_t /*nic*/, suint_t /* nhl*/) noexcept {
+constexpr tidx_t first_halo_left(tidx_t /*nic*/, tidx_t /* nhl*/) noexcept {
   return 0;
 }
-constexpr suint_t last_halo_left(suint_t /*nic*/, suint_t nhl) noexcept {
+constexpr tidx_t last_halo_left(tidx_t /*nic*/, tidx_t nhl) noexcept {
   return nhl - 1;
 }
-constexpr suint_t first_internal(suint_t /*nic*/, suint_t nhl) noexcept {
+constexpr tidx_t first_internal(tidx_t /*nic*/, tidx_t nhl) noexcept {
   return nhl;
 }
-constexpr suint_t last_internal(suint_t nic, suint_t nhl) noexcept {
+constexpr tidx_t last_internal(tidx_t nic, tidx_t nhl) noexcept {
   return nhl + nic - 1;
 }
-constexpr suint_t first_halo_right(suint_t nic, suint_t nhl) noexcept {
+constexpr tidx_t first_halo_right(tidx_t nic, tidx_t nhl) noexcept {
   return nhl + nic;
 }
-constexpr suint_t last_halo_right(suint_t nic, suint_t nhl) noexcept {
+constexpr tidx_t last_halo_right(tidx_t nic, tidx_t nhl) noexcept {
   return 2 * nhl + nic - 1;
 }
 
-template <suint_t Nd> struct subtile_bounds {
-  std::array<tile::index_type, Nd> from, to;
+template <dim_t Nd> struct subtile_bounds {
+  std::array<tile::tidx_t, Nd> from, to;
 };
 
 }  // namespace detail
@@ -50,22 +50,22 @@ template <suint_t Nd> struct subtile_bounds {
 /// Nic: number of internal cells per dimension
 /// Nhl: number of of halo layers
 ///
-template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
   using self = bounds;
   /// \name Sizes
   ///@{
 
   /// Number of halo layers
-  static constexpr suint_t halo_layers() noexcept { return Nhl; }
+  static constexpr tidx_t halo_layers() noexcept { return Nhl; }
   /// Number of internal cells per length
-  static constexpr suint_t internal_cell_length() noexcept { return Nic; }
+  static constexpr tidx_t internal_cell_length() noexcept { return Nic; }
   /// Total number of internal cells
-  static constexpr suint_t internal_cell_size() noexcept {
-    return math::ipow(internal_cell_length(), Nd);
+  static constexpr tidx_t internal_cell_size() noexcept {
+    return math::ipow(internal_cell_length(), static_cast<tidx_t>(Nd));
   }
   /// Total number of halo cells
-  static constexpr suint_t halo_cell_size() noexcept {
+  static constexpr tidx_t halo_cell_size() noexcept {
     return self::size() - internal_cell_size();
   }
 
@@ -76,42 +76,42 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
 
   /// 1D Coordinate of first halo cell of the tile with coordinates smaller than
   /// the internal cells
-  static constexpr suint_t first_halo_left() noexcept {
+  static constexpr tidx_t first_halo_left() noexcept {
     return detail::first_halo_left(Nic, Nhl);
   }
   /// 1D Coordinate of last halo cell of the tile with coordinates smaller than
   /// the internal cells
-  static constexpr suint_t last_halo_left() noexcept {
+  static constexpr tidx_t last_halo_left() noexcept {
     return detail::last_halo_left(Nic, Nhl);
   }
   /// 1D Coordinate of first internal cell
-  static constexpr suint_t first_internal() noexcept {
+  static constexpr tidx_t first_internal() noexcept {
     return detail::first_internal(Nic, Nhl);
   }
   /// 1D Coordinate of last internal cell
-  static constexpr suint_t last_internal() noexcept {
+  static constexpr tidx_t last_internal() noexcept {
     return detail::last_internal(Nic, Nhl);
   }
   /// 1D Coordinate of first internal cell (including \p h halo layers)
-  static constexpr suint_t first_internal(suint_t h) noexcept {
+  static constexpr tidx_t first_internal(tidx_t h) noexcept {
     HM3_ASSERT(h <= halo_layers(), "h {} is not <= halo layers {}", h,
                halo_layers());
     return detail::first_internal(Nic, Nhl) - h;
   }
   /// 1D Coordinate of last internal cell (including \p h halo layers)
-  static constexpr suint_t last_internal(suint_t h) noexcept {
+  static constexpr tidx_t last_internal(tidx_t h) noexcept {
     HM3_ASSERT(h <= halo_layers(), "h {} is not <= halo layers {}", h,
                halo_layers());
     return detail::last_internal(Nic, Nhl) + h;
   }
   /// 1D Coordinate of first halo cell of the tile with coordinates larger than
   /// the internal cells
-  static constexpr suint_t first_halo_right() noexcept {
+  static constexpr tidx_t first_halo_right() noexcept {
     return detail::first_halo_right(Nic, Nhl);
   }
   /// 1D Coordinate of last halo cell of the tile with coordinates larger than
   /// the internal cells
-  static constexpr suint_t last_halo_right() noexcept {
+  static constexpr tidx_t last_halo_right() noexcept {
     return detail::last_halo_right(Nic, Nhl);
   }
   // static constexpr auto cpl = self::length();
@@ -126,7 +126,7 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
 
   static constexpr detail::subtile_bounds<Nd> internal_cells() noexcept {
     detail::subtile_bounds<Nd> b;
-    for (suint_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Nd; ++d) {
       b.from[d] = fi;
       b.to[d]   = li;
     }
@@ -136,13 +136,13 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
 
 namespace detail {
 
-template <suint_t Nd, suint_t M, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_ {
   static constexpr std::array<subtile_bounds<0>, 0> indices{};
 };
 
 // 1D face halo tiles
-template <suint_t Nic, suint_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<1, 1, Nic, Nhl> {
   using b = bounds<1, Nic, Nhl>;
   static constexpr std::array<subtile_bounds<1>, 2> indices{{
@@ -157,7 +157,7 @@ struct halo_tiles_lookup_table_<1, 1, Nic, Nhl> {
 };
 
 // 2D face halo tiles
-template <suint_t Nic, suint_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<2, 1, Nic, Nhl> {
   using b = bounds<2, Nic, Nhl>;
   static constexpr std::array<subtile_bounds<2>, 4> indices{{
@@ -178,7 +178,7 @@ struct halo_tiles_lookup_table_<2, 1, Nic, Nhl> {
 };
 
 // 2D edge (corner) halo tiles
-template <suint_t Nic, suint_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<2, 2, Nic, Nhl> {
   using b = bounds<2, Nic, Nhl>;
   static constexpr std::array<subtile_bounds<2>, 4> indices{{
@@ -199,7 +199,7 @@ struct halo_tiles_lookup_table_<2, 2, Nic, Nhl> {
 };
 
 // 3D face halo tiles
-template <suint_t Nic, suint_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<3, 1, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
   static constexpr std::array<subtile_bounds<3>, 6> indices{{
@@ -226,7 +226,7 @@ struct halo_tiles_lookup_table_<3, 1, Nic, Nhl> {
 };
 
 // 3D edge halo tiles
-template <suint_t Nic, suint_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<3, 2, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
   static constexpr std::array<subtile_bounds<3>, 12> indices{{
@@ -271,7 +271,7 @@ struct halo_tiles_lookup_table_<3, 2, Nic, Nhl> {
 };
 
 // 3D corner halo tiles
-template <suint_t Nic, suint_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<3, 3, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
   static constexpr std::array<subtile_bounds<3>, 8> indices{{
@@ -304,7 +304,7 @@ struct halo_tiles_lookup_table_<3, 3, Nic, Nhl> {
 };
 
 namespace {
-template <suint_t Nd, suint_t M, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>  //
 static constexpr auto halo_tiles_lookup_table
  = halo_tiles_lookup_table_<Nd, M, Nic, Nhl>::indices;
 }  // namespace

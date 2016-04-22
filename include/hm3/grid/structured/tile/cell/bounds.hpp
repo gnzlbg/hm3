@@ -14,26 +14,24 @@ namespace tile {
 namespace cell {
 
 /// Number of cells per length in the square tile
-constexpr index_type length(index_type nc) { return nc; }
+constexpr tidx_t length(tidx_t nc) { return nc; }
 
 /// Total number of cells
-constexpr index_type size(index_type nd, index_type nc) {
-  return math::ipow(nc, nd);
+constexpr tidx_t size(dim_t nd, tidx_t nc) {
+  return math::ipow(nc, static_cast<tidx_t>(nd));
 }
 
 /// Cell bounds of a square tile
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length (the tile is square)
-template <suint_t Nd, suint_t Nc>  //
+template <dim_t Nd, tidx_t Nc>  //
 struct bounds : geometry::dimensional<Nd> {
   /// Number of cells per length in the square tile.
-  static constexpr index_type length() noexcept {
-    return static_cast<index_type>(Nc);
-  }
+  static constexpr tidx_t length() noexcept { return static_cast<tidx_t>(Nc); }
   /// Total number of cells in the tile.
-  static constexpr index_type size() noexcept {
-    return cell::size(static_cast<index_type>(Nd), static_cast<index_type>(Nc));
+  static constexpr tidx_t size() noexcept {
+    return cell::size(static_cast<tidx_t>(Nd), Nc);
   }
 };
 

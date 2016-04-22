@@ -15,7 +15,7 @@ namespace cell {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length
-template <suint_t Nd, suint_t Nc>
+template <dim_t Nd, tidx_t Nc>
 struct indexed_coordinate : geometry::dimensional<Nd> {
   using self           = indexed_coordinate;
   using index          = index<Nd, Nc>;
@@ -30,10 +30,12 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
 
   constexpr indexed_coordinate(index idx, coordinate x)
    : idx_(std::move(idx)), x_(std::move(x)) {
-    HM3_ASSERT(coordinate(idx()) == x(), "idx {} produces x {} but x is {}",
-               idx(), coordinate(idx), x());
-    HM3_ASSERT(x().idx() == idx(), "x {} produces idx {} but idx is {}", x(),
-               x().idx(), idx());
+    HM3_ASSERT(coordinate(this->idx()) == this->x(),
+               "idx {} produces x {} but x is {}", this->idx(), coordinate(idx),
+               this->x());
+    HM3_ASSERT(this->x().idx() == this->idx(),
+               "x {} produces idx {} but idx is {}", this->x(), this->x().idx(),
+               this->idx());
   }
   constexpr indexed_coordinate(index idx) : idx_(idx), x_(std::move(idx)) {}
   constexpr indexed_coordinate(coordinate x)
@@ -53,7 +55,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   constexpr explicit operator coordinate() const noexcept { return x(); }
 
   /// \p d -th coordinate component
-  constexpr auto operator[](suint_t d) const noexcept {
+  constexpr auto operator[](dim_t d) const noexcept {
     HM3_ASSERT(x(), "invalid coordinate {}", x());
     return x()[d];
   }
@@ -67,7 +69,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   ///
   /// \pre The resulting coordinate must lie within the tile
   /// \note Faster than `at`
-  constexpr self offset(suint_t d, sint_t o) const noexcept {
+  constexpr self offset(dim_t d, noffset_t o) const noexcept {
     coordinate n = x().offset(d, o);
     HM3_ASSERT(n, "offsetting x = {} by ({}, {}) results in invalid coordinate",
                x(), d, o);
@@ -88,7 +90,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   /// Coordinate at \p offset along the \p d -th component from this
   ///
   /// Returns invalid if the result lies outside the tile.
-  constexpr self at(suint_t d, sint_t offset) const noexcept {
+  constexpr self at(dim_t d, noffset_t offset) const noexcept {
     coordinate n = x().offset(d, offset);
     return n ? self{n} : self{index(), n};
   }
@@ -111,7 +113,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.idx() << " : " << ic.x()[0];
-      for (suint_t d = 1; d < Nd; ++d) { os << ", " << ic.x()[d]; }
+      for (dim_t d = 1; d < Nd; ++d) { os << ", " << ic.x()[d]; }
       os << "}";
     } else {
       os << "{ invalid : invalid }";

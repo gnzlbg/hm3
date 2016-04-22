@@ -18,12 +18,11 @@ namespace cell {
 /// \tparam Nd  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <suint_t Nd, suint_t Nic, suint_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 struct indices : bounds<Nd, Nic, Nhl>,
                  tile::cell::indices<Nd, bounds<Nd, Nic, Nhl>::length()> {
   static_assert(Nhl > 0, "zero halo layers not supported");
   using bounds            = bounds<Nd, Nic, Nhl>;
-  using index_type        = typename tile::index_type;
   using tile_cell_indices = tile::cell::indices<Nd, bounds::length()>;
   using index             = typename tile_cell_indices::index;
   using coordinate        = coordinate<Nd, Nic, Nhl>;
@@ -53,7 +52,7 @@ struct indices : bounds<Nd, Nic, Nhl>,
   ///
   /// Optional increase the size of the internal cells tile by \p h halo layers
   template <typename F>
-  static constexpr void for_each_internal(F&& f, suint_t h = 0) noexcept {
+  static constexpr void for_each_internal(F&& f, tidx_t h = 0) noexcept {
     HM3_ASSERT(h <= halo_layers(), "h {} is not <= halo layers {}", h,
                halo_layers());
     auto g
@@ -104,7 +103,7 @@ struct indices : bounds<Nd, Nic, Nhl>,
   template <typename F>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
-                                      index_type w = 0) noexcept {
+                                      tidx_t w = 0) noexcept {
     auto g
      = [&f](auto&& i) { return f(coordinate(std::forward<decltype(i)>(i))); };
     tile_cell_indices::for_each_ring(tile_coordinate(from), tile_coordinate(to),
@@ -114,7 +113,7 @@ struct indices : bounds<Nd, Nic, Nhl>,
 
   template <typename P>
   static constexpr coordinate closest_cell(coordinate x, P&& p,
-                                           index_type max_cell_distance
+                                           tidx_t max_cell_distance
                                            = length()) noexcept {
     return tile_cell_indices::closest_cell(x, std::forward<P>(p),
                                            max_cell_distance);

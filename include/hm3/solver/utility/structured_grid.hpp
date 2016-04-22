@@ -20,7 +20,7 @@ namespace solver {
 /// Nic: number of internal cells per dimension
 /// Nhl: number of of halo layers
 ///
-template <uint_t Nd, uint_t Nic, uint_t Nhl>  //
+template <dim_t Nd, uint_t Nic, uint_t Nhl>  //
 struct square_structured_indices : geometry::dimensional<Nd> {
   using geometry::dimensional<Nd>::dimension;
   using geometry::dimensional<Nd>::dimensions;
@@ -371,7 +371,7 @@ struct square_structured_indices : geometry::dimensional<Nd> {
   }
 };
 
-template <uint_t Nd, uint_t Nic, uint_t Nhl>  //
+template <dim_t Nd, uint_t Nic, uint_t Nhl>  //
 struct square_structured_grid : square_structured_indices<Nd, Nic, Nhl> {
   static_assert(Nic >= Nhl, "");
   using indices       = square_structured_indices<Nd, Nic, Nhl>;

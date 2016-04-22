@@ -12,12 +12,15 @@
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
-
+/*
 template struct hm3::solver::square_structured_indices<1, 2, 2>;
 template struct hm3::solver::square_structured_indices<2, 2, 2>;
 template struct hm3::solver::square_structured_indices<3, 2, 2>;
+*/
+// DEPRECTAED
 
 int main() {
+  /*
   using namespace solver;
 
   uint_t rm[27] = {
@@ -210,5 +213,7 @@ int main() {
       }
     }
   }
+  return 0;
+  */
   return 0;
 }

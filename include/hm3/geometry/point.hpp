@@ -63,7 +63,7 @@ num_t distance(point<Nd> const& a, point<Nd> const& b) noexcept {
 template <typename OStream, dim_t Nd>
 OStream& operator<<(OStream& o, point<Nd> const& p) {
   o << "(";
-  for (dim_t d = 0; d != Nd; ++d) {
+  for (dim_t d = 0; d < Nd; ++d) {
     o << p(d);
     if (d != Nd - 1) { o << ", "; }
   }

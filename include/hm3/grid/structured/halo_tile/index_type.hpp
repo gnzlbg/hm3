@@ -2,15 +2,15 @@
 /// \file
 ///
 /// Type of the coordinate and tile indices
-#include <hm3/grid/structured/types.hpp>
+#include <hm3/grid/structured/tile/index_type.hpp>
 
 namespace hm3 {
 namespace grid {
 namespace structured {
-namespace tile {
+namespace halo_tile {
 
-/// Underlying type of the tile (c) and coordinate {i,j,k} indices
-using tidx_t = nidx_t;
+/// Underlying type of the halo tile (c) and coordinate {i,j,k} indices
+using tidx_t = tile::tidx_t;
 
 }  // namespace tile
 }  // namespace structured

@@ -13,7 +13,7 @@ namespace structured {
 namespace tile {
 namespace surface {
 
-template <suint_t Nd, suint_t Nc>  //
+template <dim_t Nd, tidx_t Nc>  //
 struct coordinate {
   using self            = coordinate;
   using cell_coordinate = cell::coordinate<Nd, Nc>;
@@ -21,7 +21,7 @@ struct coordinate {
   using index           = index<Nd, Nc>;
   using bounds          = bounds<Nd, Nc>;
   using cell_bounds     = cell::bounds<Nd, Nc>;
-  using value_t         = index_type;
+  using value_t         = tidx_t;
 
   constexpr coordinate(cell_coordinate x_c_, suint_t d_) : x_c(x_c_), d(d_) {
     HM3_ASSERT(*this, "invalid surface with x_c: {}, d: {}", x_c, d);
@@ -49,7 +49,7 @@ struct coordinate {
   ///          d = 1
   ///
   /// For each x_c, only Nd surfaces are stored
-  suint_t d;
+  dim_t d;
 
   /// Surface normal vector.
   constexpr auto normal() const noexcept { return point_t::unit(d); }
@@ -66,7 +66,7 @@ struct coordinate {
   constexpr explicit operator bool() const noexcept {
     constexpr auto max_cell_idx = cell_bounds::length() + 1;
     // the cell index can be one row past the end of the tile on each component
-    for (value_t d_ = 0; d_ < Nd; ++d_) {
+    for (dim_t d_ = 0; d_ < Nd; ++d_) {
       const auto v = x_c[d_];
       static_assert(std::is_unsigned<value_t>{},
                     "for signed value_t it must also be checked whether v < 0 "
@@ -182,7 +182,7 @@ struct coordinate {
   friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.d << " : " << ic.x_c[0];
-      for (suint_t d_ = 1; d_ < Nd; ++d_) { os << ", " << ic.x_c[d_]; }
+      for (dim_t d_ = 1; d_ < Nd; ++d_) { os << ", " << ic.x_c[d_]; }
       os << "}";
     } else {
       os << "{ invalid : invalid }";

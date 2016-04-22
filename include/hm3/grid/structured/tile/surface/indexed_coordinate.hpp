@@ -15,7 +15,7 @@ namespace surface {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of surfaces per tile length
-template <suint_t Nd, suint_t Nc>
+template <dim_t Nd, tidx_t Nc>
 struct indexed_coordinate : geometry::dimensional<Nd> {
   using self       = indexed_coordinate;
   using index      = index<Nd, Nc>;
@@ -50,7 +50,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   constexpr explicit operator coordinate() const noexcept { return x(); }
 
   /// \p d -th coordinate component
-  constexpr auto operator[](suint_t d) const noexcept {
+  constexpr auto operator[](dim_t d) const noexcept {
     HM3_ASSERT(x(), "invalid coordinate {}", x());
     return x()[d];
   }
@@ -65,7 +65,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.idx() << " : " << ic.x()[0];
-      for (suint_t d = 1; d < Nd; ++d) { os << ", " << ic.x()[d]; }
+      for (dim_t d = 1; d < Nd; ++d) { os << ", " << ic.x()[d]; }
       os << "}";
     } else {
       os << "{ invalid : invalid }";
