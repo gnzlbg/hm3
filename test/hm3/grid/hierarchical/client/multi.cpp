@@ -1,8 +1,8 @@
 /// \file
 ///
-/// Solver grid state tests
+/// Hierarchical multi-tree client tests
+#include <hm3/grid/hierarchicak/client/multi.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
-#include <hm3/solver/utility/grid.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
@@ -36,8 +36,8 @@ int main(int argc, char* argv[]) {
   generation::uniform(g, max_grid_level);
   ///@}  // Setup
 
-  solver::state::grid<nd> grid_state0(g, 0_g, *node_capacity);
-  solver::state::grid<nd> grid_state1(g, 1_g, *node_capacity);
+  client::multi<nd> grid_state0(g, 0_g, *node_capacity);
+  client::multi<nd> grid_state1(g, 1_g, *node_capacity);
   CHECK(grid_state0.idx() == 0_g);
   CHECK(grid_state1.idx() == 1_g);
 

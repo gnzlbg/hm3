@@ -1,4 +1,7 @@
-#include <hm3/solver/utility/neighbors.hpp>
+/// \file
+///
+/// Hierarchical client neighbor storage tests
+#include <hm3/grid/hierarchical/client/neighbor_storage.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
@@ -7,7 +10,7 @@ using hierarchical::grid_node_idx;
 using hierarchical::operator""_gn;
 
 /// Explicit instantiate it
-template struct hm3::solver::state::neighbors<6>;
+template struct hm3::grid::hierarchical::client::neighbor_storage<6>;
 
 struct node {
   grid_node_idx idx;
@@ -68,7 +71,7 @@ void check(State&& s, NeighborState ns) {
 }
 
 int main() {
-  solver::state::neighbors<6> neighbors(7);
+  grid::hierarchical::client::neighbor_storage<6> neighbors(7);
 
   for (auto n : state0) {
     for (auto i : n.neighbors) {
