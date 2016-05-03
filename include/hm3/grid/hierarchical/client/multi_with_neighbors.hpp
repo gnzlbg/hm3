@@ -25,10 +25,9 @@ namespace client {
 /// manifolds.
 template <dim_t Nd>  //
 struct multi_wn : geometry::dimensional<Nd> {
-  using self  = multi_wn<Nd>;
-  using multi = multi<Nd>;
-  using neighbor_storage
-   = neighbor_storage<tree::max_no_neighbors(Nd) + 1>;
+  using self             = multi_wn<Nd>;
+  using multi            = multi<Nd>;
+  using neighbor_storage = neighbor_storage<tree::max_no_neighbors(Nd) + 1>;
 
   multi grid;
   neighbor_storage neighbors;

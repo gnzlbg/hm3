@@ -102,13 +102,30 @@ int main() {
   {  // 2d, 2x2 tile
     using t_g = tile_geom<2, 2>;
     using x_t = typename t_g::cell_coordinate;
+    using p_t = geometry::point<2>;
     auto g    = t_g::from(bbox_orig<2>());
 
-    std::vector<geometry::point<2>> xs;
-    xs.push_back({-0.25, -0.25});
-    xs.push_back({0.25, -0.25});
-    xs.push_back({-0.25, 0.25});
-    xs.push_back({0.25, 0.25});
+    std::vector<p_t> xs{
+     {-0.25, -0.25}, {0.25, -0.25}, {-0.25, 0.25}, {0.25, 0.25}};
+
+    // this works, but the above segfaults in release:
+    // std::vector<p_t> xs(4);
+    // {
+    //   xs[0][0] = -0.25;
+    //   xs[0][1] = -0.25;
+    // }
+    // {
+    //   xs[1][0] = 0.25;
+    //   xs[1][1] = -0.25;
+    // }
+    // {
+    //   xs[2][0] = -0.25;
+    //   xs[2][1] = 0.25;
+    // }
+    // {
+    //   xs[3][0] = 0.25;
+    //   xs[3][1] = 0.25;
+    // }
 
     for (tidx_t i = 0; i < 4; ++i) {
       CHECK(g.cell_center(x_t::from(i)) == xs[i]);

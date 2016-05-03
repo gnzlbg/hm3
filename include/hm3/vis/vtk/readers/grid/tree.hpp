@@ -14,6 +14,7 @@ namespace grid {
 template <dim_t Nd> struct tree : reader<Nd> {
   using typename reader<Nd>::grid_t;
   using child_pos = ::hm3::tree::child_pos<grid_t::dimension()>;
+  using cpidx_t   = ::hm3::tree::cpidx_t;
 
   using reader<Nd>::cell_data;
   using reader<Nd>::grid;
@@ -29,8 +30,8 @@ template <dim_t Nd> struct tree : reader<Nd> {
     cell_data.push("level", [&](auto&& i) { return *grid->level(i); });
     /// Parent nodes:
     cell_data.push("parent", [&](auto&& i) { return *grid->parent(i); });
-    /// Node children:
-    auto compute_children = [&](auto&& i, tree::cpidx_t p) {
+    // Node children :
+    auto compute_children = [&](auto&& i, cpidx_t p) {
       const auto c = grid->child(i, child_pos{p});
       return c ? *c : -1;
     };

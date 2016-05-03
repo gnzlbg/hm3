@@ -18,6 +18,7 @@ struct cv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   using equation_of_state::mach_number;
   using equation_of_state::pressure;
   using equation_of_state::speed_of_sound;
+  using equation_of_state::temperature;
 
  private:
   using i = indices<Nd>;
@@ -132,6 +133,12 @@ struct cv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
 
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
+  static constexpr num_t temperature(V&& v, num_t gamma,
+                                     num_t gamma_m1) noexcept {
+    return temperature(gamma, rho(v), p(v, gamma_m1));
+  }
+
+  template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   static constexpr num_t speed_of_sound(V&& v, num_t gamma,
                                         num_t gamma_m1) noexcept {
     return speed_of_sound(gamma, rho(v), p(v, gamma_m1));
@@ -188,6 +195,11 @@ template <dim_t Nd> struct cv : cv_base<Nd>, state {
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   constexpr auto flux(V&& v, dim_t d) const noexcept {
     return b::flux(std::forward<V>(v), d, gamma_m1);
+  }
+
+  template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
+  constexpr num_t temperature(V&& v) const noexcept {
+    return b::temperature(std::forward<V>(v), gamma, gamma_m1);
   }
 
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>

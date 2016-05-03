@@ -2,3 +2,4 @@
 
 - `hierarchical/`: hierarchical grids
 - `structured/`: structured grids
+- `surface/`: surface grid

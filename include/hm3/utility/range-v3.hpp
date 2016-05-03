@@ -3,6 +3,9 @@
 ///
 /// Includes the range-v3 library
 #include <hm3/utility/config/compiler.hpp>
+
+#define RANGES_CXX_LIB_IS_FINAL 0
+
 #ifdef HM3_COMPILER_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wshadow"

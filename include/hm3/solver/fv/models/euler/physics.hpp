@@ -25,7 +25,6 @@ struct physics : state, geometry::dimensional<Nd>, indices<Nd> {
 
   template <typename S, typename V, typename CellData>
   static void load(V&& v, S const& s, CellData&& cell_data) noexcept {
-    /*
     cell_data.load("density", [&](auto c, auto&&) {
       auto t = s.variables(c);
       return v.rho(t);
@@ -52,21 +51,24 @@ struct physics : state, geometry::dimensional<Nd>, indices<Nd> {
                    },
                    v.dimension(),
                    [&](auto&& d) { return v.dimension_name(d); });
-    // Gradient
-
-    // Temperature
+    cell_data.load("temperature", [&](auto c, auto&&) {
+      auto t = s.variables(c);
+      return v.temperature(t);
+    });
     cell_data.load("M", [&](auto c, auto&&) {
       auto t = s.variables(c);
       return v.mach_number(t);
     });
-    // Total energy
-    // Specific internal energy
-    // Enthalpy
     cell_data.load("a", [&](auto c, auto&&) {
       auto t = s.variables(c);
       return v.speed_of_sound(t);
     });
-    */
+
+    // TODO:
+    // Gradient
+    // Total energy
+    // Specific internal energy
+    // Enthalpy
   }
 };
 

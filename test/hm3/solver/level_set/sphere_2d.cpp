@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
     while (amr_handler0.adapt(amr_action0, [&]() {
 #ifdef HM3_ENABLE_VTK
       string fname = root_name0 + "_it_" + std::to_string(iter_counter);
-      amr::vtk::serialize(amr_handler0, fname);
+      hierarchical::amr::vtk::serialize(amr_handler0, fname);
 
       hierarchical::cartesian::vtk::serialize(
        g, "ls_grid_" + std::to_string(count_) + "_"

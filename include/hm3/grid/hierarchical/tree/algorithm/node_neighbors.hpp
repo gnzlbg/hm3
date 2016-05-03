@@ -116,13 +116,8 @@ struct node_neighbors_fn {
    -> inline_vector<node_idx, max_no_neighbors(Nd)> {
     inline_vector<node_idx, max_no_neighbors(Nd)> neighbors;
 
-    for_each_neighbor_manifold<Nd>([&](auto m) {
-      // should be:
-      // (*this)(m, t, loc, neighbors, pred);
-      // seems like a BUG in clang 3.9
-      constexpr node_neighbors_fn nnf;
-      nnf(m, t, loc, neighbors, pred);
-    });
+    for_each_neighbor_manifold<Nd>(
+     [&](auto m) { (*this)(m, t, loc, neighbors, pred); });
 
     // sort them and remove dupplicates
     ranges::sort(neighbors);

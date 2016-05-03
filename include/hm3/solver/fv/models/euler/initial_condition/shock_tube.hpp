@@ -18,7 +18,8 @@ namespace ic {
 /// Initial condition for shock tube problems
 ///
 /// Can be customized along 2 directions only (x0, y1).
-template <dim_t Nd> struct shock_tube {
+template <dim_t Nd>  //
+struct shock_tube {
   using i       = indices<Nd>;
   using p       = pv_base<Nd>;
   using var_v   = num_a<i::nvars()>;
@@ -61,9 +62,9 @@ template <dim_t Nd> struct shock_tube {
 
   ///@}  // Helpers
 
-  shock_tube(num_t rho_l, num_t u_mag_l, num_t p_l,  //
-             num_t rho_r, num_t u_mag_r, num_t p_r,  //
-             num_t x_0_ = 0.5, num_t angle_ = 0.)
+  constexpr shock_tube(num_t rho_l, num_t u_mag_l, num_t p_l,  //
+                       num_t rho_r, num_t u_mag_r, num_t p_r,  //
+                       num_t x_0_ = 0.5, num_t angle_ = 0.)
    : angle(std::move(angle_))
    , x_0(std::move(x_0_))
    , alpha(deg_to_rad(angle))
@@ -77,6 +78,11 @@ template <dim_t Nd> struct shock_tube {
     p::rho(pv_r) = rho_r;
     p::p(pv_r)   = p_r;
   }
+  constexpr shock_tube(shock_tube const&) = default;
+  constexpr shock_tube(shock_tube&&)      = default;
+
+  constexpr shock_tube& operator=(shock_tube const&) = default;
+  constexpr shock_tube& operator=(shock_tube&&) = default;
 
   /// Initial condition for Sod's shock-tube problem at point \p x
   var_v operator()(point_t x) const noexcept {
@@ -106,7 +112,7 @@ template <dim_t Nd> struct shock_tube {
 /// Nonlinear Hyperbolic Conservation Laws", Journal of Computational Physics,
 /// 27:1-31, 1978.
 ///
-template <dim_t Nd> auto sod_shock_tube() {
+template <dim_t Nd> constexpr auto sod_shock_tube() {
   return shock_tube<Nd>(1.0, 0.0, 1.0,   // left state
                         0.125, 0.0, 0.1  // right state
                         );

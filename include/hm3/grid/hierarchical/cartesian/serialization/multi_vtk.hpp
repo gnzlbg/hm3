@@ -37,8 +37,9 @@ template <dim_t Nd> struct serializable_multi : geometry::dimensional<Nd> {
 
   auto nodes() const noexcept {
     return t_.nodes() | view::filter([&](tree_node_idx n) {
-             return (level_ < 0) ? t_.is_leaf(n)
-                                 : t_.level(n) == static_cast<lidx_t>(level_);
+             return (level_ < 0)
+                     ? t_.is_leaf(n)
+                     : t_.level(n) == static_cast<tree::lidx_t>(level_);
            });
   }
 

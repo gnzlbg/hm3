@@ -114,6 +114,7 @@ struct cell_data : data_fields<cell_data<Reader, VTKGrid>> {
     // type of the component data
     using data_t
      = decltype(field_component(std::declval<vtk_cell_idx>(), sint_t{}));
+
     // array to store the component values
     auto data = make_array<data_t>();
     data->SetName(field_name.c_str());

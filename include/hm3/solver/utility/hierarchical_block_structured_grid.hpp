@@ -60,22 +60,24 @@ struct hierarchical_block_structured_grid
   /// Projection: project parent to children
   template <typename Projection>
   void refine(block_idx bidx, Projection&& projection) {
-    auto guard = grid.refine(bidx);
-    projection(bidx, guard());
+    auto refine_guard = grid.refine(bidx);
+    projection(bidx, refine_guard.new_children());
     neighbors.pop(bidx);  // remove parent first
-    for (auto cb : guard()) { neighbors.push(cb, grid.neighbors(cb)); }
+    for (auto cb : refine_guard.new_children()) {
+      neighbors.push(cb, grid.neighbors(cb));
+    }
   }
 
   /// Restriction: restrict children to parents
   template <typename Restriction>
   void coarsen(block_idx bidx, Restriction&& restriction) {
-    auto guard = grid.coarsen(bidx);
-    restriction(bidx, guard());
-    for (auto cb : guard()) {
+    auto coarsen_guard = grid.coarsen(bidx);
+    restriction(coarsen_guard.new_parent(), coarsen_guard.old_children());
+    for (auto cb : coarsen_guard.old_children()) {
       blocks_[*cb].clear();
       neighbors.pop(cb);
     }
-    neighbors.push(guard.parent);
+    neighbors.push(coarsen_guard.new_parent());
   }
 
   auto no_cells() const noexcept { return block_t::size() * (*grid.size()); }

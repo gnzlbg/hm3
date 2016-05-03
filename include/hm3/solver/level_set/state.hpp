@@ -76,12 +76,15 @@ template <dim_t Nd> struct state : geometry::dimensional<Nd> {
     }
   }
 
-  /// Refines the solver cell \p c
-  auto refine(const cell_idx i) noexcept {
+  /// Refines the solver cell \p c and returns a range of the newly created
+  /// children
+  ///
+  /// \post The cell \p c is removed from the grid
+  auto refine(const cell_idx c) noexcept {
     // parent will be deleted at the end of this scope
-    auto guard = g.refine(i);
-    interpolate_from_parent_to_children(i, guard());
-    return guard();  // returns range of newly created children
+    auto refine_guard = g.refine(c);
+    interpolate_from_parent_to_children(c, refine_guard.new_children());
+    return refine_guard.new_children();
   }
 
   template <typename ChildrenRange>
@@ -97,13 +100,16 @@ template <dim_t Nd> struct state : geometry::dimensional<Nd> {
     signed_distance(parent) /= static_cast<num_t>(count);
   }
 
-  /// Coarsens the sibling grid nodes of \p n
+  /// Coarsens the sibling grid nodes of \p and returns the parent cell id
   cell_idx coarsen(const cell_idx n) noexcept {
     // children will be deleted at the end of this scope
-    auto guard = g.coarsen(n);
-    interpolate_from_children_to_parent(n, guard());
-    for (auto i : guard()) { signed_distance(i) = -1; }
-    return guard.parent_;  // retuns cell_idx of parent
+    auto coarsen_guard = g.coarsen(n);
+    interpolate_from_children_to_parent(coarsen_guard.new_parent(),
+                                        coarsen_guard.old_children());
+    for (auto i : coarsen_guard.old_children()) {
+      signed_distance(i) = std::numeric_limits<num_t>::lowest();
+    }
+    return coarsen_guard.new_parent();
   }
 
   template <typename SD> void set_node_values(SD&& sd) noexcept {

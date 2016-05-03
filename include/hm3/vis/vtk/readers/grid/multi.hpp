@@ -11,9 +11,11 @@ namespace vtk {
 namespace grid {
 
 /// Multi hierarchical Cartesian grid reader
-template <dim_t Nd> struct multi : tree<Nd> {
+template <dim_t Nd>  //
+struct multi : tree<Nd> {
   using tree<Nd>::grid;
   using grid_idx = ::hm3::hierarchical::grid_idx;
+  using gidx_t   = ::hm3::hierarchical::gidx_t;
 
   using tree<Nd>::cell_data;
 
@@ -42,7 +44,8 @@ template <dim_t Nd> struct multi : tree<Nd> {
 
 /// Makes a multi hierarchical Cartesian grid reader of dimension `Nd`
 template <dim_t Nd>
-auto make_multi(gidx_t ng) -> std::unique_ptr<::hm3::vis::vtk::reader> {
+auto make_multi(hierarchical::gidx_t ng)
+ -> std::unique_ptr<::hm3::vis::vtk::reader> {
   return std::make_unique<multi<Nd>>(ng);
 }
 
@@ -62,8 +65,8 @@ inline auto make_multi(io::json const& b) {
      b.dump(2));
   }
 
-  dim_t nd  = io::read_file_field(b, "spatial_dimension", HM3_AT_);
-  gidx_t ng = io::read_file_field(b, "no_grids", HM3_AT_);
+  dim_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
+  hierarchical::gidx_t ng = io::read_file_field(b, "no_grids", HM3_AT_);
 
   switch (nd) {
     case 1: {

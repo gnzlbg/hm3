@@ -1,15 +1,53 @@
-#ifdef ABC
+/// Euler cut-off tests
+#include "euler/euler.hpp"
+#include <hm3/utility/test.hpp>
+
+using namespace hm3;
+
+using namespace solver::fv;
+
+template <suint_t Nd>  //
+struct sod {
+  string name              = "sod";
+  static constexpr auto nd = Nd;
+  using physics            = euler::physics<Nd>;
+  using time_integration   = euler_forward;
+  flux::rusanov_fn numerical_flux{};
+  limiter::van_albada_fn limiter{};
+  euler::max_wave_speed_time_step_fn time_step{};
+  euler::ic::shock_tube<Nd> initial_condition = euler::ic::sod_shock_tube<Nd>();
+  suint_t level                               = 2;
+  num_t gamma                                 = 1.4;
+  num_t cfl                                   = 0.4;
+  num_t time_end                              = 0.2;
+  num_t time                                  = 0.;
+  num_t dt                                    = 0.;
+};
+
+void sod_test(mpi::env& env) {
+  using namespace hm3::grid::hierarchical;
+  auto r = unit_square_neumann(env, sod<2>{});
+  solver::fv::vtk::serialize(std::get<1>(r), "block_result", std::get<0>(r).dt,
+                             std::get<1>(r).physics.cv(), 4_gn);
+}
+
+int main(int argc, char* argv[]) {
+  /// Initialize MPI
+  mpi::env env(argc, argv);
+
+  sod_test(env);
+
+  return test::result();
+}
+
+#ifdef FIXED
 #include <hm3/geometry/sd.hpp>
-#include <hm3/grid/hierarchical/amr/amr.hpp>
-#include <hm3/grid/hierarchical/amr/criterion/level_at_distance.hpp>
-#include <hm3/grid/hierarchical/cartesian/amr/multi.hpp>
-#include <hm3/grid/hierarchical/generation/uniform.hpp>
-#include <hm3/grid/hierarchical/grid.hpp>
-#include <hm3/solver/fv/euler.hpp>
-#include <hm3/solver/fv/fv.hpp>
-#include <hm3/solver/fv/models/euler/initial_condition/shock_tube.hpp>
-#include <hm3/solver/fv/numerical_flux/rusanov.hpp>
-#include <hm3/solver/fv/time_integration.hpp>
+#include <hm3/geometry/sd.hpp>
+#include <hm3/solver/fv2/euler.hpp>
+#include <hm3/solver/fv2/fv.hpp>
+#include <hm3/solver/fv2/models/euler/initial_condition/shock_tube.hpp>
+#include <hm3/solver/fv2/numerical_flux/rusanov.hpp>
+#include <hm3/solver/fv2/time_integration.hpp>
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -410,16 +448,14 @@ void sod_test(mpi::env& env) {
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
   auto bounding_box = geometry::unit(geometry::square<nd>{});
 
-  using namespace grid::hierarchical;
-
   // Create the grid
-  cm<nd> g(s, node_capacity, no_grids, bounding_box);
+  grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
 
   // Refine the grid up to the minimum leaf node level
-  generation::uniform(g, min_grid_level);
+  grid::generation::uniform(g, min_grid_level);
 
   auto solver_block_capacity
-   = grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
+   = grid::grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
 
   using p    = fv::euler::physics<nd>;
   using tint = fv::euler_forward;
@@ -476,7 +512,7 @@ void sod_test(mpi::env& env) {
   solver::fv::vtk::serialize(as0, "block_result", time_step, physics.cv(),
                              4_gn);
 }
-/*
+
 void grid_for_paper(mpi::env& env) {
   auto comm = env.world();
 
@@ -698,18 +734,17 @@ void grid_for_paper2(mpi::env& env) {
   solver::fv::vtk::serialize(as0, "block_result", time_step, physics.cv(),
                              4_gn);
 }
-*/
-#endif
+
 int main(int argc, char* argv[]) {
   /// Initialize MPI
-  // mpi::env env(argc, argv);
+  mpi::env env(argc, argv);
 
-  // check_euler();
+  check_euler();
   // sod_test(env);
-  // grid_for_paper2(env);
+  grid_for_paper2(env);
 
   // explosion_test(env);
 
-  //  return test::result();
-  return 0;
+  return test::result();
 }
+#endif

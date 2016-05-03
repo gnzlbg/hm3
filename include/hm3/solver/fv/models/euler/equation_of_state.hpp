@@ -27,13 +27,20 @@ struct equation_of_state {
     return pressure / gamma_m1 + 0.5 * rho * u_mag2;
   }
 
+  /// Temperature
+  ///
+  /// T = \gamma p / rho
+  static constexpr num_t temperature(num_t gamma, num_t rho, num_t p) noexcept {
+    return gamma * p / rho;
+  }
+
   /// Speed of sound
   ///
   /// a = \sqrt{\gamma \frac{p}{\rho}}
   ///
   /// TODO: cannot be constexpr because of std::sqrt
   static num_t speed_of_sound(num_t gamma, num_t rho, num_t p) noexcept {
-    return std::sqrt(gamma * p / rho);
+    return std::sqrt(temperature(gamma, rho, p));
   }
 
   /// Mach number

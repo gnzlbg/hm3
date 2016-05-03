@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Hierarchical multi-tree client tests
-#include <hm3/grid/hierarchicak/client/multi.hpp>
+#include <hm3/grid/hierarchical/client/multi.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/utility/test.hpp>
 
