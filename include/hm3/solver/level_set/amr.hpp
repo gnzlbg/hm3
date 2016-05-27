@@ -26,7 +26,9 @@ template <dim_t Nd> struct amr : geometry::dimensional<Nd> {
   }
 
   /// Neighbors of node \p n in the solver grid
-  auto neighbors(amr_node_idx n) const { return ls_->g.neighbors(n); }
+  auto neighbors(amr_node_idx n) const {
+    return ls_->g.grid_node_neighbors_in_tree(n);
+  }
   /// Level of node \p n
   auto level(amr_node_idx n) const { return ls_->g.level(n); }
 

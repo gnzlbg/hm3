@@ -3,7 +3,7 @@
 ///
 /// Neighbors storage for a single grid within a hierarchical Cartesian
 /// multi-tree.
-#include <hm3/solver/utility/grid.hpp>
+#include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/utility/inline_vector.hpp>
 #include <vector>
 

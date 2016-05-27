@@ -2,6 +2,9 @@
 /// \file
 ///
 ///
+#include <hm3/types.hpp>
+#include <hm3/utility/matrix.hpp>
+#include <type_traits>
 
 namespace hm3 {
 namespace solver {

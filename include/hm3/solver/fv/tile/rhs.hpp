@@ -27,8 +27,6 @@ struct right_hand_side {
   void reinitialize() {}
 };
 
-
-
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3
