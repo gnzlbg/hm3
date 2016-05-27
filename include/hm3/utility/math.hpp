@@ -5,6 +5,7 @@
 #include <cmath>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/matrix.hpp>
 #include <hm3/utility/range.hpp>
 #include <limits>
 #include <type_traits>
@@ -122,21 +123,22 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 }
 
 /// Sign of a floating point number (doesn't handle NaNs)
-template <
- typename Float,
- CONCEPT_REQUIRES_(
-  std::is_floating_point<std::remove_reference_t<std::remove_cv_t<Float>>>{})>
-Float sign(Float&& f) {
-  return (f < 0) ? Float{-1} : Float{1};
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr Float fast_sign(Float f) noexcept {
+  return (f < Float{0}) ? Float{-1} : Float{1};
 }
 
 /// Sign of a floating point number (handles NaNs)
-template <
- typename Float,
- CONCEPT_REQUIRES_(
-  std::is_floating_point<std::remove_reference_t<std::remove_cv_t<Float>>>{})>
-Float robust_sign(Float&& f) {
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr Float robust_sign(Float f) noexcept {
   return std::signbit(f) ? Float{-1} : Float{1};
+}
+
+/// Sign of a floating point number
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr Float sign(Float f) noexcept {
+  HM3_ASSERT(!std::isnan(f), "");
+  return fast_sign(f);
 }
 
 /// Computes the factorial of n
@@ -154,15 +156,38 @@ constexpr Int factorial(const Int n) noexcept {
 /// TODO: assert n - m >= 0 for unsigned types
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 constexpr Int binomial_coefficient(const Int n, const Int m) noexcept {
+  HM3_ASSERT(n - m >= 0, "n - m !>= 0 with n = {} and m = {}", n, m);
   return factorial(n) / (factorial(m) * factorial(n - m));
 }
 
-/// Constexpr version of cmath floor
-///
-/// TODO: there has to be a better way
+/// Integer floor
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr int64_t ifloor(Float x) {
+  HM3_ASSERT(!std::isnan(x), "floor of nan");
+  HM3_ASSERT(!std::isinf(x), "floor of infinity");
+  int64_t i = x;
+  return i - (x < i);
+}
+
+/// Integer ceil
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr int64_t iceil(Float x) {
+  HM3_ASSERT(!std::isnan(x), "ceil of nan");
+  HM3_ASSERT(!std::isinf(x), "ceil of infinity");
+  int64_t i = x;
+  return i + (x > i);
+}
+
+/// Constexpr version of cmath std::floor
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr Float floor(Float x) {
-  return x >= 0.0 ? int(x) : int(x) - 1;
+  return ifloor(x);
+}
+
+/// Constexpr version of cmath std::ceil
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr Float ceil(Float x) {
+  return iceil(x);
 }
 
 namespace math_detail {
@@ -457,14 +482,125 @@ static constexpr bool approx(T const& a, U const& b) noexcept {
 template <typename SignedInt, typename UnsignedInt,
           CONCEPT_REQUIRES_(SignedIntegral<SignedInt>{}
                             and UnsignedIntegral<UnsignedInt>{})>
-static constexpr SignedInt add_signed_to_unsigned(SignedInt s,
-                                                  UnsignedInt u) noexcept {
+constexpr SignedInt add_signed_to_unsigned(SignedInt s,
+                                           UnsignedInt u) noexcept {
   if (s > 0) {
     u += static_cast<UnsignedInt>(s);
   } else {
     u -= static_cast<UnsignedInt>(-s);
   }
   return u;
+}
+
+/// Computes an n-dimensional elliptical gaussian function
+struct gaussian_fn {
+  /// Computes an n-dimensional elliptical gaussian function
+  ///
+  /// Sigma is the spread
+  /// mu is the center
+  ///
+  /// f(x) = \frac {1}{\sqrt{2 \pi}^Nd \prod \sigma_i} \exp{- \left ( \sum
+  /// \frac{(x_i - \mu_i)^2}{2 \sigma_i^2} \right )}
+  template <suint_t Nd>
+  constexpr num_t operator()(num_a<Nd> x, num_a<Nd> mu, num_a<Nd> sigma) const
+   noexcept {
+    // compute the exponent:
+    num_t exponent = 0.;
+    for (suint_t d = 0; d < Nd; ++d) {
+      exponent += std::pow(x(d) - mu(d), 2.) / (2. * std::pow(sigma(d), 2));
+    }
+    exponent *= -1.;
+
+    // compute the front factor:
+    num_t factor = 1. / std::pow(std::sqrt(2. * pi<num_t>), Nd);
+    for (suint_t d = 0; d < Nd; ++d) { factor *= 1. / sigma(d); }
+
+    return factor * std::exp(exponent);
+  }
+
+  /// Computes an n-dimensional gaussian function with constant sigma:
+  ///
+  /// f(x) = \frac {1}{(\sqrt{2 \pi} \sigma)^Nd} \exp{- \left ( \sum
+  /// (x_i - \mu_i)^2 \right ) / (2 \sigma^2)}
+  template <suint_t Nd>
+  constexpr num_t operator()(num_a<Nd> x, num_a<Nd> mu, num_t sigma) const
+   noexcept {
+    return gaussian(x, mu, num_a<Nd>::constant(sigma));
+  }
+};
+
+namespace {
+static constexpr auto&& gaussian = static_const<gaussian_fn>::value;
+}
+
+/// Integrates a 1D function using the trapezoidal rule
+///
+/// \pre subdivisions > 2
+struct integrate_trapezoidal_fn {
+  template <typename F>
+  constexpr num_t operator()(F&& f, num_t from, num_t to,
+                             suint_t subdivisions) const noexcept {
+    HM3_ASSERT(from < to,
+               "domain-error: [from, to) = [{}, {}) (note: {} !< {})", from, to,
+               from, to);
+    HM3_ASSERT(subdivisions > 2, "subdivisions ({}) must be greater than 2",
+               subdivisions);
+
+    num_t dx = (to - from) / subdivisions;
+    HM3_ASSERT(math::approx(from + dx * subdivisions, to), "");
+
+    num_t value = f(from) / 2.;
+    for (suint_t i = 1; i < subdivisions; ++i) {
+      num_t x = from + i * dx;
+      value += f(x);
+    }
+
+    value += f(to) / 2.;
+    value *= dx;
+
+    return value;
+  }
+};
+
+namespace {
+static constexpr auto&& integrate_trapezoidal
+ = static_const<integrate_trapezoidal_fn>::value;
+}
+
+/// Integrates a 1D function using the simpson rule
+///
+/// \pre subdivisions > 3 and subdivisions must be an even number
+struct integrate_simpson_fn {
+  template <typename F>
+  constexpr num_t operator()(F&& f, num_t from, num_t to,
+                             suint_t subdivisions) const noexcept {
+    HM3_ASSERT(from < to,
+               "domain-error: [from, to) = [{}, {}) (note: {} !< {})", from, to,
+               from, to);
+
+    num_t dx = (to - from) / subdivisions;
+    HM3_ASSERT(math::approx(from + dx * subdivisions, to), "");
+    HM3_ASSERT(subdivisions > 3, "subdivisions ({}) must be greater than 3",
+               subdivisions);
+    HM3_ASSERT(subdivisions % 2 == 0, "subdivisions ({}) must be even",
+               subdivisions);
+
+    num_t value = f(from);
+    for (suint_t i = 1; i < subdivisions; i += 2) {
+      value += 4. * f(from + i * dx);
+      value += 2. * f(from + (i + 1) * dx);
+    }
+
+    value += f(to);
+    value *= dx / 3.;
+
+    return value;
+  }
+};
+
+namespace {
+static constexpr auto&& integrate_simpson
+ = static_const<integrate_simpson_fn>::value;
 }
 
 }  // namespace math

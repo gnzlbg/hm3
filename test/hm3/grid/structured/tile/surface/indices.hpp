@@ -21,7 +21,7 @@ struct test_2d_3 {
   using opt_i = std2::experimental::optional<suint_t>;
 
   static auto lr(suint_t i) {
-    return std::array<std::array<opt_i, 2>, 24>{{
+    return hm3::array<hm3::array<opt_i, 2>, 24>{{
      //
      {{opt_i(), 0}},  // 0
      {{0, 1}},        // 1
@@ -74,7 +74,7 @@ struct test_3d_2 {
   using opt_i = std2::experimental::optional<suint_t>;
 
   static auto lr(suint_t i) {
-    return std::array<std::array<opt_i, 2>, 36>{{
+    return hm3::array<hm3::array<opt_i, 2>, 36>{{
      //
      {{opt_i(), 0}},  // 0
      {{0, 1}},        // 1

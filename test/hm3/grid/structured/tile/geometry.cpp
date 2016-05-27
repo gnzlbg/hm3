@@ -31,7 +31,7 @@ void test_orig(TileGeometry, tidx_t nc) {
   CHECK(g.cell_volume() == std::pow(1.0 / nc, Nd));
   CHECK(g.cell_surface_area() == std::pow(1.0 / nc, Nd - 1));
   CHECK(g.tile_length() == 1.0);
-  CHECK(g.tile_center() == point_t::constant(0.0));
+  CHECK(g.tile_centroid() == point_t::constant(0.0));
   CHECK(g.tile_bounding_box() == bbox_orig<Nd>());
 
   point_t p_inside  = point_t::constant(-0.49999999);
@@ -60,7 +60,7 @@ void test_off5(TileGeometry) {
   CHECK(g.cell_volume() == std::pow(2.0 / nc, Nd));
   CHECK(g.cell_surface_area() == std::pow(2.0 / nc, Nd - 1));
   CHECK(g.tile_length() == 2.0);
-  CHECK(g.tile_center() == point_t::constant(-3.0));
+  CHECK(g.tile_centroid() == point_t::constant(-3.0));
   CHECK(g.tile_bounding_box() == bbox_off<Nd>());
 
   point_t p_inside  = point_t::constant(-3.9999999);
@@ -103,7 +103,7 @@ int main() {
     using t_g = tile_geom<2, 2>;
     using x_t = typename t_g::cell_coordinate;
     using p_t = geometry::point<2>;
-    auto g    = t_g::from(bbox_orig<2>());
+    t_g g(bbox_orig<2>());
 
     std::vector<p_t> xs{
      {-0.25, -0.25}, {0.25, -0.25}, {-0.25, 0.25}, {0.25, 0.25}};
@@ -128,7 +128,7 @@ int main() {
     // }
 
     for (tidx_t i = 0; i < 4; ++i) {
-      CHECK(g.cell_center(x_t::from(i)) == xs[i]);
+      CHECK(g.cell_centroid(x_t::from(i)) == xs[i]);
     }
   }
 

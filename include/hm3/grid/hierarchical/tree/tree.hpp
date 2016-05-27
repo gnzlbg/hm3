@@ -537,7 +537,7 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
 ///
 template <dim_t Nd>
 bool operator==(tree<Nd> const& a, tree<Nd> const& b) noexcept {
-  if (size(a) != size(b)) { return false; }
+  if (a.size() != b.size()) { return false; }
 
   RANGES_FOR (auto&& np, view::zip(a.nodes(), b.nodes())) {
     auto&& an = get<0>(np);

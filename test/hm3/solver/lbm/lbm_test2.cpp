@@ -113,7 +113,7 @@ struct poiseuille_profile {
   num_t p_outflow           = 0.;
   num_t length              = 1.0;
 
-  using vel_t = std::array<num_t, 2>;
+  using vel_t = hm3::array<num_t, 2>;
   vel_t velocity(num_t y) const noexcept {
     vel_t us;
     num_t y_rel = y - y_center;

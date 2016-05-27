@@ -21,7 +21,7 @@ constexpr tidx_t sides_per_dir(dim_t /*nd*/, tidx_t nc) noexcept {
 
 /// Number of surfaces per tile side
 constexpr tidx_t size_per_side(dim_t nd, tidx_t nc) noexcept {
-  return math::ipow(nc, nd - 1);
+  return math::ipow(nc, tidx_t(nd - 1));
 }
 
 /// Number of surfaces per direction

@@ -47,8 +47,8 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   intersection<Shape> cut;
 
   const auto shape_corners = corners(s);
-  const auto no_corners    = size(shape_corners);
-  auto corner_ids          = view::iota(suint_t{0}, no_corners);
+  const suint_t no_corners = size(shape_corners);
+  auto corner_ids          = view::iota(0_su, no_corners);
 
   // Compute signed distance values at the corners once:
   inline_vector<num_t, MaxNp> sd_at_corners;

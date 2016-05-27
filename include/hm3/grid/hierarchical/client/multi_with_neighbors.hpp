@@ -17,20 +17,21 @@ namespace hierarchical {
 namespace client {
 
 /// Stores a single grid within a hierarchical Cartesian multi-tree and
-/// internally stores grid neighbors
+/// internally caches grid neighbors (which allows having nodes that are not
+/// part of the tree grid)
 ///
 /// \tparam Nd number of spatial dimensions of the grid
 ///
 /// This store a grid client and a internal copy of neighbors across all
 /// manifolds.
 template <dim_t Nd>  //
-struct multi_wn : geometry::dimensional<Nd> {
-  using self             = multi_wn<Nd>;
-  using multi            = multi<Nd>;
-  using neighbor_storage = neighbor_storage<tree::max_no_neighbors(Nd) + 1>;
+struct multi_wn : multi<Nd> {
+  using self   = multi_wn<Nd>;
+  using base   = multi<Nd>;
+  using tree_t = typename base::tree_t;
 
-  multi grid;
-  neighbor_storage neighbors;
+  using neighbor_storage = neighbor_storage<tree::max_no_neighbors(Nd) + 1>;
+  neighbor_storage cached_neighbors;
 
   multi_wn()                = default;
   multi_wn(multi_wn const&) = default;
@@ -38,19 +39,24 @@ struct multi_wn : geometry::dimensional<Nd> {
   multi_wn& operator=(multi_wn const&) = default;
   multi_wn& operator=(multi_wn&&) = default;
 
-  multi_wn(multi g) : grid(std::move(g)), neighbors(grid.capacity()) {}
+  multi_wn(tree_t& t, grid_idx g, grid_node_idx node_capacity)
+   : base(t, g, node_capacity), cached_neighbors(node_capacity) {}
+
+  multi_wn(tree_t& t, grid_idx g, grid_node_idx node_capacity,
+           hm3::log::serial& log)
+   : base(t, g, node_capacity, log), cached_neighbors(node_capacity) {}
 
   /// Append the tree node \p n into the grid and returns its grid node idx
   grid_node_idx push(tree_node_idx n) {
-    auto i = grid.push(n);
-    neighbors.push(i, grid.neighbors(i));
+    auto i = base::push(n);
+    cached_neighbors.push(i, base::grid_node_neighbors_in_tree(i));
     return i;
   }
 
   /// Remove the grid node \p n from the grid
   void pop(grid_node_idx n) {
-    grid.pop(n);
-    neighbors.pop(n);
+    base::pop(n);
+    cached_neighbors.pop(n);
   }
 
   /// Refines node \p p () using a \p projection.
@@ -61,11 +67,11 @@ struct multi_wn : geometry::dimensional<Nd> {
   /// \note This functions removes the parent node \p p from the grid.
   template <typename Projection>
   void refine(grid_node_idx parent, Projection&& projection) {
-    auto refine_guard = grid.refine(parent);
+    auto refine_guard = base::refine(parent);
     projection(refine_guard.old_parent(), refine_guard.new_children());
-    neighbors.pop(parent);  // remove parent from the grid first
+    cached_neighbors.pop(parent);  // remove parent from the grid first
     for (auto c : refine_guard.new_children()) {
-      neighbors.push(c, grid.neighbors(c));
+      cached_neighbors.push(c, base::grid_node_neighbors_in_tree(c));
     }
     /// \note parent node `parent` is removed on refine guard destruction
   }
@@ -79,10 +85,10 @@ struct multi_wn : geometry::dimensional<Nd> {
   /// is, all children of the newly created parent of \p child).
   template <typename Restriction>
   void coarsen(grid_node_idx child, Restriction&& restriction) {
-    auto coarsen_guard = grid.coarsen(child);
+    auto coarsen_guard = base::coarsen(child);
     restriction(coarsen_guard.new_parent(), coarsen_guard.old_children());
-    for (auto c : coarsen_guard.old_children()) { neighbors.pop(c); }
-    neighbors.push(coarsen_guard.new_parent());
+    for (auto c : coarsen_guard.old_children()) { cached_neighbors.pop(c); }
+    cached_neighbors.push(coarsen_guard.new_parent());
     /// \note siblings of node `child` are removed on coarsen guard destruction
   }
 };

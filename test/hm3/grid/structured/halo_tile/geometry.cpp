@@ -11,19 +11,19 @@ int main() {
 
   using p_t = geometry::point<nd>;
 
-  auto tile_center          = p_t::constant(0.);
+  auto tile_centroid        = p_t::constant(0.);
   auto tile_internal_length = 1.0;
   auto tile_internal_bbox
-   = geometry::square<nd>{tile_center, tile_internal_length};
+   = geometry::square<nd>{tile_centroid, tile_internal_length};
   auto tile_external_length = 3.0;
   auto tile_external_bbox
-   = geometry::square<nd>{tile_center, tile_external_length};
+   = geometry::square<nd>{tile_centroid, tile_external_length};
 
   tile_geometry g(tile_internal_bbox);
   CHECK(g.cell_length() == 0.5);
   CHECK(g.cell_surface_area() == (0.5));
   CHECK(g.cell_volume() == (0.5 * 0.5));
-  CHECK(g.tile_center() == p_t::constant(0.));
+  CHECK(g.tile_centroid() == p_t::constant(0.));
   CHECK(g.tile_external_length() == tile_external_length);
   CHECK(g.tile_internal_length() == tile_internal_length);
   CHECK(g.tile_external_bounding_box() == tile_external_bbox);

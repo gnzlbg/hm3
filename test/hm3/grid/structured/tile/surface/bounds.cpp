@@ -17,11 +17,11 @@ int main() {
     CHECK(b.size_per_dir() == size_pd);
     CHECK(b.size() == size_);
     CHECK(b.size_per_cell() == size_pc);
-    static_assert(b.sides_per_dir() == sides_pd, "");
-    static_assert(b.size_per_side() == size_ps, "");
-    static_assert(b.size_per_dir() == size_pd, "");
-    static_assert(b.size() == size_, "");
-    static_assert(b.size_per_cell() == size_pc, "");
+    STATIC_CHECK(b.sides_per_dir() == sides_pd);
+    STATIC_CHECK(b.size_per_side() == size_ps);
+    STATIC_CHECK(b.size_per_dir() == size_pd);
+    STATIC_CHECK(b.size() == size_);
+    STATIC_CHECK(b.size_per_cell() == size_pc);
   }
 
   {
@@ -37,11 +37,11 @@ int main() {
     CHECK(b.size_per_dir() == size_pd);
     CHECK(b.size() == size_);
     CHECK(b.size_per_cell() == size_pc);
-    static_assert(b.sides_per_dir() == sides_pd, "");
-    static_assert(b.size_per_side() == size_ps, "");
-    static_assert(b.size_per_dir() == size_pd, "");
-    static_assert(b.size() == size_, "");
-    static_assert(b.size_per_cell() == size_pc, "");
+    STATIC_CHECK(b.sides_per_dir() == sides_pd);
+    STATIC_CHECK(b.size_per_side() == size_ps);
+    STATIC_CHECK(b.size_per_dir() == size_pd);
+    STATIC_CHECK(b.size() == size_);
+    STATIC_CHECK(b.size_per_cell() == size_pc);
   }
 
   {
@@ -57,11 +57,11 @@ int main() {
     CHECK(b.size_per_dir() == size_pd);
     CHECK(b.size() == size_);
     CHECK(b.size_per_cell() == size_pc);
-    static_assert(b.sides_per_dir() == sides_pd, "");
-    static_assert(b.size_per_side() == size_ps, "");
-    static_assert(b.size_per_dir() == size_pd, "");
-    static_assert(b.size() == size_, "");
-    static_assert(b.size_per_cell() == size_pc, "");
+    STATIC_CHECK(b.sides_per_dir() == sides_pd);
+    STATIC_CHECK(b.size_per_side() == size_ps);
+    STATIC_CHECK(b.size_per_dir() == size_pd);
+    STATIC_CHECK(b.size() == size_);
+    STATIC_CHECK(b.size_per_cell() == size_pc);
   }
 
   {
@@ -75,10 +75,10 @@ int main() {
     CHECK(b.size_per_side() == size_ps);
     CHECK(b.size_per_dir() == size_pd);
     CHECK(b.size() == size_);
-    static_assert(b.sides_per_dir() == sides_pd, "");
-    static_assert(b.size_per_side() == size_ps, "");
-    static_assert(b.size_per_dir() == size_pd, "");
-    static_assert(b.size() == size_, "");
+    STATIC_CHECK(b.sides_per_dir() == sides_pd);
+    STATIC_CHECK(b.size_per_side() == size_ps);
+    STATIC_CHECK(b.size_per_dir() == size_pd);
+    STATIC_CHECK(b.size() == size_);
   }
 
   {
@@ -92,10 +92,10 @@ int main() {
     CHECK(b.size_per_side() == size_ps);
     CHECK(b.size_per_dir() == size_pd);
     CHECK(b.size() == size_);
-    static_assert(b.sides_per_dir() == sides_pd, "");
-    static_assert(b.size_per_side() == size_ps, "");
-    static_assert(b.size_per_dir() == size_pd, "");
-    static_assert(b.size() == size_, "");
+    STATIC_CHECK(b.sides_per_dir() == sides_pd);
+    STATIC_CHECK(b.size_per_side() == size_ps);
+    STATIC_CHECK(b.size_per_dir() == size_pd);
+    STATIC_CHECK(b.size() == size_);
   }
 
   {
@@ -109,10 +109,10 @@ int main() {
     CHECK(b.size_per_side() == size_ps);
     CHECK(b.size_per_dir() == size_pd);
     CHECK(b.size() == size_);
-    static_assert(b.sides_per_dir() == sides_pd, "");
-    static_assert(b.size_per_side() == size_ps, "");
-    static_assert(b.size_per_dir() == size_pd, "");
-    static_assert(b.size() == size_, "");
+    STATIC_CHECK(b.sides_per_dir() == sides_pd);
+    STATIC_CHECK(b.size_per_side() == size_ps);
+    STATIC_CHECK(b.size_per_dir() == size_pd);
+    STATIC_CHECK(b.size() == size_);
   }
 
   return test::result();

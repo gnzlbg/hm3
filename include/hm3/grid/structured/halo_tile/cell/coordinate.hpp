@@ -36,7 +36,10 @@ struct coordinate
   constexpr coordinate& operator=(coordinate&&) = default;
 
   constexpr coordinate(tile_ic x) : tile_ic(std::move(x)) {}
-  explicit operator tile_ic() { return static_cast<tile_ic>(*this); }
+
+  // constexpr operator tile_ic() const noexcept {
+  //   return tile_ic(static_cast<tile_ic const&>(*this));
+  // }
 
   /// Is the coordinate an internal cell.
   constexpr bool is_internal() const noexcept {

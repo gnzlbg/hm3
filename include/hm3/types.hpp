@@ -34,10 +34,13 @@ using suint_t = uint32_t;
 #pragma error "No choice of primitive integer types was specified"
 #endif
 
+using f32_t = float;
+using f64_t = double;
+
 #if defined(HM3_USE_DOUBLE_PRECISION)
-using num_t = double;
+using num_t = f64_t;
 #elif defined(HM3_USE_SINGLE_PRECISION)
-using num_t = float;
+using num_t = f32_t;
 #else
 #pragma error "No choice of floating point precision was specified"
 #endif

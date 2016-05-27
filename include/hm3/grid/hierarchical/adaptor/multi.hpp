@@ -198,19 +198,6 @@ struct multi : TreeGrid {
                                 });
   }
 
-  /// All neighbors across \p manifold of node \p n in grid \p g
-  template <typename Manifold>
-  inline auto neighbors(tree_node_idx n, grid_idx g, Manifold manifold) const
-   noexcept {
-    assert_grid_in_bounds(g, HM3_AT_);
-    assert_node_in_use(n, HM3_AT_);
-    return tree::node_neighbors(manifold, *this, tree::node_location(*this, n),
-                                [&, g](tree_node_idx i) {
-                                  HM3_ASSERT(i, "");
-                                  return in_grid(i, g);
-                                });
-  }
-
   ///@}  // Node-to-Grid-Node map
 };
 

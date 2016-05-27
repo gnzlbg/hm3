@@ -3,6 +3,7 @@
 ///
 /// Bit manipulation utilities
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
@@ -245,11 +246,11 @@ namespace morton {
 /// \name 1D
 ///@{
 template <typename UInt, CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{})>
-constexpr UInt encode(std::array<UInt, 1> xs) noexcept {
+constexpr UInt encode(array<UInt, 1> xs) noexcept {
   return xs[0];
 }
 template <typename UInt, CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{})>
-constexpr std::array<UInt, 1> decode(UInt code, std::array<UInt, 1>) noexcept {
+constexpr array<UInt, 1> decode(UInt code, array<UInt, 1>) noexcept {
   return {{code}};
 }
 
@@ -258,12 +259,12 @@ constexpr std::array<UInt, 1> decode(UInt code, std::array<UInt, 1>) noexcept {
 /// \name 2D
 ///@{
 template <typename UInt, CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{})>
-UInt encode(std::array<UInt, 2> xs) noexcept {
+UInt encode(array<UInt, 2> xs) noexcept {
   return deposit_bits(xs[1], static_cast<UInt>(0xAAAAAAAAAAAAAAAA))
          | deposit_bits(xs[0], static_cast<UInt>(0x5555555555555555));
 }
 template <typename UInt, CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{})>
-std::array<UInt, 2> decode(UInt code, std::array<UInt, 2>) noexcept {
+array<UInt, 2> decode(UInt code, array<UInt, 2>) noexcept {
   return {{extract_bits(code, static_cast<UInt>(0x555555555555555)),
            extract_bits(code, static_cast<UInt>(0xAAAAAAAAAAAAAAAA))}};
 }
@@ -272,13 +273,13 @@ std::array<UInt, 2> decode(UInt code, std::array<UInt, 2>) noexcept {
 /// \name 3D
 ///@{
 template <typename UInt, CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{})>
-UInt encode(std::array<UInt, 3> xs) noexcept {
+UInt encode(array<UInt, 3> xs) noexcept {
   return deposit_bits(xs[2], static_cast<UInt>(0x4924924924924924))
          | deposit_bits(xs[1], static_cast<UInt>(0x2492492492492492))
          | deposit_bits(xs[0], static_cast<UInt>(0x9249249249249249));
 }
 template <typename UInt, CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{})>
-std::array<UInt, 3> decode(UInt code, std::array<UInt, 3>) noexcept {
+array<UInt, 3> decode(UInt code, array<UInt, 3>) noexcept {
   return {{extract_bits(code, static_cast<UInt>(0x9249249249249249)),
            extract_bits(code, static_cast<UInt>(0x2492492492492492)),
            extract_bits(code, static_cast<UInt>(0x4924924924924924))}};

@@ -23,11 +23,11 @@ int main() {
     n(1) = 1. / l;
     CHECK(normal(l0) == n);
 
-    std::array<num_t, 2> vs{{0., 1.}};
+    hm3::array<num_t, 2> vs{{0., 1.}};
     CHECK(interpolate(l / 2., l0, vs) == 0.5);
     CHECK(distance_to_value(.5, l0, vs) == l / 2.);
     CHECK(point_with_value(.5, l0, vs) == p_c);
-    std::array<num_t, 2> vs2{{-1., 1.}};
+    hm3::array<num_t, 2> vs2{{-1., 1.}};
     CHECK(interpolate(l / 2., l0, vs2) == 0.0);
     CHECK(distance_to_value(0., l0, vs2) == l / 2.);
     CHECK(point_with_value(0., l0, vs2) == p_c);

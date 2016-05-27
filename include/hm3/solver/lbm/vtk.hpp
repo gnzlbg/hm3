@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -147,3 +148,4 @@ void ls_serialize(State const& state, Solid const& solid, Ls const& ls,
 }  // namespace solver
 }  // namespace hm3
 #endif  // HM3_ENABLE_VTK
+#endif

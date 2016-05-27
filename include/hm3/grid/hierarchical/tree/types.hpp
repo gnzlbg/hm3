@@ -3,6 +3,7 @@
 ///
 /// Tree types
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/math.hpp>
@@ -56,7 +57,9 @@ template <dim_t Nd> struct tree;
 using cpidx_t = suint_t;
 
 /// Relative child-position coordinate (weakly-typed)
-using rcpidx_t = sint_t;
+///
+/// TODO: before sint_t (should match coidx_t?);
+using rcpidx_t = std::make_signed_t<nidx_t>;
 
 /// Child positions
 template <dim_t Nd>
@@ -78,7 +81,7 @@ using coidx_t = std::make_signed_t<nidx_t>;  // signed version of node index
 /// Coordinate offset
 ///
 /// Coordinate type must be signed and can be arbitrarily long
-template <dim_t Nd> using offset_t = std::array<coidx_t, Nd>;
+template <dim_t Nd> using offset_t = array<coidx_t, Nd>;
 
 }  // namespace tree
 }  // namespace hm3

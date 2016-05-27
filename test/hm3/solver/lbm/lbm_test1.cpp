@@ -70,7 +70,7 @@ struct data_structure {
     const int y_s = ly - (ly + 1 - (y_i + 1)) % ly - 1;
     const int x_w = lx - (lx + 1 - (x_i + 1)) % lx - 1;
 
-    const std::array<idx_t, 9> nghbrs
+    const hm3::array<idx_t, 9> nghbrs
      = {{c, cell_at(x_e, y_i), cell_at(x_i, y_n), cell_at(x_w, y_i),
          cell_at(x_i, y_s), cell_at(x_e, y_n), cell_at(x_w, y_n),
          cell_at(x_w, y_s), cell_at(x_e, y_s)}};

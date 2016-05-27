@@ -2,12 +2,12 @@
 /// \file
 ///
 /// Rectangle/square corners
-#include <array>
 #include <hm3/geometry/dimension/dimension.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/rectangle/concept.hpp>
 #include <hm3/geometry/rectangle/square.hpp>
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/config/fatal_error.hpp>
 
 namespace hm3 {
@@ -70,7 +70,7 @@ constexpr auto corner_positions(Shape const&) noexcept {
 /// Corners
 template <typename Shape, CONCEPT_REQUIRES_(Rectangle<Shape>{})>
 constexpr auto corners(Shape const& s) noexcept {
-  std::array<point<dimension(Shape())>, Shape::no_corners()> corners;
+  array<point<dimension(Shape())>, Shape::no_corners()> corners;
   auto ls                 = lengths(s);
   const auto half_lengths = 0.5 * ls();
   const auto x_c          = centroid(s);
@@ -84,7 +84,7 @@ constexpr auto corners(Shape const& s) noexcept {
 
 template <dim_t Nd>  // optimization for squares
 constexpr auto corners(square<Nd> const& s) noexcept {
-  std::array<point<Nd>, square<Nd>::no_corners()> corners;
+  array<point<Nd>, square<Nd>::no_corners()> corners;
   const auto l           = length(s);
   const auto half_length = 0.5 * l;
   const auto x_c         = centroid(s);

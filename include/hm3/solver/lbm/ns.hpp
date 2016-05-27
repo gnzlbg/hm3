@@ -1,7 +1,7 @@
 #pragma once
 /// \file
-#include <array>
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {
@@ -14,8 +14,8 @@ struct physics : Lattice {
   using typename Lattice::indices;
   using l = Lattice;
 
-  using vel_t  = std::array<num_t, l::dimension()>;
-  using dist_t = std::array<num_t, l::size()>;
+  using vel_t  = array<num_t, l::dimension()>;
+  using dist_t = array<num_t, l::size()>;
 
   struct variables {
     num_t rho;

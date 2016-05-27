@@ -5,10 +5,10 @@
 ///
 /// Slower and requires 4x more memory than the interleaved location
 /// implementation. It might be possible to make this faster by using BMI2.
-#include <array>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/bit.hpp>
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/math.hpp>
@@ -46,7 +46,7 @@ struct deinterleaved : geometry::dimensional<Nd> {
   using opt_self = compact_optional<self>;
 
   using morton_idx_t = MortonIdxT;
-  using morton_x_t   = std::array<morton_idx_t, Nd>;
+  using morton_x_t   = array<morton_idx_t, Nd>;
 
   /// Required to model the CompactOptional concept
   using value_type     = self;
@@ -222,7 +222,7 @@ struct deinterleaved : geometry::dimensional<Nd> {
   /// Constructs a location from deinterleaved Morton coordinates \p x_ up to
   /// a level \p l.
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>
-  deinterleaved(std::array<U, Nd> x, level_idx l = max_level()) : level_(l) {
+  deinterleaved(array<U, Nd> x, level_idx l = max_level()) : level_(l) {
     HM3_ASSERT(l <= max_level(), "");
 
     for (auto&& d : dimensions()) {

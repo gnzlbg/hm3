@@ -22,11 +22,17 @@ template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 struct indices : bounds<Nd, Nic, Nhl>,
                  tile::cell::indices<Nd, bounds<Nd, Nic, Nhl>::length()> {
   static_assert(Nhl > 0, "zero halo layers not supported");
-  using bounds            = bounds<Nd, Nic, Nhl>;
+
+  using bounds = bounds<Nd, Nic, Nhl>;
+
+ private:  // members from tile, used to call tile methods
   using tile_cell_indices = tile::cell::indices<Nd, bounds::length()>;
-  using index             = typename tile_cell_indices::index;
-  using coordinate        = coordinate<Nd, Nic, Nhl>;
   using tile_coordinate   = typename tile_cell_indices::coordinate;
+
+ public:
+  using index      = typename tile_cell_indices::index;
+  using coordinate = coordinate<Nd, Nic, Nhl>;
+
   /// Sizes
   ///@{
 
@@ -125,6 +131,17 @@ struct indices : bounds<Nd, Nic, Nhl>,
            | view::transform([](auto&& i) {
                return coordinate(std::forward<decltype(i)>(i));
              });
+  }
+
+  static constexpr bool is_internal(coordinate i) noexcept {
+    return i.is_internal();
+  }
+
+  static constexpr coordinate closest_internal_cell(coordinate x,
+                                                    tidx_t max_cell_distance
+                                                    = length()) noexcept {
+    return closest_cell(x, [](coordinate y) { return is_internal(y); },
+                        max_cell_distance);
   }
 };
 

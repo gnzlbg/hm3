@@ -4,15 +4,16 @@
 /// Runge Kutta SSP (Strong Stability Preserving) time integration
 ///
 /// It requires an extra copy of the variables per cell.
-#include <array>
+#include <hm3/solver/fv/time_integration/initialization.hpp>
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {
 namespace solver {
 namespace fv {
 
-template <uint_t NoStages>  //
+template <suint_t NoStages>  //
 struct runge_kutta {
   /// \name Block state
   ///@{
@@ -38,7 +39,7 @@ struct runge_kutta {
 
   /// \name Time integration state
   ///@{
-  using coefficients_t = std::array<num_t, NoStages>;
+  using coefficients_t = array<num_t, NoStages>;
   coefficients_t coefficients;
   uint_t stage = 0;
   ///@}  // Time integration state
@@ -90,8 +91,8 @@ struct runge_kutta {
 
 struct runge_kutta_5_t : runge_kutta<5> {
   constexpr runge_kutta_5_t()
-   : runge_kutta<5>(
-      std::array<num_t, 5>{{1. / 4., 1. / 6., 3. / 8., 1. / 2., 1.}}) {}
+   : runge_kutta<5>(array<num_t, 5>{{1. / 4., 1. / 6., 3. / 8., 1. / 2., 1.}}) {
+  }
 };
 
 namespace {

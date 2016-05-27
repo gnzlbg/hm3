@@ -3,6 +3,7 @@
 ///
 /// Solver types
 #include <hm3/grid/hierarchical/types.hpp>
+#include <hm3/grid/structured/tile/index_type.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -15,20 +16,26 @@ using hierarchical::operator""_g;
 
 using tree::level_idx;
 
+using tidx_t = grid::structured::tile::tidx_t;
+
+using cidx_t = idx_t;
+
 /// Index of a cell
 using cell_idx
- = compact_optional<empty_scalar_value<idx_t,
-                                       std::numeric_limits<idx_t>::max()>,
+ = compact_optional<empty_scalar_value<cidx_t,
+                                       std::numeric_limits<cidx_t>::max()>,
                     struct cell_idx_tag>;
 
 constexpr cell_idx operator"" _c(unsigned long long int i) {
   return cell_idx{static_cast<idx_t>(i)};
 }
 
+using vidx_t = suint_t;
+
 /// Index of a variable
 using var_idx
- = compact_optional<empty_scalar_value<sidx_t,
-                                       std::numeric_limits<sidx_t>::max()>,
+ = compact_optional<empty_scalar_value<vidx_t,
+                                       std::numeric_limits<vidx_t>::max()>,
                     struct var_idx_tag>;
 
 constexpr var_idx operator"" _v(unsigned long long int i) {

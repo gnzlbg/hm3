@@ -311,7 +311,7 @@ int main() {
     static_assert(sizeof(stack_vec) == 1, "");
 
     constexpr auto a = stack_vec{};
-    static_assert(a.size() == std::size_t{0}, "");
+    STATIC_CHECK(a.size() == std::size_t{0});
   }
 
   return test::result();

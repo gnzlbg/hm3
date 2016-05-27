@@ -135,6 +135,11 @@ inline int result() { return detail::failures() ? EXIT_FAILURE : EXIT_SUCCESS; }
   (void)(hm3::test::detail::loc{__FILE__, __LINE__, #__VA_ARGS__} \
           ->*__VA_ARGS__) /**/
 
+#define STATIC_CHECK(...)                                         \
+  (void)(hm3::test::detail::loc{__FILE__, __LINE__, #__VA_ARGS__} \
+          ->*__VA_ARGS__);                                        \
+  static_assert(__VA_ARGS__, "") /**/
+
 #define THROWS(expr, ExceptionType)                                        \
   do {                                                                     \
     bool exception_thrown_ = false;                                        \

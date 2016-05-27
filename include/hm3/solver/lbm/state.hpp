@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -50,3 +51,4 @@ struct state : hierarchical_block_structured_grid<block_t_<Physics>> {
 }  // namespace lbm
 }  // namespace solver
 }  // namespace hm3
+#endif

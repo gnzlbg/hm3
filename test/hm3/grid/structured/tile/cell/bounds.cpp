@@ -9,8 +9,8 @@ int main() {
     constexpr auto b = bounds_t{};
     CHECK(b.length() == 1_u);
     CHECK(b.size() == 1_u);
-    static_assert(b.length() == 1_u, "");
-    static_assert(b.size() == 1_u, "");
+    STATIC_CHECK(b.length() == 1_u);
+    STATIC_CHECK(b.size() == 1_u);
   }
 
   {
@@ -18,8 +18,8 @@ int main() {
     constexpr auto b = bounds_t{};
     CHECK(b.length() == 10_u);
     CHECK(b.size() == 10_u);
-    static_assert(b.length() == 10_u, "");
-    static_assert(b.size() == 10_u, "");
+    STATIC_CHECK(b.length() == 10_u);
+    STATIC_CHECK(b.size() == 10_u);
   }
 
   {
@@ -27,8 +27,8 @@ int main() {
     constexpr auto b = bounds_t{};
     CHECK(b.length() == 1_u);
     CHECK(b.size() == 1_u);
-    static_assert(b.length() == 1_u, "");
-    static_assert(b.size() == 1_u, "");
+    STATIC_CHECK(b.length() == 1_u);
+    STATIC_CHECK(b.size() == 1_u);
   }
 
   {
@@ -36,8 +36,8 @@ int main() {
     constexpr auto b = bounds_t{};
     CHECK(b.length() == 10_u);
     CHECK(b.size() == 100_u);
-    static_assert(b.length() == 10_u, "");
-    static_assert(b.size() == 100_u, "");
+    STATIC_CHECK(b.length() == 10_u);
+    STATIC_CHECK(b.size() == 100_u);
   }
 
   {
@@ -45,8 +45,8 @@ int main() {
     constexpr auto b = bounds_t{};
     CHECK(b.length() == 1_u);
     CHECK(b.size() == 1_u);
-    static_assert(b.length() == 1_u, "");
-    static_assert(b.size() == 1_u, "");
+    STATIC_CHECK(b.length() == 1_u);
+    STATIC_CHECK(b.size() == 1_u);
   }
 
   {
@@ -54,8 +54,8 @@ int main() {
     constexpr auto b = bounds_t{};
     CHECK(b.length() == 10_u);
     CHECK(b.size() == 1000_u);
-    static_assert(b.length() == 10_u, "");
-    static_assert(b.size() == 1000_u, "");
+    STATIC_CHECK(b.length() == 10_u);
+    STATIC_CHECK(b.size() == 1000_u);
   }
 
   return test::result();

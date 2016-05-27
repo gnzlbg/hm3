@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Shift node location by offset algorithm
-#include <array>
 #include <hm3/geometry/point.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/math.hpp>
 
 namespace hm3 {
@@ -20,7 +20,7 @@ struct shift_location_fn {
   /// an assertion triggers in location's constructor)
   template <typename Loc, dim_t Nd = Loc::dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
-  auto operator()(Loc loc, std::array<num_t, Nd> offset,
+  auto operator()(Loc loc, array<num_t, Nd> offset,
                   lidx_t level = Loc::max_level()) const noexcept -> Loc {
     const num_t scale = math::ipow(lidx_t{2}, loc.level);
     RANGES_FOR (auto&& d, dimensions(Nd)) { offset[d] += loc[d] / scale; }

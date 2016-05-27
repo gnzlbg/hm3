@@ -5,11 +5,11 @@
 ///
 /// TODO: move some of this to e.g. grid/relations since these are also used by
 /// structured grids
-#include <array>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/config/fatal_error.hpp>
@@ -64,48 +64,45 @@ template <dim_t Nd, dim_t M> struct neighbor_children_sharing_face_ {
 ///  |         | child 1 |          | child 0  |         |
 ///
 template <> struct neighbor_children_sharing_face_<1, 0> {
-  static constexpr std::array<std::array<child_pos<1>, 1>, 2> stencil{
-   {{{1}}, {{0}}}};
+  static constexpr array<array<child_pos<1>, 1>, 2> stencil{{{{1}}, {{0}}}};
 };
 
 template <> struct neighbor_children_sharing_face_<2, 1> {
-  static constexpr std::array<std::array<child_pos<2>, 2>, 4> stencil{
+  static constexpr array<array<child_pos<2>, 2>, 4> stencil{
    {{{1, 3}}, {{0, 2}}, {{2, 3}}, {{0, 1}}}};
 };
 
 template <> struct neighbor_children_sharing_face_<2, 0> {
-  static constexpr std::array<std::array<child_pos<2>, 1>, 4> stencil{
+  static constexpr array<array<child_pos<2>, 1>, 4> stencil{
    {{{3}}, {{2}}, {{1}}, {{0}}}};
 };
 
 template <> struct neighbor_children_sharing_face_<3, 2> {
-  static constexpr std::array<std::array<child_pos<3>, 4>, 6> stencil{
-   {{{1, 3, 5, 7}},
-    {{0, 2, 4, 6}},
-    {{2, 3, 6, 7}},
-    {{0, 1, 4, 5}},
-    {{4, 5, 6, 7}},
-    {{0, 1, 2, 3}}}};
+  static constexpr array<array<child_pos<3>, 4>, 6> stencil{{{{1, 3, 5, 7}},
+                                                             {{0, 2, 4, 6}},
+                                                             {{2, 3, 6, 7}},
+                                                             {{0, 1, 4, 5}},
+                                                             {{4, 5, 6, 7}},
+                                                             {{0, 1, 2, 3}}}};
 };
 
 template <> struct neighbor_children_sharing_face_<3, 1> {
-  static constexpr std::array<std::array<child_pos<3>, 2>, 12> stencil{
-   {{{3, 7}},
-    {{2, 6}},
-    {{1, 5}},
-    {{0, 4}},
-    {{5, 7}},
-    {{4, 6}},
-    {{6, 7}},
-    {{4, 5}},
-    {{1, 3}},
-    {{0, 2}},
-    {{2, 3}},
-    {{0, 1}}}};
+  static constexpr array<array<child_pos<3>, 2>, 12> stencil{{{{3, 7}},
+                                                              {{2, 6}},
+                                                              {{1, 5}},
+                                                              {{0, 4}},
+                                                              {{5, 7}},
+                                                              {{4, 6}},
+                                                              {{6, 7}},
+                                                              {{4, 5}},
+                                                              {{1, 3}},
+                                                              {{0, 2}},
+                                                              {{2, 3}},
+                                                              {{0, 1}}}};
 };
 
 template <> struct neighbor_children_sharing_face_<3, 0> {
-  static constexpr std::array<std::array<child_pos<3>, 1>, 8> stencil{
+  static constexpr array<array<child_pos<3>, 1>, 8> stencil{
    {{{7}}, {{6}}, {{5}}, {{4}}, {{3}}, {{2}}, {{1}}, {{0}}}};
 };
 
@@ -166,28 +163,28 @@ template <dim_t Nd, dim_t M> struct neighbor_lookup_table_ {
 
 /// 1D: across faces
 template <> struct neighbor_lookup_table_<1, 0> {
-  static constexpr std::array<neighbor_offset<1>, 2> stencil{{
+  static constexpr array<neighbor_offset<1>, 2> stencil{{
    {{-1}}, {{1}}  //
   }};
 };
 
 /// 2D: across faces
 template <> struct neighbor_lookup_table_<2, 1> {
-  static constexpr std::array<neighbor_offset<2>, 4> stencil{{
+  static constexpr array<neighbor_offset<2>, 4> stencil{{
    {{-1, 0}}, {{1, 0}}, {{0, -1}}, {{0, 1}}  //
   }};
 };
 
 /// 2D: across edges
 template <> struct neighbor_lookup_table_<2, 0> {
-  static constexpr std::array<neighbor_offset<2>, 4> stencil{{
+  static constexpr array<neighbor_offset<2>, 4> stencil{{
    {{-1, -1}}, {{1, -1}}, {{-1, 1}}, {{1, 1}}  //
   }};
 };
 
 /// 3D: across faces
 template <> struct neighbor_lookup_table_<3, 2> {
-  static constexpr std::array<neighbor_offset<3>, 6> stencil{{
+  static constexpr array<neighbor_offset<3>, 6> stencil{{
    {{-1, 0, 0}},
    {{1, 0, 0}},
    {{0, -1, 0}},
@@ -199,7 +196,7 @@ template <> struct neighbor_lookup_table_<3, 2> {
 
 /// 3D: across edges
 template <> struct neighbor_lookup_table_<3, 1> {
-  static constexpr std::array<neighbor_offset<3>, 12> stencil{{
+  static constexpr array<neighbor_offset<3>, 12> stencil{{
    {{-1, -1, 0}},
    {{1, -1, 0}},
    {{-1, 1, 0}},
@@ -218,7 +215,7 @@ template <> struct neighbor_lookup_table_<3, 1> {
 
 /// 3D: across corners
 template <> struct neighbor_lookup_table_<3, 0> {
-  static constexpr std::array<neighbor_offset<3>, 8> stencil{{
+  static constexpr array<neighbor_offset<3>, 8> stencil{{
    {{-1, -1, -1}},
    {{1, -1, -1}},
    {{-1, 1, -1}},
@@ -389,7 +386,7 @@ constexpr auto opposite(NeighborIdx p) -> NeighborIdx {
       return (!f) * (*p + 1) + f * tmp;
     }
     case 2: {
-      const constexpr std::array<npidx_t, 12> stencil{
+      const constexpr array<npidx_t, 12> stencil{
        {3, 2, 1, 0, 9, 8, 11, 10, 5, 4, 7, 6}};
       return stencil[*p];
     }

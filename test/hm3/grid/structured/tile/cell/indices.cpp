@@ -46,8 +46,8 @@ void tile_cell_indices_tests() {
     using tile_t = grid::structured::tile::cell::indices<1, 1>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
-    static_assert(t.size() == 1, "");
-    static_assert(t.length() == 1, "");
+    STATIC_CHECK(t.size() == 1);
+    STATIC_CHECK(t.length() == 1);
 
     suint_t c      = 0;
     auto check_all = [&](auto i) {
@@ -115,8 +115,8 @@ void tile_cell_indices_tests() {
     using tile_t = grid::structured::tile::cell::indices<2, 4>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
-    static_assert(t.size() == 16, "");
-    static_assert(t.length() == 4, "");
+    STATIC_CHECK(t.size() == 16);
+    STATIC_CHECK(t.length() == 4);
 
     suint_t c   = 0;
     suint_t x_i = 0;
@@ -218,8 +218,8 @@ void tile_cell_indices_tests() {
     using tile_t = grid::structured::tile::cell::indices<3, 5>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
-    static_assert(t.size() == 125, "");
-    static_assert(t.length() == 5, "");
+    STATIC_CHECK(t.size() == 125);
+    STATIC_CHECK(t.length() == 5);
 
     suint_t c      = 0;
     suint_t x_i    = 0;

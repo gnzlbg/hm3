@@ -5,9 +5,11 @@
 ///
 /// TODO: move some of these to grid relations since they are also needed by
 /// structured grids
-#include <array>
 #include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/square.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/config/fatal_error.hpp>
@@ -30,7 +32,7 @@ namespace tree {
 /// Formula: \f$ 2^{nd} \f$
 ///
 static constexpr cpidx_t no_children(dim_t nd) noexcept {
-  return math::ipow(cpidx_t{2}, cpidx_t{nd});
+  return math::ipow(cpidx_t{2}, cpidx_t(nd));
 }
 
 /// Number of siblings of a node
@@ -53,7 +55,7 @@ static constexpr cpidx_t no_siblings(dim_t nd) noexcept {
 /// Formula: \f$ 2 ^ {m} \f$ for \f$ m >= m \f$ otherwise 0.
 ///
 static constexpr npidx_t no_nodes_sharing_face(dim_t nd, dim_t m) noexcept {
-  return (nd >= m) ? math::ipow(npidx_t{2}, npidx_t{m}) : npidx_t{0};
+  return (nd >= m) ? math::ipow(npidx_t{2}, npidx_t(m)) : npidx_t{0};
 }
 
 /// Number of nodes sharing a single face at a given level
@@ -83,7 +85,7 @@ static constexpr nidx_t no_nodes_sharing_face_at_level(
 ///
 static constexpr npidx_t no_faces(dim_t nd, dim_t m) noexcept {
   return m <= nd
-          ? math::ipow(npidx_t{2}, npidx_t{nd - m})
+          ? math::ipow(npidx_t{2}, npidx_t(nd - m))
              * math::binomial_coefficient(nd, m)
           : npidx_t{0};
 }
@@ -98,7 +100,7 @@ static constexpr npidx_t no_faces(dim_t nd, dim_t m) noexcept {
 /// \note The result can be very big => nidx_t type.
 ///
 static constexpr nidx_t no_nodes_at_uniform_level(dim_t nd, level_idx level) {
-  return math::ipow(math::ipow(nidx_t{2}, nidx_t{nd}),
+  return math::ipow(math::ipow(nidx_t{2}, nidx_t(nd)),
                     static_cast<nidx_t>(*level));
 }
 
@@ -126,25 +128,25 @@ static constexpr num_t node_length_at_level(level_idx l) {
 }
 
 template <dim_t Nd> struct relative_child_positions_ {
-  static constexpr std::array<std::array<rcpidx_t, 0>, 0> stencil{{}};
+  static constexpr array<array<rcpidx_t, 0>, 0> stencil{{}};
 };
 
 template <> struct relative_child_positions_<1> {
-  static constexpr std::array<std::array<rcpidx_t, 1>, 2> stencil{{
+  static constexpr array<array<rcpidx_t, 1>, 2> stencil{{
    {{-1}}, {{1}}
    //
   }};
 };
 
 template <> struct relative_child_positions_<2> {
-  static constexpr std::array<std::array<rcpidx_t, 2>, 4> stencil{{
+  static constexpr array<array<rcpidx_t, 2>, 4> stencil{{
    {{-1, -1}}, {{1, -1}}, {{-1, 1}}, {{1, 1}}
    //
   }};
 };
 
 template <> struct relative_child_positions_<3> {
-  static constexpr std::array<std::array<rcpidx_t, 3>, 8> stencil{{
+  static constexpr array<array<rcpidx_t, 3>, 8> stencil{{
    {{-1, -1, -1}},
    {{1, -1, -1}},
    {{-1, 1, -1}},
@@ -193,17 +195,38 @@ static constexpr auto relative_child_position_stencil
 ///
 ///
 template <dim_t Nd>
-static constexpr auto relative_child_position(const child_pos<Nd> p)
+constexpr auto relative_child_position(const child_pos<Nd> p)
  -> const offset_t<Nd> {
 #ifdef HM3_USE_CHILDREN_LOOKUP_TABLE
   return relative_child_position_stencil<Nd>[*p];
 #else
   offset_t<Nd> r;
-  for (auto&& d : dimensions(Nd)) {
+  for (dim_t d = 0; d < Nd; ++d) {
     r[d] = (*p / math::ipow(coidx_t{2}, coidx_t{d})) % 2 ? 1 : -1;
   }
   return r;
 #endif
+}
+
+/// Centroid of child at position \p child_position for a parent with centroid
+/// \p parent_centroid and length \p parent_length
+template <dim_t Nd>
+constexpr auto child_centroid(const child_pos<Nd> child_position,
+                              geometry::point<Nd> parent_centroid,
+                              num_t parent_length) -> geometry::point<Nd> {
+  const auto rcp = relative_child_position<Nd>(child_position);
+  const num_t l4 = parent_length / 4.;
+  for (dim_t d = 0; d < Nd; ++d) { parent_centroid(d) += l4 * rcp[d]; }
+  return parent_centroid;
+}
+
+template <dim_t Nd>
+constexpr auto child_geometry(const child_pos<Nd> child_position,
+                              geometry::square<Nd> parent)
+ -> geometry::square<Nd> {
+  return {child_centroid(child_position, geometry::centroid(parent),
+                         geometry::length(parent)),
+          geometry::length(parent) / 2.};
 }
 
 ///@} // Tree relations

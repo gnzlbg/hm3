@@ -28,7 +28,7 @@ template <dim_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
 
   using vtk_cell_idx = node_idx;
 
-  serializable_tree(tree<Nd> const& s, int_t level = -1) noexcept
+  serializable_tree(tree<Nd> const& s, sint_t level = -1) noexcept
    : t_{s}, level_{level} {}
 
   auto geometry(node_idx n) const noexcept {

@@ -19,7 +19,7 @@ if(EXISTS "${range-v3_INCLUDE_DIR}")
 else()
   include(ExternalProject)
   ExternalProject_Add(range-v3
-    GIT_REPOSITORY https://github.com/ericniebler/range-v3.git
+    DOWNLOAD_COMMAND git clone --depth 1 https://github.com/gnzlbg/range-v3.git
     TIMEOUT 5
     CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}"

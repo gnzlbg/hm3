@@ -20,8 +20,8 @@ namespace vtk {
 template <typename State, typename T>
 struct serializable : geometry::dimensional<State::dimension()> {
   State const& s;
-  using block_idx = grid_node_idx;
-  block_idx idx   = block_idx{};
+  using tile_idx = grid_node_idx;
+  tile_idx idx   = tile_idx{};
 
   using vtk_cell_idx = cell_idx;
 
@@ -32,12 +32,12 @@ struct serializable : geometry::dimensional<State::dimension()> {
              if (!idx) {
                return s.is_internal(c);
              } else {
-               return s.is_in_block(c, idx);
+               return s.is_in_tile(c, idx);
              }
            });
   }
 
-  auto bounding_box() const noexcept { return s.grid.tree().bounding_box(); }
+  auto bounding_box() const noexcept { return s.tree().bounding_box(); }
 
   template <typename F> auto for_each_cell(F&& f) const noexcept {
     f(nodes());
@@ -48,12 +48,12 @@ struct serializable : geometry::dimensional<State::dimension()> {
     cell_data.load("cell_idx", [&](cell_idx n, auto&&) {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
-    cell_data.load("block_idx", [&](cell_idx c, auto&&) {
-      auto n = s.block_i(c);
+    cell_data.load("tile_idx", [&](cell_idx c, auto&&) {
+      auto n = s.tile_idx(c);
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
-    cell_data.load("block_cell_idx", [&](cell_idx c, auto&&) {
-      auto n = s.block_cell_idx(c);
+    cell_data.load("tile_local_cell_idx", [&](cell_idx c, auto&&) {
+      auto n = *s.tile_local_cell_idx(c);
       return n;  // ? static_cast<int_t>(*n) : int_t{-1};
     });
     if (idx) {
@@ -64,7 +64,7 @@ struct serializable : geometry::dimensional<State::dimension()> {
     s.physics.load(T{s.physics}, s, cell_data);
   }
 
-  serializable(State const& s_, block_idx b = block_idx{}) : s(s_), idx{b} {}
+  serializable(State const& s_, tile_idx b = tile_idx{}) : s(s_), idx{b} {}
 };
 
 template <typename Ls, typename State, typename T>
@@ -73,7 +73,7 @@ struct ls_serializable : serializable<State, T> {
   using base = serializable<State, T>;
   using base::s;
   using base::idx;
-  using block_idx           = typename base::block_idx;
+  using tile_idx            = typename base::tile_idx;
   static constexpr dim_t Nd = State::dimension();
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
@@ -91,7 +91,7 @@ struct ls_serializable : serializable<State, T> {
                       and (geometry::is_completely_inside(s.geometry(c), ls)
                            or geometry::is_intersected(s.geometry(c), ls));
              } else {
-               return s.is_in_block(c, idx);
+               return s.is_in_tile(c, idx);
              }
            });
   }
@@ -110,7 +110,7 @@ struct ls_serializable : serializable<State, T> {
     s.physics.load(T{s.physics}, s, cell_data);
   }
 
-  ls_serializable(Ls const& l, State const& s_, block_idx b = block_idx{})
+  ls_serializable(Ls const& l, State const& s_, tile_idx b = tile_idx{})
    : serializable<State, T>(s_, b), ls(l) {}
 };
 
@@ -120,7 +120,7 @@ void serialize(State const& state, string file_name, uint_t time_step, T&&,
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
-  if (b) { file_name += "_block_" + to_string(b); }
+  if (b) { file_name += "_tile_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
   serializable<State, T> s(state, b);
@@ -133,7 +133,7 @@ void ls_serialize(State const& state, Ls const& ls, string file_name,
   using std::to_string;
   hm3::log::serial log("fv-serialization-to-vtk");
 
-  if (b) { file_name += "_block_" + to_string(b); }
+  if (b) { file_name += "_tile_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
   ls_serializable<Ls, State, T> s(ls, state, b);

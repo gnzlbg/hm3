@@ -231,4 +231,9 @@ template <typename N, typename Tag> struct hash<hm3::compact_optional<N, Tag>> {
   }
 };
 
+// template <typename T, typename Tag, T Val>
+// struct is_integral<hm3::compact_optional<hm3::empty_scalar_value<T, Val>,
+// Tag>>
+//  : is_integral<T> {};
+
 }  // namespace std

@@ -2,13 +2,13 @@
 /// \file
 ///
 /// Normalized coordinates algorithm
-#include <array>
 #include <hm3/geometry/point.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_location.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/location/default.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/utility/array.hpp>
 
 namespace hm3 {
 namespace tree {

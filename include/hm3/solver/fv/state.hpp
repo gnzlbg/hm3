@@ -2,54 +2,39 @@
 /// \file
 ///
 /// Finite-volume solver state
-#include <hm3/solver/fv/block.hpp>
-#include <hm3/solver/utility/hierarchical_block_structured_grid.hpp>
-// #include <hm3/solver/state/runge_kutta.hpp>
-// #include <hm3/solver/state/boundary_conditions.hpp>
+#include <hm3/solver/fv/tile.hpp>
 
 namespace hm3 {
 namespace solver {
 namespace fv {
 
-template <typename Physics, typename TimeIntegration,
-          typename block_base_t
-          = block_base<Physics::dimension(), Physics::nvars(), 10, 2>>
-using block_t_
- = block<block_base_t,
-         decltype(TimeIntegration::state_t(std::declval<block_base_t>()))>;
-
 /// Finite volume discretization state
-template <typename Physics, typename TimeIntegration>  //
+template <typename TileLayout, typename Physics, typename TimeIntegration,
+          typename Method>  //
 struct state
- : hierarchical_block_structured_grid<block_t_<Physics, TimeIntegration>> {
-  using self = state<Physics, TimeIntegration>;
-  using hbsg
-   = hierarchical_block_structured_grid<block_t_<Physics, TimeIntegration>>;
-  using grid_t = typename hbsg::grid_t;
-  using geometry::dimensional<Physics::dimension()>::dimension;
-  using geometry::dimensional<Physics::dimension()>::dimensions;
+ : grid_client_type<tile_type<TileLayout, Physics, TimeIntegration, Method>> {
+  using self          = state<TileLayout, Physics, TimeIntegration, Method>;
+  using tile_t        = tile_type<TileLayout, Physics, TimeIntegration, Method>;
+  using grid_client_t = grid_client_type<tile_t>;
+  using grid_t        = typename grid_client_t::grid_t;
+  using tile_idx_t    = typename grid_client_t::tile_idx_t;
 
-  static constexpr uint_t nvars() noexcept { return Physics::nvars(); }
+  using physics_t          = Physics;
+  using time_integration_t = TimeIntegration;
+  using method_t           = Method;
+
+  static constexpr uint_t nvars() noexcept { return physics_t::nvars(); }
   static constexpr auto variables() noexcept { return view::iota(0, nvars()); }
 
-  using physics_t = Physics;
-  using block_idx = typename hbsg::block_idx;
+  physics_t physics;
+  time_integration_t time_integration;
+  method_t method;
 
-  Physics physics;
-  TimeIntegration time_integration;
-
-  state(grid_t& g, grid_idx gidx, block_idx block_capacity, Physics p)
-   : hbsg(g, gidx, block_capacity), physics(p) {}
-
-  // void refine(block_idx bidx) {
-  //   hbsg::refine(bidx, project_parent_to_children);
-  // }
-  // void coarsen(block_idx bidx) {
-  //   hbsg::coarsen(bidx, restrict_children_to_parent);
-  // }
+  state(grid_t& g, grid_idx gidx, tile_idx_t tile_capacity, physics_t p)
+   : grid_client_t(g, gidx, tile_capacity), physics(p) {}
 
   decltype(auto) variables(cell_idx c) const noexcept {
-    return (this->block(this->block_i(c))).variables(this->block_cell_idx(c));
+    return this->tile(c).variables(this->tile_local_cell_idx(c));
   }
 
   friend bool operator==(self const&, self const&) noexcept { return false; }

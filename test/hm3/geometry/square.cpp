@@ -48,20 +48,20 @@ static_assert(Rectangle<square<3>>{}, "");
     const auto s1_v     = volume(s1);                                      \
     constexpr auto s2_v = volume(s2);                                      \
                                                                            \
-    static_assert(dimension(s1) == nd, "");                                \
-    static_assert(dimension(s2) == dimension(s1), "");                     \
-    static_assert(dimension(s2) == dimension(s3), "");                     \
+    STATIC_CHECK(dimension(s1) == nd);                                     \
+    STATIC_CHECK(dimension(s2) == dimension(s1));                          \
+    STATIC_CHECK(dimension(s2) == dimension(s3));                          \
                                                                            \
-    static_assert(length(s2) == 1., "");                                   \
+    STATIC_CHECK(length(s2) == 1.);                                        \
     CHECK(math::approx(length(s1), 1.));                                   \
                                                                            \
     CHECK(s2_xc() == xc());                                                \
     CHECK(s1_xc() == xc());                                                \
                                                                            \
     CHECK(math::approx(s1_v, 1.));                                         \
-    static_assert(s2_v == 1., "");                                         \
+    STATIC_CHECK(s2_v == 1.);                                              \
                                                                            \
-    constexpr std::array<point<nd>, math::ipow(2_u, nd)> corners{          \
+    constexpr hm3::array<point<nd>, math::ipow(2_u, nd)> corners{          \
      {UNWRAP corners_}};                                                   \
     CHECK(size(corners) == size(geometry::corners(s1)));                   \
                                                                            \
@@ -79,15 +79,15 @@ int main() {
                     ({0., 0., 0.}, {1., 0., 0.}, {1., 1., 0.}, {0., 1., 0.},
                      {0., 0., 1.}, {1., 0., 1.}, {1., 1., 1.}, {0., 1., 1.}));
 
-#define CHECK_CORNER_POS(p, v0, v1, v2)                                     \
-  static_assert(                                                            \
-   geometry::rectangle_detail::relative_corner_position(p, 0) == (v0), ""); \
-  static_assert(                                                            \
-   geometry::rectangle_detail::relative_corner_position(p, 1) == (v1), ""); \
-  static_assert(                                                            \
-   geometry::rectangle_detail::relative_corner_position(p, 2) == (v2), ""); \
-  CHECK(equal(geometry::rectangle_detail::relative_corner_position<3>(p),   \
-              geometry::point<3>{{(v0), (v1), (v2)}},                       \
+#define CHECK_CORNER_POS(p, v0, v1, v2)                                   \
+  STATIC_CHECK(geometry::rectangle_detail::relative_corner_position(p, 0) \
+               == (v0));                                                  \
+  STATIC_CHECK(geometry::rectangle_detail::relative_corner_position(p, 1) \
+               == (v1));                                                  \
+  STATIC_CHECK(geometry::rectangle_detail::relative_corner_position(p, 2) \
+               == (v2));                                                  \
+  CHECK(equal(geometry::rectangle_detail::relative_corner_position<3>(p), \
+              geometry::point<3>{{(v0), (v1), (v2)}},                     \
               [](auto i, auto j) { return math::approx(i, j); }))
 
   CHECK_CORNER_POS(0, -1, -1, -1);

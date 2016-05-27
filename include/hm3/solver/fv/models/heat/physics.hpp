@@ -11,10 +11,19 @@ namespace fv {
 namespace heat {
 
 template <dim_t Nd> struct physics : geometry::dimensional<Nd>, indices<Nd> {
-  using self = physics<Nd>;
+  struct tile_variables {
+    template <typename Grid, typename Order = dense::col_major_t>
+    using invoke = meta::list<  //
+     //  nothing for now
+     >;
+  };
 
-  template <typename V> static decltype(auto) temperature(V&& v) noexcept {
-    return v(indices<Nd>::temperature());
+  using self = physics<Nd>;
+  using i    = indices<Nd>;
+
+  template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
+  static constexpr decltype(auto) temperature(V&& v) noexcept {
+    return v(i::temperature(), 0);
   }
 
   self cv() const noexcept { return *this; }

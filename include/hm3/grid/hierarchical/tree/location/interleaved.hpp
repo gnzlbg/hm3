@@ -47,7 +47,7 @@ struct interleaved : geometry::dimensional<Nd> {
   /// "l" from the root node encoded in the location has a positive (true) or
   /// negative (false) relative position to its parent along the coordinate "i".
   ///
-  using morton_x_t = std::array<morton_idx_t, Nd>;
+  using morton_x_t = array<morton_idx_t, Nd>;
 
   /// Required to model the CompactOptional concept
   using value_type     = self;
@@ -296,7 +296,7 @@ struct interleaved : geometry::dimensional<Nd> {
   /// stored up to the maximum level that can be stored within the location
   /// code.
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>
-  interleaved(std::array<U, Nd> x_, level_idx l = max_level()) {
+  interleaved(array<U, Nd> x_, level_idx l = max_level()) {
     HM3_ASSERT(l <= max_level(), "level {} out-of-bounds [1, {}]", l,
                max_level());
 
@@ -308,7 +308,7 @@ struct interleaved : geometry::dimensional<Nd> {
     }
 
     num_t scale = math::ipow(lidx_t{2}, *l);
-    std::array<morton_idx_t, Nd> tmp;
+    array<morton_idx_t, Nd> tmp;
     for (auto&& d : dimensions()) { tmp[d] = x_[d] * scale; }
     value = encode(tmp, l);
 

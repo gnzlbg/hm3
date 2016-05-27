@@ -16,20 +16,22 @@ namespace cell {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length
 template <dim_t Nd, tidx_t Nc>
-struct indexed_coordinate : geometry::dimensional<Nd> {
+struct indexed_coordinate : public coordinate<Nd, Nc> {
   using self           = indexed_coordinate;
   using index          = index<Nd, Nc>;
   using coordinate     = coordinate<Nd, Nc>;
   using offset_t       = typename coordinate::offset_t;
   using value_t        = typename coordinate::value_t;
   using signed_value_t = typename coordinate::signed_value_t;
+  //  using idx_           = index;
+  using x_ = coordinate;
   index idx_;
-  coordinate x_;
+  // coordinate x_;
 
-  constexpr indexed_coordinate() : idx_(index::invalid()), x_() {}
+  constexpr indexed_coordinate() : x_(), idx_(index::invalid()) {}
 
   constexpr indexed_coordinate(index idx, coordinate x)
-   : idx_(std::move(idx)), x_(std::move(x)) {
+   : x_(std::move(x)), idx_(std::move(idx)) {
     HM3_ASSERT(coordinate(this->idx()) == this->x(),
                "idx {} produces x {} but x is {}", this->idx(), coordinate(idx),
                this->x());
@@ -37,9 +39,9 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
                "x {} produces idx {} but idx is {}", this->x(), this->x().idx(),
                this->idx());
   }
-  constexpr indexed_coordinate(index idx) : idx_(idx), x_(std::move(idx)) {}
+  constexpr indexed_coordinate(index idx) : x_(idx), idx_(std::move(idx)) {}
   constexpr indexed_coordinate(coordinate x)
-   : idx_(coordinate::idx(x)), x_(std::move(x)) {}
+   : x_(x), idx_(coordinate::idx(x)) {}
 
   constexpr explicit operator bool() const noexcept {
     HM3_ASSERT(static_cast<bool>(idx()) == static_cast<bool>(x()),
@@ -49,10 +51,12 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   }
 
   constexpr index idx() const noexcept { return idx_; }
-  constexpr coordinate x() const noexcept { return x_; }
+  constexpr coordinate x() const noexcept {
+    return static_cast<coordinate const&>(*this);
+  }
 
-  constexpr explicit operator index() const noexcept { return idx(); }
-  constexpr explicit operator coordinate() const noexcept { return x(); }
+  constexpr operator index() const noexcept { return idx(); }
+  constexpr operator coordinate() const noexcept { return x(); }
 
   /// \p d -th coordinate component
   constexpr auto operator[](dim_t d) const noexcept {

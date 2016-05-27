@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Dense matrix storage
-#include <array>
 #include <bitset>
 #include <boost/container/vector.hpp>
 #include <boost/dynamic_bitset.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/matrix/bounds.hpp>
 #include <hm3/utility/matrix/traits.hpp>
@@ -52,7 +52,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using max_bounds::max_no_cols;
   using max_bounds::max_size;
 
-  using data_container  = std::array<T, (max_size() > 0) ? max_size() : 1>;
+  using data_container  = array<T, (max_size() > 0) ? max_size() : 1>;
   using iterator        = typename data_container::iterator;
   using const_iterator  = typename data_container::const_iterator;
   using reference       = typename data_container::reference;

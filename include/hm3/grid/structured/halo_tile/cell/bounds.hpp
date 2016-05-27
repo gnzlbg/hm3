@@ -38,9 +38,7 @@ constexpr tidx_t last_halo_right(tidx_t nic, tidx_t nhl) noexcept {
   return 2 * nhl + nic - 1;
 }
 
-template <dim_t Nd> struct subtile_bounds {
-  std::array<tile::tidx_t, Nd> from, to;
-};
+template <dim_t Nd> struct subtile_bounds { array<tile::tidx_t, Nd> from, to; };
 
 }  // namespace detail
 
@@ -138,14 +136,14 @@ namespace detail {
 
 template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_ {
-  static constexpr std::array<subtile_bounds<0>, 0> indices{};
+  static constexpr array<subtile_bounds<0>, 0> indices{};
 };
 
 // 1D face halo tiles
 template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<1, 1, Nic, Nhl> {
   using b = bounds<1, Nic, Nhl>;
-  static constexpr std::array<subtile_bounds<1>, 2> indices{{
+  static constexpr array<subtile_bounds<1>, 2> indices{{
    //
    {              // 0:
     {{b::fhl}},   // from
@@ -160,7 +158,7 @@ struct halo_tiles_lookup_table_<1, 1, Nic, Nhl> {
 template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<2, 1, Nic, Nhl> {
   using b = bounds<2, Nic, Nhl>;
-  static constexpr std::array<subtile_bounds<2>, 4> indices{{
+  static constexpr array<subtile_bounds<2>, 4> indices{{
    //
    {                     // 0:
     {{b::fhl, b::fi}},   // from
@@ -181,7 +179,7 @@ struct halo_tiles_lookup_table_<2, 1, Nic, Nhl> {
 template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<2, 2, Nic, Nhl> {
   using b = bounds<2, Nic, Nhl>;
-  static constexpr std::array<subtile_bounds<2>, 4> indices{{
+  static constexpr array<subtile_bounds<2>, 4> indices{{
    //
    {                      // 0:
     {{b::fhl, b::fhl}},   // from
@@ -202,7 +200,7 @@ struct halo_tiles_lookup_table_<2, 2, Nic, Nhl> {
 template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<3, 1, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
-  static constexpr std::array<subtile_bounds<3>, 6> indices{{
+  static constexpr array<subtile_bounds<3>, 6> indices{{
    //
    {                            // 0:
     {{b::fhl, b::fi, b::fi}},   // from
@@ -229,7 +227,7 @@ struct halo_tiles_lookup_table_<3, 1, Nic, Nhl> {
 template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<3, 2, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
-  static constexpr std::array<subtile_bounds<3>, 12> indices{{
+  static constexpr array<subtile_bounds<3>, 12> indices{{
    //
    {                             // 0:
     {{b::fhl, b::fhl, b::fi}},   // from
@@ -274,7 +272,7 @@ struct halo_tiles_lookup_table_<3, 2, Nic, Nhl> {
 template <tidx_t Nic, tidx_t Nhl>  //
 struct halo_tiles_lookup_table_<3, 3, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
-  static constexpr std::array<subtile_bounds<3>, 8> indices{{
+  static constexpr array<subtile_bounds<3>, 8> indices{{
    //
    {                              // 0:
     {{b::fhl, b::fhl, b::fhl}},   // from

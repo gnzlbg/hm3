@@ -1,3 +1,5 @@
+#ifdef FIXED
+
 #pragma once
 /// \file
 #include <hm3/solver/utility/structured_grid.hpp>
@@ -20,9 +22,9 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
   level_idx level_;
   constexpr level_idx level() const noexcept { return level_; }
 
-  std::array<num_t, distribution_size()> nodes_0;
-  std::array<num_t, distribution_size()> nodes_1;
-  std::array<bool, size()> is_boundary_;
+  array<num_t, distribution_size()> nodes_0;
+  array<num_t, distribution_size()> nodes_1;
+  array<bool, size()> is_boundary_;
 
   static constexpr uint_t dist(sidx_t c, uint_t d) noexcept {
     return Ndist * c + d;
@@ -70,3 +72,4 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
 }  // namespace lbm
 }  // namespace solver
 }  // namespace hm3
+#endif

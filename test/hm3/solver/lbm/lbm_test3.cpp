@@ -114,7 +114,7 @@ struct poiseuille_profile {
   num_t p_outflow           = 0.;
   num_t length              = 1.0;
 
-  using vel_t = std::array<num_t, 2>;
+  using vel_t = hm3::array<num_t, 2>;
   vel_t velocity(num_t y) const noexcept {
     vel_t us;
     num_t y_rel = y - y_center;
@@ -299,7 +299,7 @@ void fd_slip(State&& s, Obstacle&& obstacle) {
   // auto line_ic_bndry = geometry::line<1>::through(
   //  geometry::point<1>{x_ic(1)}, geometry::point<1>(x_ic(1) + dy));
 
-  // std::array<num_t, 2> values;
+  // hm3::array<num_t, 2> values;
   // num_t u_ic = s.physics.u(&b.nodes0(ic, 0));
   // values[0] = u_ic;
   // values[1] = u;

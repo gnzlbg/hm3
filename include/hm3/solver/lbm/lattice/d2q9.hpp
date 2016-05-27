@@ -1,7 +1,7 @@
 #pragma once
 /// \file
-#include <array>
 #include <hm3/geometry/dimensions.hpp>
+#include <hm3/utility/array.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -68,7 +68,7 @@ struct d2q9 : geometry::dimensional<2> {
   }
 
   static constexpr auto dir(suint_t d) noexcept {
-    using dir_t   = std::array<sint_t, 2>;
+    using dir_t   = array<sint_t, 2>;
     dir_t dirs[9] = {{{0, 0}}};
 
     dirs[W]  = dir_t{{-1, 0}};
@@ -84,7 +84,7 @@ struct d2q9 : geometry::dimensional<2> {
   }
 
   static constexpr auto periodic_neighbor_dir_x(suint_t d) noexcept {
-    using dir_t   = std::array<sint_t, 2>;
+    using dir_t   = array<sint_t, 2>;
     dir_t dirs[9] = {{{0, 0}}};
 
     dirs[W]  = dir_t{{-1, 0}};

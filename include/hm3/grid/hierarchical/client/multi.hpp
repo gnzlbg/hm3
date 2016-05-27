@@ -3,6 +3,7 @@
 ///
 /// Stores a single grid within a hierarchical Cartesian multi-tree.
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
+#include <hm3/grid/hierarchical/grid.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -94,10 +95,10 @@ struct multi : geometry::dimensional<Nd> {
     auto& tn = tree_node_ids_(n);
 // In the paraview plugin the grid doesn't need to load the grid ids
 #ifndef HM3_PARAVIEW_PLUGIN
-    HM3_ASSERT(
-     (tn and in_tree(tn) == n) || !tn,
-     "grid node {} has tree node {} but tree node {} has grid node {}", n, tn,
-     tn, in_tree(tn));
+    HM3_ASSERT((tn and in_tree(tn) == n) || !tn, "grid node {} has tree node "
+                                                 "{} but tree node {} has grid "
+                                                 "node {} on grid {}",
+               n, tn, tn, in_tree(tn), idx());
 #endif
     return tn;
   }
@@ -107,30 +108,30 @@ struct multi : geometry::dimensional<Nd> {
     const auto tn = tree_node_ids_(n);
 // In the paraview plugin the grid doesn't need to load the grid ids
 #ifndef HM3_PARAVIEW_PLUGIN
-    HM3_ASSERT(
-     (tn and in_tree(tn) == n) || !tn,
-     "grid node {} has tree node {} but tree node {} has grid node {}", n, tn,
-     tn, in_tree(tn));
+    HM3_ASSERT((tn and in_tree(tn) == n) || !tn, "grid node {} has tree node "
+                                                 "{} but tree node {} has grid "
+                                                 "node {} on grid {}",
+               n, tn, tn, in_tree(tn), idx());
 #endif
     return tn;
   }
   /// Parent tree node of grid node \p n
   tree_node_idx parent(grid_node_idx n) const noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "grid node {} is not part of the tree grid", n);
+    HM3_ASSERT(tn, "grid node {} is not part of the tree grid {}", n, idx());
     return tree().parent(tn);
   }
   /// Children of grid node \p n (in tree nodes)
   auto children(grid_node_idx n) const noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "grid node {} is not part of the tree grid", n);
+    HM3_ASSERT(tn, "grid node {} is not part of the tree grid {}", n, idx());
     return tree().children(tn);
   }
 
   /// Siblings of grid node \p n in tree
   auto tree_siblings(grid_node_idx n) const noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "grid node {} is not part of the tree grid", n);
+    HM3_ASSERT(tn, "grid node {} is not part of the tree grid {}", n, idx());
     return tree().siblings(tn);
   }
 
@@ -140,15 +141,15 @@ struct multi : geometry::dimensional<Nd> {
   }
 
   /// Neighbors of grid node \p n in tree
-  auto tree_neighbors(grid_node_idx n) const noexcept {
+  auto tree_node_neighbors_in_tree(grid_node_idx n) const noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "grid node {} is not part of the tree grid", n);
+    HM3_ASSERT(tn, "grid node {} is not part of the tree grid {}", n, idx());
     return tree().neighbors(tn, idx());
   }
 
   /// Neighbors of grid node \p n in grid
-  auto neighbors(grid_node_idx n) const noexcept {
-    auto ns = tree_neighbors(n);
+  auto grid_node_neighbors_in_tree(grid_node_idx n) const noexcept {
+    auto ns = tree_node_neighbors_in_tree(n);
     inline_vector<grid_node_idx, ns.capacity()> gs(ns.size());
     RANGES_FOR (auto&& p, view::zip(ns, gs)) {
       std::get<1>(p) = in_tree(std::get<0>(p));
@@ -159,7 +160,7 @@ struct multi : geometry::dimensional<Nd> {
   /// Level of grid node \p n
   auto level(grid_node_idx n) const noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "grid node {} is not part of the tree grid", n);
+    HM3_ASSERT(tn, "grid node {} is not part of the tree grid {}", n, idx());
     return tree().level(tn);
   }
 
@@ -167,9 +168,10 @@ struct multi : geometry::dimensional<Nd> {
   template <typename At>
   void assert_within_capacity(grid_node_idx n, At&& at_) const noexcept {
     HM3_ASSERT_AT(n, "invalid grid node", at_);
-    HM3_ASSERT_AT(n < capacity(),
-                  "solver node '{}'  is out-of-capacity-bounds [0, {})", at_, n,
-                  capacity());
+    HM3_ASSERT_AT(
+     n < capacity(),
+     "solver node '{}' of grid {} is out-of-capacity-bounds [0, {})", at_, n,
+     idx(), capacity());
   }
 
  private:
@@ -184,7 +186,8 @@ struct multi : geometry::dimensional<Nd> {
   template <typename At>
   void assert_in_use(grid_node_idx n, At&& at_) const noexcept {
     assert_within_capacity(n, at_);
-    HM3_ASSERT_AT(!is_free_(n), "cell {} is not in use", at_, n);
+    HM3_ASSERT_AT(!is_free_(n), "cell {} of grid {} is not in use", at_, n,
+                  idx());
   }
 
  private:
@@ -282,11 +285,11 @@ struct multi : geometry::dimensional<Nd> {
   /// Push grid node into solver nodes and get solver node
   grid_node_idx push(tree_node_idx n) {
     auto sn = free_node();
-    HM3_ASSERT(is_free(sn), "node {} is not free", sn);
+    HM3_ASSERT(is_free(sn), "node {} of grid {} is not free", sn, idx());
     if (sn >= capacity()) {
       /// TODO: this should probably throw to allow writing a checkpoint
       /// before dying
-      HM3_FATAL_ERROR("cannot push node: ran out of memory");
+      HM3_FATAL_ERROR("cannot push node to grid {}: ran out of memory", idx());
     }
     is_free_(sn) = false;
 
@@ -314,7 +317,9 @@ struct multi : geometry::dimensional<Nd> {
     tree_node(sn) = tree_node_idx{};
     is_free_(sn)  = true;
     if (gn) {
-      HM3_ASSERT(in_tree(gn) == sn, "");
+      HM3_ASSERT(in_tree(gn) == sn, "link from tree to grid is broken: gn = {} "
+                                    "=> in_tree({}) = {} != sn = {}",
+                 gn, gn, in_tree(gn), sn);
       tree().remove(gn, idx());
     }
     --size_;
@@ -324,9 +329,10 @@ struct multi : geometry::dimensional<Nd> {
   /// Coordinates of grid node \p n
   auto coordinates(grid_node_idx n) const noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "not implemented: node {} has no tree node so cannot "
-                   "compute coordinates here",
-               n);
+    HM3_ASSERT(tn,
+               "not implemented: node {} of grid {} has no tree node so cannot "
+               "compute coordinates here",
+               n, idx());
     return tree().coordinates(tn);
   }
 
@@ -364,13 +370,14 @@ struct multi : geometry::dimensional<Nd> {
   ///
   refine_t refine(grid_node_idx n) noexcept {
     auto tn = tree_node(n);
-    HM3_ASSERT(tn, "grid node {} since it doesn't have a valid tree node", n);
+    HM3_ASSERT(tn, "grid node {} of grid {} doesn't have a valid tree node", n,
+               idx());
     auto child_nodes = tree().refine(tn);
     if (distance(child_nodes) == 0) {
-      HM3_FATAL_ERROR("couldn't refine node {}", n);
+      HM3_FATAL_ERROR("couldn't refine node {} on grid {}", n, idx());
     }
     for (auto&& i : child_nodes) {
-      HM3_ASSERT(i, "invalid child node");
+      HM3_ASSERT(i, "invalid child node in grid {}", idx());
       push(i);
     }
     return {*this, n};
@@ -404,6 +411,18 @@ struct multi : geometry::dimensional<Nd> {
     auto p_tn = parent(n);
     auto p    = push(p_tn);
     return {*this, p};
+  }
+
+  template <typename Projection>
+  void refine(grid_node_idx n, Projection&& projection) {
+    auto refine_guard = refine(n);
+    projection(refine_guard.old_parent(), refine_guard.new_children());
+  }
+
+  template <typename Restriction>
+  void coarsen(grid_node_idx n, Restriction&& restriction) {
+    auto coarsen_guard = coarsen(n);
+    restriction(coarsen_guard.new_parent(), coarsen_guard.old_children());
   }
 
   multi() = default;

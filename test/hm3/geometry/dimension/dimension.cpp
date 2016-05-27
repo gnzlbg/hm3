@@ -4,8 +4,8 @@
 
 int main() {
   using hm3::geometry::dimension;
-  static_assert(dimension(with_member_dimension{}) == 2, "");
-  static_assert(dimension(other::with_nonmember_dimension{}) == 3, "");
+  STATIC_CHECK(dimension(with_member_dimension{}) == 2);
+  STATIC_CHECK(dimension(other::with_nonmember_dimension{}) == 3);
 
   return hm3::test::result();
 }

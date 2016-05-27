@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Tree concepts
-#include <array>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/range.hpp>
 

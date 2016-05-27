@@ -24,7 +24,8 @@ struct tile : geometry::dimensional<Nd> {
   geometry_t geometry_;
 
   /// Tile geometry:
-  constexpr geometry_t geometry() const noexcept { return geometry_; }
+  constexpr geometry_t const& geometry() const noexcept { return geometry_; }
+  constexpr geometry_t& geometry() noexcept { return geometry_; }
   /// Tile cell indices:
   static constexpr cell_indices_t cells() noexcept { return cell_indices_t{}; }
   /// Tile surface indices:

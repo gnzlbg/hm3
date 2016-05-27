@@ -12,6 +12,20 @@ namespace grid {
 namespace structured {
 namespace tile {
 
+template <dim_t Nd, tidx_t Nc>  //
+struct cell_geometry : geometry::square<Nd>, cell::indices<Nd, Nc>::coordinate {
+  using square_t     = geometry::square<Nd>;
+  using coordinate_t = typename cell::indices<Nd, Nc>::coordinate;
+  cell_geometry(square_t s, coordinate_t x)
+   : square_t{std::move(s)}, coordinate_t(std::move(x)) {}
+  explicit operator square_t() const noexcept {
+    return static_cast<square_t const&>(*this);
+  }
+  explicit operator coordinate_t() const noexcept {
+    return static_cast<coordinate_t const&>(*this);
+  }
+};
+
 /// Square structured tile spatial information
 ///
 /// \tparam Nd number of spatial dimensions
@@ -23,14 +37,15 @@ struct tile_geometry : geometry::dimensional<Nd> {
   using square_t        = geometry::square<Nd>;
   using cell_indices    = cell::indices<Nd, Nc>;
   using cell_coordinate = typename cell_indices::coordinate;
+  using cell_geometry_t = cell_geometry<Nd, Nc>;
 
-  point_t x_first_cell_;
   num_t cell_length_;
+  point_t x_first_cell_;
 
   /// Cell length
   constexpr num_t cell_length() const noexcept { return cell_length_; }
 
-  /// First cell center coordinates
+  /// First cell centroid coordinates
   constexpr point_t x_first_cell() const noexcept { return x_first_cell_; }
 
   /// Cell volume
@@ -48,22 +63,22 @@ struct tile_geometry : geometry::dimensional<Nd> {
     return cell_length() * num_t{bounds::length()};
   }
 
-  /// Tile center
-  constexpr point_t tile_center(num_t tile_length) const noexcept {
-    point_t x_tile_center = x_first_cell();
-    const auto tl         = tile_length;
-    const auto l          = cell_length();
-    for (dim_t d = 0; d < Nd; ++d) { x_tile_center[d] += 0.5 * (tl - l); }
-    return x_tile_center;
+  /// Tile centroid
+  constexpr point_t tile_centroid(num_t tile_length) const noexcept {
+    point_t x_tile_centroid = x_first_cell();
+    const auto tl           = tile_length;
+    const auto l            = cell_length();
+    for (dim_t d = 0; d < Nd; ++d) { x_tile_centroid[d] += 0.5 * (tl - l); }
+    return x_tile_centroid;
   }
-  /// Tile center
-  constexpr point_t tile_center() const noexcept {
-    return tile_center(tile_length());
+  /// Tile centroid
+  constexpr point_t tile_centroid() const noexcept {
+    return tile_centroid(tile_length());
   }
 
-  /// Tile cell center
-  constexpr point_t cell_center(cell_coordinate x) const noexcept {
-    HM3_ASSERT(x, "cannot compute center of invalid coordinate {}", x);
+  /// Tile cell centroid
+  constexpr point_t cell_centroid(cell_coordinate x) const noexcept {
+    HM3_ASSERT(x, "cannot compute centroid of invalid coordinate {}", x);
     point_t r    = x_first_cell();
     const auto l = cell_length();
     for (dim_t d = 0; d < Nd; ++d) { r[d] += x[d] * l; }
@@ -73,9 +88,9 @@ struct tile_geometry : geometry::dimensional<Nd> {
 
   /// Tile bounding box
   constexpr square_t tile_bounding_box() const noexcept {
-    num_t tile_length     = this->tile_length();
-    point_t x_tile_center = tile_center(tile_length);
-    return square_t{x_tile_center, tile_length};
+    num_t tile_length       = this->tile_length();
+    point_t x_tile_centroid = tile_centroid(tile_length);
+    return square_t{x_tile_centroid, tile_length};
   }
 
   /// Compute the cell length from the length of the tile
@@ -90,7 +105,17 @@ struct tile_geometry : geometry::dimensional<Nd> {
     return cell_length(geometry::length(bbox));
   }
 
-  /// Computes first cell center coordinates (idx = 0) from tile bounding box
+  /// Bounding box of cell at coordinate \p x
+  constexpr square_t bounding_box(cell_coordinate x) const noexcept {
+    return square_t{cell_centroid(x), cell_length()};
+  }
+
+  /// Geometry of cell at coordinate \p x
+  constexpr cell_geometry_t operator()(cell_coordinate x) const noexcept {
+    return cell_geometry_t{bounding_box(x), x};
+  }
+
+  /// Computes first cell centroid coordinates (idx = 0) from tile bounding box
   static constexpr point_t x_first_cell(square_t bbox) noexcept {
     HM3_ASSERT(geometry::length(bbox) > 0.,
                "bounding box length must be positive, bbox {}", bbox);
@@ -121,12 +146,10 @@ struct tile_geometry : geometry::dimensional<Nd> {
     return i;
   }
 
-  /// Returns a tile geometry from the tile's bounding box
-  static constexpr tile_geometry from(square_t bounding_box) noexcept {
-    tile_geometry g;
-    g.cell_length_  = tile_geometry::cell_length(bounding_box);
-    g.x_first_cell_ = tile_geometry::x_first_cell(bounding_box);
-    return g;
+  /// Sets the bounding box of the tile to \p bounding_box
+  constexpr void set_bbox(square_t bounding_box) noexcept {
+    cell_length_  = cell_length(bounding_box);
+    x_first_cell_ = x_first_cell(bounding_box);
   }
 
   constexpr tile_geometry()                     = default;
@@ -137,7 +160,8 @@ struct tile_geometry : geometry::dimensional<Nd> {
 
   /// Constructs a tile geometry from its bounding box
   constexpr tile_geometry(square_t bounding_box)
-   : tile_geometry(from(std::move(bounding_box))) {}
+   : cell_length_(cell_length(bounding_box))
+   , x_first_cell_(x_first_cell(bounding_box)) {}
 };
 
 }  // namespace tile

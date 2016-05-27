@@ -37,7 +37,7 @@ template <dim_t Nd, typename T> T interpolate(num_t d, line<Nd> l, T v0, T v1) {
 }
 
 template <dim_t Nd, typename T>
-T interpolate(num_t d, line<Nd> l, std::array<T, 2> vs) {
+T interpolate(num_t d, line<Nd> l, array<T, 2> vs) {
   return interpolate(d, l, vs[0], vs[1]);
 }
 
@@ -48,7 +48,7 @@ num_t distance_to_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
 }
 
 template <dim_t Nd, typename T>
-num_t distance_to_value(T v, line<Nd> l, std::array<T, 2> vs) {
+num_t distance_to_value(T v, line<Nd> l, array<T, 2> vs) {
   return distance_to_value(v, l.x_0, l.x_1, vs[0], vs[1]);
 }
 
@@ -59,7 +59,7 @@ point<Nd> point_with_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
 }
 
 template <dim_t Nd, typename T>
-point<Nd> point_with_value(T v, line<Nd> l, std::array<T, 2> vs) {
+point<Nd> point_with_value(T v, line<Nd> l, array<T, 2> vs) {
   return point_with_value(v, l.x_0, l.x_1, vs[0], vs[1]);
 }
 

@@ -6,6 +6,7 @@
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/index.hpp>
 #include <hm3/grid/structured/tile/index_type.hpp>
+#include <hm3/utility/array.hpp>
 #include <hm3/utility/config/attributes.hpp>
 #include <hm3/utility/math.hpp>
 
@@ -24,8 +25,8 @@ struct coordinate : geometry::dimensional<Nd> {
   using self           = coordinate;
   using value_t        = tidx_t;
   using signed_value_t = std::make_signed_t<value_t>;
-  using coordinates_t  = std::array<value_t, Nd>;
-  using offset_t       = std::array<signed_value_t, Nd>;
+  using coordinates_t  = array<value_t, Nd>;
+  using offset_t       = array<signed_value_t, Nd>;
   using index          = index<Nd, Nc>;
   using bounds         = bounds<Nd, Nc>;
   static_assert(sizeof(value_t) == sizeof(signed_value_t), "");

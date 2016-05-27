@@ -227,14 +227,14 @@ template <typename Tree> void test_children(Tree const& t, node const& n) {
 
 template <typename Tree, typename Location>
 void test_node_location(Tree const& t, node const& n, Location l) {
-  static_assert(Tree::dimension() == Location::dimension(), "");
+  STATIC_CHECK(Tree::dimension() == Location::dimension());
   // consistency:
   CHECK(node_at(t, node_location(t, *n.idx, l)) == *n.idx);
 }
 
 template <typename Tree, typename Location>
 void test_pos_in_parent(Tree const& t, node const& n, Location l) {
-  static_assert(Tree::dimension() == Location::dimension(), "");
+  STATIC_CHECK(Tree::dimension() == Location::dimension());
   if (!n.pos_in_parent) { return; }
   test::check_equal(node_location(t, *n.idx, l)(), *n.pos_in_parent);
   CHECK(node_at(t, Location(*n.pos_in_parent)) == *n.idx);
@@ -277,7 +277,7 @@ void test_normalized_coordinates(Tree const& t, node const& n, Location l) {
 
 template <typename Tree, typename Location>
 void check_node(Tree const& t, node n, Location l) {
-  static_assert(Tree::dimension() == Location::dimension(), "");
+  STATIC_CHECK(Tree::dimension() == Location::dimension());
   test_parent(t, n);
   test_level(t, n);
   test_children(t, n);
@@ -394,7 +394,7 @@ template <typename Tree, typename ReferenceTree,
           typename Location = location::default_location<Tree::dimension()>>
 void check_tree(Tree const& tree, ReferenceTree const& tref,
                 Location l = Location{}) {
-  static_assert(Tree::dimension() == Location::dimension(), "");
+  STATIC_CHECK(Tree::dimension() == Location::dimension());
   for (auto&& n : tref.nodes) { check_node(tree, n, l); }
   consistency_checks(tree, Location{});
 }
@@ -417,7 +417,7 @@ auto uniformly_refined_tree(uint_t level, uint_t level_capacity)
   }
 
   CHECK(!t.empty());
-  CHECK(size(t) == no_nodes_until_uniform_level(Nd, level));
+  CHECK(t.size() == no_nodes_until_uniform_level(Nd, level));
 
   return t;
 }

@@ -15,7 +15,7 @@ HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(std::declval<tree<2>>()());
 
 HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(tree<2>::child_positions());
 
-template <template <hm3::uint_t, class...> class Loc> void test_tree() {
+template <template <dim_t, class...> class Loc> void test_tree() {
   {  // check construction
     tree<2> t(1);
     CHECK(t.capacity() == 1_u);

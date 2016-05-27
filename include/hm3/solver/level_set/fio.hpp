@@ -3,7 +3,6 @@
 ///
 /// Serialization to HM3's File I/O
 #include <hm3/solver/level_set/fwd.hpp>
-#include <hm3/solver/utility/grid.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -21,8 +20,7 @@ template <dim_t Nd> void map_arrays(io::file& f, state<Nd> const& s) {
 template <dim_t Nd, typename Tree = typename state<Nd>::tree_t>
 state<Nd> from_file_unread(state<Nd> const&, io::file& f, Tree& t,
                            io::session& s_, grid_node_idx node_capacity) {
-  auto g
-   = from_file_unread(::hm3::solver::state::grid<Nd>{}, f, t, node_capacity);
+  auto g = from_file_unread(grid_client_t<Nd>{}, f, t, node_capacity);
   state<Nd> s(std::move(g), s_);
   map_arrays(f, s);
   return s;

@@ -22,7 +22,7 @@ template <dim_t Nd> string name(state<Nd> const& s, grid_idx idx) {
 template <dim_t Nd> string name(state<Nd> const& s) { return name(s, s.idx()); }
 
 template <dim_t Nd> struct state : geometry::dimensional<Nd> {
-  using grid = ::hm3::solver::state::grid<Nd>;
+  using grid = ::hm3::grid::hierarchical::client::multi<Nd>;
 
   using tree_t   = typename grid::tree_t;
   using cell_idx = grid_node_idx;

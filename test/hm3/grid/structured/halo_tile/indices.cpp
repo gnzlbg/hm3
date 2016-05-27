@@ -15,30 +15,29 @@ void test_indices() {
   static_assert(std::is_literal_type<ci_t>{}, "");
 
   // Size tests:
-  static_assert(ci_t::dimension() == Nd, "");
-  static_assert(ci_t::halo_layers() == Nhl, "");
-  static_assert(ci_t::internal_cell_length() == Nic, "");
-  static_assert(ci_t::length() == Nic + 2 * Nhl, "");
-  static_assert(ci_t::size() == math::ipow(ci_t::length(), Nd), "");
-  static_assert(ci_t::internal_cell_size()
-                 == math::ipow(ci_t::internal_cell_length(), Nd),
-                "");
-  static_assert(
-   ci_t::halo_cell_size() == ci_t::size() - ci_t::internal_cell_size(), "");
+  STATIC_CHECK(ci_t::dimension() == Nd);
+  STATIC_CHECK(ci_t::halo_layers() == Nhl);
+  STATIC_CHECK(ci_t::internal_cell_length() == Nic);
+  STATIC_CHECK(ci_t::length() == Nic + 2 * Nhl);
+  STATIC_CHECK(ci_t::size() == math::ipow(ci_t::length(), tidx_t(Nd)));
+  STATIC_CHECK(ci_t::internal_cell_size()
+               == math::ipow(ci_t::internal_cell_length(), tidx_t(Nd)));
+  STATIC_CHECK(ci_t::halo_cell_size()
+               == ci_t::size() - ci_t::internal_cell_size());
 
   // Coordinate tests
   using x = typename ci_t::coordinate;
-  static_assert(std::is_literal_type<x>{}, "");
+  static_assert(std::is_literal_type<x>{});
 
-  static_assert(ci_t::first_internal() == Nhl, "");
-  static_assert(ci_t::first_internal(1) == Nhl - 1, "");
-  static_assert(ci_t::last_internal() == Nhl + Nic - 1, "");
-  static_assert(ci_t::last_internal(1) == Nhl + Nic + 1 - 1, "");
+  STATIC_CHECK(ci_t::first_internal() == Nhl);
+  STATIC_CHECK(ci_t::first_internal(1) == Nhl - 1);
+  STATIC_CHECK(ci_t::last_internal() == Nhl + Nic - 1);
+  STATIC_CHECK(ci_t::last_internal(1) == Nhl + Nic + 1 - 1);
 
-  static_assert(ci_t::first_halo_left() == 0, "");
-  static_assert(ci_t::last_halo_left() == Nhl - 1, "");
-  static_assert(ci_t::first_halo_right() == Nhl + Nic, "");
-  static_assert(ci_t::last_halo_right() == 2 * Nhl + Nic - 1, "");
+  STATIC_CHECK(ci_t::first_halo_left() == 0);
+  STATIC_CHECK(ci_t::last_halo_left() == Nhl - 1);
+  STATIC_CHECK(ci_t::first_halo_right() == Nhl + Nic);
+  STATIC_CHECK(ci_t::last_halo_right() == 2 * Nhl + Nic - 1);
 
   constexpr ci_t g{};
 
@@ -188,7 +187,7 @@ int main() {
 
     test_indices<nd, nic, nhl>();
     using ci_t = grid::structured::halo_tile::cell::indices<nd, nic, nhl>;
-    constexpr ci_t ci;
+    constexpr ci_t ci{};
 
     // test all halo cells
     using halo_cells = std::vector<std::vector<tidx_t>>;

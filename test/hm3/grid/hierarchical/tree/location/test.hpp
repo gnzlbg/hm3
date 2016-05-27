@@ -23,16 +23,16 @@ void test_location(Loc) {
   static_assert(TotallyOrdered<Loc>{}, "");
   static_assert(Location<Loc>{}, "");
   Loc l;
-  static_assert(l.dimension() == Nd, "");
-  static_assert(l.max_no_levels() == NoLevels, "");
-  static_assert(*l.max_level() == NoLevels - 1, "");
+  STATIC_CHECK(l.dimension() == Nd);
+  STATIC_CHECK(l.max_no_levels() == NoLevels);
+  STATIC_CHECK(*l.max_level() == NoLevels - 1);
   test::check_equal(l.dimensions(), dimensions(Nd));
   {
     auto a        = l;
     uint_t count_ = 0;
     CHECK(a.level() == count_);
     // CHECK(a[0_u] == 1_u);
-    for (auto&& c : view::iota(0_u, no_children(Nd))) {
+    for (auto&& c : view::iota(0_su, no_children(Nd))) {
       a.push(c);
       count_++;
       CHECK(a.level() == count_);
@@ -40,7 +40,7 @@ void test_location(Loc) {
     }
     test::check_equal(a.levels(), view::iota(1_u, count_ + 1));
     test::check_equal(a(), view::iota(0_u, no_children(Nd)));
-    for_each(view::iota(0_u, no_children(Nd)) | view::reverse, [&](auto&& c) {
+    for_each(view::iota(0_su, no_children(Nd)) | view::reverse, [&](auto&& c) {
       CHECK(a.pop() == c);
       count_--;
       CHECK(a.level() == count_);
@@ -77,7 +77,7 @@ void test_location(Loc) {
                 << std::endl;
 #endif
       for (auto d : dimensions(Nd)) {
-        std::array<int_t, Nd> offset{};
+        hm3::array<int_t, Nd> offset{};
         fill(offset, int_t{0});
 
         auto bs = shift(b, offset);
@@ -122,7 +122,7 @@ void test_location(Loc) {
                 << std::endl;
 #endif
       for (auto d : dimensions(Nd)) {
-        std::array<int_t, Nd> offset{};
+        hm3::array<int_t, Nd> offset{};
         fill(offset, int_t{0});
 
         auto bs = shift(b, offset);
@@ -147,7 +147,7 @@ void test_location(Loc) {
   }
 }
 
-template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
+template <template <hm3::dim_t, class...> class Loc> void test_location_2() {
   using namespace hm3;
   using namespace tree;
   {
@@ -189,14 +189,14 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
     using morton_idx = morton_idx_t<Loc<2>>;
     CHECK(static_cast<morton_idx>(a) == 30_u);
     CHECK(a.morton_idx() == 30_u);
-    std::array<morton_idx, 2> ar(a);
+    hm3::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 2_u);
     CHECK(ar[1] == 3_u);
     CHECK(a.level() == 2_u);
-    auto k = shift(a, std::array<int_t, 2>{{1, 0}});
+    auto k = shift(a, hm3::array<int_t, 2>{{1, 0}});
     CHECK(!(!k));
     a  = *k;
-    ar = static_cast<std::array<morton_idx, 2>>(a);
+    ar = static_cast<hm3::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 3_u);
     CHECK(ar[1] == 3_u);
     CHECK(ar[0] == a.morton_x()[0]);
@@ -207,14 +207,14 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   {  // test to_int coordinate-wise
     auto a           = Loc<2>({2, 1});
     using morton_idx = morton_idx_t<Loc<2>>;
-    std::array<morton_idx, 2> ar(a);
+    hm3::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 1_u);
     CHECK(ar[1] == 2_u);
     CHECK(a.morton_x()[0] == 1_u);
     CHECK(a.morton_x()[1] == 2_u);
 
-    a  = *shift(a, std::array<int_t, 2>{{-1, 0}});
-    ar = static_cast<std::array<morton_idx, 2>>(a);
+    a  = *shift(a, hm3::array<int_t, 2>{{-1, 0}});
+    ar = static_cast<hm3::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 0_u);
     CHECK(ar[1] == 2_u);
     CHECK(a.morton_x()[0] == 0_u);
@@ -225,14 +225,14 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   {  // test to_int coordinate-wise
     auto a           = Loc<2>({3, 0, 0});
     using morton_idx = morton_idx_t<Loc<2>>;
-    std::array<morton_idx, 2> ar(a);
+    hm3::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 4_u);
     CHECK(ar[1] == 4_u);
     CHECK(a.morton_x()[0] == 4_u);
     CHECK(a.morton_x()[1] == 4_u);
 
-    a  = *shift(a, std::array<int_t, 2>{{-1, -1}});
-    ar = static_cast<std::array<morton_idx, 2>>(a);
+    a  = *shift(a, hm3::array<int_t, 2>{{-1, -1}});
+    ar = static_cast<hm3::array<morton_idx, 2>>(a);
     CHECK(ar[0] == 3_u);
     CHECK(ar[1] == 3_u);
     CHECK(a.morton_x()[0] == 3_u);
@@ -249,7 +249,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   {  // test to_int coordinate-wise
     auto a           = Loc<2>({1, 1, 2});
     using morton_idx = morton_idx_t<Loc<2>>;
-    std::array<morton_idx, 2> ar(a);
+    hm3::array<morton_idx, 2> ar(a);
     CHECK(ar[0] == 6_u);
     CHECK(ar[1] == 1_u);
     CHECK(a.morton_x()[0] == 6_u);
@@ -259,7 +259,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   {  // test to_int coordinate-wise
     auto a           = Loc<3>({6, 5});
     using morton_idx = morton_idx_t<Loc<3>>;
-    std::array<morton_idx, 3> ar(a);
+    hm3::array<morton_idx, 3> ar(a);
     CHECK(a.level() == 2_u);
     CHECK(ar[0] == 1_u);
     CHECK(ar[1] == 2_u);
@@ -272,7 +272,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
   // test float from Loc
   {
     {  // loc (0.25, 0.75)
-      std::array<num_t, 2> x{{0.25, 0.75}};
+      hm3::array<num_t, 2> x{{0.25, 0.75}};
       {
         auto fl = Loc<2>(x, 1);
         CHECK(fl.level() == 1_u);
@@ -287,7 +287,7 @@ template <template <hm3::uint_t, class...> class Loc> void test_location_2() {
       }
     }
     {  // loc (0.6, 0.8)
-      std::array<num_t, 2> x{{0.6, 0.8}};
+      hm3::array<num_t, 2> x{{0.6, 0.8}};
       {
         auto fl = Loc<2>(x, 1);
         CHECK(fl.level() == 1_u);

@@ -57,7 +57,7 @@ void coordinate_tests(I index, suint_t length, const X x) {
 
   // Array offset +1
   for (auto&& d : X::dimensions()) {
-    std::array<sint_t, X::dimension()> o;
+    hm3::array<sint_t, X::dimension()> o;
     o.fill(0);
     o[d]   = 1;
     auto w = x.offset(o);
@@ -74,7 +74,7 @@ void coordinate_tests(I index, suint_t length, const X x) {
 
   // Array offset -1
   for (auto&& d : X::dimensions()) {
-    std::array<sint_t, X::dimension()> o;
+    hm3::array<sint_t, X::dimension()> o;
     o.fill(0);
     o[d]   = -1;
     auto w = x.offset(o);

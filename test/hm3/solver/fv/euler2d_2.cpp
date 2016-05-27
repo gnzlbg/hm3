@@ -1,3 +1,4 @@
+#ifdef ABC
 /// Euler cut-off tests
 #include "euler/euler.hpp"
 #include <hm3/utility/test.hpp>
@@ -39,6 +40,9 @@ int main(int argc, char* argv[]) {
 
   return test::result();
 }
+#else
+int main() { return 0; }
+#endif
 
 #ifdef FIXED
 #include <hm3/geometry/sd.hpp>

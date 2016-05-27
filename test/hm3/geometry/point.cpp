@@ -23,9 +23,9 @@ int main() {
     constexpr auto p2 = point<2>{0., 0.};
     constexpr auto p3 = point<3>{0., 0., 0.};
 
-    static_assert(dimension(p1) == 1, "");
-    static_assert(dimension(p2) == 2, "");
-    static_assert(dimension(p3) == 3, "");
+    STATIC_CHECK(dimension(p1) == 1);
+    STATIC_CHECK(dimension(p2) == 2);
+    STATIC_CHECK(dimension(p3) == 3);
   }
 
   {  // check values:
@@ -87,39 +87,39 @@ int main() {
     CHECK(dimension(p2) == 2_u);
     CHECK(dimension(p3) == 3_u);
 
-    static_assert(dimension(p1) == 1, "");
-    static_assert(dimension(p2) == 2, "");
-    static_assert(dimension(p3) == 3, "");
+    STATIC_CHECK(dimension(p1) == 1);
+    STATIC_CHECK(dimension(p2) == 2);
+    STATIC_CHECK(dimension(p3) == 3);
 
     CHECK(p1(0) == 0.);
     CHECK(p3(0) == 0.);
     CHECK(p3(1) == 1.);
     CHECK(p3(2) == 2.);
 
-    static_assert(p1(0) == 0., "");
-    static_assert(p3(0) == 0., "");
-    static_assert(p3(1) == 1., "");
-    static_assert(p3(2) == 2., "");
+    STATIC_CHECK(p1(0) == 0.);
+    STATIC_CHECK(p3(0) == 0.);
+    STATIC_CHECK(p3(1) == 1.);
+    STATIC_CHECK(p3(2) == 2.);
   }
 
   {  // check assignment:
     constexpr auto p1 = point<2>{0., 1.};
     constexpr auto p2 = p1;
 
-    static_assert(dimension(p1) == dimension(p2), "");
+    STATIC_CHECK(dimension(p1) == dimension(p2));
 
-    static_assert(p1(0) == 0., "");
-    static_assert(p1(1) == 1., "");
-    static_assert(p2(0) == 0., "");
-    static_assert(p2(1) == 1., "");
+    STATIC_CHECK(p1(0) == 0.);
+    STATIC_CHECK(p1(1) == 1.);
+    STATIC_CHECK(p2(0) == 0.);
+    STATIC_CHECK(p2(1) == 1.);
 
     constexpr auto p3 = point<1>{1.5};
     constexpr auto p4 = p3;
 
-    static_assert(dimension(p3) == dimension(p4), "");
+    STATIC_CHECK(dimension(p3) == dimension(p4));
 
-    static_assert(p3(0) == 1.5, "");
-    static_assert(p4(0) == 1.5, "");
+    STATIC_CHECK(p3(0) == 1.5);
+    STATIC_CHECK(p4(0) == 1.5);
   }
 
   return test::result();

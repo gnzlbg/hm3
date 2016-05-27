@@ -79,7 +79,7 @@ template <uint_t Nd> struct test_state {
   using var_v = num_a<Nd + 2>;
   var_v cv;
   var_v pv;
-  std::array<var_v, Nd> f;
+  hm3::array<var_v, Nd> f;
   num_t a;
   num_t s_max;
 };
@@ -200,7 +200,7 @@ void check_time_step(fv::euler::physics<Nd> p, test_state<Nd> a) {
 template <uint_t Nd, typename var_v = typename test_state<Nd>::var_v>
 void check_lax_friedrichs_flux(fv::euler::physics<Nd> p, test_state<Nd> l,
                                test_state<Nd> r
-                               //, std::array<var_v, Nd> result
+                               //, hm3::array<var_v, Nd> result
                                ) {
   auto cv = p.cv();
   auto pv = p.pv();

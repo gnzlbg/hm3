@@ -123,21 +123,19 @@ struct indices : bounds<Nd, Nc> {
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
   CONCEPT_REQUIRES(Nd == 1)
-  static constexpr std::array<tidx_t, Nd> offsets(coordinate, coordinate) {
+  static constexpr array<tidx_t, Nd> offsets(coordinate, coordinate) {
     return {{tidx_t{1}}};
   }
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
   CONCEPT_REQUIRES(Nd == 2)
-  static constexpr std::array<tidx_t, Nd> offsets(coordinate from,
-                                                  coordinate to) {
+  static constexpr array<tidx_t, Nd> offsets(coordinate from, coordinate to) {
     return {{tidx_t{1}, tidx_t{Nc - (to[0] - from[0]) - 1}}};
   }
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
   CONCEPT_REQUIRES(Nd == 3)
-  static constexpr std::array<tidx_t, Nd> offsets(coordinate from,
-                                                  coordinate to) {
+  static constexpr array<tidx_t, Nd> offsets(coordinate from, coordinate to) {
     return {{tidx_t{1}, tidx_t{Nc - (to[0] - from[0]) - 1},
              tidx_t{Nc * (Nc - (to[1] - from[1]) - 1)}}};
   }
