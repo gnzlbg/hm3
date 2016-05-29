@@ -15,4 +15,4 @@ auto unit(Shape) noexcept {
 }
 
 }  // namespace geometry
-}  // namespacehm3
+}  // namespace hm3

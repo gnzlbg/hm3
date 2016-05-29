@@ -145,11 +145,8 @@ struct data_structure {
   }
 
   template <class T> num_t p(T, const idx_t cidx_t) const {
-    if (obst(cidx_t)) {
-      return ns::physics<lattice>::p(density);
-    } else {
-      return ns::physics<lattice>::p(vars(T{}, cidx_t));
-    }
+    if (obst(cidx_t)) { return ns::physics<lattice>::p(density); }
+    return ns::physics<lattice>::p(vars(T{}, cidx_t));
   }
 
   template <class T> std::vector<num_t> ps(T) const {
@@ -159,11 +156,8 @@ struct data_structure {
   }
 
   template <class T> num_t u(T, const idx_t cidx_t) const {
-    if (obst(cidx_t)) {
-      return 0.;
-    } else {
-      return ns::physics<lattice>::u(vars(T{}, cidx_t));
-    }
+    if (obst(cidx_t)) { return 0.; }
+    return ns::physics<lattice>::u(vars(T{}, cidx_t));
   }
 
   template <class T> std::vector<num_t> us(T) const {
@@ -173,11 +167,8 @@ struct data_structure {
   }
 
   template <class T> num_t v(T, const idx_t cidx_t) const {
-    if (obst(cidx_t)) {
-      return 0.;
-    } else {
-      return ns::physics<lattice>::v(vars(T{}, cidx_t));
-    }
+    if (obst(cidx_t)) { return 0.; }
+    return ns::physics<lattice>::v(vars(T{}, cidx_t));
   }
 
   template <class T> std::vector<num_t> vs(T) const {
@@ -377,7 +368,9 @@ void write_vtk(const data_structure& cells, int time_it) {
 
   fprintf(f, "SCALARS active int\n");
   fprintf(f, "LOOKUP_TABLE default\n");
-  for (auto i : cells.cell_ids()) { fprintf(f, "%d\n", !cells.obst(i)); }
+  for (auto i : cells.cell_ids()) {
+    fprintf(f, "%d\n", static_cast<int>(!cells.obst(i)));
+  }
 
   fclose(f);
 }

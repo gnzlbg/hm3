@@ -11,7 +11,7 @@ namespace hm3 {
 
 /// A constexpr-friendly implementation of std::array
 template <typename T, suint_t N>  //
-struct array {
+struct array {                    // NOLINT
   using self                   = array;
   using value_type             = T;
   using reference              = value_type&;
@@ -65,11 +65,11 @@ struct array {
   constexpr reference operator[](size_type n) { return elems_[n]; }
   constexpr const_reference operator[](size_type n) const { return elems_[n]; }
   constexpr reference at(size_type n) {
-    if (n >= N) throw std::out_of_range("array::at");
+    if (n >= N) { throw std::out_of_range("array::at"); }
     return elems_[n];
   };
   constexpr const_reference at(size_type n) const {
-    if (n >= N) throw std::out_of_range("array::at");
+    if (n >= N) { throw std::out_of_range("array::at"); }
     return elems_[n];
   }
   constexpr reference front() { return elems_[0]; }

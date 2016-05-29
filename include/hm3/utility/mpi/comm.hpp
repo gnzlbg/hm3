@@ -20,6 +20,8 @@ struct comm {
  public:
   comm(MPI_Comm c = MPI_COMM_NULL) : comm_id_(c) {}
 
+  /// These are _shallow_ copies !!
+  ///
   comm(comm const& other) = default;
   comm& operator=(comm const& other) = default;
 
@@ -80,7 +82,6 @@ template <typename F, typename... Args>
 constexpr void root_do_(std::true_type, const comm& comm, F&& f,
                         Args&&... args) noexcept {
   if (is_root(comm)) { f(std::forward<Args>(args)...); }
-  return;
 }
 
 template <typename F, typename... Args>

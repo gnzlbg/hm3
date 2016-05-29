@@ -12,7 +12,7 @@ namespace halo_tile {
 /// Underlying type of the halo tile (c) and coordinate {i,j,k} indices
 using tidx_t = tile::tidx_t;
 
-}  // namespace tile
+}  // namespace halo_tile
 }  // namespace structured
 }  // namespace grid
 }  // namespace hm3

@@ -23,9 +23,9 @@ int main() {
     constexpr auto p2 = point<2>{0., 0.};
     constexpr auto p3 = point<3>{0., 0., 0.};
 
-    STATIC_CHECK(dimension(p1) == 1);
-    STATIC_CHECK(dimension(p2) == 2);
-    STATIC_CHECK(dimension(p3) == 3);
+    STATIC_CHECK(dimension(p1) == 1_su);
+    STATIC_CHECK(dimension(p2) == 2_su);
+    STATIC_CHECK(dimension(p3) == 3_su);
   }
 
   {  // check values:
@@ -83,13 +83,13 @@ int main() {
     constexpr auto p2 = point<2>{0., 1.};
     constexpr auto p3 = point<3>{0., 1., 2.};
 
-    CHECK(dimension(p1) == 1_u);
-    CHECK(dimension(p2) == 2_u);
-    CHECK(dimension(p3) == 3_u);
+    CHECK(dimension(p1) == 1_su);
+    CHECK(dimension(p2) == 2_su);
+    CHECK(dimension(p3) == 3_su);
 
-    STATIC_CHECK(dimension(p1) == 1);
-    STATIC_CHECK(dimension(p2) == 2);
-    STATIC_CHECK(dimension(p3) == 3);
+    STATIC_CHECK(dimension(p1) == 1_su);
+    STATIC_CHECK(dimension(p2) == 2_su);
+    STATIC_CHECK(dimension(p3) == 3_su);
 
     CHECK(p1(0) == 0.);
     CHECK(p3(0) == 0.);

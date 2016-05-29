@@ -125,7 +125,8 @@ template <typename Target> struct state {
     ///  Can be coarsened (set them to nothing otherwise)
     for (auto&& n : nodes_ | to_coarsen{}()) {
       // If all siblings are at the same level and marked for coarsening: done
-      if (distance(siblings(n)) == t_.no_siblings()
+      HM3_ASSERT(distance(siblings(n)) >= 0, "");
+      if (distance(siblings(n), 0_u) == t_.no_siblings()
           and all_of(siblings(n), to_coarsen{})) {
         continue;
       }

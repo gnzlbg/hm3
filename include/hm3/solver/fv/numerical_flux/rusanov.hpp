@@ -18,8 +18,8 @@ struct rusanov_fn {
   /// \p v_l and right \p v_r states.
   template <typename V, typename VT, typename State,
             typename var_v = num_a<std::decay_t<VT>::nvars()>>
-  constexpr auto operator()(VT&& vt, V&& v_l, V&& v_r, dim_t d, State&& s) const
-   noexcept {
+  constexpr auto operator()(VT&& vt, V&& v_l, V&& v_r, dim_t d,
+                            State&& /*s*/) const noexcept {
     num_t max_wave_speed
      = std::max(vt.max_wave_speed(v_l, d), vt.max_wave_speed(v_r, d));
     var_v f

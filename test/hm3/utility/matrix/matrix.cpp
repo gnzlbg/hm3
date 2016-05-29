@@ -99,12 +99,18 @@ template <class Vector> void vector_test(const idx_t n) {
     /// Initialize to increasing sequence starting at zero
     idx_t start = 0;
     copy(view::iota(idx_t{0}, n), begin(v));
-    for (idx_t i = 0; i != n; ++i) { CHECK(v(i) == start++); }
+    for (idx_t i = 0; i != n; ++i) {
+      CHECK(v(i) == start);
+      start++;
+    }
 
     /// Use Eigen expressions:
     v()   = v().unaryExpr([](T i) { return i * 2; });
     start = 0;
-    for (idx_t i = 0; i != n; ++i) { CHECK(v(i) == (start++ * 2)); }
+    for (idx_t i = 0; i != n; ++i) {
+      CHECK(v(i) == (start * 2));
+      start++;
+    }
 
     /// Test range based for:
     start = 0;

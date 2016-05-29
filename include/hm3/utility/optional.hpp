@@ -277,7 +277,7 @@ template <typename T> union storage_t {
   constexpr storage_t(Args&&... args)
    : value_(constexpr_forward<Args>(args)...) {}
 
-  ~storage_t() {}
+  ~storage_t(){};  // NOLINT
 };
 
 template <typename T> union constexpr_storage_t {
@@ -651,7 +651,8 @@ template <typename T> class optional<T&> {
 
   optional(T&&) = delete;
 
-  constexpr optional(const optional& rhs) noexcept : ref_(rhs.ref_) {}
+  constexpr optional(const optional& rhs) noexcept
+   : ref_(rhs.ref_) {}  // NOLINT
 
   explicit constexpr optional(in_place_t, T& v) noexcept
    : ref_(static_addressof(v)) {}
@@ -677,7 +678,7 @@ template <typename T> class optional<T&> {
   // }
 
   template <typename U>
-  auto operator=(U&& rhs) noexcept ->
+  auto operator=(U&& rhs) noexcept ->  // NOLINT
    typename enable_if<is_same<typename decay<U>::type, optional<T&>>::value,
                       optional&>::type {
     ref_ = rhs.ref_;

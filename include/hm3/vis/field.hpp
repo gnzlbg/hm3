@@ -15,11 +15,9 @@ struct field {
   enum value_t : int { inactive = 0, active = 1 };
 
   field(string n, std::function<void(void)> f, int v = 0)
-   : name{std::move(n)}
-   , value{static_cast<value_t>(std::move(v))}
-   , load{std::move(f)} {}
+   : name{std::move(n)}, value{static_cast<value_t>(v)}, load{std::move(f)} {}
   field(string n, std::function<void(void)> f, value_t v)
-   : name{std::move(n)}, value{std::move(v)}, load{std::move(f)} {}
+   : name{std::move(n)}, value{v}, load{std::move(f)} {}
 
   string name;
   value_t value;

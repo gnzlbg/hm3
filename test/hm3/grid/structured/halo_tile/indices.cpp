@@ -27,14 +27,14 @@ void test_indices() {
 
   // Coordinate tests
   using x = typename ci_t::coordinate;
-  static_assert(std::is_literal_type<x>{});
+  static_assert(std::is_literal_type<x>{}, "");
 
   STATIC_CHECK(ci_t::first_internal() == Nhl);
   STATIC_CHECK(ci_t::first_internal(1) == Nhl - 1);
   STATIC_CHECK(ci_t::last_internal() == Nhl + Nic - 1);
   STATIC_CHECK(ci_t::last_internal(1) == Nhl + Nic + 1 - 1);
 
-  STATIC_CHECK(ci_t::first_halo_left() == 0);
+  STATIC_CHECK(ci_t::first_halo_left() == 0_su);
   STATIC_CHECK(ci_t::last_halo_left() == Nhl - 1);
   STATIC_CHECK(ci_t::first_halo_right() == Nhl + Nic);
   STATIC_CHECK(ci_t::last_halo_right() == 2 * Nhl + Nic - 1);

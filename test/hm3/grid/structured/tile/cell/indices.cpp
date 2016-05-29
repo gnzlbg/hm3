@@ -20,7 +20,7 @@ void closest_cell_tests() {
                                       acc, math::absdiff(x_t(c)[i], x_t(o)[i]));
                                    })
                      + 1,
-                    (suint_t)x_t::dimension());
+                    x_t::dimension());
       int cells_visited = 0;
       auto x_c = Tile::closest_cell(x_t(c), [=, &cells_visited](auto i) {
         cells_visited++;
@@ -46,8 +46,8 @@ void tile_cell_indices_tests() {
     using tile_t = grid::structured::tile::cell::indices<1, 1>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
-    STATIC_CHECK(t.size() == 1);
-    STATIC_CHECK(t.length() == 1);
+    STATIC_CHECK(t.size() == 1_su);
+    STATIC_CHECK(t.length() == 1_su);
 
     suint_t c      = 0;
     auto check_all = [&](auto i) {
@@ -115,8 +115,8 @@ void tile_cell_indices_tests() {
     using tile_t = grid::structured::tile::cell::indices<2, 4>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
-    STATIC_CHECK(t.size() == 16);
-    STATIC_CHECK(t.length() == 4);
+    STATIC_CHECK(t.size() == 16_su);
+    STATIC_CHECK(t.length() == 4_su);
 
     suint_t c   = 0;
     suint_t x_i = 0;
@@ -208,7 +208,7 @@ void tile_cell_indices_tests() {
         ++counter_one;
       };
       tile_t::for_each_ring(f, l, check_one, 1);
-      CHECK(counter_one == 16);
+      CHECK(counter_one == 16_su);
     }
 
     closest_cell_tests<tile_t>();
@@ -218,8 +218,8 @@ void tile_cell_indices_tests() {
     using tile_t = grid::structured::tile::cell::indices<3, 5>;
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
-    STATIC_CHECK(t.size() == 125);
-    STATIC_CHECK(t.length() == 5);
+    STATIC_CHECK(t.size() == 125_su);
+    STATIC_CHECK(t.length() == 5_su);
 
     suint_t c      = 0;
     suint_t x_i    = 0;
@@ -241,7 +241,7 @@ void tile_cell_indices_tests() {
         x_i++;
       }
 
-      if (c % (t.length() * t.length()) == 0) {
+      if (c % (t.length() * t.length()) == 0_su) {
         x_j = 0;
         x_k++;
       }
@@ -342,7 +342,7 @@ void tile_cell_indices_tests() {
         if (counter_one == 62) { ++counter_one; }
       };
       tile_t::for_each_ring(f, l, check_one, 1);
-      CHECK(counter_one == 125);
+      CHECK(counter_one == 125_su);
     }
 
     closest_cell_tests<tile_t>();
@@ -357,31 +357,33 @@ void tile_cell_indices_tests() {
       auto f = x_t(0, 0, 0);
       auto l = x_t(5, 5, 5);
 
-      int c          = 0;
+      suint_t c      = 0;
       auto check_one = [&](auto i) {
         // hm3::fmt::print("{}\n", i);
         CHECK(*i == c);
         ++c;
-        if (c == 86 || c == 92 || c == 122 || c == 128) { c += 2; }
+        if (c == 86_su || c == 92_su || c == 122_su || c == 128_su) {
+          c += 2_su;
+        }
       };
       t.for_each_ring(f, l, check_one, 1);
-      CHECK(c == 216);
+      CHECK(c == 216_su);
     }
   }
 }
 
 void tile_cell_indices_bench() {
   std::vector<unsigned> v(1000000);
-  srand(time(NULL));
+  srand(time(nullptr));
   for (auto& e : v) { e = rand(); }
 
   auto time = [&](auto f) {
-    static constexpr auto N        = 10000;
-    static constexpr auto N_warmup = 100;
+    static constexpr auto n        = 10000;
+    static constexpr auto n_warmup = 100;
     unsigned long d                = 0;
     int val                        = 0;
-    for (int i = 0; i != N_warmup; ++i) { val = f(v); }
-    for (int i = 0; i != N; ++i) {
+    for (int i = 0; i != n_warmup; ++i) { val = f(v); }
+    for (int i = 0; i != n; ++i) {
       auto start_ = std::chrono::high_resolution_clock::now();
       val         = f(v);
       auto end_   = std::chrono::high_resolution_clock::now();

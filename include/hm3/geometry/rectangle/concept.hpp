@@ -36,7 +36,7 @@ struct square : rc::refines<Rectangle> {
 
 using Square = square;
 
-}  // namespace concept
+}  // namespace concepts
 
 template <typename T>
 using Rectangle

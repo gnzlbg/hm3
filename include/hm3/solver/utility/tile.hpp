@@ -62,7 +62,7 @@ struct tile : SquareGrid, Vars... {
 
   tile() = default;
   tile(tree::level_idx level_, bbox_t bbox) {
-    reinitialize(std::move(level_), std::move(bbox));
+    reinitialize(level_, std::move(bbox));
     clear();
   }
 };

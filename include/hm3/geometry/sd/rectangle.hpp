@@ -35,14 +35,18 @@ num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
 
   if (no_pos_values == Nd) {  // corner quadrants
     return distance().norm();
-  } else if (no_pos_values < 2) {  // direct neighbors and inside
+  }
+  if (no_pos_values < 2) {  // direct neighbors and inside
     return distance().maxCoeff();
-  } else if (Nd == 3) {             // shorter distance is to edges
+  }
+  if (Nd == 3) {                    // shorter distance is to edges
     if (distance(0) < num_t{0.}) {  // parallel x
       return std::sqrt(std::pow(distance(1), 2) + std::pow(distance(2), 2));
-    } else if (distance(1) < num_t{0.}) {  // parallel y
+    }
+    if (distance(1) < num_t{0.}) {  // parallel y
       return std::sqrt(std::pow(distance(0), 2) + std::pow(distance(2), 2));
-    } else if (distance(2) < num_t{0.}) {  // parallel z
+    }
+    if (distance(2) < num_t{0.}) {  // parallel z
       return std::sqrt(std::pow(distance(0), 2) + std::pow(distance(1), 2));
     }
   }

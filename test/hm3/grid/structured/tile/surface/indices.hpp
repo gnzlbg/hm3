@@ -63,13 +63,9 @@ struct test_2d_3 {
 struct test_3d_2 {
   static constexpr suint_t size() noexcept { return 36; }
   static auto normal(suint_t i) {
-    if (i <= 11) {
-      return geometry::point<3>::unit(0);
-    } else if (i <= 23) {
-      return geometry::point<3>::unit(1);
-    } else {
-      return geometry::point<3>::unit(2);
-    }
+    if (i <= 11) { return geometry::point<3>::unit(0); }
+    if (i <= 23) { return geometry::point<3>::unit(1); }
+    return geometry::point<3>::unit(2);
   }
   using opt_i = std2::experimental::optional<suint_t>;
 

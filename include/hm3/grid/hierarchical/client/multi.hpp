@@ -48,9 +48,9 @@ struct multi : geometry::dimensional<Nd> {
   /// node)
   grid_node_idx size_ = 0_gn;
   /// Smallest level in the grid
-  level_idx min_level;
+  level_idx min_level_;
   /// Largest level in the grid.
-  level_idx max_level;
+  level_idx max_level_;
   ///@}  // Data members
 
  public:
@@ -268,17 +268,17 @@ struct multi : geometry::dimensional<Nd> {
 
   /// Range of levels of nodes in the tree: [min_level, max_level]
   auto levels() const noexcept {
-    return min_level and max_level
-            ? boxed_ints<level_idx>(min_level, max_level + 1)
+    return min_level_ and max_level_
+            ? boxed_ints<level_idx>(min_level_, max_level_ + 1)
             : boxed_ints<level_idx>(0, 0);
   }
 
  private:
   void update_minmax_level(tree_node_idx n) noexcept {
     HM3_ASSERT(n, "");
-    auto l    = tree().level(n);
-    min_level = min_level ? std::min(min_level, l) : l;
-    max_level = max_level ? std::max(max_level, l) : l;
+    auto l     = tree().level(n);
+    min_level_ = min_level_ ? std::min(min_level_, l) : l;
+    max_level_ = max_level_ ? std::max(max_level_, l) : l;
   }
 
  public:
@@ -347,7 +347,7 @@ struct multi : geometry::dimensional<Nd> {
   struct refine_t {
     self& grid_;
     grid_node_idx parent_;
-    refine_t(self& g, grid_node_idx n) : grid_{g}, parent_{std::move(n)} {}
+    refine_t(self& g, grid_node_idx n) : grid_{g}, parent_{n} {}
     refine_t(refine_t&& other) : grid_{other.grid_}, parent_{other.parent_} {
       other.parent_ = grid_node_idx{};
     }
@@ -386,7 +386,7 @@ struct multi : geometry::dimensional<Nd> {
   struct coarsen_t {
     self& grid_;
     grid_node_idx parent_;
-    coarsen_t(self& g, grid_node_idx n) : grid_{g}, parent_{std::move(n)} {}
+    coarsen_t(self& g, grid_node_idx n) : grid_{g}, parent_{n} {}
     coarsen_t(coarsen_t&& other) : grid_{other.grid_}, parent_{other.parent_} {
       other.parent_ = grid_node_idx{};
     }
@@ -429,7 +429,7 @@ struct multi : geometry::dimensional<Nd> {
 
   multi(tree_t& t, grid_idx g, grid_node_idx node_capacity)
    : tree_{&t}
-   , grid_idx_{std::move(g)}
+   , grid_idx_{g}
    , tree_node_ids_(*node_capacity)
    , is_free_(*node_capacity)
    , size_(0_gn) {
@@ -438,7 +438,7 @@ struct multi : geometry::dimensional<Nd> {
 
   multi(tree_t& t, grid_idx g, grid_node_idx node_capacity,
         hm3::log::serial& log)
-   : multi(t, std::move(g), std::move(node_capacity)) {
+   : multi(t, g, node_capacity) {
     log("Allocated memory for \"{}\" tree nodes", capacity());
   }
 
@@ -447,8 +447,8 @@ struct multi : geometry::dimensional<Nd> {
     size_ = 0_gn;
     is_free_.set();
     for (auto&& n : tree_node_ids_) { n = tree_node_idx{}; }
-    min_level = level_idx{};
-    max_level = level_idx{};
+    min_level_ = level_idx{};
+    max_level_ = level_idx{};
     // reset doesn't do the following, mainly because the grid already does
     // it, but also because the typical pattern is to read the grid first, and
     // then read the solver grid state, which mean the solver nodes are
@@ -483,9 +483,9 @@ struct multi : geometry::dimensional<Nd> {
   }
 
   template <typename DataSwap> void sort(DataSwap&& ds) {
-    min_level = level_idx{};
-    max_level = level_idx{};
-    auto i    = grid_node_idx{0};
+    min_level_ = level_idx{};
+    max_level_ = level_idx{};
+    auto i     = grid_node_idx{0};
     for (auto n : tree().nodes(idx())) {
       auto cn = in_tree(n);
       ds(i, cn);

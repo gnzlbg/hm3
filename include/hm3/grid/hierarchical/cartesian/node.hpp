@@ -24,16 +24,14 @@ struct node : geometry::square<Nd>, tree_node_idx {
   /// Node from \p x_min and \p x_max.
   constexpr node(point_t x_min, point_t x_max,
                  tree_node_idx i = tree_node_idx{})
-   : geometry::square<Nd>{std::move(x_min), std::move(x_max)}
-   , tree_node_idx{std::move(i)} {}
+   : geometry::square<Nd>{x_min, x_max}, tree_node_idx{i} {}
   /// Node from \p x_center and \p x_length.
   constexpr node(point_t x_center, num_t length,
                  tree_node_idx i = tree_node_idx{})
-   : geometry::square<Nd>{std::move(x_center), std::move(length)}
-   , tree_node_idx{std::move(i)} {}
+   : geometry::square<Nd>{x_center, length}, tree_node_idx{i} {}
   /// Node from \p square and index \p i
   constexpr node(geometry::square<Nd> square, tree_node_idx i = tree_node_idx{})
-   : geometry::square<Nd>{std::move(square)}, tree_node_idx{std::move(i)} {}
+   : geometry::square<Nd>{square}, tree_node_idx{i} {}
 };
 
 template <dim_t Nd>

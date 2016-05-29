@@ -11,7 +11,7 @@ namespace hm3 {
 namespace inline_vector_detail {
 
 template <typename T, std::size_t Capacity,
-          bool is_trivially_destructible>  //
+          bool IsTriviallyDestructible>  //
 struct storage {
   static_assert(Capacity != std::size_t{0}, "");
   std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value>

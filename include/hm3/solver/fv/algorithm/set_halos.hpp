@@ -46,9 +46,8 @@ namespace fv {
 /// tiles between tiles "at the same level". This support should be increased
 /// for iterating over halo tiles across levels and used here.
 struct set_halos_fn {
-  template <typename State, typename TIdx, typename Tile>
-  void copy_internal_cells(State& s, TIdx tile_idx, Tile& tile,
-                           TIdx neighbor_tile_idx, Tile& neighbor_tile) const
+  template <typename State, typename Tile>
+  void copy_internal_cells(State& s, Tile& tile, Tile& neighbor_tile) const
    noexcept {
     tile.cells().for_each_halo([&](auto tile_halo_cell) {
       auto x_h = tile.geometry().cell_centroid(tile_halo_cell);
@@ -60,10 +59,9 @@ struct set_halos_fn {
     });
   }
 
-  template <typename State, typename TIdx, typename Tile>
-  void restrict_internal_cells(State& s, TIdx tile_idx, Tile& tile,
-                               TIdx neighbor_tile_idx,
-                               Tile& neighbor_tile) const noexcept {
+  template <typename State, typename Tile>
+  void restrict_internal_cells(State& s, Tile& tile, Tile& neighbor_tile) const
+   noexcept {
     tile.cells().for_each_halo([&](auto tile_halo_cell) {
       const auto x_h = tile.geometry().cell_centroid(tile_halo_cell);
       auto neighbor_tile_internal_cell
@@ -73,8 +71,7 @@ struct set_halos_fn {
       auto t_lhs = s.time_integration.lhs(tile)(tile_halo_cell);
       RANGES_FOR (auto&& v, s.variables()) { t_lhs(v) = 0.; }
       // average children values:
-      const auto l_h           = tile.geometry().cell_length();
-      static constexpr auto nd = State::dimension();
+      const auto l_h = tile.geometry().cell_length();
       for (auto child_pos : s.grid_client.tree().child_positions()) {
         auto x_child = child_centroid(child_pos, x_h, l_h);
         auto c = neighbor_tile.geometry().internal_cell_containing(x_child);
@@ -86,9 +83,8 @@ struct set_halos_fn {
     });
   }
 
-  template <typename State, typename TIdx, typename Tile, typename Lim>
-  void project_internal_cells(State& s, TIdx tile_idx, Tile& tile,
-                              TIdx neighbor_tile_idx, Tile& neighbor_tile,
+  template <typename State, typename Tile, typename Lim>
+  void project_internal_cells(State& s, Tile& tile, Tile& neighbor_tile,
                               Lim&& lim) const noexcept {
     tile.cells().for_each_halo([&](auto tile_halo_cell) {
       auto x_hc = tile.geometry().cell_centroid(tile_halo_cell);
@@ -121,11 +117,9 @@ struct set_halos_fn {
       for (auto neighbor_tile_idx : s.neighbors(tile_idx)) {
         auto& neighbor_tile = s.tile(neighbor_tile_idx);
         if (tile.level == neighbor_tile.level) {  // copy
-          copy_internal_cells(s, tile_idx, tile, neighbor_tile_idx,
-                              neighbor_tile);
+          copy_internal_cells(s, tile, neighbor_tile);
         } else if (tile.level < neighbor_tile.level) {  // restrict
-          restrict_internal_cells(s, tile_idx, tile, neighbor_tile_idx,
-                                  neighbor_tile);
+          restrict_internal_cells(s, tile, neighbor_tile);
         }
       }
     }
@@ -136,8 +130,7 @@ struct set_halos_fn {
       for (auto neighbor_tile_idx : s.neighbors(tile_idx)) {
         auto& neighbor_tile = s.tile(neighbor_tile_idx);
         if (!(tile.level < neighbor_tile.level)) { continue; }
-        project_internal_cells(s, tile_idx, tile, neighbor_tile_idx,
-                               neighbor_tile, lim);
+        project_internal_cells(s, tile, neighbor_tile, lim);
       }
     }
   }

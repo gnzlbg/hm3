@@ -700,7 +700,7 @@ void grid_for_paper2(mpi::env& env) {
 }
 */
 #endif
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char* /*argv*/ []) {
   /// Initialize MPI
   // mpi::env env(argc, argv);
 

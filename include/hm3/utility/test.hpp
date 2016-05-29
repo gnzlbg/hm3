@@ -51,11 +51,11 @@ template <typename T> streamable<T> stream(T const& t) {
 
 template <typename T> struct ret {
  private:
-  char const* filename_;
-  int lineno_;
-  char const* expr_;
   T t_;
+  int lineno_;
   bool dismissed_ = false;
+  char const* filename_;
+  char const* expr_;
 
   template <typename U> void oops(U const& u) const {
     fmt::print("> ERROR: CHECK failed '{}'\n > \t {} ({})\n", expr_, filename_,
@@ -73,7 +73,7 @@ template <typename T> struct ret {
 
  public:
   ret(char const* filename, int lineno, char const* expr, T t)
-   : filename_(filename), lineno_(lineno), expr_(expr), t_(std::move(t)) {}
+   : t_(std::move(t)), lineno_(lineno), filename_(filename), expr_(expr) {}
   ~ret() {
     if (!dismissed_ && eval_(42)) { this->oops(42); }
   }
@@ -128,7 +128,9 @@ struct loc {
 
 }  // namespace detail
 
-inline int result() { return detail::failures() ? EXIT_FAILURE : EXIT_SUCCESS; }
+inline int result() {
+  return detail::failures() != 0 ? EXIT_FAILURE : EXIT_SUCCESS;
+}
 
 /// CHECK(ACTUAL op EXPECTED)
 #define CHECK(...)                                                \

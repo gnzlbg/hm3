@@ -51,11 +51,12 @@ struct oracle {
 
   oracle() : s(s_default_constructed) {}
   oracle(const oracle_val& v) : s(s_value_copy_constructed), val(v) {}
-  oracle(oracle_val&& v) : s(s_value_move_constructed), val(std::move(v)) {
+  oracle(oracle_val&& v)
+   : s(s_value_move_constructed), val(std::move(v)) {  // NOLINT
     v.s = s_moved_from;
   }
   oracle(const oracle& o) : s(s_copy_constructed), val(o.val) {}
-  oracle(oracle&& o) : s(s_move_constructed), val(std::move(o.val)) {
+  oracle(oracle&& o) : s(s_move_constructed), val(std::move(o.val)) {  // NOLINT
     o.s = s_moved_from;
   }
 
@@ -66,7 +67,7 @@ struct oracle {
   }
   oracle& operator=(oracle_val&& v) {
     s   = s_value_move_constructed;
-    val = std::move(v);
+    val = std::move(v);  // NOLINT
     v.s = s_moved_from;
     return *this;
   }
@@ -77,7 +78,7 @@ struct oracle {
   }
   oracle& operator=(oracle&& o) {
     s   = s_move_constructed;
-    val = std::move(o.val);
+    val = std::move(o.val);  // NOLINT
     o.s = s_moved_from;
     return *this;
   }
@@ -162,7 +163,7 @@ TEST(value_ctor) {
   assert(oo1->s == s_move_constructed);
   assert(v.s == s_value_constructed);
 
-  tr2::optional<oracle> oo2(std::move(v));
+  tr2::optional<oracle> oo2(std::move(v));  // NOLINT
   assert(oo2 != tr2::nullopt);
   assert(oo2 != tr2::optional<oracle>{});
   assert(oo2 == oo1);
@@ -183,7 +184,7 @@ TEST(value_ctor) {
     assert(oo1->s == s_value_copy_constructed);
     assert(v.s == s_value_constructed);
 
-    tr2::optional<oracle> oo2{tr2::in_place, std::move(v)};
+    tr2::optional<oracle> oo2{tr2::in_place, std::move(v)};  // NOLINT
     assert(oo2 != tr2::nullopt);
     assert(oo2 != tr2::optional<oracle>{});
     assert(oo2 == oo1);
@@ -367,11 +368,11 @@ TEST(example1) {
   oi               = oj;       // assign disengaged object
   optional<int> ok = oj;       // ok is disengaged
 
-  if (oi) { assert(false); }  // 'if oi is engaged...'
-  if (!oi) { assert(true); }  // 'if oi is disengaged...'
+  if (oi) { assert(false); }             // 'if oi is engaged...'
+  if (!oi) { static_assert(true, ""); }  // 'if oi is disengaged...'
 
-  if (oi != nullopt) { assert(false); }  // 'if oi is engaged...'
-  if (oi == nullopt) { assert(true); }   // 'if oi is disengaged...'
+  if (oi != nullopt) { assert(false); }            // 'if oi is engaged...'
+  if (oi == nullopt) { static_assert(true, ""); }  // 'if oi is disengaged...'
 
   assert(oi == ok);  // two disengaged optionals compare equal
 
@@ -558,15 +559,15 @@ TEST(example_rationale) {
   // FAILS: if (opt2 == {}) {}   // ilegal
 
   ////////////////////////////////
-  assert(optional<unsigned>{} < optional<unsigned>{0});
-  assert(optional<unsigned>{0} < optional<unsigned>{1});
-  assert(!(optional<unsigned>{} < optional<unsigned>{}));
-  assert(!(optional<unsigned>{1} < optional<unsigned>{1}));
+  static_assert(optional<unsigned>{} < optional<unsigned>{0}, "");
+  static_assert(optional<unsigned>{0} < optional<unsigned>{1}, "");
+  static_assert(!(optional<unsigned>{} < optional<unsigned>{}), "");
+  static_assert(!(optional<unsigned>{1} < optional<unsigned>{1}), "");
 
-  assert(optional<unsigned>{} != optional<unsigned>{0});
-  assert(optional<unsigned>{0} != optional<unsigned>{1});
-  assert(optional<unsigned>{} == optional<unsigned>{});
-  assert(optional<unsigned>{0} == optional<unsigned>{0});
+  static_assert(optional<unsigned>{} != optional<unsigned>{0}, "");
+  static_assert(optional<unsigned>{0} != optional<unsigned>{1}, "");
+  static_assert(optional<unsigned>{} == optional<unsigned>{}, "");
+  static_assert(optional<unsigned>{0} == optional<unsigned>{0}, "");
 
   /////////////////////////////////
   optional<int> o;
@@ -1086,7 +1087,7 @@ TEST(optional_ref_hashing) {
   assert(hi(0) == hoi(optional<int&>{i0}));
   assert(hi(1) == hoi(optional<int&>{i1}));
 
-  string s{""};
+  string s;
   string s0{"0"};
   string s_cat{"CAT"};
   assert(hs("") == hos(optional<string&>{s}));
@@ -1219,19 +1220,19 @@ TEST(exception_safety) {
 // these 4 classes have different noexcept signatures in move operations
 struct nothrow_both {
   nothrow_both(nothrow_both&&) noexcept(true){};
-  void operator=(nothrow_both&&) noexcept(true){};
+  void operator=(nothrow_both&&) noexcept(true){};  // NOLINT
 };
 struct nothrow_ctor {
   nothrow_ctor(nothrow_ctor&&) noexcept(true){};
-  void operator=(nothrow_ctor&&) noexcept(false){};
+  void operator=(nothrow_ctor&&) noexcept(false){};  // NOLINT
 };
 struct nothrow_assign {
   nothrow_assign(nothrow_assign&&) noexcept(false){};
-  void operator=(nothrow_assign&&) noexcept(true){};
+  void operator=(nothrow_assign&&) noexcept(true){};  // NOLINT
 };
 struct nothrow_none {
   nothrow_none(nothrow_none&&) noexcept(false){};
-  void operator=(nothrow_none&&) noexcept(false){};
+  void operator=(nothrow_none&&) noexcept(false){};  // NOLINT
 };
 
 void test_noexcept() {

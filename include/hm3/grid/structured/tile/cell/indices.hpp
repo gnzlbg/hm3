@@ -414,9 +414,8 @@ struct indices : bounds<Nd, Nc> {
         if (current_[d] < to_[d]) {
           ++current_[d];
           return;
-        } else {
-          current_[d] = from_[d];
         }
+        current_[d] = from_[d];
       }
       done_ = true;
     }

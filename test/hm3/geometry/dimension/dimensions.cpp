@@ -4,11 +4,12 @@
 #include <hm3/utility/test.hpp>
 
 int main() {
+  using hm3::dim_t;
   {
     int c = 0;
     RANGES_FOR (auto&& d, hm3::dimensions(with_member_dimension{})) {
       c++;
-      CHECK(d < (uint)2);
+      CHECK(d < dim_t{2});
     }
     CHECK(c == 2);
   }
@@ -17,7 +18,7 @@ int main() {
     int c = 0;
     RANGES_FOR (auto&& d, hm3::dimensions(with_member_dimension2{})) {
       c++;
-      CHECK(d < (uint)2);
+      CHECK(d < dim_t{2});
     }
     CHECK(c == 2);
   }
@@ -26,7 +27,7 @@ int main() {
     int c = 0;
     RANGES_FOR (auto&& d, hm3::dimensions(other::with_nonmember_dimension{})) {
       c++;
-      CHECK(d < (uint)3);
+      CHECK(d < dim_t{3});
     }
     CHECK(c == 3);
   }
@@ -35,7 +36,7 @@ int main() {
     int c = 0;
     RANGES_FOR (auto&& d, hm3::dimensions(other::with_nonmember_dimension2{})) {
       c++;
-      CHECK(d < (uint)3);
+      CHECK(d < dim_t{3});
     }
     CHECK(c == 3);
   }

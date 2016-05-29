@@ -13,7 +13,7 @@ namespace io {
 using namespace nlohmann;
 
 inline bool has_field(json const& j, string const& name) {
-  return j.count(name);
+  return j.count(name) != 0u;
 }
 
 template <typename At>

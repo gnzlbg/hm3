@@ -45,5 +45,5 @@ struct state
 };
 
 }  // namespace fv
-}  // namespace name
+}  // namespace solver
 }  // namespace hm3

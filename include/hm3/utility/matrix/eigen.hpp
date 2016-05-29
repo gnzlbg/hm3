@@ -28,7 +28,7 @@ using aligned_eigen_type
 }  // namespace hm3
 
 /// Eigen extensions:
-namespace Eigen {
+namespace Eigen {  // NOLINT
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>

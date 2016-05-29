@@ -11,9 +11,9 @@ namespace fv {
 
 struct gradient_fn {
   template <typename LeftVars, typename RightVars>
-  constexpr auto operator()(LeftVars&& vL, RightVars&& vR,
+  constexpr auto operator()(LeftVars&& v_l, RightVars&& v_r,
                             num_t const& distance) const noexcept {
-    return (vR - vL) / distance;
+    return (v_r - v_l) / distance;
   }
 };
 
@@ -29,29 +29,29 @@ auto compute_structured_gradient(State& s, Tile& b, CIdx c, dim_t d,
   const auto dx  = b.geometry().cell_length();
   const auto dx2 = 2. * dx;
   auto&& lhs     = s.time_integration.lhs(b);
-  auto cm        = c.offset(d, -1);
-  auto cp        = c.offset(d, +1);
+  auto c_m       = c.offset(d, -1);
+  auto c_p       = c.offset(d, +1);
 
-  auto vM = lhs(cm);
-  auto vP = lhs(cp);
+  auto v_m = lhs(c_m);
+  auto v_p = lhs(c_p);
 
   if (Same<Limiter, limiter::none_fn>{}) {  // unlimited
     static_assert(!std::is_const<Tile>{}, "");
-    b.gradient(c, d) = gradient(vM, vP, dx2);
+    b.gradient(c, d) = gradient(v_m, v_p, dx2);
   } else {  // limited:
-    auto vC = lhs(c);
+    auto v_c = lhs(c);
 
-    // vars gM  = gradient(vC, vM, dx);
-    // vars gP  = gradient(vP, vC, dx);
-    // vars gC  = gradient(vP, vM, dx2);
+    // vars g_m  = gradient(v_c, v_m, dx);
+    // vars g_p  = gradient(v_p, v_c, dx);
+    // vars g_c  = gradient(v_p, v_m, dx2);
 
-    vars gM = gradient(vM, vC, dx);
-    vars gP = gradient(vC, vP, dx);
-    vars gC = gradient(vM, vP, dx2);
+    vars g_m = gradient(v_m, v_c, dx);
+    vars g_p = gradient(v_c, v_p, dx);
+    vars g_c = gradient(v_m, v_p, dx2);
 
-    vars lim = limiter(gM, gP);
+    vars lim = limiter(g_m, g_p);
 
-    grad = gC.array() * lim.array();
+    grad = g_c.array() * lim.array();
   }
   return grad;
 }

@@ -34,9 +34,9 @@ struct single : tree::tree<Nd> {
   single& operator=(single&&) = default;
 
   single(tree_node_idx node_capacity, node_geometry_t bounding_box)
-   : tree_t(std::move(node_capacity)), bounding_box_(std::move(bounding_box)) {}
+   : tree_t(node_capacity), bounding_box_(bounding_box) {}
   single(node_geometry_t bounding_box, tree_t tree_)
-   : tree_t(std::move(tree_)), bounding_box_(std::move(bounding_box)) {}
+   : tree_t(std::move(tree_)), bounding_box_(bounding_box) {}
 
   /// Bounding box of the grid (root node geometry)
   auto bounding_box() const noexcept { return bounding_box_; }

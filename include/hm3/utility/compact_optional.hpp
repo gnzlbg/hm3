@@ -61,7 +61,9 @@ struct compact_bool : compact_optional_type<bool, char, bool> {
   static constexpr bool is_empty_value(char v) { return v == 2; }
 
   static constexpr bool access_value(const char& v) { return bool(v); }
-  static constexpr char store_value(const bool& v) { return v; }
+  static constexpr char store_value(const bool& v) {
+    return static_cast<char>(v);
+  }
 };
 
 namespace detail {

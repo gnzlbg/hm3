@@ -66,15 +66,14 @@ struct coordinate : geometry::dimensional<Nd> {
   ///@{
 
   CONCEPT_REQUIRES(Nd == 1)
-  constexpr coordinate(value_t i) noexcept : xs{{std::move(i)}} {}
+  constexpr coordinate(value_t i) noexcept : xs{{i}} {}
 
   CONCEPT_REQUIRES(Nd == 2)
-  constexpr coordinate(value_t i, value_t j) noexcept
-   : xs{{std::move(i), std::move(j)}} {}
+  constexpr coordinate(value_t i, value_t j) noexcept : xs{{i, j}} {}
 
   CONCEPT_REQUIRES(Nd == 3)
   constexpr coordinate(value_t i, value_t j, value_t k) noexcept
-   : xs{{std::move(i), std::move(j), std::move(k)}} {}
+   : xs{{i, j, k}} {}
 
   constexpr coordinate(coordinates_t i) noexcept : xs{std::move(i)} {}
 

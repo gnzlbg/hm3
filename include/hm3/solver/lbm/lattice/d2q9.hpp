@@ -38,15 +38,15 @@ struct d2q9 : geometry::dimensional<2> {
   */
 
   enum indices {
-    W  = 3,
-    E  = 1,
-    S  = 4,
-    N  = 2,
-    NE = 5,
-    SE = 8,
-    SW = 7,
-    NW = 6,
-    C  = 0
+    w  = 3,
+    e  = 1,
+    s  = 4,
+    n  = 2,
+    ne = 5,
+    se = 8,
+    sw = 7,
+    nw = 6,
+    c  = 0
   };
   static auto without_center() noexcept { return view::iota(1, 9); }
   static auto direct() noexcept { return view::iota(1, 5); }
@@ -54,16 +54,15 @@ struct d2q9 : geometry::dimensional<2> {
 
   static constexpr suint_t opposite(suint_t d) noexcept {
     suint_t stencil[size()] = {0};
-
-    stencil[W]  = E;
-    stencil[E]  = W;
-    stencil[S]  = N;
-    stencil[N]  = S;
-    stencil[NE] = SW;
-    stencil[SE] = NW;
-    stencil[SW] = NE;
-    stencil[NW] = SE;
-    stencil[C]  = C;
+    stencil[w]              = e;
+    stencil[e]              = w;
+    stencil[s]              = n;
+    stencil[n]              = s;
+    stencil[ne]             = sw;
+    stencil[se]             = nw;
+    stencil[sw]             = ne;
+    stencil[nw]             = se;
+    stencil[c]              = c;
     return stencil[d];
   }
 
@@ -71,15 +70,15 @@ struct d2q9 : geometry::dimensional<2> {
     using dir_t   = array<sint_t, 2>;
     dir_t dirs[9] = {{{0, 0}}};
 
-    dirs[W]  = dir_t{{-1, 0}};
-    dirs[E]  = dir_t{{1, 0}};
-    dirs[S]  = dir_t{{0, -1}};
-    dirs[N]  = dir_t{{0, 1}};
-    dirs[NE] = dir_t{{1, 1}};
-    dirs[SE] = dir_t{{1, -1}};
-    dirs[SW] = dir_t{{-1, -1}};
-    dirs[NW] = dir_t{{-1, 1}};
-    dirs[C]  = dir_t{{0, 0}};
+    dirs[w]  = dir_t{{-1, 0}};
+    dirs[e]  = dir_t{{1, 0}};
+    dirs[s]  = dir_t{{0, -1}};
+    dirs[n]  = dir_t{{0, 1}};
+    dirs[ne] = dir_t{{1, 1}};
+    dirs[se] = dir_t{{1, -1}};
+    dirs[sw] = dir_t{{-1, -1}};
+    dirs[nw] = dir_t{{-1, 1}};
+    dirs[c]  = dir_t{{0, 0}};
     return dirs[d];
   }
 
@@ -87,15 +86,15 @@ struct d2q9 : geometry::dimensional<2> {
     using dir_t   = array<sint_t, 2>;
     dir_t dirs[9] = {{{0, 0}}};
 
-    dirs[W]  = dir_t{{-1, 0}};
-    dirs[E]  = dir_t{{1, 0}};
-    dirs[S]  = dir_t{{0, 0}};
-    dirs[N]  = dir_t{{0, 0}};
-    dirs[NE] = dir_t{{1, 1}};
-    dirs[SE] = dir_t{{1, 1}};
-    dirs[SW] = dir_t{{-1, -1}};
-    dirs[NW] = dir_t{{-1, -1}};
-    dirs[C]  = dir_t{{0, 0}};
+    dirs[w]  = dir_t{{-1, 0}};
+    dirs[e]  = dir_t{{1, 0}};
+    dirs[s]  = dir_t{{0, 0}};
+    dirs[n]  = dir_t{{0, 0}};
+    dirs[ne] = dir_t{{1, 1}};
+    dirs[se] = dir_t{{1, 1}};
+    dirs[sw] = dir_t{{-1, -1}};
+    dirs[nw] = dir_t{{-1, -1}};
+    dirs[c]  = dir_t{{0, 0}};
     return dirs[d];
   }
 
@@ -110,15 +109,15 @@ struct d2q9 : geometry::dimensional<2> {
 
     num_t t[9] = {0};
 
-    t[W]  = t_direct;
-    t[E]  = t_direct;
-    t[S]  = t_direct;
-    t[N]  = t_direct;
-    t[NE] = t_diagonal;
-    t[SE] = t_diagonal;
-    t[SW] = t_diagonal;
-    t[NW] = t_diagonal;
-    t[C]  = t_center;
+    t[w]  = t_direct;
+    t[e]  = t_direct;
+    t[s]  = t_direct;
+    t[n]  = t_direct;
+    t[ne] = t_diagonal;
+    t[se] = t_diagonal;
+    t[sw] = t_diagonal;
+    t[nw] = t_diagonal;
+    t[c]  = t_center;
     return t[d];
   }
 };

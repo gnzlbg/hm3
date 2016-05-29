@@ -18,7 +18,7 @@ using nidx_t = uint_t;
 using node_idx
  = compact_optional<empty_scalar_value<nidx_t,
                                        std::numeric_limits<nidx_t>::max()>,
-                    struct node_idx_tag>;
+                    struct tree_node_idx_tag>;
 
 constexpr node_idx operator"" _n(unsigned long long int i) {
   return node_idx{static_cast<nidx_t>(i)};

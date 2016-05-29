@@ -303,7 +303,7 @@ struct file {
 
   /// Creates a file without a dependency
   file(string const& group_name, index_t index = index_t{})
-   : current_(id{group_name, std::move(index)}) {}
+   : current_(id{group_name, index}) {}
 
   /// Creates a file without a dependency
   file(const char* group_name) : file(string{group_name}) {}
@@ -411,7 +411,7 @@ struct file {
     for (auto i = begin(fields_), e = end(fields_); i != e; ++i) {
       auto f = *i;
       auto n = i.key();
-      if (in_memory_.count(n)) {
+      if (in_memory_.count(n) != 0u) {
         auto mr     = in_memory_[n];
         auto mb     = reinterpret_cast<byte_ptr>(mr.first);
         auto me     = reinterpret_cast<byte_ptr>(mr.second);

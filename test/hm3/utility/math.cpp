@@ -66,6 +66,8 @@ int main() {
     STATIC_CHECK(binomial_coefficient(3, 2) == 3);
     STATIC_CHECK(binomial_coefficient(3, 3) == 1);
   }
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
 
   {  // floor
     using ::hm3::math::floor;
@@ -112,7 +114,7 @@ int main() {
     STATIC_CHECK(ceil(-1.5) == -1.0);
     STATIC_CHECK(ceil(-1.8) == -1.0);
   }
-
+#pragma clang diagnostic pop
   // Gaussian 1D: TODO
   // Gaussian 2D: TODO
 

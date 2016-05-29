@@ -21,7 +21,7 @@ struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
   }
 
   template <typename V>
-  decltype(auto) max_wave_speed(V&& v, dim_t d) const noexcept {
+  decltype(auto) max_wave_speed(V&& /*v*/, dim_t d) const noexcept {
     return std::abs(this->velocity(d));
   }
 
@@ -50,7 +50,7 @@ struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
       return v.marker(t);
     });
     cell_data.load(
-     "velocity", [&](auto c, auto&& d) { return s.physics.velocity(d); },
+     "velocity", [&](auto /*c*/, auto&& d) { return s.physics.velocity(d); },
      v.dimension(), [&](auto&& d) { return v.dimension_name(d); });
   }
 };

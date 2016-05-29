@@ -67,7 +67,7 @@ struct tuple_for_each_indexed_fn {
 namespace {
 constexpr auto&& tuple_for_each_indexed
  = static_const<tuple_for_each_indexed_fn>::value;
-}
+}  // namespace
 
 }  // namespace hm3
 

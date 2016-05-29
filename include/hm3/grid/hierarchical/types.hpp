@@ -34,16 +34,14 @@ constexpr grid_idx operator"" _g(unsigned long long int i) {
 using nidx_t = idx_t;
 
 /// Index of a node within a grid
-using node_idx
+using grid_node_idx
  = compact_optional<empty_scalar_value<nidx_t,
                                        std::numeric_limits<nidx_t>::max()>,
-                    struct node_idx_tag>;
+                    struct grid_node_idx_tag>;
 
-constexpr node_idx operator"" _gn(unsigned long long int i) {
-  return node_idx{static_cast<nidx_t>(i)};
+constexpr grid_node_idx operator"" _gn(unsigned long long int i) {
+  return grid_node_idx{static_cast<nidx_t>(i)};
 }
-
-using grid_node_idx = node_idx;
 
 }  // namespace hierarchical
 }  // namespace grid

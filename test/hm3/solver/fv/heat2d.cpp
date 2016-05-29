@@ -51,7 +51,7 @@ struct CylBoundaryCondition {
   }
 };
 */
-struct NeumannBoundaryConditions {
+struct neumann_boundary_conditions {
   template <typename State, typename To>
   constexpr void apply(State& s, To&& to) {
     for (auto&& b : s.tiles()) {
@@ -63,7 +63,7 @@ struct NeumannBoundaryConditions {
   }
 };
 
-struct DirichletBoundaryConditions {
+struct dirichlet_boundary_conditions {
   num_t val;
   template <typename State, typename To>
   constexpr void apply(State& s, To&& to) {
@@ -81,7 +81,7 @@ struct DirichletBoundaryConditions {
   }
 };
 
-struct DirichletBoundaryConditionsQ {
+struct dirichlet_boundary_conditionsQ {
   num_t val;
   template <typename State, typename To>
   constexpr void apply(State& s, To&& to) {
@@ -107,7 +107,7 @@ struct DirichletBoundaryConditionsQ {
   }
 };
 
-struct LaserBoundaryConditions {
+struct laser_boundary_conditions {
   num_t val;
   template <typename State, typename To>
   constexpr void apply(State& s, To&& to) {
@@ -186,8 +186,8 @@ void square(mpi::env& env) {
   }
 
   /// Boundary conditions
-  // auto bcs = LaserBoundaryConditions{20.0};
-  auto bcs = DirichletBoundaryConditionsQ{20.0};
+  // auto bcs = laser_boundary_conditions{20.0};
+  auto bcs = dirichlet_boundary_conditionsQ{20.0};
 
   num_t cfl = 0.5;
   // bcs.apply(

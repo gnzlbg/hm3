@@ -29,11 +29,8 @@ struct serializable : geometry::dimensional<State::dimension()> {
 
   auto nodes() const noexcept {
     return s.all_cells() | view::filter([&](cell_idx c) {
-             if (!idx) {
-               return s.is_internal(c);
-             } else {
-               return s.is_in_tile(c, idx);
-             }
+             if (!idx) { return s.is_internal(c); }
+             return s.is_in_tile(c, idx);
            });
   }
 
@@ -74,11 +71,11 @@ struct ls_serializable : serializable<State, T> {
   using base::s;
   using base::idx;
   using tile_idx            = typename base::tile_idx;
-  static constexpr dim_t Nd = State::dimension();
+  static constexpr dim_t nd = State::dimension();
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
-  vis::vtk::geometries<Nd> geometry(cell_idx c) const noexcept {
+  vis::vtk::geometries<nd> geometry(cell_idx c) const noexcept {
     auto g = s.geometry(c);
     if (!geometry::is_intersected(g, ls)) { return g; }
     return std::get<0>(intersect(g, ls));
@@ -90,9 +87,8 @@ struct ls_serializable : serializable<State, T> {
                return s.is_internal(c)
                       and (geometry::is_completely_inside(s.geometry(c), ls)
                            or geometry::is_intersected(s.geometry(c), ls));
-             } else {
-               return s.is_in_tile(c, idx);
              }
+             return s.is_in_tile(c, idx);
            });
   }
 

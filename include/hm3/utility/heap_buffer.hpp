@@ -21,7 +21,7 @@ template <typename T, typename Buffer = buffer> struct view {
   using reference       = T&;
   using const_reference = T const&;
 
-  view(Buffer& buffer, const uint_t noTs = 0) : buf_(buffer) { resize(noTs); }
+  view(Buffer& buffer, const uint_t no_ts = 0) : buf_(buffer) { resize(no_ts); }
   ~view() { buf_.clear(); }
   view()            = delete;
   view(view const&) = delete;
@@ -33,9 +33,9 @@ template <typename T, typename Buffer = buffer> struct view {
   inline uint_t capacity() const noexcept {
     return buf_.capacity() / sizeof(T);
   }
-  /// Makes sure buffer is able to hold \p noTs \p T 's.
-  inline void resize(const uint_t noTs) { buf_.resize(noTs * sizeof(T)); }
-  /// Makes sure buffer is able to hold \p noTs \p T 's.
+  /// Makes sure buffer is able to hold \p no_ts \p T 's.
+  inline void resize(const uint_t no_ts) { buf_.resize(no_ts * sizeof(T)); }
+  /// Makes sure buffer is able to hold \p no_ts \p T 's.
   inline uint_t size() const noexcept { return buf_.size() / sizeof(T); }
   /// Access \p i 'th T element of the buffer
   inline reference operator()(const uint_t i) noexcept {

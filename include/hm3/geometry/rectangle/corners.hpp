@@ -34,13 +34,13 @@ constexpr sint_t relative_corner_position(ppidx_t corner_pos,
                                           dim_t dimension) noexcept {
   switch (dimension) {
     case 0: {
-      return (corner_pos + 1) / 2 % 2 ? 1 : -1;
+      return ((corner_pos + 1) / 2 % 2) != 0 ? 1 : -1;
     }
     case 1: {
-      return (corner_pos / 2) % 2 ? 1 : -1;
+      return ((corner_pos / 2) % 2) != 0 ? 1 : -1;
     }
     case 2: {
-      return (corner_pos / 4) % 4 ? +1 : -1;
+      return ((corner_pos / 4) % 4) != 0 ? +1 : -1;
     }
     default: { HM3_FATAL_ERROR("unknown dimension {}", dimension); }
   }

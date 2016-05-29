@@ -178,21 +178,19 @@ struct session {
     return fs::remove(path, c);
   }
 
-  session(mpi::comm comm) : comm_{std::move(comm)} {}
+  session(mpi::comm comm) : comm_{comm} {}
   session(session const& other) = default;
   session(session&&)            = default;
   session& operator=(session const& other) = default;
   session& operator=(session&&) = default;
 
   /// Create a new session
-  session(create_t, string const& path, mpi::comm comm)
-   : comm_{std::move(comm)} {
+  session(create_t, string const& path, mpi::comm comm) : comm_{comm} {
     set_file(create, path);
   }
 
   /// Restart from an already existing session
-  session(restart_t, string const& path, mpi::comm comm)
-   : comm_{std::move(comm)} {
+  session(restart_t, string const& path, mpi::comm comm) : comm_{comm} {
     set_file(restart, path);
   }
 

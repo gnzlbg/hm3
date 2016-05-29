@@ -8,112 +8,112 @@ using namespace test;
 
 int main() {
   // Test no children:
-  STATIC_CHECK(no_children(1) == 2);
-  STATIC_CHECK(no_children(2) == 4);
-  STATIC_CHECK(no_children(3) == 8);
+  STATIC_CHECK(no_children(1) == 2_su);
+  STATIC_CHECK(no_children(2) == 4_su);
+  STATIC_CHECK(no_children(3) == 8_su);
 
   // Test no siblings
-  STATIC_CHECK(no_siblings(1) == 2);
-  STATIC_CHECK(no_siblings(2) == 4);
-  STATIC_CHECK(no_siblings(3) == 8);
+  STATIC_CHECK(no_siblings(1) == 2_su);
+  STATIC_CHECK(no_siblings(2) == 4_su);
+  STATIC_CHECK(no_siblings(3) == 8_su);
 
   // Test no nodes sharing face: 0D
-  STATIC_CHECK(no_nodes_sharing_face(0, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face(0, 1) == 0);
-  STATIC_CHECK(no_nodes_sharing_face(0, 2) == 0);
-  STATIC_CHECK(no_nodes_sharing_face(0, 3) == 0);
-  STATIC_CHECK(no_nodes_sharing_face(0, 4) == 0);
+  STATIC_CHECK(no_nodes_sharing_face(0, 0) == 1_su);
+  STATIC_CHECK(no_nodes_sharing_face(0, 1) == 0_su);
+  STATIC_CHECK(no_nodes_sharing_face(0, 2) == 0_su);
+  STATIC_CHECK(no_nodes_sharing_face(0, 3) == 0_su);
+  STATIC_CHECK(no_nodes_sharing_face(0, 4) == 0_su);
 
   // Test no nodes sharing face: 1D
-  STATIC_CHECK(no_nodes_sharing_face(1, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face(1, 1) == 2);
-  STATIC_CHECK(no_nodes_sharing_face(1, 2) == 0);
-  STATIC_CHECK(no_nodes_sharing_face(1, 3) == 0);
-  STATIC_CHECK(no_nodes_sharing_face(1, 4) == 0);
+  STATIC_CHECK(no_nodes_sharing_face(1, 0) == 1_su);
+  STATIC_CHECK(no_nodes_sharing_face(1, 1) == 2_su);
+  STATIC_CHECK(no_nodes_sharing_face(1, 2) == 0_su);
+  STATIC_CHECK(no_nodes_sharing_face(1, 3) == 0_su);
+  STATIC_CHECK(no_nodes_sharing_face(1, 4) == 0_su);
 
   // Test no nodes sharing face: 2D
-  STATIC_CHECK(no_nodes_sharing_face(2, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face(2, 1) == 2);
-  STATIC_CHECK(no_nodes_sharing_face(2, 2) == 4);
-  STATIC_CHECK(no_nodes_sharing_face(2, 3) == 0);
-  STATIC_CHECK(no_nodes_sharing_face(2, 4) == 0);
+  STATIC_CHECK(no_nodes_sharing_face(2, 0) == 1_su);
+  STATIC_CHECK(no_nodes_sharing_face(2, 1) == 2_su);
+  STATIC_CHECK(no_nodes_sharing_face(2, 2) == 4_su);
+  STATIC_CHECK(no_nodes_sharing_face(2, 3) == 0_su);
+  STATIC_CHECK(no_nodes_sharing_face(2, 4) == 0_su);
 
   // Test no nodes sharing face: 3D
-  STATIC_CHECK(no_nodes_sharing_face(3, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face(3, 1) == 2);
-  STATIC_CHECK(no_nodes_sharing_face(3, 2) == 4);
-  STATIC_CHECK(no_nodes_sharing_face(3, 3) == 8);
-  STATIC_CHECK(no_nodes_sharing_face(3, 4) == 0);
+  STATIC_CHECK(no_nodes_sharing_face(3, 0) == 1_su);
+  STATIC_CHECK(no_nodes_sharing_face(3, 1) == 2_su);
+  STATIC_CHECK(no_nodes_sharing_face(3, 2) == 4_su);
+  STATIC_CHECK(no_nodes_sharing_face(3, 3) == 8_su);
+  STATIC_CHECK(no_nodes_sharing_face(3, 4) == 0_su);
 
   // Test no nodes sharing face at level: 0D
-  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 0, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 0, 1) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 0, 2) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 1, 0) == 0);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 1, 1) == 0);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 1, 2) == 0);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 0, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 0, 1) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 0, 2) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 1, 0) == 0_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 1, 1) == 0_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(0, 1, 2) == 0_u);
 
   // Test no nodes sharing face at level: 1D
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 0, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 0, 1) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 0, 2) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 1, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 1, 1) == 2);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 1, 2) == 4);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 2, 0) == 0);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 2, 1) == 0);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 2, 2) == 0);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 0, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 0, 1) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 0, 2) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 1, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 1, 1) == 2_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 1, 2) == 4_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 2, 0) == 0_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 2, 1) == 0_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(1, 2, 2) == 0_u);
 
   // Test no nodes sharing face at level: 2D
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 0, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 0, 1) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 0, 2) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 1) == 2);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 2) == 4);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 3) == 8);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 2, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 2, 1) == 4);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 2, 2) == 16);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 3, 0) == 0);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 3, 1) == 0);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 3, 2) == 0);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 0, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 0, 1) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 0, 2) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 1) == 2_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 2) == 4_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 1, 3) == 8_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 2, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 2, 1) == 4_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 2, 2) == 16_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 3, 0) == 0_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 3, 1) == 0_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(2, 3, 2) == 0_u);
 
   // Test no nodes sharing face at level: 3D
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 0, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 0, 1) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 0, 2) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 1) == 2);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 2) == 4);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 3) == 8);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 2, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 2, 1) == 4);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 2, 2) == 16);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 3, 0) == 1);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 3, 1) == 8);
-  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 3, 2) == 64);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 0, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 0, 1) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 0, 2) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 1) == 2_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 2) == 4_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 1, 3) == 8_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 2, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 2, 1) == 4_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 2, 2) == 16_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 3, 0) == 1_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 3, 1) == 8_u);
+  STATIC_CHECK(no_nodes_sharing_face_at_level(3, 3, 2) == 64_u);
 
   /// Test number of node faces: 1D
-  STATIC_CHECK(no_faces(1, 0) == 2);
-  STATIC_CHECK(no_faces(1, 1) == 1);
-  STATIC_CHECK(no_faces(1, 2) == 0);
+  STATIC_CHECK(no_faces(1, 0) == 2_su);
+  STATIC_CHECK(no_faces(1, 1) == 1_su);
+  STATIC_CHECK(no_faces(1, 2) == 0_su);
 
   /// Test number of node faces: 2D
-  STATIC_CHECK(no_faces(2, 0) == 4);
-  STATIC_CHECK(no_faces(2, 1) == 4);
-  STATIC_CHECK(no_faces(2, 2) == 1);
+  STATIC_CHECK(no_faces(2, 0) == 4_su);
+  STATIC_CHECK(no_faces(2, 1) == 4_su);
+  STATIC_CHECK(no_faces(2, 2) == 1_su);
 
   /// Test number of node faces: 3D
-  STATIC_CHECK(no_faces(3, 0) == 8);
-  STATIC_CHECK(no_faces(3, 1) == 12);
-  STATIC_CHECK(no_faces(3, 2) == 6);
-  STATIC_CHECK(no_faces(3, 3) == 1);
+  STATIC_CHECK(no_faces(3, 0) == 8_su);
+  STATIC_CHECK(no_faces(3, 1) == 12_su);
+  STATIC_CHECK(no_faces(3, 2) == 6_su);
+  STATIC_CHECK(no_faces(3, 3) == 1_su);
 
   /// Check face neighbors: 1D
   {
     constexpr auto fn = face_neighbors<1>{};
-    STATIC_CHECK(fn.size() == 2);
+    STATIC_CHECK(fn.size() == 2_su);
     CHECK(size(fn()) == 2_u);
     test::check_equal(fn[0], neighbor_offset<1>{{-1}});
     test::check_equal(fn[1], neighbor_offset<1>{{1}});
@@ -123,7 +123,7 @@ int main() {
   /// Check face neighbors: 2D
   {
     constexpr auto fn = face_neighbors<2>{};
-    STATIC_CHECK(fn.size() == 4);
+    STATIC_CHECK(fn.size() == 4_su);
     CHECK(size(fn()) == 4_u);
     test::check_equal(fn[0], neighbor_offset<2>{{-1, 0}});
     test::check_equal(fn[1], neighbor_offset<2>{{1, 0}});
@@ -135,7 +135,7 @@ int main() {
   /// Check face neighbors: 3D
   {
     constexpr auto fn = face_neighbors<3>{};
-    STATIC_CHECK(fn.size() == 6);
+    STATIC_CHECK(fn.size() == 6_su);
     CHECK(size(fn()) == 6_u);
     test::check_equal(fn[0], neighbor_offset<3>{{-1, 0, 0}});
     test::check_equal(fn[1], neighbor_offset<3>{{1, 0, 0}});
@@ -149,8 +149,8 @@ int main() {
   /// Check edge neighbors: 1D
   {
     constexpr auto fn = edge_neighbors<1>{};
+    STATIC_CHECK(fn.size() == 0_su);
     CHECK(size(fn()) == 0_u);
-    STATIC_CHECK(fn.size() == 0);
     auto o = fn.offsets();
     auto m = neighbor_lookup_table<1, 100>;
     test::check_equal(o, m);
@@ -159,7 +159,7 @@ int main() {
   /// Check edge neighbors: 2D
   {
     constexpr auto fn = edge_neighbors<2>{};
-    STATIC_CHECK(fn.size() == 4);
+    STATIC_CHECK(fn.size() == 4_su);
     CHECK(size(fn()) == 4_u);
     test::check_equal(fn[0], neighbor_offset<2>{{-1, -1}});
     test::check_equal(fn[1], neighbor_offset<2>{{1, -1}});
@@ -171,7 +171,7 @@ int main() {
   /// Check edge neighbors: 3D
   {
     constexpr auto fn = edge_neighbors<3>{};
-    STATIC_CHECK(fn.size() == 12);
+    STATIC_CHECK(fn.size() == 12_su);
     CHECK(size(fn()) == 12_u);
 
     test::check_equal(fn[0], neighbor_offset<3>{{-1, -1, 0}});
@@ -194,7 +194,7 @@ int main() {
   /// Check corner neighbors: 1D
   {
     constexpr auto fn = corner_neighbors<1>{};
-    STATIC_CHECK(fn.size() == 0);
+    STATIC_CHECK(fn.size() == 0_su);
     CHECK(size(fn()) == 0_u);
     test::check_equal(fn.offsets(), neighbor_lookup_table<1, 100>);
   }
@@ -202,7 +202,7 @@ int main() {
   /// Check corner neighbors: 2D
   {
     constexpr auto fn = corner_neighbors<2>{};
-    STATIC_CHECK(fn.size() == 0);
+    STATIC_CHECK(fn.size() == 0_su);
     CHECK(size(fn()) == 0_u);
     test::check_equal(fn.offsets(), neighbor_lookup_table<2, 100>);
   }
@@ -210,7 +210,7 @@ int main() {
   /// Check corner neighbors: 3D
   {
     constexpr auto fn = corner_neighbors<3>{};
-    STATIC_CHECK(fn.size() == 8);
+    STATIC_CHECK(fn.size() == 8_su);
     CHECK(size(fn()) == 8_u);
     test::check_equal(fn[0], neighbor_offset<3>{{-1, -1, -1}});
     test::check_equal(fn[1], neighbor_offset<3>{{1, -1, -1}});
@@ -270,9 +270,9 @@ int main() {
 
   /// Test max no neighbors
   {
-    STATIC_CHECK(max_no_neighbors(1) == 2);
-    STATIC_CHECK(max_no_neighbors(2) == 12);
-    STATIC_CHECK(max_no_neighbors(3) == 56);
+    STATIC_CHECK(max_no_neighbors(1) == 2_su);
+    STATIC_CHECK(max_no_neighbors(2) == 12_su);
+    STATIC_CHECK(max_no_neighbors(3) == 56_su);
   }
 
   /// Test opposite neighbor stencils
@@ -280,7 +280,10 @@ int main() {
     auto test_opposite_neighbor_positions = [](auto neighbors, auto stencil) {
       std::size_t c = 0;
       CHECK(size(neighbors()) == size(stencil));
-      for (auto p : neighbors()) { CHECK(opposite(p) == stencil[c++]); }
+      for (auto p : neighbors()) {
+        CHECK(opposite(p) == stencil[c]);
+        c++;
+      }
     };
     // faces:
     test_opposite_neighbor_positions(face_neighbors<1>{},

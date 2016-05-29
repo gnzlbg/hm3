@@ -16,8 +16,9 @@ num_a<std::decay_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf,
                                                           num_t dt, V&& v,
                                                           Tile&& b, CIdx&& c,
                                                           LHS&& lhs) {
-  using var_v       = num_a<std::decay_t<V>::nvars()>;
-  auto variables_at = [](auto&& v, auto&& g, num_t dx) { return v + g * dx; };
+  using var_v = num_a<std::decay_t<V>::nvars()>;
+  auto variables_at
+   = [](auto&& vidx, auto&& g, num_t dx) { return vidx + g * dx; };
 
   var_v result = var_v::Zero();
   struct {
@@ -30,22 +31,22 @@ num_a<std::decay_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf,
   const num_t f   = 1. / data.dx;
   const num_t dx2 = data.dx / 2.;
   for (auto&& d : b.dimensions()) {
-    auto cM = c.offset(d, -1);
-    auto cP = c.offset(d, +1);
+    auto c_m = c.offset(d, -1);
+    auto c_p = c.offset(d, +1);
 
 #define SECOND_ORDER
 #ifdef SECOND_ORDER
-    auto vM  = variables_at(lhs(cM), b.gradient(cM, d), +dx2);
-    auto vcM = variables_at(lhs(c), b.gradient(c, d), -dx2);
-    auto vcP = variables_at(lhs(c), b.gradient(c, d), +dx2);
-    auto vP  = variables_at(lhs(cP), b.gradient(cP, d), -dx2);
+    auto v_m  = variables_at(lhs(c_m), b.gradient(c_m, d), +dx2);
+    auto v_cm = variables_at(lhs(c), b.gradient(c, d), -dx2);
+    auto v_cp = variables_at(lhs(c), b.gradient(c, d), +dx2);
+    auto v_p  = variables_at(lhs(c_p), b.gradient(c_p, d), -dx2);
 #else
-    auto vM  = lhs(cM);
-    auto vcM = lhs(c);
-    auto vcP = lhs(c);
-    auto vP  = lhs(cP);
+    auto v_m  = lhs(c_m);
+    auto v_cm = lhs(c);
+    auto v_cp = lhs(c);
+    auto v_p  = lhs(c_p);
 #endif
-    result += (nf(v, vM, vcM, d, data) - nf(v, vcP, vP, d, data));
+    result += (nf(v, v_m, v_cm, d, data) - nf(v, v_cp, v_p, d, data));
   }
   return f * result;
 }

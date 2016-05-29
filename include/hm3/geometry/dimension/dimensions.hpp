@@ -23,7 +23,7 @@ template <typename T, CONCEPT_REQUIRES_(
 constexpr auto dimensions(T&& t) {
   return dimensions(dimension(t));
 }
-}  // namespace detail
+}  // namespace dimensions_detail
 
 struct dimensions_fn {
   template <typename T>  // using geometry::dimensions

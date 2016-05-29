@@ -531,7 +531,7 @@ struct gaussian_fn {
 
 namespace {
 static constexpr auto&& gaussian = static_const<gaussian_fn>::value;
-}
+}  // namespace
 
 /// Integrates a 1D function using the trapezoidal rule
 ///
@@ -565,7 +565,7 @@ struct integrate_trapezoidal_fn {
 namespace {
 static constexpr auto&& integrate_trapezoidal
  = static_const<integrate_trapezoidal_fn>::value;
-}
+}  // namespace
 
 /// Integrates a 1D function using the simpson rule
 ///
@@ -601,7 +601,7 @@ struct integrate_simpson_fn {
 namespace {
 static constexpr auto&& integrate_simpson
  = static_const<integrate_simpson_fn>::value;
-}
+}  // namespace
 
 }  // namespace math
 }  // namespace hm3

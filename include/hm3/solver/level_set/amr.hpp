@@ -21,7 +21,7 @@ template <dim_t Nd> struct amr : geometry::dimensional<Nd> {
   /// Siblings of node \p n within the solver grid
   auto siblings(amr_node_idx n) const { return ls_->g.siblings(n); }
   /// Number of siblings within a node in the solver grid
-  constexpr int_t no_siblings() const noexcept {
+  constexpr uint_t no_siblings() const noexcept {
     return ls_->g.tree().no_children();
   }
 

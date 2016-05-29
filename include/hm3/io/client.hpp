@@ -70,7 +70,7 @@ struct client {
 
   /// Returns a reference to the underlying io::session
   io::session& session() {
-    if (!session_) {
+    if (session_ == nullptr) {
       HM3_FATAL_ERROR("io::client for \"{}\" is not initialized (null session)",
                       name_);
     }

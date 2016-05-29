@@ -31,7 +31,7 @@ struct multi : TreeGrid {
   using TreeGrid::neighbors;
   using TreeGrid::node;
 
-  multi() : grids_(0, 0) {}
+  multi()             = default;  // : grids_(0, 0) {}
   multi(multi const&) = default;
   multi(multi&&)      = default;
   multi& operator=(multi const&) = default;
@@ -85,9 +85,8 @@ struct multi : TreeGrid {
                  n, TreeGrid::size(), TreeGrid::capacity(),
                  TreeGrid::size() == TreeGrid::capacity());
       return TreeGrid::nodes(c);
-    } else {
-      return TreeGrid::children(n);
     }
+    return TreeGrid::children(n);
   }
 
   /// Remove grid node of grid \p g at node \p n

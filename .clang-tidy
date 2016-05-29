@@ -1,5 +1,5 @@
 ---
-Checks:          '-*,clang-analyzer-*,-clang-analyzer-alpha*,readability-identifier-naming,google-*,-google-build-using-namespace,-google-build-namespaces,-google-explicit-constructor,-google-readability-function-size,-google-readability-todo,-google-runtime-operator,-google-runtime-int,llvm-*,-llvm-include-order,modernize-*,readability-*,-readability-function-size,-readability-named-parameter,misc-*,-misc-noexcept-move-constructor'
+Checks:          '-*,clang-analyzer-*,-clang-analyzer-alpha*,readability-identifier-naming,google-*,-google-build-using-namespace,-google-build-namespaces,-google-explicit-constructor,-google-readability-function-size,-google-readability-todo,-google-runtime-operator,-google-runtime-int,llvm-*,-llvm-include-order,modernize-*,readability-*,-readability-function-size,-readability-named-parameter,misc-*,-misc-noexcept-move-constructor,-misc-definitions-in-headers,-modernize-pass-by-value,-google-runtime-references'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: true
 CheckOptions:
@@ -97,3 +97,5 @@ CheckOptions:
     value:           lower_case
   - key:             readability-identifier-naming.VirtualMethodCase
     value:           lower_case
+  - key:             readability-implicit-bool-cast.AllowConditionalPointerCasts
+    value:           0
