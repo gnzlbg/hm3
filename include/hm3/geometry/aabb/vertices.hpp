@@ -2,6 +2,7 @@
 /// \file
 ///
 /// AABB vertices
+#include <hm3/geometry/aabb/aabb.hpp>
 #include <hm3/geometry/aabb/concept.hpp>
 #include <hm3/geometry/aabb/relative_vertex_position.hpp>
 #include <hm3/geometry/aabb/size.hpp>

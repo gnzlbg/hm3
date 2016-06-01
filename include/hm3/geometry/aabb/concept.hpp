@@ -16,9 +16,6 @@ struct aabb : rc::refines<rc::Regular, Dimensional> {
   auto requires_(T&& t)
    -> decltype(rc::valid_expr(x_max(t), x_min(t), bounds(t),
                               length(t, dim_t{0}), lengths(t)));
-
-  // -> decltype(rc::valid_expr(bounds(t), length(t, dim_t{0}), x_min(t),
-  //                            x_max(t), vertex_size(t)));
 };
 
 using AABB = aabb;

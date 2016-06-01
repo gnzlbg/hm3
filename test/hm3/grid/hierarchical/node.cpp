@@ -49,7 +49,7 @@ void test_node() {
   CHECK(volume(n1) == volume(n2));
   CHECK(dimension(n1) == Nd);
   CHECK(centroid(n1) == centroid(n2));
-  CHECK(volume(box<Nd>(pm, pp)) == 1.0);
+  CHECK(volume(geometry::box<Nd>(pm, pp)) == 1.0);
 
   CHECK(n1 == n2);
   CHECK(!(n1 != n2));
@@ -65,7 +65,7 @@ void test_node() {
   CHECK(static_cast<tree_node_idx>(n3) == tree_node_idx{3});
   CHECK(static_cast<tree_node_idx>(n4) == tree_node_idx{4});
 
-  CHECK(static_cast<box<Nd>>(n1) == box<Nd>(pm, pp));
+  CHECK(static_cast<geometry::box<Nd>>(n1) == geometry::box<Nd>(pm, pp));
 }
 
 int main() {

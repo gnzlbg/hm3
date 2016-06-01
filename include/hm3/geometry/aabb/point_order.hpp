@@ -3,6 +3,7 @@
 ///
 /// Checks order of points in AABBs
 #include <hm3/geometry/aabb/concept.hpp>
+#include <hm3/geometry/polygon/types.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/math.hpp>

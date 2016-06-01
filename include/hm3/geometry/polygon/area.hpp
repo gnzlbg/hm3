@@ -23,7 +23,7 @@ constexpr num_t signed_area(P&& polygon) noexcept {
 }
 
 /// Computes the absolute area of a polygon
-template <typename P, CONCEPT_REQUIRES_(Polygon<P>{})>
+template <typename P, CONCEPT_REQUIRES_(PolygonD<P, 2>{})>
 constexpr num_t area(P&& polygon) noexcept {
   return std::abs(signed_area(std::forward<P>(polygon)));
 }

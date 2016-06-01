@@ -10,6 +10,7 @@
 #include <hm3/geometry/box/is_box.hpp>
 #include <hm3/geometry/box/length.hpp>
 #include <hm3/geometry/box/polygon.hpp>
+#include <hm3/geometry/box/size.hpp>
 #include <hm3/geometry/box/vertices.hpp>
 #include <hm3/geometry/box/volume.hpp>
 #include <hm3/geometry/box/x_min_max.hpp>
