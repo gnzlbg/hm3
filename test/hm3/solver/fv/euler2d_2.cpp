@@ -27,7 +27,7 @@ struct sod {
 
 void sod_test(mpi::env& env) {
   using namespace hm3::grid::hierarchical;
-  auto r = unit_square_neumann(env, sod<2>{});
+  auto r = unit_box_neumann(env, sod<2>{});
   solver::fv::vtk::serialize(std::get<1>(r), "block_result", std::get<0>(r).dt,
                              std::get<1>(r).physics.cv(), 4_gn);
 }
@@ -341,7 +341,7 @@ void explosion_test(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::square<nd>::unit();
+  auto bounding_box = geometry::box<nd>::unit();
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -450,7 +450,7 @@ void sod_test(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -531,7 +531,7 @@ void grid_for_paper(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 2;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -643,7 +643,7 @@ void grid_for_paper2(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 3;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);

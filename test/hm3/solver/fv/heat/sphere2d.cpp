@@ -1,4 +1,4 @@
-#include <hm3/geometry/square.hpp>
+#include <hm3/geometry/box.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/fv/models/heat.hpp>
@@ -75,7 +75,7 @@ int main(int argc, char* argv[]) {
   auto max_grid_level = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   using namespace grid::hierarchical;
 

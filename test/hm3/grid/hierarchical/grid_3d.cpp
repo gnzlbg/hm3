@@ -36,7 +36,7 @@ struct uniform_grid {
 auto uniform_grid_v = extend(uniform_tree{}, uniform_grid{});
 
 int main() {
-  auto bbox = geometry::unit(geometry::square<3>{});
+  auto bbox = geometry::unit(geometry::box<3>{});
   hierarchical::cartesian::single<3> g(73, bbox);
   g.refine(0_n);
   g.refine(1_n);

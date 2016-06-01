@@ -8,4 +8,5 @@
 #include <hm3/geometry/line/length.hpp>
 #include <hm3/geometry/line/line.hpp>
 #include <hm3/geometry/line/normal.hpp>
+#include <hm3/geometry/line/ostream.hpp>
 #include <hm3/geometry/line/vertices.hpp>

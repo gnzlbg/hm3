@@ -79,8 +79,8 @@ template <typename Grid> void grid_consistency_checks(Grid const& g) {
   auto bounding_box = g.bounding_box();
   auto xc_0         = g.coordinates(0_n);
   auto l_0          = g.length(0_n);
-  auto square_0     = geometry::square<Grid::dimension()>(xc_0, l_0);
-  CHECK(bounding_box == square_0);
+  auto box_0        = geometry::box<Grid::dimension()>(xc_0, l_0);
+  CHECK(bounding_box == box_0);
   consistency_checks(g);
 }
 

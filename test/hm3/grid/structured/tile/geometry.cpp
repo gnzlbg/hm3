@@ -9,17 +9,17 @@ template <dim_t Nd, tidx_t Nc>
 using tile_geom = grid::structured::tile::tile_geometry<Nd, Nc>;
 
 // Bounding box at the origin with length 1
-template <dim_t Nd> constexpr geometry::square<Nd> bbox_orig() {
+template <dim_t Nd> constexpr geometry::box<Nd> bbox_orig() {
   auto x_c = geometry::point<Nd>::constant(0.);
   auto l   = 1.0;
-  return geometry::square<Nd>{x_c, l};
+  return geometry::box<Nd>{x_c, l};
 }
 
 // Bounding box at x=(-3., -3, ...) ith length 2
-template <dim_t Nd> constexpr geometry::square<Nd> bbox_off() {
+template <dim_t Nd> constexpr geometry::box<Nd> bbox_off() {
   auto x_c = geometry::point<Nd>::constant(-3.);
   auto l   = 2.0;
-  return geometry::square<Nd>{x_c, l};
+  return geometry::box<Nd>{x_c, l};
 }
 
 template <typename TileGeometry, dim_t Nd = TileGeometry::dimension()>

@@ -15,4 +15,3 @@ num_t distance(point<Nd> const& a, point<Nd> const& b) noexcept {
 
 }  // namespace geometry
 }  // namespace hm3
- 

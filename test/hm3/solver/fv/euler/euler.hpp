@@ -1,4 +1,4 @@
-#include <hm3/geometry/square.hpp>
+#include <hm3/geometry/box.hpp>
 #include <hm3/grid/hierarchical/amr/amr.hpp>
 #include <hm3/grid/hierarchical/amr/criterion/level_at_distance.hpp>
 #include <hm3/grid/hierarchical/cartesian/amr/multi.hpp>
@@ -26,7 +26,7 @@ struct NeumannBoundaryConditions {
 };
 
 template <typename Parameters>
-auto unit_square_neumann(hm3::mpi::env& env, Parameters p) {
+auto unit_box_neumann(hm3::mpi::env& env, Parameters p) {
   using namespace hm3;
   auto comm = env.world();
 
@@ -38,7 +38,7 @@ auto unit_square_neumann(hm3::mpi::env& env, Parameters p) {
   constexpr suint_t no_grids = 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, p.level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   using namespace grid;
   using namespace grid::hierarchical;

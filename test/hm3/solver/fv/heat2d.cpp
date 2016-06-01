@@ -1,5 +1,5 @@
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/sd/sphere.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/fv/models/heat.hpp>
@@ -175,7 +175,7 @@ num_t error_slab_analytical(
   auto max_grid_level = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   using namespace grid::hierarchical;
 
@@ -279,7 +279,7 @@ void convergence_slab_analytical(mpi::env& env) {
   }
 }
 
-void square(mpi::env& env) {
+void box(mpi::env& env) {
   auto comm = env.world();
 
   // Initialize I/O session
@@ -293,7 +293,7 @@ void square(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 2;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   using namespace grid::hierarchical;
 
@@ -385,7 +385,7 @@ void sphere(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::unit(geometry::box<nd>{});
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -449,7 +449,7 @@ int main(int argc, char* argv[]) {
   /// Initialize MPI
   mpi::env env(argc, argv);
 
-  // square(env);
+  // box(env);
   convergence_slab_analytical(env);
   // sphere(env);
 

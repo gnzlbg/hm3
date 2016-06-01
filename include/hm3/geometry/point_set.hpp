@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Unique set of points
-#include <hm3/geometry/point.hpp>
 #include <hm3/geometry/box.hpp>
+#include <hm3/geometry/point.hpp>
 #include <hm3/grid/hierarchical/cartesian/single.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/balanced_refine.hpp>
 #include <hm3/utility/optional.hpp>

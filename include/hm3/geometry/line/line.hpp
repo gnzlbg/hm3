@@ -37,20 +37,14 @@ struct line : dimensional<Nd> {
   constexpr line& operator=(line&&) = default;
 };
 
-template <typename OStream, dim_t Nd>
-OStream& operator<<(OStream& o, line<Nd> const& l) {
-  o << "(x_0{";
-  for (dim_t d = 0; d < Nd; ++d) {
-    o << l.x_0(d);
-    if (d != Nd - 1) { o << ", "; }
-  }
-  o << "}, x_1{";
-  for (dim_t d = 0; d < Nd; ++d) {
-    o << l.x_1(d);
-    if (d != Nd - 1) { o << ", "; }
-  }
-  o << "})";
-  return o;
+template <dim_t Nd>
+bool operator==(line<Nd> const& l, line<Nd> const& r) noexcept {
+  return l.x_0 == r.x_0 and l.x_1 == r.x_1;
+}
+
+template <dim_t Nd>
+bool operator!=(line<Nd> const& l, line<Nd> const& r) noexcept {
+  return !(l == r);
 }
 
 }  // namespace geometry

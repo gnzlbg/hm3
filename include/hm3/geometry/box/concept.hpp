@@ -14,7 +14,6 @@ using Square = concepts::rc::models<concepts::Square, ranges::uncvref_t<T>>;
 
 namespace concepts {
 
-
 /// Boxs are not only rectangles but also boxs:
 // template <dim_t Nd>
 // struct is_box<::hm3::geometry::box<Nd>> : std::true_type {};

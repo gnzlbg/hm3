@@ -11,4 +11,3 @@ template <dim_t Nd> using vector = point<Nd>;
 
 }  // namespace geometry
 }  // namespace hm3
- 

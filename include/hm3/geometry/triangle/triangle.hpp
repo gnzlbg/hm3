@@ -23,5 +23,15 @@ struct triangle : dimensional<Nd> {
   }
 };
 
+template <dim_t Nd>
+bool operator==(triangle<Nd> const& l, triangle<Nd> const& r) noexcept {
+  return equal(l.vertices, r.vertices);
+}
+
+template <dim_t Nd>
+bool operator!=(triangle<Nd> const& l, triangle<Nd> const& r) noexcept {
+  return !(l == r);
+}
+
 }  // namespace geometry
 }  // namespace hm3

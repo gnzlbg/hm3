@@ -14,10 +14,10 @@ int main() {
   auto tile_centroid        = p_t::constant(0.);
   auto tile_internal_length = 1.0;
   auto tile_internal_bbox
-   = geometry::square<nd>{tile_centroid, tile_internal_length};
+   = geometry::box<nd>{tile_centroid, tile_internal_length};
   auto tile_external_length = 3.0;
   auto tile_external_bbox
-   = geometry::square<nd>{tile_centroid, tile_external_length};
+   = geometry::box<nd>{tile_centroid, tile_external_length};
 
   tile_geometry g(tile_internal_bbox);
   CHECK(g.cell_length() == 0.5);

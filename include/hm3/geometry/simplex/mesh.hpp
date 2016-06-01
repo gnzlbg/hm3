@@ -9,6 +9,8 @@ namespace hm3 {
 namespace geometry {
 
 /// Mesh of simplices (points, lines, triangles)
+///
+/// TODO: maybe specialize this for 1D...?
 template <dim_t Nd>  //
 struct simplex_mesh {
   using point_t   = point<Nd>;
