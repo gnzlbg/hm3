@@ -18,32 +18,35 @@ void test_node() {
   using namespace grid;
   using namespace geometry;
   using namespace hierarchical;
+  using p_t = point<Nd>;
+  using a_t = aabb<Nd>;
+  using b_t = geometry::box<Nd>;
 
-  point<Nd> pm = point<Nd>::zero();
-  point<Nd> pp = point<Nd>::ones();
-  point<Nd> xc = point<Nd>::constant(0.5);
+  p_t pm = p_t::zero();
+  p_t pp = p_t::ones();
+  p_t xc = p_t::constant(0.5);
 
-  point<Nd> ppw = point<Nd>::ones();
-  ppw(0)        = 1.5;
+  p_t ppw = p_t::ones();
+  ppw(0)  = 1.5;
 
-  CHECK(is_box(pm, pp));
-  CHECK(is_box(pm, xc));
-  CHECK(is_box(xc, pp));
+  CHECK(is_box(a_t(pm, pp)));
+  CHECK(is_box(a_t(pm, xc)));
+  CHECK(is_box(a_t(xc, pp)));
   if (Nd > 1) {
-    CHECK(!is_box(pm, ppw));
-    CHECK(!is_box(xc, ppw));
+    CHECK(!is_box(a_t(pm, ppw)));
+    CHECK(!is_box(a_t(xc, ppw)));
   }
 
-  CHECK(xc == box_centroid(pm, pp));
-  CHECK(xc != box_centroid(pm, xc));
-  CHECK(xc != box_centroid(xc, pp));
+  CHECK(xc == centroid(b_t(pm, pp)));
+  CHECK(xc != centroid(b_t(pm, xc)));
+  CHECK(xc != centroid(b_t(xc, pp)));
 
-  CHECK(box_length(pm, pp) == 1.0);
-  CHECK(box_length(pm, xc) == 0.5);
-  CHECK(box_length(xc, pp) == 0.5);
+  CHECK(length(b_t(pm, pp)) == 1.0);
+  CHECK(length(b_t(pm, xc)) == 0.5);
+  CHECK(length(b_t(xc, pp)) == 0.5);
 
   cartesian::node<Nd> n1(pm, pp);
-  cartesian::node<Nd> n2(box_centroid(pm, pp), box_length(pm, pp));
+  cartesian::node<Nd> n2(centroid(b_t(pm, pp)), length(b_t(pm, pp)));
 
   CHECK(length(n1) == length(n2));
   CHECK(volume(n1) == volume(n2));
