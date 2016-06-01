@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/geometry/square.hpp>
+#include <hm3/geometry/box.hpp>
 #include <hm3/solver/types.hpp>
 
 namespace hm3 {
@@ -22,10 +22,10 @@ auto call_as(T&& t, F&& f) -> std::enable_if_t<(sizeof...(Bs) > 0), void> {
   call_as<Bs...>(t, f);
 }
 
-template <typename SquareGrid, typename... Vars>  //
-struct tile : SquareGrid, Vars... {
-  using grid_t = SquareGrid;
-  using bbox_t = geometry::square<SquareGrid::dimension()>;
+template <typename BoxGrid, typename... Vars>  //
+struct tile : BoxGrid, Vars... {
+  using grid_t = BoxGrid;
+  using bbox_t = geometry::box<BoxGrid::dimension()>;
   /// Data
   ///
   /// \note The rest of the data is stored in base clases (see Vars...).

@@ -115,6 +115,15 @@ struct indices : bounds<Nd, Nic, Nhl>,
     tile_cell_indices::for_each_ring(tile_coordinate(from), tile_coordinate(to),
                                      g, w);
   }
+
+  template <typename F>
+  static constexpr void for_each_in_first_internal_ring(F&& f) noexcept {
+    auto g
+     = [&f](auto&& i) { return f(coordinate(std::forward<decltype(i)>(i))); };
+    tile_cell_indices::for_each_ring(
+     tile_coordinate::constant(first_internal()),
+     tile_coordinate::constant(last_internal()), g, 1);
+  }
   ///@} Internal iteration
 
   template <typename P>

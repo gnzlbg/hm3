@@ -14,16 +14,19 @@ namespace geometry {
 template <typename Shape, typename SDFunction,
           CONCEPT_REQUIRES_(Polygon<Shape>{})>
 bool is_intersected(Shape const& s, SDFunction&& sd) noexcept {
-  const auto shape_corners = corners(s);
-  const auto no_corners    = size(shape_corners);
-  using cpidx_t            = decltype(no_corners);
+  const auto shape_vertices = vertices(s);
+  const auto no_vertices    = size(shape_vertices);
+  using cpidx_t             = decltype(no_vertices);
 
-  auto sg = math::signum(sd(shape_corners[0]));
-  for (cpidx_t c = 1; c < no_corners; ++c) {
-    auto sg_c = math::signum(sd(shape_corners[c]));
+  HM3_ASSERT(no_vertices == 1, "");
+
+  auto sg = math::signum(sd(shape_vertices[0]));
+  for (cpidx_t c = 1; c < no_vertices; ++c) {
+    auto sg_c = math::signum(sd(shape_vertices[c]));
     if (sg == 0) { sg = sg_c; }
     if (sg != sg_c) { return true; }
   }
+
   return false;
 }
 
@@ -46,24 +49,24 @@ template <typename Shape, typename SDFunction, dim_t Nd = Shape::dimension(),
 intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   intersection<Shape> cut;
 
-  const auto shape_corners = corners(s);
-  const suint_t no_corners = size(shape_corners);
-  auto corner_ids          = view::iota(0_su, no_corners);
+  const auto shape_vertices = vertices(s);
+  const suint_t no_vertices = size(shape_vertices);
+  auto corner_ids           = view::iota(0_su, no_vertices);
 
-  // Compute signed distance values at the corners once:
-  inline_vector<num_t, MaxNp> sd_at_corners;
-  for (auto c : shape_corners) { sd_at_corners.push_back(sd(c)); }
+  // Compute signed distance values at the vertices once:
+  inline_vector<num_t, MaxNp> sd_at_vertices;
+  for (auto c : shape_vertices) { sd_at_vertices.push_back(sd(c)); }
 
   // Index of the next corner, wraps around for the last corner:
   auto next_corner
-   = [&](auto&& cidx) { return (cidx != no_corners - 1) ? cidx + 1 : 0; };
+   = [&](auto&& cidx) { return (cidx != no_vertices - 1) ? cidx + 1 : 0; };
 
   ppidx_t no_cutpoints_found = 0;
-  /// Adds corners and cut points to each polygon
+  /// Adds vertices and cut points to each polygon
   for (auto cidx : corner_ids) {
-    const auto corner_sd           = sd_at_corners[cidx];
+    const auto corner_sd           = sd_at_vertices[cidx];
     const auto n_cidx              = next_corner(cidx);
-    const auto next_corner_sd      = sd_at_corners[n_cidx];
+    const auto next_corner_sd      = sd_at_vertices[n_cidx];
     const auto corner_sd_sign      = math::signum(corner_sd);
     const auto next_corner_sd_sign = math::signum(next_corner_sd);
 
@@ -71,18 +74,18 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
     // (inside and outside) and the cut surface, otherwise it is only part of
     // one polygon
     if (corner_sd_sign == 0) {
-      cut.inside.push_back(shape_corners[cidx]);
-      cut.outside.push_back(shape_corners[cidx]);
+      cut.inside.push_back(shape_vertices[cidx]);
+      cut.outside.push_back(shape_vertices[cidx]);
       cut.signum_inside.push_back(corner_sd_sign);
       cut.signum_outside.push_back(corner_sd_sign);
-      cut.surface.push_back(shape_corners[cidx]);
+      cut.surface.push_back(shape_vertices[cidx]);
       ++no_cutpoints_found;
       continue;  // we are then done since we found the cut points
     } else if (corner_sd_sign == 1) {
-      cut.inside.push_back(shape_corners[cidx]);
+      cut.inside.push_back(shape_vertices[cidx]);
       cut.signum_inside.push_back(corner_sd_sign);
     } else if (corner_sd_sign == -1) {
-      cut.outside.push_back(shape_corners[cidx]);
+      cut.outside.push_back(shape_vertices[cidx]);
       cut.signum_outside.push_back(corner_sd_sign);
     } else {
       HM3_FATAL_ERROR("unreachable");
@@ -99,8 +102,9 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
 
     // Otherwise this edge is intersected by the zero level-set, so find the
     // point in the edge with value 0 by interpolating linearly:
-    auto x_cp = ip::linear::point_with_value(
-     0., shape_corners[cidx], shape_corners[n_cidx], corner_sd, next_corner_sd);
+    auto x_cp = ip::linear::point_with_value(0., shape_vertices[cidx],
+                                             shape_vertices[n_cidx], corner_sd,
+                                             next_corner_sd);
     ++no_cutpoints_found;
 
     // Cut points are part fo both polygons and part of the surface:

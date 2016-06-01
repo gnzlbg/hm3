@@ -290,7 +290,10 @@ int main() {
     }
     {
       int count_ = 0;
-      for (auto i : vec1) { CHECK(i == count_); ++count_;}
+      for (auto i : vec1) {
+        CHECK(i == count_);
+        ++count_;
+      }
     }
 
     {
@@ -303,7 +306,10 @@ int main() {
       stack_vec vec(vec2.size());
       copy(vec2, begin(vec));
       int count_ = 4;
-      for (auto i : vec) { CHECK(i == count_); --count_;}
+      for (auto i : vec) {
+        CHECK(i == count_);
+        --count_;
+      }
     }
   }
   {

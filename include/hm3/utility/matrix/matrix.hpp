@@ -73,8 +73,10 @@ struct matrix : bounds<NoRows, NoCols>,
   constexpr matrix& operator=(matrix const&) = default;
   constexpr matrix& operator=(matrix&&) = default;
 
+  // template <typename Int,
+  //           CONCEPT_REQUIRES_(is_vector() and std::is_integral<Int>{})>
   CONCEPT_REQUIRES(is_vector())
-  constexpr matrix(const uint_t no_elements)
+  constexpr matrix(const suint_t no_elements)
    : bounds(no_elements, 1), storage(no_elements) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
   }

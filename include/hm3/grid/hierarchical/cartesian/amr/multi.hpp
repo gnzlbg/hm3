@@ -39,8 +39,8 @@ struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
 
   /// Required to model the SerializableToVTK concept (optional)
   /// (allows writing the AMR state to vtk for debugging purposes):
-  geometry::square<Nd> geometry(amr_node_idx n) const { return g_->node(n); }
-  geometry::square<Nd> bounding_box() const { return g_->bounding_box(); }
+  geometry::box<Nd> geometry(amr_node_idx n) const { return g_->node(n); }
+  geometry::box<Nd> bounding_box() const { return g_->bounding_box(); }
 };
 
 template <dim_t Nd>

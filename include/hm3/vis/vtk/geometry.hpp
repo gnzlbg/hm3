@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Maps different cell type geometries
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3 {
@@ -11,12 +11,12 @@ namespace vis {
 namespace vtk {
 
 template <dim_t Nd> struct supported_geometries {
-  using type = std::experimental::variant<geometry::square<Nd>>;
+  using type = std::experimental::variant<geometry::box<Nd>>;
 };
 
 template <> struct supported_geometries<2_u> {
-  using type = std::experimental::variant<geometry::square<2_u>,
-                                          geometry::polygon<2_u, 5>>;
+  using type
+   = std::experimental::variant<geometry::box<2_u>, geometry::polygon<2_u, 5>>;
 };
 
 template <dim_t Nd> using geometries = typename supported_geometries<Nd>::type;

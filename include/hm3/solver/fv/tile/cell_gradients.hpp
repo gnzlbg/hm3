@@ -19,6 +19,7 @@ struct cell_gradients {
 
   auto& gradient() noexcept { return gradient_; }
   auto const& gradient() const noexcept { return gradient_; }
+
   auto gradient(cell_idx c, dim_t d) noexcept {
     return gradient_.row(*c.idx()).template segment<Nv>(d * Nv);
   }

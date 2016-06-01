@@ -4,8 +4,8 @@
 ///
 /// Serialization of LBM solver to VTK
 #ifdef HM3_ENABLE_VTK
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/solver/lbm/state.hpp>
 #include <hm3/utility/variant.hpp>
 #include <hm3/vis/vtk/geometry.hpp>

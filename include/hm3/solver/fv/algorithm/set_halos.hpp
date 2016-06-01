@@ -3,6 +3,8 @@
 ///
 /// Exchange halos
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
+#include <hm3/solver/fv/algorithm/project.hpp>
+#include <hm3/solver/fv/algorithm/restrict.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -54,6 +56,7 @@ struct set_halos_fn {
       auto neighbor_tile_internal_cell
        = neighbor_tile.geometry().internal_cell_containing(x_h);
       if (!neighbor_tile_internal_cell) { return; }
+
       s.time_integration.lhs(tile)(tile_halo_cell)
        = s.time_integration.lhs(neighbor_tile)(neighbor_tile_internal_cell);
     });
@@ -67,43 +70,29 @@ struct set_halos_fn {
       auto neighbor_tile_internal_cell
        = neighbor_tile.geometry().internal_cell_containing(x_h);
       if (!neighbor_tile_internal_cell) { return; }
-      // zero halo:
-      auto t_lhs = s.time_integration.lhs(tile)(tile_halo_cell);
-      RANGES_FOR (auto&& v, s.variables()) { t_lhs(v) = 0.; }
-      // average children values:
-      const auto l_h = tile.geometry().cell_length();
-      for (auto child_pos : s.grid_client.tree().child_positions()) {
-        auto x_child = child_centroid(child_pos, x_h, l_h);
-        auto c = neighbor_tile.geometry().internal_cell_containing(x_child);
-        HM3_ASSERT(c, "");  // all child must lie within the neighbors and they
-                            // must be different cells
-        t_lhs += s.time_integration.lhs(neighbor_tile)(c);
-      }
-      t_lhs /= s.grid_client.tree().no_children();
+
+      auto&& lhs_t  = s.time_integration.lhs(tile);
+      auto&& lhs_nt = s.time_integration.lhs(neighbor_tile);
+      restrict(s, neighbor_tile, lhs_nt, tile, tile_halo_cell, lhs_t);
     });
   }
 
   template <typename State, typename Tile, typename Lim>
   void project_internal_cells(State& s, Tile& tile, Tile& neighbor_tile,
                               Lim&& lim) const noexcept {
-    tile.cells().for_each_halo([&](auto tile_halo_cell) {
-      auto x_hc = tile.geometry().cell_centroid(tile_halo_cell);
-      auto neighbor_tile_internal_cell
-       = neighbor_tile.geometry().internal_cell_containing(x_hc);
-      if (!neighbor_tile_internal_cell) { return; }  // TODO: use halo sub-tiles
-      auto x_nc
-       = neighbor_tile.geometry().cell_centroid(neighbor_tile_internal_cell);
-      auto dx    = x_hc() - x_nc();
-      auto t_lhs = s.time_integration.lhs(tile)(tile_halo_cell);
-      auto nt_lhs
-       = s.time_integration.lhs(neighbor_tile)(neighbor_tile_internal_cell);
-      RANGES_FOR (auto&& d, s.dimensions()) {
-        auto neighbor_gradients = compute_structured_gradient(
-         s, neighbor_tile, neighbor_tile_internal_cell, d, lim);
-        neighbor_gradients *= dx(d);
-        neighbor_gradients += nt_lhs;
-        t_lhs = neighbor_gradients;
-      }
+    // TODO: iterate only over the first ring of internal cells
+    tile.cells().for_each_internal([&](auto tile_internal_cell) {
+      // tile.cells().for_each_in_first_internal_ring([&](auto
+      // tile_internal_cell) {
+      // find the internal neighbor overlapping the halo cell
+      auto x_i = tile.geometry().cell_centroid(tile_internal_cell);
+      auto neighbor_tile_halo_cell
+       = neighbor_tile.geometry().halo_cell_containing(x_i);
+      if (!neighbor_tile_halo_cell) { return; }
+
+      auto&& lhs_t  = s.time_integration.lhs(tile);
+      auto&& lhs_nt = s.time_integration.lhs(neighbor_tile);
+      project(s, tile, tile_internal_cell, lhs_t, neighbor_tile, lhs_nt, lim);
     });
   }
 
@@ -129,8 +118,9 @@ struct set_halos_fn {
       auto&& tile = s.tile(tile_idx);
       for (auto neighbor_tile_idx : s.neighbors(tile_idx)) {
         auto& neighbor_tile = s.tile(neighbor_tile_idx);
-        if (!(tile.level < neighbor_tile.level)) { continue; }
-        project_internal_cells(s, tile, neighbor_tile, lim);
+        if (tile.level < neighbor_tile.level) {
+          project_internal_cells(s, tile, neighbor_tile, lim);
+        }
       }
     }
   }

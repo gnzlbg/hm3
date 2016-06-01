@@ -66,7 +66,7 @@ struct physics : Lattice {
 
   template <typename Distributions, CONCEPT_REQUIRES_(l::dimension() == 2)>
   static constexpr num_t u(Distributions&& d, num_t density) noexcept {
-    return (d[l::E] + d[l::NE] + d[l::SE] - (d[l::W] + d[l::NW] + d[l::SW]))
+    return (d[l::e] + d[l::ne] + d[l::se] - (d[l::w] + d[l::nw] + d[l::sw]))
            / density;
   }
 
@@ -77,7 +77,7 @@ struct physics : Lattice {
 
   template <typename Distributions, CONCEPT_REQUIRES_(l::dimension() == 2)>
   static constexpr num_t v(Distributions&& d, num_t density) noexcept {
-    return (d[l::N] + d[l::NW] + d[l::NE] - (d[l::S] + d[l::SW] + d[l::SE]))
+    return (d[l::n] + d[l::nw] + d[l::ne] - (d[l::s] + d[l::sw] + d[l::se]))
            / density;
   }
 

@@ -8,8 +8,9 @@ namespace hm3 {
 namespace tree {
 
 struct root_traversal_fn {
-  /// Executes function \p f (node) -> bool on each node between node
-  /// \p n and the root node or until f(node) returns false.
+  /// Executes function \p f (node) -> bool on each node between node \p n and
+  /// the root node or until f(node) returns false (i.e. traversers the nodes
+  /// from \p until the root of the tree).
   ///
   /// \param tree [in] Tree on which the node \p n is located
   /// \param n [in] Start node

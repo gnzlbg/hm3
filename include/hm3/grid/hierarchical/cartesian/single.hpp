@@ -3,9 +3,11 @@
 ///
 /// Single hierarchical Cartesian grid
 #include <hm3/grid/hierarchical/cartesian/node.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/leaf_node_location.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/normalized_coordinates.hpp>
+#include <hm3/grid/hierarchical/tree/algorithm/shift_location.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 
 namespace hm3 {
@@ -19,7 +21,7 @@ namespace cartesian {
 template <dim_t Nd>  //
 struct single : tree::tree<Nd> {
   using tree_t                  = tree::tree<Nd>;
-  using node_geometry_t         = geometry::square<Nd>;
+  using node_geometry_t         = geometry::box<Nd>;
   using point_t                 = geometry::point<Nd>;
   using node_t                  = node<Nd>;
   node_geometry_t bounding_box_ = {point_t::constant(0.5), 1.};
@@ -70,8 +72,9 @@ struct single : tree::tree<Nd> {
   /// Center coordinates of node \p n
   point_t coordinates(tree_node_idx n) const noexcept {
     assert_node_in_use(n, HM3_AT_);
-    auto xs = tree::normalized_coordinates(*this, n);
-    return point_t{geometry::length(bounding_box()) * xs()};
+    auto xs    = tree::normalized_coordinates(*this, n);
+    auto x_min = geometry::bounds(bounding_box()).min;
+    return point_t{geometry::length(bounding_box()) * xs() + x_min()};
   }
 
   /// Node at index \p n
@@ -81,9 +84,7 @@ struct single : tree::tree<Nd> {
   }
 
   /// Geometry of node \p n
-  geometry::square<Nd> geometry(tree_node_idx n) const noexcept {
-    return node(n);
-  }
+  geometry::box<Nd> geometry(tree_node_idx n) const noexcept { return node(n); }
 
   /// Level of node \p n
   level_idx level(tree_node_idx n) const noexcept {
@@ -118,6 +119,12 @@ struct single : tree::tree<Nd> {
     const auto offset = Manifold()[p];
     for (auto&& d : dimensions()) { x_n += delta * offset[d]; }
     return x_n;
+  }
+
+  /// Index of leaf node containing the point \p p
+  tree_node_idx leaf_node_containing(point_t p) {
+    if (!geometry::contains(bounding_box(), p)) { return tree_node_idx{}; }
+    return tree::leaf_node_location(*this, bounding_box(), p).idx;
   }
 };
 

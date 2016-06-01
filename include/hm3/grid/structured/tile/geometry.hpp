@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Square tile geometry
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/dimensions.hpp>
 #include <hm3/geometry/point.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/grid/structured/tile/cell.hpp>
 
 namespace hm3 {
@@ -13,20 +13,20 @@ namespace structured {
 namespace tile {
 
 template <dim_t Nd, tidx_t Nc>  //
-struct cell_geometry : geometry::square<Nd>, cell::indices<Nd, Nc>::coordinate {
-  using square_t     = geometry::square<Nd>;
+struct cell_geometry : geometry::box<Nd>, cell::indices<Nd, Nc>::coordinate {
+  using box_t        = geometry::box<Nd>;
   using coordinate_t = typename cell::indices<Nd, Nc>::coordinate;
-  cell_geometry(square_t s, coordinate_t x)
-   : square_t{std::move(s)}, coordinate_t(std::move(x)) {}
-  explicit operator square_t() const noexcept {
-    return static_cast<square_t const&>(*this);
+  cell_geometry(box_t s, coordinate_t x)
+   : box_t{std::move(s)}, coordinate_t(std::move(x)) {}
+  explicit operator box_t() const noexcept {
+    return static_cast<box_t const&>(*this);
   }
   explicit operator coordinate_t() const noexcept {
     return static_cast<coordinate_t const&>(*this);
   }
 };
 
-/// Square structured tile spatial information
+/// Box structured tile spatial information
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
@@ -34,7 +34,7 @@ template <dim_t Nd, tidx_t Nc>  //
 struct tile_geometry : geometry::dimensional<Nd> {
   using bounds          = cell::bounds<Nd, Nc>;
   using point_t         = geometry::point<Nd>;
-  using square_t        = geometry::square<Nd>;
+  using box_t           = geometry::box<Nd>;
   using cell_indices    = cell::indices<Nd, Nc>;
   using cell_coordinate = typename cell_indices::coordinate;
   using cell_geometry_t = cell_geometry<Nd, Nc>;
@@ -87,10 +87,10 @@ struct tile_geometry : geometry::dimensional<Nd> {
   }
 
   /// Tile bounding box
-  constexpr square_t tile_bounding_box() const noexcept {
+  constexpr box_t tile_bounding_box() const noexcept {
     num_t tile_length       = this->tile_length();
     point_t x_tile_centroid = tile_centroid(tile_length);
-    return square_t{x_tile_centroid, tile_length};
+    return box_t{x_tile_centroid, tile_length};
   }
 
   /// Compute the cell length from the length of the tile
@@ -101,13 +101,13 @@ struct tile_geometry : geometry::dimensional<Nd> {
   }
 
   /// Compute the cell length from the tile bounding box
-  static constexpr num_t cell_length(square_t bbox) noexcept {
+  static constexpr num_t cell_length(box_t bbox) noexcept {
     return cell_length(geometry::length(bbox));
   }
 
   /// Bounding box of cell at coordinate \p x
-  constexpr square_t bounding_box(cell_coordinate x) const noexcept {
-    return square_t{cell_centroid(x), cell_length()};
+  constexpr box_t bounding_box(cell_coordinate x) const noexcept {
+    return box_t{cell_centroid(x), cell_length()};
   }
 
   /// Geometry of cell at coordinate \p x
@@ -116,7 +116,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
   }
 
   /// Computes first cell centroid coordinates (idx = 0) from tile bounding box
-  static constexpr point_t x_first_cell(square_t bbox) noexcept {
+  static constexpr point_t x_first_cell(box_t bbox) noexcept {
     HM3_ASSERT(geometry::length(bbox) > 0.,
                "bounding box length must be positive, bbox {}", bbox);
     auto x_min  = geometry::bounds(bbox).min;
@@ -147,7 +147,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
   }
 
   /// Sets the bounding box of the tile to \p bounding_box
-  constexpr void set_bbox(square_t bounding_box) noexcept {
+  constexpr void set_bbox(box_t bounding_box) noexcept {
     cell_length_  = cell_length(bounding_box);
     x_first_cell_ = x_first_cell(bounding_box);
   }
@@ -159,7 +159,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
   constexpr tile_geometry& operator=(tile_geometry&&) = default;
 
   /// Constructs a tile geometry from its bounding box
-  constexpr tile_geometry(square_t bounding_box)
+  constexpr tile_geometry(box_t bounding_box)
    : cell_length_(cell_length(bounding_box))
    , x_first_cell_(x_first_cell(bounding_box)) {}
 };

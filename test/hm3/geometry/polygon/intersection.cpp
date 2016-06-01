@@ -1,20 +1,20 @@
+#include <hm3/geometry/aabb.hpp>
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/rectangle.hpp>
 #include <hm3/geometry/sd/combinators.hpp>
 #include <hm3/geometry/sd/edge.hpp>
-#include <hm3/geometry/square.hpp>
 
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
-using p2d         = geometry::point<2>;
-using v2d         = geometry::vector<2>;
-using quad2d      = geometry::polygon<2, 4>;
-using tri2d       = geometry::polygon<2, 3>;
-using square2d    = geometry::square<2>;
-using rectangle2d = geometry::rectangle<2>;
+using p2d    = geometry::point<2>;
+using v2d    = geometry::vector<2>;
+using quad2d = geometry::polygon<2, 4>;
+using tri2d  = geometry::polygon<2, 3>;
+using box2d  = geometry::box<2>;
+using aabb2d = geometry::aabb<2>;
 
 template <uint_t MaxNp> using poly2d = geometry::polygon<2, MaxNp>;
 
@@ -59,12 +59,12 @@ edge2d make_edge(num_t x_c, num_t nx, num_t ny) {
 }
 
 int main() {
-  // Test a square cut by a plane passing by its center aligned with the square
+  // Test a box cut by a plane passing by its center aligned with the box
   // axis (4 possibilities): normal pointing left, right, top, and bottom
 
-  {  // square intersected with left pointing plane at square center
+  {  // box intersected with left pointing plane at box center
     // (inverse test covers right pointing plane)
-    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s   = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     auto sdf = make_edge(0.5, 1.0, 0.0);
 
     poly2d<5> inside  = {p2d{.5, 0.}, p2d{1., 0.}, p2d{1., 1.}, p2d{.5, 1.}};
@@ -73,9 +73,9 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with top pointing plane at square center
+  {  // box intersected with top pointing plane at box center
     // (inverse test covers bottom pointing plane)
-    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s   = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     auto sdf = make_edge(0.5, 0.0, 1.0);
 
     poly2d<5> inside  = {p2d{1., .5}, p2d{1., 1.}, p2d{0., 1.}, p2d{0., .5}};
@@ -84,13 +84,13 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  // Test a square cut by a 45 degree plane passing by its center (4
+  // Test a box cut by a 45 degree plane passing by its center (4
   // possibilities): top right (TR), bottom left (BL), top left (TL), bottom
   // right (BR)
 
-  {  // square intersected with 45deg plane at square center pointing TR
+  {  // box intersected with 45deg plane at box center pointing TR
     // (inverse test covers pointing BL)
-    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s   = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     auto sdf = make_edge(0.5, 0.5, 0.5);
 
     poly2d<5> inside  = {p2d{1., 0.}, p2d{1., 1.}, p2d{0., 1.}};
@@ -99,9 +99,9 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with 45deg plane at square center pointing TL
+  {  // box intersected with 45deg plane at box center pointing TL
     // (inverse test covers pointing BR)
-    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s   = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     auto sdf = make_edge(0.5, 0.5, -0.5);
 
     poly2d<5> inside  = {p2d{0., 0.}, p2d{1., 0.}, p2d{1., 1.}};
@@ -110,15 +110,15 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  /// Test a square cut by a 45 degree plane displaced by a delta along a 45
+  /// Test a box cut by a 45 degree plane displaced by a delta along a 45
   /// degree diagonal: two possibilities per corner are possible, the plane
   /// normal can point to the corner or away from it, resulting in a total of 8
   /// cases. The corners are BL BR TL and TR, and the normals are into the
   /// corner C or away from it A:
 
-  {  // square intersected with 45deg plane at distance detla = 0.25 from square
+  {  // box intersected with 45deg plane at distance detla = 0.25 from box
      // center pointing into the BL corner: CBL (inverse test covers ABL)
-    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s   = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     auto sdf = make_edge(0.25, -0.5, -0.5);
 
     poly2d<5> inside = {p2d{0., 0.}, p2d{.5, 0.}, p2d{0., .5}};
@@ -128,9 +128,9 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with 45deg plane at distance detla = 0.25 from square
+  {  // box intersected with 45deg plane at distance detla = 0.25 from box
      // center pointing into the BR corner: CBR (inverse test covers ABR)
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0.75, 0.25}};
     auto sdf = make_edge(ep, 0.5, -0.5);
 
@@ -141,9 +141,9 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with 45deg plane at distance detla = 0.25 from square
+  {  // box intersected with 45deg plane at distance detla = 0.25 from box
      // center pointing into the TR corner: CTR (inverse test covers ATR)
-    auto s   = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s   = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     auto sdf = make_edge(0.75, 0.5, 0.5);
 
     poly2d<5> inside = {p2d{1., .5}, p2d{1., 1.}, p2d{.5, 1.}};
@@ -153,9 +153,9 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with 45deg plane at distance detla = 0.25 from square
+  {  // box intersected with 45deg plane at distance detla = 0.25 from box
      // center pointing into the TL corner: CTL (inverse test covers ATL)
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0.25, 0.75}};
     auto sdf = make_edge(ep, -0.5, 0.5);
 
@@ -166,10 +166,10 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  // Test a square intersected with cut planes aligned with square sides (4
+  // Test a box intersected with cut planes aligned with box sides (4
   // cases)
-  {  // square intersected with a plane aligned with the left axis: L
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with a plane aligned with the left axis: L
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0.0, 0.5}};
     auto sdf = make_edge(ep, 1., 0.);
 
@@ -179,8 +179,8 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with a plane aligned with the left axis: R
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with a plane aligned with the left axis: R
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{1.0, 0.5}};
     auto sdf = make_edge(ep, -1., 0.);
 
@@ -190,8 +190,8 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with a plane aligned with the bottom axis: B
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with a plane aligned with the bottom axis: B
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0.5, 0.}};
     auto sdf = make_edge(ep, 0., 1.);
 
@@ -201,8 +201,8 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with a plane aligned with the bottom axis: B
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with a plane aligned with the bottom axis: B
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0.5, 1.}};
     auto sdf = make_edge(ep, 0., -1.);
 
@@ -212,10 +212,10 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  // Test square intersected with cut plane at the corners that doesn't cut the
-  // square, 4 cases (one for each corner): BL, BR, TR, TL
-  {  // square intersected with non-cutting plane at the corner: BL
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  // Test box intersected with cut plane at the corners that doesn't cut the
+  // box, 4 cases (one for each corner): BL, BR, TR, TL
+  {  // box intersected with non-cutting plane at the corner: BL
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0., 0.}};
     auto sdf = make_edge(ep, 0.5, 0.5);
 
@@ -225,8 +225,8 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with non-cutting plane at the corner: BR
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with non-cutting plane at the corner: BR
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{1., 0.}};
     auto sdf = make_edge(ep, -0.5, 0.5);
 
@@ -236,8 +236,8 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with non-cutting plane at the corner: TR
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with non-cutting plane at the corner: TR
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{1., 1.}};
     auto sdf = make_edge(ep, -0.5, -0.5);
 
@@ -247,8 +247,8 @@ int main() {
     test_intersect(s, sdf, inside, outside, surface);
   }
 
-  {  // square intersected with non-cutting plane at the corner: TL
-    auto s = poly2d<5>(square2d(p2d::constant(0.5), 1.0));
+  {  // box intersected with non-cutting plane at the corner: TL
+    auto s = poly2d<5>(box2d(p2d::constant(0.5), 1.0));
     p2d ep{{0., 1.}};
     auto sdf = make_edge(ep, 0.5, -0.5);
 

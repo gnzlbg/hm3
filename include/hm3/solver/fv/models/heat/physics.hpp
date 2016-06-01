@@ -19,6 +19,8 @@ template <dim_t Nd> struct physics : geometry::dimensional<Nd>, indices<Nd> {
      >;
   };
 
+  num_t thermal_diffusivity;
+
   using self = physics<Nd>;
   using i    = indices<Nd>;
 
@@ -30,11 +32,8 @@ template <dim_t Nd> struct physics : geometry::dimensional<Nd>, indices<Nd> {
   self cv() const noexcept { return *this; }
   self pv() const noexcept { return *this; }
 
-  physics()               = default;
-  physics(physics const&) = default;
-  physics(physics&&)      = default;
-  physics& operator=(physics const&) = default;
-  physics& operator=(physics&&) = default;
+  physics(num_t thermal_diffusivity_)
+   : thermal_diffusivity(thermal_diffusivity_) {}
 
   template <typename S, typename V, typename CellData>
   static void load(V&& v, S const& s, CellData&& cell_data) noexcept {

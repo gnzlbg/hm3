@@ -32,7 +32,7 @@ template <dim_t Nd> struct multi : adaptor::multi<single<Nd>> {
         this->capacity(), this->no_grids(), this->bounding_box(), this->size());
   }
   multi(io::session& s, tree_node_idx node_capacity, grid_idx grid_capacity,
-        geometry::square<Nd> bounding_box)
+        geometry::box<Nd> bounding_box)
    : multi(s, base_t(node_capacity, grid_capacity, std::move(bounding_box))) {}
 
   bool is_sorted() const noexcept { return ::hm3::tree::dfs_sort.is(*this); }
@@ -65,8 +65,8 @@ template <dim_t Nd> struct multi : adaptor::multi<single<Nd>> {
     if (type_ == type(tree::tree<Nd>{})) {
       auto d = from_file(tree::tree<Nd>{}, f, node_capacity);
       return multi<Nd>{
-       s, base_t{0, single<Nd>{geometry::unit(geometry::square<Nd>{}),
-                               std::move(d)}}};
+       s, base_t{
+           0, single<Nd>{geometry::unit(geometry::box<Nd>{}), std::move(d)}}};
     }
 
     HM3_FATAL_ERROR("Cannot read block of type {} and name {} into a "

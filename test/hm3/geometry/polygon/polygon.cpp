@@ -1,28 +1,28 @@
+#include <hm3/geometry/aabb.hpp>
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/rectangle.hpp>
-#include <hm3/geometry/square.hpp>
 
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
-using p2d         = geometry::point<2>;
-using v2d         = geometry::vector<2>;
-using quad2d      = geometry::polygon<2, 4>;
-using tri2d       = geometry::polygon<2, 3>;
-using square2d    = geometry::square<2>;
-using rectangle2d = geometry::rectangle<2>;
+using p2d    = geometry::point<2>;
+using v2d    = geometry::vector<2>;
+using quad2d = geometry::polygon<2, 4>;
+using tri2d  = geometry::polygon<2, 3>;
+using box2d  = geometry::box<2>;
+using aabb2d = geometry::aabb<2>;
 
 // check concepts:
 static_assert(geometry::PolygonD<quad2d, 2>{}, "");
 static_assert(geometry::PolygonD<tri2d, 2>{}, "");
-static_assert(geometry::PolygonD<square2d, 2>{}, "");
-static_assert(geometry::PolygonD<rectangle2d, 2>{}, "");
+static_assert(geometry::PolygonD<box2d, 2>{}, "");
+static_assert(geometry::PolygonD<aabb2d, 2>{}, "");
 
 template <typename Points, typename Point>
-void test_unit_square(Points&& ps, num_t sa,
-                      Point&& x_c) {  // constructors and equality:
+void test_unit_box(Points&& ps, num_t sa,
+                   Point&& x_c) {  // constructors and equality:
   quad2d a;
   quad2d b;
   num_t A = std::abs(sa);
@@ -37,23 +37,23 @@ void test_unit_square(Points&& ps, num_t sa,
   b = a;
   CHECK(a == b);
 
-  // check corners
-  CHECK(size(corner_positions(a)) == 4_u);
-  CHECK(equal(corner_positions(a), {0, 1, 2, 3}));
-  CHECK(equal(corners(a), ps));
+  // check vertices
+  CHECK(size(vertex_indices(a)) == 4_u);
+  CHECK(equal(vertex_indices(a), {0, 1, 2, 3}));
+  CHECK(equal(vertices(a), ps));
 
-  // construct from square
+  // construct from box
 
-  square2d sq(x_c, 1.0);
+  box2d sq(x_c, 1.0);
   quad2d c(sq);
   CHECK(a == c);
-  CHECK(equal(corners(a), corners(c)));
+  CHECK(equal(vertices(a), vertices(c)));
 
-  // construct from rectangle
-  auto rect = rectangle2d::at(x_c, v2d::constant(1.0));
+  // construct from aabb
+  auto rect = aabb2d::at(x_c, v2d::constant(1.0));
   quad2d d(rect);
   CHECK(a == d);
-  CHECK(equal(corners(a), corners(d)));
+  CHECK(equal(vertices(a), vertices(d)));
 
   // signed area:
   CHECK(signed_area(a) == sa);
@@ -87,14 +87,14 @@ void test_unit_square(Points&& ps, num_t sa,
 }
 
 int main() {
-  {  // test unit squares: 4 points of a square in ccw order
+  {  // test unit boxs: 4 points of a box in ccw order
     p2d ps[]  = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}};
     p2d ps2[] = {{-0.5, -0.5}, {0.5, -0.5}, {0.5, 0.5}, {-0.5, 0.5}};
     p2d ps3[] = {{-1.0, -1.0}, {0.0, -1.0}, {0.0, 0.0}, {-1.0, 0.0}};
 
-    test_unit_square(ps, 1.0, p2d{{0.5, 0.5}});
-    test_unit_square(ps2, 1.0, p2d{{0.0, 0.0}});
-    test_unit_square(ps3, 1.0, p2d{{-0.5, -0.5}});
+    test_unit_box(ps, 1.0, p2d{{0.5, 0.5}});
+    test_unit_box(ps2, 1.0, p2d{{0.0, 0.0}});
+    test_unit_box(ps3, 1.0, p2d{{-0.5, -0.5}});
   }
 
   {
@@ -178,13 +178,13 @@ int main() {
     CHECK(area(ccw_quad1) == ccw_quad1_area);
     CHECK(centroid(ccw_quad1) == ccw_quad1_centroid);
 
-    {  // square ccw corners
-      square2d s(p2d::constant(0.), p2d::constant(1.));
-      auto ccw_corners = corners(s);
+    {  // box ccw vertices
+      box2d s(p2d::constant(0.), p2d::constant(1.));
+      auto ccw_vertices = vertices(s);
 
-      p2d ccw_corners_should[] = {{0., 0.}, {1., 0.}, {1., 1.}, {0., 1.}};
+      p2d ccw_vertices_should[] = {{0., 0.}, {1., 0.}, {1., 1.}, {0., 1.}};
       for (suint_t i = 0; i != 4; ++i) {
-        CHECK(ccw_corners[i] == ccw_corners_should[i]);
+        CHECK(ccw_vertices[i] == ccw_vertices_should[i]);
       }
     }
   }

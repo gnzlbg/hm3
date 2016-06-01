@@ -3,8 +3,8 @@
 ///
 /// Tree serialization to VKT
 #ifdef HM3_ENABLE_VTK
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/dimensions.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbor.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
@@ -34,7 +34,7 @@ template <dim_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
   auto geometry(node_idx n) const noexcept {
     auto loc = node_location(t_, n);
     auto x_c = normalized_coordinates(loc);
-    return geometry::square<Nd>(x_c, node_length_at_level(loc.level()));
+    return geometry::box<Nd>(x_c, node_length_at_level(loc.level()));
   }
 
   auto nodes() const noexcept {
@@ -46,7 +46,7 @@ template <dim_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
   }
 
   static auto bounding_box() noexcept {
-    return geometry::square<Nd>(geometry::point<Nd>::constant(0.5), 1.0);
+    return geometry::box<Nd>(geometry::point<Nd>::constant(0.5), 1.0);
   }
 
   template <typename F> auto for_each_cell(F&& f) const noexcept {

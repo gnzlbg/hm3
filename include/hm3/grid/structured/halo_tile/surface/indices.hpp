@@ -20,19 +20,23 @@ namespace surface {
 /// \tparam Nhl number of halo layers
 template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
 struct indices
- : tile::surface::indices<Nd, cell::bounds<Nd, Nic, Nhl>::size()> {
-  using self            = indices<Nd, Nic, Nhl>;
-  using cell_bounds     = cell::bounds<Nd, Nic, Nhl>;
-  using cell_indices    = cell::indices<Nd, Nic, Nhl>;
-  using cell_coordinate = typename cell_indices::coordinate;
+ : tile::surface::indices<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
+  using self         = indices<Nd, Nic, Nhl>;
+  using cell_bounds  = cell::bounds<Nd, Nic, Nhl>;
+  using base         = tile::surface::indices<Nd, cell_bounds::length()>;
+  using cell_indices = cell::indices<Nd, Nic, Nhl>;
+  using base_cell_coordinate = typename base::cell_coordinate;
+  using cell_coordinate      = typename cell_indices::coordinate;
+
+  using base::for_each;
 
   /// For each surface of the internal cells in the tile with normal component
   /// in direction \p d
   template <typename F>
   static constexpr void for_each_internal(F&& f, dim_t d) noexcept {
-    self::for_each(cell_coordinate::constant(cell_bounds::first_internal()),
-                   cell_coordinate::constant(cell_bounds::last_internal()),
-                   std::forward<F>(f), d);
+    for_each(cell_coordinate::constant(cell_bounds::first_internal()),
+             cell_coordinate::constant(cell_bounds::last_internal()),
+             std::forward<F>(f), d);
   }
 
   /// For each surface of the internal cells in the tile
@@ -40,9 +44,9 @@ struct indices
   [[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]]  //
    static constexpr void
    for_each_internal(F&& f) noexcept {
-    self::for_each(cell_coordinate::constant(cell_bounds::first_internal()),
-                   cell_coordinate::constant(cell_bounds::last_internal()),
-                   std::forward<F>(f));
+    for_each(cell_coordinate::constant(cell_bounds::first_internal()),
+             cell_coordinate::constant(cell_bounds::last_internal()),
+             std::forward<F>(f));
   }
 };
 

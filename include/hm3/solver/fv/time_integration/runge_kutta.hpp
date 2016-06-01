@@ -4,7 +4,8 @@
 /// Runge Kutta SSP (Strong Stability Preserving) time integration
 ///
 /// It requires an extra copy of the variables per cell.
-#include <hm3/solver/fv/time_integration/initialization.hpp>
+#include <hm3/solver/fv/tile/lhs.hpp>
+#include <hm3/solver/fv/tile/rhs.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/range.hpp>
@@ -15,89 +16,90 @@ namespace fv {
 
 template <suint_t NoStages>  //
 struct runge_kutta {
-  /// \name Block state
-  ///@{
-  template <typename BlockBase> struct runge_kutta_block_state {
-    using var_t   = typename BlockBase::var_t;
-    using index_t = typename BlockBase::index_t;
-    var_t new_variables_;
-    var_t& new_variables() { return new_variables_; }
-    var_t const& new_variables() const { return new_variables_; }
-    auto new_variables(sidx_t c) noexcept { return new_variables_.row(c); }
-    auto new_variables(sidx_t c) const noexcept {
-      return new_variables_.row(c);
-    }
-    auto new_variables(index_t c) noexcept { return new_variables(c.idx); }
-    auto new_variables(index_t c) const noexcept {
-      return new_variables(c.idx);
-    }
-  };
-
-  template <typename BlockBase, typename BlockBase_ = std::decay_t<BlockBase>>
-  static runge_kutta_block_state<BlockBase_> state_t(BlockBase&&);
-  ///@}  // Block State
-
   /// \name Time integration state
   ///@{
+
+  /// Cell variables
+  struct tile_variables {
+    template <typename Grid, typename Physics,
+              typename Order = dense::col_major_t>
+    using invoke             = meta::list<              //
+     right_hand_side<Grid, Physics::nvars(), Order>,    //
+     left_hand_side<Grid, Physics::nvars(), Order>,     //
+     new_left_hand_side<Grid, Physics::nvars(), Order>  //
+     >;
+  };
+
   using coefficients_t = array<num_t, NoStages>;
   coefficients_t coefficients;
   uint_t stage = 0;
   ///@}  // Time integration state
 
-  runge_kutta()                   = default;
-  runge_kutta(runge_kutta const&) = default;
-  runge_kutta& operator=(runge_kutta const&) = default;
-  runge_kutta(runge_kutta&&)                 = default;
-  runge_kutta& operator=(runge_kutta&&) = default;
+  /// Initialize the time integration
+  ///
+  /// Sets Runge-Kutta stage to zero and copies the LHS into the Runge-Kutta
+  /// intermediate storage (new_lhs)
+  template <typename State> void initialize(State&& s) {
+    stage = 0;
+    for (auto&& t : s.tiles()) { t.new_lhs() = t.lhs(); }
+  }
+
+  /// Initializes the time integration step
+  template <typename State> constexpr void initialize_step(State&& s) noexcept {
+    for (auto&& t : s.tiles()) { t.rhs()().fill(0.); }
+  }
+
+  /// Time integration done?
+  bool done() const noexcept { return stage == coefficients.size(); }
 
   constexpr runge_kutta(coefficients_t coefficients_)
    : coefficients(std::move(coefficients_)) {}
 
-  template <typename State> void initialize(State&& s) {
-    stage = 0;
-    for (auto&& b : s.blocks()) { b.new_variables() = b.variables(); }
+  /// \name LHS/RHS of the current step
+  ///@{
+
+  template <typename Tile> auto rhs(Tile&& t) const noexcept {
+    return [&](auto&& c) -> decltype(auto) { return t.rhs(c); };
   }
 
-  bool done() const noexcept { return stage == coefficients.size(); }
-
-  template <typename Block> auto rhs(Block&& b) const noexcept {
-    return [&](auto&& c) -> decltype(auto) { return b.rhs(c); };
+  template <typename Tile> auto rhs(Tile&& t) noexcept {
+    return [&](auto&& c) -> decltype(auto) { return t.rhs(c); };
   }
 
-  template <typename Block> auto lhs(Block&& b) const noexcept {
-    return [&](auto&& c) -> decltype(auto) { return b.new_variables(c); };
+  template <typename Tile> auto lhs(Tile&& t) const noexcept {
+    return [&](auto&& c) -> decltype(auto) { return t.new_lhs(c); };
   }
 
-  template <typename Block> auto rhs(Block&& b) noexcept {
-    return [&](auto&& c) -> decltype(auto) { return b.rhs(c); };
+  template <typename Tile> auto lhs(Tile&& t) noexcept {
+    return [&](auto&& c) -> decltype(auto) { return t.new_lhs(c); };
   }
 
-  template <typename Block> auto lhs(Block&& b) noexcept {
-    return [&](auto&& c) -> decltype(auto) { return b.new_variables(c); };
-  }
+  ///@} // LHS/RHS of the current step
 
-  template <typename State> void advance(State& s, num_t dt) noexcept {
+  /// Advance solution by one Runge-Kutta step
+  template <typename State>
+  [[ HM3_HOT, HM3_FLATTEN ]] void advance(State& s, num_t dt) noexcept {
+    if (stage == coefficients.size()) {
+      HM3_FATAL_ERROR("time integration finished: call `initialize()`");
+    }
     const num_t f = coefficients[stage] * dt;
-    for (auto&& b : s.blocks()) {
-      b.for_each_internal(
-       [&](auto&& c) { b.new_variables(c) = b.variables(c) + f * b.rhs(c); });
+    for (auto&& t : s.tiles()) {
+      t.cells().for_each_internal(
+       [&](auto&& c) { t.new_lhs(c) = t.lhs(c) + f * t.rhs(c); });
     }
     ++stage;
     if (stage == coefficients.size()) {
-      for (auto&& b : s.blocks()) { b.variables() = b.new_variables(); }
+      // TODO: Optimization: this should just swap pointers (not perform a copy)
+      for (auto&& t : s.tiles()) { t.lhs() = t.new_lhs(); }
     }
   }
 };
 
-struct runge_kutta_5_t : runge_kutta<5> {
-  constexpr runge_kutta_5_t()
+struct runge_kutta_5 : runge_kutta<5> {
+  constexpr runge_kutta_5()
    : runge_kutta<5>(array<num_t, 5>{{1. / 4., 1. / 6., 3. / 8., 1. / 2., 1.}}) {
   }
 };
-
-namespace {
-constexpr auto&& runge_kutta_5 = static_const<runge_kutta_5_t>::value;
-}  // namespace
 
 }  // namespace fv
 }  // namespace solver

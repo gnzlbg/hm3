@@ -52,10 +52,6 @@ struct shock_tube {
     return pv;
   }
 
-  static constexpr num_t deg_to_rad(num_t angle_deg) noexcept {
-    return angle_deg * (2. * math::pi<num_t>) / 360;
-  }
-
   num_t pos_in_rot(num_t angle_rad) const noexcept {
     return math::approx(angle_rad, num_t{0.}) ? x_0 : x_0 * std::sqrt(2.);
   }
@@ -67,7 +63,7 @@ struct shock_tube {
                        num_t x_0_ = 0.5, num_t angle_ = 0.)
    : angle(std::move(angle_))
    , x_0(std::move(x_0_))
-   , alpha(deg_to_rad(angle))
+   , alpha(math::deg_to_rad(angle))
    , pos(pos_in_rot(alpha)) {
     pv_l = rotate_u(u_mag_l);
     pv_r = rotate_u(u_mag_r);

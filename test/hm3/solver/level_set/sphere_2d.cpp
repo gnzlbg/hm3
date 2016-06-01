@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
   auto time_steps    = view::generate([]() mutable {
                       static num_t next = 0.;
                       auto r            = next;
-                      next += 1. / 4. * math::pi<num_t>;
+                      next += 1. / 4. * math::pi;
                       return r;
                     })
                     | view::take(no_time_steps);

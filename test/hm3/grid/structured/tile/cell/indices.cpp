@@ -13,14 +13,14 @@ void closest_cell_tests() {
   for (auto c : Tile::all()) {
     for (auto o : Tile::all()) {
       if (c == o) { continue; }
-      int cells_visited_upper_bound
-       = math::ipow(2 * accumulate(x_t::dimensions(), suint_t{1},
-                                   [&](auto&& acc, auto&& i) {
-                                     return std::max(
-                                      acc, math::absdiff(x_t(c)[i], x_t(o)[i]));
-                                   })
-                     + 1,
-                    x_t::dimension());
+      int cells_visited_upper_bound = math::ipow<suint_t>(
+       2 * accumulate(x_t::dimensions(), suint_t{1},
+                      [&](auto&& acc, auto&& i) {
+                        return std::max(acc,
+                                        math::absdiff(x_t(c)[i], x_t(o)[i]));
+                      })
+        + 1,
+       x_t::dimension());
       int cells_visited = 0;
       auto x_c = Tile::closest_cell(x_t(c), [=, &cells_visited](auto i) {
         cells_visited++;
@@ -389,7 +389,7 @@ void tile_cell_indices_bench() {
       auto end_   = std::chrono::high_resolution_clock::now();
       d += (end_ - start_).count();
     }
-    return std::make_pair(val, d / N);
+    return std::make_pair(val, d / n);
   };
 
   auto fe = [](auto const& v_) {

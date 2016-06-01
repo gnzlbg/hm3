@@ -3,7 +3,7 @@
 ///
 /// VTK Grid reader
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/square.hpp>
+#include <hm3/geometry/box.hpp>
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/cartesian/serialization/multi_vtk.hpp>
 #include <hm3/grid/hierarchical/types.hpp>

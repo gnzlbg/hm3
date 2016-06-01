@@ -4,7 +4,6 @@
 ///
 #include <hm3/solver/fv/tile/lhs.hpp>
 #include <hm3/solver/fv/tile/rhs.hpp>
-#include <hm3/solver/fv/time_integration/initialization.hpp>
 #include <hm3/types.hpp>
 
 namespace hm3 {
@@ -12,6 +11,10 @@ namespace solver {
 namespace fv {
 
 struct euler_forward {
+  /// \name Time integration state
+  ///@{
+
+  /// Cell variables
   struct tile_variables {
     template <typename Grid, typename Physics,
               typename Order = dense::col_major_t>
@@ -21,44 +24,47 @@ struct euler_forward {
      >;
   };
 
-  /// \name Block state
-  ///@{
-  struct euler_forward_state {};
-  template <typename BlockBase> static euler_forward_state state_t(BlockBase&&);
-  ///@}  // Block State
-
-  /// \name Time integration state
-  ///@{
   bool done_ = false;
   ///@}  // Time integration state
 
-  template <typename State> constexpr void initialize(State&&) noexcept {
+  /// Initializes the time integration
+  template <typename State> constexpr void initialize(State&& s) noexcept {
     done_ = false;
   }
-  /// Done?
+
+  /// Initializes the time integration step
+  template <typename State> constexpr void initialize_step(State&& s) noexcept {
+    for (auto&& t : s.tiles()) { t.rhs()().fill(0.); }
+  }
+
+  /// Time integration done?
   bool done() const noexcept { return done_; }
 
-  template <typename Block> auto rhs(Block&& b) const noexcept {
-    return [&](auto&& c) -> auto { return b.rhs(c); };
+  /// \name LHS/RHS of the current step
+  ///@{
+
+  template <typename Tile> auto rhs(Tile&& t) const noexcept {
+    return [&](auto&& c) -> auto { return t.rhs(c); };
   }
 
-  template <typename Block> auto lhs(Block&& b) const noexcept {
-    return [&](auto&& c) -> auto { return b.variables(c); };
+  template <typename Tile> auto lhs(Tile&& t) const noexcept {
+    return [&](auto&& c) -> auto { return t.lhs(c); };
   }
 
-  template <typename Block> auto rhs(Block&& b) noexcept {
-    return [&](auto&& c) -> auto { return b.rhs(c); };
+  template <typename Tile> auto rhs(Tile&& t) noexcept {
+    return [&](auto&& c) -> auto { return t.rhs(c); };
   }
 
-  template <typename Block> auto lhs(Block&& b) noexcept {
-    return [&](auto&& c) -> auto { return b.variables(c); };
+  template <typename Tile> auto lhs(Tile&& t) noexcept {
+    return [&](auto&& c) -> auto { return t.lhs(c); };
   }
 
-  /// Advance Block
+  ///@} // LHS/RHS of the current step
+
+  /// Advance solution by one Euler-Forward step
   template <typename State> void advance(State&& s, num_t dt) noexcept {
-    for (auto&& b : s.tiles()) {
-      b.cells().for_each_internal(
-       [&](auto&& c) { b.variables(c) += dt * b.rhs(c); });
+    for (auto&& t : s.tiles()) {
+      t.cells().for_each_internal([&](auto&& c) { t.lhs(c) += dt * t.rhs(c); });
     }
     done_ = true;
   }

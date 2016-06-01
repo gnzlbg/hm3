@@ -15,7 +15,7 @@ constexpr auto centroid(P&& polygon) noexcept -> point<dimension_t<P>{}> {
   HM3_ASSERT(counter_clock_wise(polygon), "not sorted counter clock wise!");
   auto x       = point<dimension_t<P>{}>::constant(0.);
   auto a       = signed_area(polygon);
-  auto&& ps    = corners(polygon);
+  auto&& ps    = vertices(polygon);
   const auto e = size(ps) - 1;
 
   auto kernel = [&](auto&& l, auto&& r) {

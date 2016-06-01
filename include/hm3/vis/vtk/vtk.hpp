@@ -44,8 +44,8 @@
 #include <string>
 #include <tuple>
 // hm3
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/polygon.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3 {
@@ -83,15 +83,15 @@ template <typename T> auto make_array() {
 }
 
 template <typename T> struct cell_t {};
-template <> struct cell_t<geometry::square<1>> {
+template <> struct cell_t<geometry::box<1>> {
   using type = vtkLine;
   static constexpr auto value() { return VTK_LINE; }
 };
-template <> struct cell_t<geometry::square<2>> {
+template <> struct cell_t<geometry::box<2>> {
   using type = vtkQuad;
   static constexpr auto value() { return VTK_QUAD; }
 };
-template <> struct cell_t<geometry::square<3>> {
+template <> struct cell_t<geometry::box<3>> {
   using type = vtkHexahedron;
   static constexpr auto value() { return VTK_HEXAHEDRON; }
 };

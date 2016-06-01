@@ -9,23 +9,39 @@ namespace hm3 {
 namespace solver {
 namespace fv {
 
-struct gradient_fn {
-  template <typename LeftVars, typename RightVars>
-  constexpr auto operator()(LeftVars&& v_l, RightVars&& v_r,
-                            num_t const& distance) const noexcept {
-    return (v_r - v_l) / distance;
+struct compute_structured_gradients_fn {
+  /// If the gradients are not required, do nothing
+  template <typename State, typename Limiter>
+  static constexpr void impl(State&, Limiter, std::false_type) noexcept {}
+
+  template <typename State, typename Limiter>
+  static constexpr void impl(State& s, Limiter limiter,
+                             std::true_type) noexcept {
+    for (auto&& t : s.tiles()) {
+      auto&& lhs = s.time_integration.lhs(t);
+      structured_central_difference(t, lhs, limiter);
+    }
+  }
+
+  template <typename State, typename Limiter = limiter::none_fn>
+  constexpr void operator()(State& s, Limiter limiter = Limiter{}) const
+   noexcept {
+    using state_t    = uncvref_t<State>;
+    using num_flux_t = typename state_t::numerical_flux_t;
+    impl(s, limiter, meta::bool_<num_flux_t::requires_cell_gradients>{});
   }
 };
 
 namespace {
-constexpr auto&& gradient = static_const<gradient_fn>::value;
+constexpr auto&& compute_structured_gradients
+ = static_const<compute_structured_gradients_fn>::value;
 }  // namespace
-
+/*
 template <typename State, typename Tile, typename CIdx, typename Limiter>
-auto compute_structured_gradient(State& s, Tile& b, CIdx c, dim_t d,
-                                 Limiter& limiter) {
-  using vars = num_a<std::decay_t<State>::nvars()>;
-  vars grad;
+auto compute_local_central_difference_structured_gradient(State& s, Tile& b,
+                                                          CIdx c, dim_t d,
+                                                          Limiter& limiter) {
+  using vars     = num_a<std::decay_t<State>::nvars()>;
   const auto dx  = b.geometry().cell_length();
   const auto dx2 = 2. * dx;
   auto&& lhs     = s.time_integration.lhs(b);
@@ -36,39 +52,62 @@ auto compute_structured_gradient(State& s, Tile& b, CIdx c, dim_t d,
   auto v_p = lhs(c_p);
 
   if (Same<Limiter, limiter::none_fn>{}) {  // unlimited
-    static_assert(!std::is_const<Tile>{}, "");
-    b.gradient(c, d) = gradient(v_m, v_p, dx2);
-  } else {  // limited:
-    auto v_c = lhs(c);
-
-    // vars g_m  = gradient(v_c, v_m, dx);
-    // vars g_p  = gradient(v_p, v_c, dx);
-    // vars g_c  = gradient(v_p, v_m, dx2);
-
-    vars g_m = gradient(v_m, v_c, dx);
-    vars g_p = gradient(v_c, v_p, dx);
-    vars g_c = gradient(v_m, v_p, dx2);
-
-    vars lim = limiter(g_m, g_p);
-
-    grad = g_c.array() * lim.array();
+    return vars(math::gradient(v_m, v_p, dx2));
   }
-  return grad;
+
+  // limited:
+  auto v_c = lhs(c);
+
+  // vars g_m  = math::gradient(v_c, v_m, dx);
+  // vars g_p  = math::gradient(v_p, v_c, dx);
+  // vars g_c  = math::gradient(v_p, v_m, dx2);
+
+  vars g_m = math::gradient(v_m, v_c, dx);
+  vars g_p = math::gradient(v_c, v_p, dx);
+  vars g_c = math::gradient(v_m, v_p, dx2);
+
+  vars lim = limiter(g_m, g_p);
+
+  return vars(g_c.array() * lim.array());
+}
+
+struct compute_structured_gradients_fn {
+  /// If the gradients are not required, do nothing
+  template <typename State, typename Limiter>
+  static constexpr void impl(State&, Limiter, std::false_type) noexcept {}
+
+  template <typename State, typename Limiter>
+  static constexpr void impl(State& s, Limiter limiter,
+                             std::true_type) noexcept {
+    for (auto&& b : s.tiles()) {
+      b.cells().for_each_internal(
+       [&](auto c) {
+         for (auto d : b.dimensions()) {
+           b.gradient(c, d)
+            = compute_local_central_difference_structured_gradients(s, b, c, d,
+                                                                    limiter);
+         }
+       },
+       1 /* computes gradients until the first halo layer */ /*);
+}
 }
 
 template <typename State, typename Limiter = limiter::none_fn>
-void compute_structured_gradients(State& s, Limiter limiter = Limiter{}) {
-  for (auto&& b : s.tiles()) {
-    b.cells().for_each_internal(
-     [&](auto c) {
-       for (auto d : b.dimensions()) {
-         b.gradient(c, d) = compute_structured_gradient(s, b, c, d, limiter);
-       }
-     },
-     1);
-  }
+constexpr void operator()(State& s, Limiter limiter = Limiter{}) const
+noexcept {
+using state_t    = uncvref_t<State>;
+using num_flux_t = typename state_t::numerical_flux_t;
+// if the numerical flux does not need the cell center gradients this does
+// nothing:
+impl(s, limiter, meta::bool_<num_flux_t::requires_cell_gradients>{});
 }
+};
 
+namespace {
+constexpr auto&& compute_structured_gradients
+= static_const<compute_structured_gradients_fn>::value;
+}  // namespace
+*/
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3

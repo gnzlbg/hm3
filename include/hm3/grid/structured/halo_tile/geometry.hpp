@@ -13,21 +13,21 @@ namespace structured {
 namespace halo_tile {
 
 template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
-struct cell_geometry : geometry::square<Nd>,
+struct cell_geometry : geometry::box<Nd>,
                        cell::indices<Nd, Nic, Nhl>::coordinate {
-  using square_t     = geometry::square<Nd>;
+  using box_t        = geometry::box<Nd>;
   using coordinate_t = typename cell::indices<Nd, Nic, Nhl>::coordinate;
-  cell_geometry(square_t s, coordinate_t x)
-   : square_t{std::move(s)}, coordinate_t(std::move(x)) {}
-  explicit operator square_t() const noexcept {
-    return static_cast<square_t const&>(*this);
+  cell_geometry(box_t s, coordinate_t x)
+   : box_t{std::move(s)}, coordinate_t(std::move(x)) {}
+  explicit operator box_t() const noexcept {
+    return static_cast<box_t const&>(*this);
   }
   explicit operator coordinate_t() const noexcept {
     return static_cast<coordinate_t const&>(*this);
   }
 };
 
-/// Square structured halo tile spatial information
+/// Box structured halo tile spatial information
 ///
 /// Note: external and internal are used to talk about the tile geometry of the
 /// tile with and without halo cells, respectively.
@@ -42,7 +42,7 @@ struct tile_geometry
   using external_tile_geometry = tile::tile_geometry<Nd, bounds::length()>;
   using cell_coordinate        = cell::coordinate<Nd, Nic, Nhl>;
   using point_t                = typename external_tile_geometry::point_t;
-  using square_t               = typename external_tile_geometry::square_t;
+  using box_t                  = typename external_tile_geometry::box_t;
   using cell_geometry_t        = cell_geometry<Nd, Nic, Nhl>;
 
   // imports from external_tile_geometry
@@ -60,7 +60,7 @@ struct tile_geometry
   constexpr tile_geometry& operator=(tile_geometry const&) = default;
   constexpr tile_geometry& operator=(tile_geometry&&) = default;
 
-  static constexpr square_t external_bbox(square_t internal_bbox) noexcept {
+  static constexpr box_t external_bbox(box_t internal_bbox) noexcept {
     using internal_tile_geometry = tile::tile_geometry<Nd, Nic>;
     auto cell_length = internal_tile_geometry::cell_length(internal_bbox);
     auto external_tile_length          = cell_length * bounds::length();
@@ -70,14 +70,14 @@ struct tile_geometry
   }
 
   /// Construct a halo tile geometry from the bounding box of the internal cells
-  static constexpr tile_geometry from(square_t internal_bbox) noexcept {
+  static constexpr tile_geometry from(box_t internal_bbox) noexcept {
     return tile_geometry(
      external_tile_geometry(external_bbox(std::move(internal_bbox))));
   }
 
   /// Constructs a halo tile geometry from the bounding box of the internal
   /// cells
-  constexpr tile_geometry(square_t internal_bbox)
+  constexpr tile_geometry(box_t internal_bbox)
    : tile_geometry(from(internal_bbox)) {}
   /// Constructs a halo tile geometry from a non-halo tile geometry (the same
   /// bounding box is used)
@@ -85,12 +85,12 @@ struct tile_geometry
    : external_tile_geometry(std::move(g)) {}
 
   /// Updates the external bounding box (up to the halos)
-  constexpr void set_external_bbox(square_t bbox) noexcept {
+  constexpr void set_external_bbox(box_t bbox) noexcept {
     this->set_bbox(std::move(bbox));
   }
 
   // Updates the internal bounding box (without the halos)
-  constexpr void set_internal_bbox(square_t bbox) noexcept {
+  constexpr void set_internal_bbox(box_t bbox) noexcept {
     set_external_bbox(external_bbox(std::move(bbox)));
   }
 
@@ -131,14 +131,14 @@ struct tile_geometry
   }
 
   /// Bounding box of the tile without halo cells
-  constexpr square_t tile_internal_bounding_box() const noexcept {
+  constexpr box_t tile_internal_bounding_box() const noexcept {
     auto internal_bbox    = tile_external_bounding_box();
     internal_bbox.length_ = tile_internal_length();
     return internal_bbox;
   }
 
   /// Bounding box of the tile with halo cells
-  constexpr square_t tile_external_bounding_box() const noexcept {
+  constexpr box_t tile_external_bounding_box() const noexcept {
     return this->tile_bounding_box();
   }
 

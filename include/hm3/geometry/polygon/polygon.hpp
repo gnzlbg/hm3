@@ -19,7 +19,7 @@ struct polygon : dimensional<Nd>, inline_vector<point<Nd>, MaxNp> {
 
   template <typename Shape, CONCEPT_REQUIRES_(Polygon<Shape>{})>
   polygon(Shape const& s) {
-    RANGES_FOR (auto&& c, corners(s)) { this->push_back(c); }
+    RANGES_FOR (auto&& c, vertices(s)) { this->push_back(c); }
   }
 
   static constexpr sint_t max_points() noexcept { return MaxNp; }
@@ -42,15 +42,21 @@ bool operator!=(polygon<Nd, MaxNp> const& a,
   return !(a == b);
 }
 
-/// Corner points
+/// Polygon vertices
 template <dim_t Nd, ppidx_t MaxNp>
-constexpr auto corners(polygon<Nd, MaxNp> p) noexcept {
+constexpr auto vertices(polygon<Nd, MaxNp> p) noexcept {
   return p;
 }
 
-/// Corner positions
+/// Polygon vertices
 template <dim_t Nd, ppidx_t MaxNp>
-auto corner_positions(polygon<Nd, MaxNp> const& p) noexcept {
+constexpr auto vertex(polygon<Nd, MaxNp> p, suint_t v) noexcept {
+  return p[v];
+}
+
+/// Vertex indices
+template <dim_t Nd, ppidx_t MaxNp>
+auto vertex_indices(polygon<Nd, MaxNp> const& p) noexcept {
   return view::iota(std::size_t{0}, p.size());
 }
 

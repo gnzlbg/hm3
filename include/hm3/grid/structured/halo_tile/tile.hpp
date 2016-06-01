@@ -26,7 +26,7 @@ struct tile : geometry::dimensional<Nd> {
   using surface_indices_t    = surface::indices<Nd, Nic, Nhl>;
   using surface_coordinate_t = typename surface_indices_t::coordinate;
   using geometry_t           = tile_geometry<Nd, Nic, Nhl>;
-  using square_t             = typename geometry_t::square_t;
+  using box_t                = typename geometry_t::box_t;
 
   geometry_t geometry_;
 
@@ -46,7 +46,7 @@ struct tile : geometry::dimensional<Nd> {
   constexpr tile(tile&&)                 = default;
   constexpr tile& operator=(tile&&) = default;
 
-  constexpr tile(square_t bbox) : geometry_(std::move(bbox)) {}
+  constexpr tile(box_t bbox) : geometry_(std::move(bbox)) {}
 };
 
 }  // namespace halo_tile

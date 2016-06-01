@@ -18,13 +18,13 @@ struct shift_location_fn {
   ///
   /// TODO: if offset is out of bounds -> undefined behavior (right now
   /// an assertion triggers in location's constructor)
-  template <typename Loc, dim_t Nd = Loc::dimension(),
+  template <typename Loc, typename Array, dim_t Nd = Loc::dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
-  auto operator()(Loc loc, array<num_t, Nd> offset,
-                  lidx_t level = Loc::max_level()) const noexcept -> Loc {
-    const num_t scale = math::ipow(lidx_t{2}, loc.level);
-    RANGES_FOR (auto&& d, dimensions(Nd)) { offset[d] += loc[d] / scale; }
-    return Loc{offset, level};
+  auto operator()(Loc loc, Array offset) const noexcept -> Loc {
+    const num_t scale = math::ipow(lidx_t{2}, *loc.level());
+    offset_t<Nd> o;
+    for (dim_t d = 0; d < Nd; ++d) { o[d] = offset[d] * scale; }
+    return *shift(loc, o);
   }
 
   /// Shifts the location \p loc by \p offset

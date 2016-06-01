@@ -15,8 +15,8 @@ template <dim_t Nd>
 single<Nd> from_file_unread(single<Nd> const&, io::file& f,
                             tree_node_idx node_capacity) {
   auto root_node
-   = geometry::square<Nd>{f.constant("root_node_center", geometry::point<Nd>{}),
-                          f.constant("root_node_length", num_t{})};
+   = geometry::box<Nd>{f.constant("root_node_center", geometry::point<Nd>{}),
+                       f.constant("root_node_length", num_t{})};
 
   single<Nd> g(root_node,
                from_file_unread<Nd>(tree::tree<Nd>{}, f, node_capacity));

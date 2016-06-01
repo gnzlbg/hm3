@@ -58,15 +58,12 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
 
   block() = default;
 
-  void reinitialize(level_idx block_level_,
-                    geometry::square<Nd> bbox) noexcept {
+  void reinitialize(level_idx block_level_, geometry::box<Nd> bbox) noexcept {
     grid_t::reinitialize(bbox);
     level_ = block_level_;
   }
 
-  block(level_idx l, geometry::square<Nd> bbox) noexcept {
-    reinitialize(l, bbox);
-  }
+  block(level_idx l, geometry::box<Nd> bbox) noexcept { reinitialize(l, bbox); }
 };
 
 }  // namespace lbm

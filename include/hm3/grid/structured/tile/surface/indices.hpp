@@ -2,6 +2,9 @@
 /// \file
 ///
 /// Structured square tile's surface indices
+///
+/// TODO: remove the cell_bounds::length variants (use the general one)
+/// TODO: add an iteration that maximizes data locality
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/coordinate.hpp>
 #include <hm3/grid/structured/tile/cell/indices.hpp>

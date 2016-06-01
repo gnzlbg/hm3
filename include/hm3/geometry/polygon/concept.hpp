@@ -19,9 +19,11 @@ namespace rc = ranges::concepts;
 
 struct polygon : rc::refines<rc::Regular, Dimensional> {
   template <typename T>
-  auto requires_(T&& t)
-   -> decltype(rc::valid_expr(rc::model_of<rc::RandomAccessRange>(corners(t))),
-               rc::is_true(is_polygon<rc::uncvref_t<T>>{}));
+  auto requires_(T&& t) -> decltype(
+   rc::valid_expr(rc::model_of<rc::RandomAccessRange>(vertices(t))),
+   rc::valid_expr(vertex(t, suint_t{0})),
+   rc::valid_expr(rc::model_of<rc::RandomAccessRange>(vertex_indices(t))),
+   rc::is_true(is_polygon<rc::uncvref_t<T>>{}));
 };
 
 using Polygon = polygon;

@@ -38,7 +38,7 @@ struct isentropic_vortex {
   var_v operator()(point_t x, num_t t) const noexcept {
     var_v pv;
 
-    constexpr auto pi = math::pi<num_t>;
+    constexpr auto pi = math::pi;
 
     point_t x_t = x() - u() * t;
     num_t r     = (x_t() - x_0()).norm();

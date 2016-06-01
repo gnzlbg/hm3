@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Grid node type
+#include <hm3/geometry/box.hpp>
 #include <hm3/geometry/point.hpp>
-#include <hm3/geometry/square.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
 
 namespace hm3 {
@@ -13,7 +13,7 @@ namespace cartesian {
 
 /// Hierarchical Cartesian grid node
 template <dim_t Nd>  //
-struct node : geometry::square<Nd>, tree_node_idx {
+struct node : geometry::box<Nd>, tree_node_idx {
   using point_t               = geometry::point<Nd>;
   constexpr node()            = default;
   constexpr node(node const&) = default;
@@ -24,21 +24,21 @@ struct node : geometry::square<Nd>, tree_node_idx {
   /// Node from \p x_min and \p x_max.
   constexpr node(point_t x_min, point_t x_max,
                  tree_node_idx i = tree_node_idx{})
-   : geometry::square<Nd>{x_min, x_max}, tree_node_idx{i} {}
+   : geometry::box<Nd>{x_min, x_max}, tree_node_idx{i} {}
   /// Node from \p x_center and \p x_length.
   constexpr node(point_t x_center, num_t length,
                  tree_node_idx i = tree_node_idx{})
-   : geometry::square<Nd>{x_center, length}, tree_node_idx{i} {}
-  /// Node from \p square and index \p i
-  constexpr node(geometry::square<Nd> square, tree_node_idx i = tree_node_idx{})
-   : geometry::square<Nd>{square}, tree_node_idx{i} {}
+   : geometry::box<Nd>{x_center, length}, tree_node_idx{i} {}
+  /// Node from \p box and index \p i
+  constexpr node(geometry::box<Nd> box, tree_node_idx i = tree_node_idx{})
+   : geometry::box<Nd>{box}, tree_node_idx{i} {}
 };
 
 template <dim_t Nd>
 constexpr bool operator==(node<Nd> const& a, node<Nd> const& b) noexcept {
   return static_cast<tree_node_idx>(a) == static_cast<tree_node_idx>(b)
-         and static_cast<geometry::square<Nd>>(a)
-              == static_cast<geometry::square<Nd>>(b);
+         and static_cast<geometry::box<Nd>>(a)
+              == static_cast<geometry::box<Nd>>(b);
 }
 
 template <dim_t Nd>

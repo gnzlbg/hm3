@@ -148,10 +148,10 @@ int main() {
      };
 
   test_integration("trapezoidal", [](num_t v) { return std::sin(v); }, 2., 0.,
-                   pi<num_t>, integrate_trapezoidal);
+                   pi, integrate_trapezoidal);
 
-  test_integration("simpson", [](num_t v) { return std::sin(v); }, 2., 0.,
-                   pi<num_t>, integrate_simpson);
+  test_integration("simpson", [](num_t v) { return std::sin(v); }, 2., 0., pi,
+                   integrate_simpson);
 
   return test::result();
 }

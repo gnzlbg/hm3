@@ -1,6 +1,6 @@
 #include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
 
-using namespace hm3;
+namespace hm3 {
 
 template <typename I, typename X>
 void coordinate_tests(I index, suint_t length, const X x) {
@@ -89,3 +89,5 @@ void coordinate_tests(I index, suint_t length, const X x) {
     }
   }
 }
+
+}  // namespace hm3

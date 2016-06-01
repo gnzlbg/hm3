@@ -23,12 +23,13 @@ using tile_variables_t = typename T::tile_variables;
 
 /// Helper to create a meta::list<Vars...> of tile variables
 template <typename Grid, typename Physics, typename TimeIntegration,
-          typename Method>
-using tile_variables =                                                    //
- meta::concat<                                                            //
-  meta::invoke<tile_variables_t<Physics>, Grid>,                          //
-  meta::invoke<tile_variables_t<TimeIntegration>, Grid, Physics>,         //
-  meta::invoke<tile_variables_t<Method>, Grid, Physics, TimeIntegration>  //
+          typename NumFlux, typename Method>
+using tile_variables =                                             //
+ meta::concat<                                                     //
+  meta::invoke<tile_variables_t<Physics>, Grid>,                   //
+  meta::invoke<tile_variables_t<TimeIntegration>, Grid, Physics>,  //
+  meta::invoke<tile_variables_t<Method>, Grid, Physics, TimeIntegration,
+               NumFlux>  //
   >;
 
 /// This unwraps the variables from the meta::list<Vars...> into
@@ -49,20 +50,20 @@ struct unwrap_variables_into_tile<Grid, meta::list<Args...>> {
 
 /// Type of the tile
 template <typename Grid, typename Physics, typename TimeIntegration,
-          typename Method>
+          typename NumFlux, typename Method>
 using tile_type = typename meta::
- _t<unwrap_variables_into_tile<Grid,
-                               tile_variables<Grid, Physics, TimeIntegration,
-                                              Method>>>;  //
+ _t<unwrap_variables_into_tile<Grid, tile_variables<Grid, Physics,
+                                                    TimeIntegration, NumFlux,
+                                                    Method>>>;  //
 
 }  // namespace fv
-}  // namespace name
+}  // namespace solver
 }  // namespace hm3
 
 // tile.hpp
 // #include <hm3/geometry/dimensions.hpp>
 // #include <hm3/geometry/point.hpp>
-// #include <hm3/geometry/square.hpp>
+// #include <hm3/geometry/box.hpp>
 // #include <hm3/grid/structured/grid.hpp>
 // #include <hm3/solver/fv/cell_information.hpp>
 // #include <hm3/solver/types.hpp>
@@ -206,7 +207,7 @@ using tile_type = typename meta::
 
 //   tile_base() {}
 
-//   void reinitialize(level_idx level_, geometry::square<Nd> bbox) noexcept {
+//   void reinitialize(level_idx level_, geometry::box<Nd> bbox) noexcept {
 //     this->geometry().set_internal_bbox(bbox);
 //     length = this->geometry().tile_internal_length();
 //     level  = level;
@@ -217,7 +218,7 @@ using tile_type = typename meta::
 //     // info_.resize(size());
 //   }
 
-//   tile_base(level_idx level_, geometry::square<Nd> bbox)
+//   tile_base(level_idx level_, geometry::box<Nd> bbox)
 //   // : info_(size()) {
 //   {
 //     reinitialize(std::move(level_), std::move(bbox));

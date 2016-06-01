@@ -32,6 +32,24 @@ struct left_hand_side {
   void reinitialize() {}
 };
 
+template <typename Grid, vidx_t Nv, typename Order = dense::col_major_t>
+struct new_left_hand_side {
+  using grid_t   = Grid;
+  using cell_idx = typename grid_t::cell_indices_t::coordinate;
+
+  using storage_t
+   = dense::matrix<num_t, grid_t::cells().size(), Nv, tidx_t, vidx_t, Order>;
+  storage_t new_lhs_;
+
+  auto& new_lhs() noexcept { return new_lhs_; }
+  auto const& new_lhs() const noexcept { return new_lhs_; }
+  auto new_lhs(cell_idx c) noexcept { return new_lhs_.row(*c.idx()); }
+  auto new_lhs(cell_idx c) const noexcept { return new_lhs_.row(*c.idx()); }
+
+  void clear() { new_lhs_ = storage_t::zero(); }
+  void reinitialize() {}
+};
+
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3

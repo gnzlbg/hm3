@@ -147,6 +147,12 @@ struct interleaved : geometry::dimensional<Nd> {
     push(*position_in_parent);
   }
 
+  static constexpr self min() noexcept {
+    self l;
+    while (*l.level() < *l.max_level() - 1) { l.push(0); }
+    return l;
+  }
+
   /// Change location to the parent of the current node.
   ///
   /// \return The position in parent of the current node.

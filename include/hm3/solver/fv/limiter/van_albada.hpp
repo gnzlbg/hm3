@@ -17,7 +17,7 @@ struct van_albada_fn {
   template <typename Grad,
             typename vars = num_a<std::decay_t<Grad>::SizeAtCompileTime>>
   vars operator()(Grad&& g_l, Grad&& g_r) const noexcept {
-    vars r = (g_l.array() / (g_r.array() + math::eps<num_t>)).eval();
+    vars r = (g_l.array() / (g_r.array() + math::eps)).eval();
     vars rf
      = (r.array() * (1. + r.array()) / (1. + r.array() * r.array())).eval();
     vars rfr = (2. / (1. + r.array())).eval();

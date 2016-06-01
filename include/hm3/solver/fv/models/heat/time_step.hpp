@@ -12,10 +12,12 @@ namespace fv {
 namespace heat {
 
 struct time_step_fn {
-  template <typename V, typename S>
-  constexpr num_t operator()(V&&, S const&, num_t length, num_t cfl) const
+  static constexpr bool requires_cell_state = false;
+  ///
+  template <typename S>
+  constexpr num_t operator()(S const& s, num_t length, num_t cfl) const
    noexcept {
-    return cfl * 0.5 * std::pow(length, 2.);
+    return cfl * 0.5 * std::pow(length, 2.) / s.thermal_diffusivity;
   }
 };
 

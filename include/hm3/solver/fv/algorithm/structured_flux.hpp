@@ -34,7 +34,7 @@ num_a<std::decay_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf,
     auto c_m = c.offset(d, -1);
     auto c_p = c.offset(d, +1);
 
-#define SECOND_ORDER
+//#define SECOND_ORDER
 #ifdef SECOND_ORDER
     auto v_m  = variables_at(lhs(c_m), b.gradient(c_m, d), +dx2);
     auto v_cm = variables_at(lhs(c), b.gradient(c, d), -dx2);

@@ -5,6 +5,7 @@
 #include <cmath>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <hm3/utility/range.hpp>
 #include <limits>
@@ -22,17 +23,21 @@ namespace constant {
 
 /// Epsilon
 template <typename T>
-static const constexpr T eps = std::numeric_limits<T>::epsilon();
+static const constexpr T eps_v = std::numeric_limits<T>::epsilon();
 
 /// Pi
 template <typename T>
-static const constexpr T pi
+static const constexpr T pi_v
  = 3.141592653589793238462643383279502884197169399375105820974944;
 
 /// Euler's number
 template <typename T>
-static const constexpr T e
+static const constexpr T e_v
  = 2.7182818284590452353602874713526624977572470936999595749669676;
+
+static const constexpr num_t eps = e_v<num_t>;
+static const constexpr num_t pi  = pi_v<num_t>;
+static const constexpr num_t e   = e_v<num_t>;
 
 }  // namespace constant
 
@@ -76,36 +81,37 @@ static constexpr sint_t signum(const T& x) noexcept {
 /// Computes integer pow using exponentiation by squaring
 /// Complexiy O(log(e))
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
-[[clang::no_sanitize("integer")]] constexpr Int ipow_impl(Int b, Int e) {
+[[clang::no_sanitize("integer")]] constexpr Int ipow_impl(Int base,
+                                                          Int exponent) {
   Int result = 1;
-  while (e) {
-    if (e & 1) { result *= b; }
-    e >>= 1;
-    b *= b;
+  while (exponent) {
+    if (exponent & 1) { result *= base; }
+    exponent >>= 1;
+    base *= base;
   }
   return result;
 }
 
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 [[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]] constexpr Int lookup_ipow2(
- Int e) {
+ Int exponent) {
   constexpr unsigned ipow2_v[] = {1, 2, 4};
   HM3_ASSERT(e < std::extent<decltype(ipow2_v)>::value,
-             "ipow2 exponent {} is out of bounds [0, {})", e,
+             "ipow2 exponent {} is out of bounds [0, {})", exponent,
              std::extent<decltype(ipow2_v)>::value);
-  HM3_ASSERT(ipow2_v[e] == ipow_impl(Int{2}, e),
-             "ipow2[{}] is {} but should be {}", e, ipow2_v[e],
-             ipow_impl(Int{2}, e));
-  return ipow2_v[e];
+  HM3_ASSERT(ipow2_v[exponent] == ipow_impl(Int{2}, exponent),
+             "ipow2[{}] is {} but should be {}", exponent, ipow2_v[exponent],
+             ipow_impl(Int{2}, exponent));
+  return ipow2_v[exponent];
 }
 
 /// Computes integer pow
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 [[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]]  //
  constexpr Int
- ipow(Int b, Int e) {
+ ipow(Int base, Int exponent) {
 #ifdef HM3_IPOW_LOOKUP
-  switch (b) {
+  switch (base) {
     case 0: {
       return 0;
     }
@@ -113,12 +119,12 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
       return 1;
     }
     case 2: {
-      return lookup_ipow2(e);
+      return lookup_ipow2(exponent);
     }
   }
-  HM3_ASSERT(false, "unknown base {}", b);
+  HM3_ASSERT(false, "unknown base {}", base);
 #else
-  return ipow_impl(b, e);
+  return ipow_impl(base, exponent);
 #endif
 }
 
@@ -512,7 +518,7 @@ struct gaussian_fn {
     exponent *= -1.;
 
     // compute the front factor:
-    num_t factor = 1. / std::pow(std::sqrt(2. * pi<num_t>), Nd);
+    num_t factor = 1. / std::pow(std::sqrt(2. * pi), Nd);
     for (suint_t d = 0; d < Nd; ++d) { factor *= 1. / sigma(d); }
 
     return factor * std::exp(exponent);
@@ -601,6 +607,58 @@ struct integrate_simpson_fn {
 namespace {
 static constexpr auto&& integrate_simpson
  = static_const<integrate_simpson_fn>::value;
+}  // namespace
+
+/// Integrates a 1D function up-to a specific tolerance
+struct integrate_fn {
+  template <typename F>
+  constexpr num_t operator()(F&& f, num_t from, num_t to, num_t tol = 1e-12,
+                             suint_t max_subdivisions
+                             = std::numeric_limits<suint_t>::max() / 100) const
+   noexcept {
+    HM3_ASSERT(from < to,
+               "domain-error: [from, to) = [{}, {}) (note: {} !< {})", from, to,
+               from, to);
+    suint_t subdiv = 4;
+    num_t result   = integrate_simpson(f, from, to, subdiv);
+    while (true) {
+      subdiv *= 2;
+      num_t next_result = integrate_simpson(f, from, to, subdiv);
+      if (std::abs(result - next_result) < tol) { return next_result; }
+      result = next_result;
+      if (subdiv > max_subdivisions) {
+        // note: if you need more subdivisions you should be calling
+        HM3_FATAL_ERROR(
+         "maximum number of subdivisions exceeded while integrating");
+      }
+    }
+  }
+};
+
+namespace {
+static constexpr auto&& integrate = static_const<integrate_fn>::value;
+}  // namespace
+
+/// Degree to radian conversion
+constexpr num_t deg_to_rad(num_t angle_deg) noexcept {
+  return angle_deg * (2. * pi) / 360.;
+}
+
+/// Radian to degree conversion
+constexpr num_t rad_to_deg(num_t angle_rad) noexcept {
+  return angle_rad * 360. / (2. * pi);
+}
+
+struct gradient_fn {
+  template <typename LeftVars, typename RightVars>
+  constexpr auto operator()(LeftVars&& v_l, RightVars&& v_r,
+                            num_t const& distance) const noexcept {
+    return (v_r - v_l) / distance;
+  }
+};
+
+namespace {
+constexpr auto&& gradient = static_const<gradient_fn>::value;
 }  // namespace
 
 }  // namespace math

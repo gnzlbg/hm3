@@ -67,10 +67,10 @@ struct unstructured_grid {
       auto cell_geometry = geometry(n);
       std::experimental::visit(
        [&](auto&& g) {
-         using geometry_t  = std::decay_t<decltype(g)>;
-         auto cell_corners = corners(g);
-         auto&& tmp_cell   = std::get<to_vtk_cell_ptr_t<geometry_t>>(tmp_cells);
-         HM3_ASSERT(size(cell_corners) > 0_u,
+         using geometry_t   = std::decay_t<decltype(g)>;
+         auto cell_vertices = vertices(g);
+         auto&& tmp_cell = std::get<to_vtk_cell_ptr_t<geometry_t>>(tmp_cells);
+         HM3_ASSERT(size(cell_vertices) > 0_u,
                     "cells of zero points not supported (see comment below)");
          // TL;DR: Cells that don't have any points break too much stuff in too
          // many different places. Improving this is not worth it.
@@ -86,14 +86,14 @@ struct unstructured_grid {
          //      if it is possible to work around this somehow, that's going to
          //      be painful.
          tmp_cell->GetPointIds()->Reset();
-         // Append corners to the point set, and store the corner ids:
-         RANGES_FOR (auto&& cIdx, corner_positions(g)) {
+         // Append vertices to the point set, and store the corner ids:
+         RANGES_FOR (auto&& cIdx, vertex_indices(g)) {
            vtkIdType id;
-           auto corner_vtk = to_vtk_point(cell_corners[cIdx]);
+           auto corner_vtk = to_vtk_point(cell_vertices[cIdx]);
            unique_inserter->InsertUniquePoint(corner_vtk.data(), id);
            // TODO: this is faster, tmp_cell->GetPointIds()->SetId(cIdx, id);
            // so instead of just doing Reset above, we should get
-           // size(corners())
+           // size(vertices())
            // and initialize the cell points, so that we can use SetId
            //
            // The InsertId function does bound checks, so we might want to use
