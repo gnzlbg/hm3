@@ -8,7 +8,7 @@
 namespace hm3 {
 namespace geometry {
 
-/// Mesh of simplices (points, lines, triangles)
+/// Mesh of simplices (points, line segments, triangles)
 ///
 /// TODO: maybe specialize this for 1D...?
 template <dim_t Nd>  //

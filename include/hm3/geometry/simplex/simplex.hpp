@@ -2,18 +2,18 @@
 /// \file
 ///
 /// Simplex
-#include <hm3/geometry/line.hpp>
+#include <hm3/geometry/segment.hpp>
 #include <hm3/geometry/point.hpp>
 #include <hm3/geometry/triangle.hpp>
 
 namespace hm3 {
 namespace geometry {
 
-/// Simplex: points (1D), lines (2D), triangles(3D)
+/// Simplex: points (1D), segments (2D), triangles(3D)
 template <dim_t Nd>  // clang-format off
 using simplex
  = std::conditional_t<Nd == 1, point<Nd>,
-   std::conditional_t<Nd == 2, line<Nd>,
+   std::conditional_t<Nd == 2, segment<Nd>,
    std::conditional_t<Nd == 3, triangle<Nd>,
                                void
                      >>>;
