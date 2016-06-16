@@ -1,6 +1,6 @@
 /// \file
 ///
-/// AABB vertices
+/// Box volume
 #include <hm3/geometry/box/box.hpp>
 
 namespace hm3 {

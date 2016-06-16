@@ -10,9 +10,7 @@ namespace geometry {
 
 template <typename OStream, typename Shape, CONCEPT_REQUIRES_(AABB<Shape>{})>
 OStream& operator<<(OStream& o, Shape const& s) {
-  auto b = bounds(s);
-  o << "(center: " << centroid(s) << ", lengths: " << lengths(s)
-    << ", min: " << b.min << ", max: " << b.max << ")";
+  o << "(min: " << x_min(s) << ", max: " << x_max(s) << ")";
   return o;
 }
 

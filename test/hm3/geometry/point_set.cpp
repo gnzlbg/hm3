@@ -12,6 +12,11 @@ int main() {
   using p_t = point<nd>;
   using ps  = point_set<nd, 2>;
 
+  {
+    ps s;
+    CHECK(s.size() == 0_u);
+  }
+
   // clang-format off
   p_t points[] = {
     {-0.9, 2.9},  // 0

@@ -87,7 +87,6 @@ void test_unit_box(Points&& ps, num_t sa,
 }
 
 int main() {
-  auto b123 = geometry::unit(geometry::box<2>{});
   {  // test unit boxs: 4 points of a box in ccw order
     p2d ps[]  = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}};
     p2d ps2[] = {{-0.5, -0.5}, {0.5, -0.5}, {0.5, 0.5}, {-0.5, 0.5}};

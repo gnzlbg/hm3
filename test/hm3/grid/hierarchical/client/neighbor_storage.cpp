@@ -17,7 +17,8 @@ struct node {
   std::vector<grid_node_idx> neighbors;
   node(int nidx, std::initializer_list<int> ns)
    : idx{nidx}, neighbors(ns.size()) {
-    transform(ns, begin(neighbors), [](auto&& n) { return grid_node_idx{n}; });
+    ranges::transform(ns, begin(neighbors),
+                      [](auto&& n) { return grid_node_idx{n}; });
   }
 };
 

@@ -118,10 +118,10 @@ intersection<Shape> intersect(Shape const& s, SDFunction&& sd) noexcept {
   }
 
   // remove polygons containing only points where the level-set is zero:
-  if (all_of(cut.signum_inside, [](auto i) { return i == 0; })) {
+  if (ranges::all_of(cut.signum_inside, [](auto i) { return i == 0; })) {
     cut.inside.clear();
   }
-  if (all_of(cut.signum_outside, [](auto i) { return i == 0; })) {
+  if (ranges::all_of(cut.signum_outside, [](auto i) { return i == 0; })) {
     cut.outside.clear();
   }
 

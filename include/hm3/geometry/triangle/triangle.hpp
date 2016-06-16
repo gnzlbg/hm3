@@ -19,9 +19,23 @@ struct triangle : dimensional<Nd> {
   template <typename Rng, CONCEPT_REQUIRES_(Range<Rng>{})>
   constexpr triangle(Rng&& rng) noexcept {
     HM3_ASSERT(ranges::distance(rng) == 3, "?");
-    copy(rng, begin(vertices));
+    ranges::copy(rng, begin(vertices));
+    if (Nd == 2) {
+      /// HM3_ASSERT() ccw order
+    }
   }
+
+  constexpr triangle()                = default;
+  constexpr triangle(triangle const&) = default;
+  constexpr triangle(triangle&&)      = default;
+  constexpr triangle& operator=(triangle const&) = default;
+  constexpr triangle& operator=(triangle&&) = default;
 };
+
+template <dim_t Nd>  //
+constexpr bool empty(triangle<Nd> const&) noexcept {
+  return false;
+}
 
 template <dim_t Nd>
 bool operator==(triangle<Nd> const& l, triangle<Nd> const& r) noexcept {

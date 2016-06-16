@@ -73,7 +73,7 @@ template <typename Step> struct multiple {
 
   template <typename Grid, typename SD, typename Node>
   amr::action operator()(Grid&& g, SD&& d_fn, Node n) const {
-    return accumulate(steps, action::coarsen, [
+    return ranges::accumulate(steps, action::coarsen, [
       g = std::forward<Grid>(g), d_fn = std::forward<SD>(d_fn), n
     ](auto&& acc, auto a) { return combine(acc, a(g, d_fn, n)); });
   }
@@ -93,9 +93,9 @@ struct level_till_cell_distances {
   level_till_cell_distances(Grid const& grid, std::initializer_list<step> l)
    : r_(l.size()) {
     std::vector<step> steps_{l};
-    sort(steps_, std::greater<>{}, &step::target_level);
+    ranges::sort(steps_, std::greater<>{}, &step::target_level);
     num_t distance = 0.;
-    transform(steps_, begin(r_.steps), [&](auto&& s) {
+    ranges::transform(steps_, begin(r_.steps), [&](auto&& s) {
       distance += s.no_cells * grid.length(tree::level_idx{s.target_level});
       return level_till_distance{distance, s.target_level};
     });

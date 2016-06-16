@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
   CHECK(grid_state0.idx() == 0_g);
   CHECK(grid_state1.idx() == 1_g);
 
-  auto no_leaf_nodes = distance(g.nodes() | g.leaf());
+  auto no_leaf_nodes = ranges::distance(g.nodes() | g.leaf());
   auto append_nodes  = [&](auto&& state, uint_t from, uint_t to) {
     uint_t counter = 0;
     for (auto&& n : g.nodes()) {

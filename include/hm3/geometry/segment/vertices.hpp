@@ -28,8 +28,10 @@ template <typename L, typename Lu = uncvref_t<L>,
           CONCEPT_REQUIRES_(std::is_same<Lu, segment<Lu::dimension()>>{}
                             and !std::is_rvalue_reference<L>{})>
 constexpr auto vertices(L&& l) noexcept {
-  return view::iota(0, 2) | view::transform([l_ = ref(l)](auto&& v)->decltype(
-                             auto) { return vertex(l_.get(), v); });
+  return view::iota(0, 2)
+         | view::transform([l_ = ranges::ref(l)](auto&& v)->decltype(auto) {
+             return vertex(l_.get(), v);
+           });
 }
 
 }  // namespace geometry

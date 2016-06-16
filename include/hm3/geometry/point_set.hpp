@@ -37,6 +37,8 @@ struct point_set {
   num_t tolerance_;
 
  public:
+  point_set() = default;
+
   point_set(suint_t point_capacity, bbox_t bbox, num_t tolerance = 1e-12)
    : tree_(node_idx(point_capacity), bbox), tolerance_(tolerance) {}
 
@@ -60,6 +62,20 @@ struct point_set {
     auto idx = append_point(p);
     nodes_[n].push_back(idx);
     return idx;
+  }
+
+  /// Grows the tree using a growth factor
+  void grow_tree() {
+    static constexpr suint_t growth_factor = math::ipow(dim_t{2}, Nd);
+
+    auto current_capacity = tree_.capacity();
+    auto new_capacity     = growth_factor * current_capacity;
+
+    // Copy the tree into a new tree with the new larger capacity:
+    auto new_tree = tree_t(tree_, new_capacity);
+
+    // Swap new tree on success with the old one:
+    ranges::swap(tree_, new_tree);
   }
 
  public:

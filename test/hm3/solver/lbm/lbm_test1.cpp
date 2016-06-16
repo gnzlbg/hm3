@@ -151,7 +151,8 @@ struct data_structure {
 
   template <class T> std::vector<num_t> ps(T) const {
     std::vector<num_t> ps_(no_cells());
-    transform(cell_ids(), ps_.begin(), [&](auto i) { return p(T{}, i); });
+    ranges::transform(cell_ids(), ps_.begin(),
+                      [&](auto i) { return p(T{}, i); });
     return ps_;
   }
 
@@ -162,7 +163,8 @@ struct data_structure {
 
   template <class T> std::vector<num_t> us(T) const {
     std::vector<num_t> ps_(no_cells());
-    transform(cell_ids(), ps_.begin(), [&](auto i) { return u(T{}, i); });
+    ranges::transform(cell_ids(), ps_.begin(),
+                      [&](auto i) { return u(T{}, i); });
     return ps_;
   }
 
@@ -173,7 +175,8 @@ struct data_structure {
 
   template <class T> std::vector<num_t> vs(T) const {
     std::vector<num_t> ps_(no_cells());
-    transform(cell_ids(), ps_.begin(), [&](auto i) { return v(T{}, i); });
+    ranges::transform(cell_ids(), ps_.begin(),
+                      [&](auto i) { return v(T{}, i); });
     return ps_;
   }
 
@@ -182,14 +185,14 @@ struct data_structure {
   void init() {
     auto f_eq
      = ns::physics<lattice>::equilibrium_distribution(density, {{0.0, 0.0}});
-    for_each(cell_ids(), [&](auto c) {
+    ranges::for_each(cell_ids(), [&](auto c) {
       for (auto i : lattice::all()) { nodes(c, i) = f_eq[i]; }
     });
   }
 
   // Compute integral density (should remain constant)
   void check_density(int time_it) const {
-    double n_sum = accumulate(
+    double n_sum = ranges::accumulate(
      cell_ids() | view::transform([&](auto c) { return d_loc(node_vars, c); }),
      num_t{0});
     printf("# %d | integral density: %8.f\n", time_it, n_sum);
@@ -197,7 +200,7 @@ struct data_structure {
 
   // One-step density relaxation process
   void relaxation() {
-    for_each(cell_ids(), [&](auto c) {
+    ranges::for_each(cell_ids(), [&](auto c) {
       if (obst(c)) { return; }
 
       // integral local density:
@@ -221,7 +224,7 @@ struct data_structure {
   // bounce back from cells.obstacle nodes.
   // solid-wall condition?
   void bounceback() {
-    for_each(cell_ids(), [&](auto c) {
+    ranges::for_each(cell_ids(), [&](auto c) {
       if (obst(c)) {
         for (auto n : node_ids()) {
           nodes(c, n) = nodes_hlp(c, lattice::opposite(n));
@@ -233,7 +236,7 @@ struct data_structure {
   // Propagate fluid densities to their next neighbour nodes
   // streaming operator?
   void propagate() {
-    for_each(cell_ids(), [&](auto c) {
+    ranges::for_each(cell_ids(), [&](auto c) {
       for (auto n : node_ids()) { nodes_hlp(neighbor(c, n), n) = nodes(c, n); }
     });
   }
@@ -246,7 +249,7 @@ struct data_structure {
     const num_t t_1 = density * accel / 9.;
     const num_t t_2 = density * accel / 36.;
 
-    for_each(cell_ids(), [&](auto c) {
+    ranges::for_each(cell_ids(), [&](auto c) {
       auto xi = x(c);
       if (xi != 0) { return; }
       auto yi = y(c);
@@ -341,7 +344,7 @@ void write_vtk(const data_structure& cells, int time_it) {
   }
 
   fprintf(f, "CELL_TYPES %ld\n", cells.no_cells());
-  for_each(cells.cell_ids(), [&](auto) { fprintf(f, "8\n"); });
+  ranges::for_each(cells.cell_ids(), [&](auto) { fprintf(f, "8\n"); });
 
   fprintf(f, "CELL_DATA %ld\n", cells.no_cells());
 

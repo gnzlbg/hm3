@@ -3,6 +3,7 @@
 ///
 /// Axis-Aligned Bounding Box
 #include <hm3/geometry/aabb/aabb.hpp>
+#include <hm3/geometry/aabb/bounding_box.hpp>
 #include <hm3/geometry/aabb/bounds.hpp>
 #include <hm3/geometry/aabb/centroid.hpp>
 #include <hm3/geometry/aabb/contains.hpp>

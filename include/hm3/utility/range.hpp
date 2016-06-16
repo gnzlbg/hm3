@@ -8,7 +8,61 @@ namespace hm3 {
 
 template <typename T> using static_const = ranges::static_const<T>;
 
-using namespace ranges;
+// namespace ranges = ranges::v3;
+namespace view   = ranges::view;
+namespace action = ranges::action;
+
+using ranges::uncvref_t;
+using ranges::iterator_value_t;
+using ranges::value_type;
+using ranges::difference_type;
+using ranges::range_iterator_t;
+using ranges::unwrap_reference;
+using ranges::tuple_indices_t;
+
+// standard concepts:
+using ranges::Same;
+
+using ranges::Range;
+using ranges::InputRange;
+using ranges::ForwardRange;
+using ranges::RandomAccessRange;
+using ranges::IteratorRange;
+using ranges::InputIterator;
+using ranges::ForwardIterator;
+using ranges::RandomAccessIterator;
+using ranges::RandomAccessIncrementable;
+using ranges::Integral;
+using ranges::SignedIntegral;
+using ranges::UnsignedIntegral;
+using ranges::WeaklyOrdered;
+using ranges::EqualityComparable;
+using ranges::TotallyOrdered;
+using ranges::Regular;
+using ranges::SemiRegular;
+using ranges::Movable;
+using ranges::Copyable;
+using ranges::Container;
+using ranges::Constructible;
+using ranges::CopyConstructible;
+using ranges::DefaultConstructible;
+using ranges::MoveConstructible;
+using ranges::Function;
+using ranges::ConvertibleTo;
+
+// core algorithms
+using ranges::begin;
+using ranges::end;
+using ranges::cbegin;
+using ranges::cend;
+using ranges::front;
+using ranges::back;
+using ranges::at;
+using ranges::size;
+using ranges::equal;
+
+// some ranges
+using ranges::iterator_range;
 
 /// Creates a range of boxed integers (e.g. boxed in a compact_optional or
 /// bounded_integer type)
@@ -71,7 +125,7 @@ constexpr auto&& tuple_for_each_indexed
 
 }  // namespace hm3
 
-#define HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(Value)  \
-  static_assert(::hm3::RandomAccessRange<decltype(Value)>{} \
-                 && ::hm3::SizedRange<decltype(Value)>{},   \
+#define HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(Value)   \
+  static_assert(ranges::RandomAccessRange<decltype(Value)>{} \
+                 && ranges::SizedRange<decltype(Value)>{},   \
                 "The value " #Value " is not a random access sized range!")

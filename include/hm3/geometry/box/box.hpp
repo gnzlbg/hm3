@@ -5,6 +5,7 @@
 #include <hm3/geometry/aabb/centroid.hpp>
 #include <hm3/geometry/aabb/is_box.hpp>
 #include <hm3/geometry/aabb/length.hpp>
+#include <hm3/geometry/aabb/ostream.hpp>
 #include <hm3/geometry/point/point.hpp>
 
 namespace hm3 {

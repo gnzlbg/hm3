@@ -51,8 +51,6 @@ namespace {
 constexpr auto&& three_point = static_const<three_point_fn>::value;
 }  // namespace
 
-template <typename T> struct dump;
-
 struct five_point_fn {
   static constexpr bool requires_cell_gradients = true;
 

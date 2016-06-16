@@ -211,7 +211,8 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
                "sibling group {} is not free", s);
     first_free_sibling_group_ = s;
     HM3_ASSERT(
-     all_of(boxed_ints(0_sg, s), [&](siblings_idx i) { return !is_free(i); }),
+     ranges::all_of(boxed_ints(0_sg, s),
+                    [&](siblings_idx i) { return !is_free(i); }),
      "invalid first free sibling: found free siblings in range [0, {})", s);
   }
 
@@ -292,7 +293,7 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
     const auto result = first_free_sibling_group_ == sibling_group(size());
 
     auto no_free_sgs = [&]() {
-      return none_of(
+      return ranges::none_of(
        boxed_ints<siblings_idx>(first_sg(), sibling_group(size())),
        [&](auto&& s) { return is_free(s); });
     };
@@ -375,8 +376,8 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
      = boxed_ints<siblings_idx>(first_free_sibling_group_, last_sg());
     HM3_STATIC_ASSERT_RANDOM_ACCESS_SIZED_RANGE(remaining_sgs);
 
-    auto next_unused_sg_it
-     = find_if(remaining_sgs, [&](siblings_idx i) { return is_free(i); });
+    auto next_unused_sg_it = ranges::find_if(
+     remaining_sgs, [&](siblings_idx i) { return is_free(i); });
     if (next_unused_sg_it != end(remaining_sgs)) {
       first_free_sibling_group_ = *next_unused_sg_it;
     }
@@ -385,8 +386,9 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
     set_first_child(p, first_node(s));
 
     HM3_ASSERT(!is_free(s), "node {}: refine produced a free sg {}", *p, *s);
-    HM3_ASSERT(all_of(children(p), [&](node_idx i) { return is_leaf(i); }),
-               "node {}: refine produced non leaf children", *p);
+    HM3_ASSERT(
+     ranges::all_of(children(p), [&](node_idx i) { return is_leaf(i); }),
+     "node {}: refine produced non leaf children", *p);
     HM3_ASSERT(!is_free(p), "node {}: refine freed the node", *p);
     HM3_ASSERT(!is_leaf(p), "node {}: refine produced a leaf parent node", *p);
     return s;
@@ -434,8 +436,8 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
   /// Is the tree reseted?
   bool is_reseted() {
     return size_ == 0 and first_free_sibling_group_ == 0_sg
-           and all_of(all_parents(), [](node_idx i) { return !i; })
-           and all_of(all_children(), [](node_idx i) { return !i; });
+           and ranges::all_of(all_parents(), [](node_idx i) { return !i; })
+           and ranges::all_of(all_children(), [](node_idx i) { return !i; });
   }
 
  public:
@@ -508,25 +510,34 @@ template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
 
   tree(tree&& other) = default;
 
-  tree(tree const& other) : tree(*other.capacity()) {
+  tree(tree const& other, node_idx new_node_capacity = node_idx{})
+   : tree(new_node_capacity ? new_node_capacity : other.capacity()) {
+    HM3_ASSERT(
+     !new_node_capacity || new_node_capacity >= other.size(),
+     "the new tree capacity {} is not >= the size of the tree to copy {}",
+     new_node_capacity, other.size());
     size_                     = other.size_;
     first_free_sibling_group_ = other.first_free_sibling_group_;
     {  // copy parents_
       auto b = other.parents_.get();
       auto e = b + *other.sibling_group_capacity();
       auto o = parents_.get();
-      copy(b, e, o);
+      ranges::copy(b, e, o);
     }
     {  // copy first_children_
       auto b = other.first_children_.get();
       auto e = b + *other.capacity();
       auto o = first_children_.get();
-      copy(b, e, o);
+      ranges::copy(b, e, o);
     }
   }
 
   tree& operator=(tree other) {
-    ranges::swap(*this, other);
+    ranges::swap(sg_capacity_, other.sg_capacity_);
+    ranges::swap(parents_, other.parents_);
+    ranges::swap(first_children_, other.first_children_);
+    ranges::swap(size_, other.size_);
+    ranges::swap(first_free_sibling_group_, other.first_free_sibling_group_);
     return *this;
   }
 };

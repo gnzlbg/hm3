@@ -13,7 +13,6 @@
 
 namespace hm3 {
 namespace tree {
-template <typename T> struct dump;
 
 struct node_neighbors_fn {
   struct always_true_pred {

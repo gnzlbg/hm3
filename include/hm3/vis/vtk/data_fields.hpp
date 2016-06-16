@@ -41,15 +41,16 @@ template <typename DataFieldType> struct data_fields {
 
   /// Did any cell data field changed since the last update?
   bool changed() const noexcept {
-    return any_of(modified_, [&](auto&& i) {
+    return ranges::any_of(modified_, [&](auto&& i) {
       return get_field(current_, i.name).value != i.value;
     });
   }
 
   /// Are all the fields unique?
   bool assert_unique() const noexcept {
-    return all_of(current_, [&](auto&& i) {
-      return count_if(current_, [&](auto&& j) { return i.name == j.name; })
+    return ranges::all_of(current_, [&](auto&& i) {
+      return ranges::count_if(current_,
+                              [&](auto&& j) { return i.name == j.name; })
              == 1;
     });
   }

@@ -36,9 +36,15 @@ struct simplex_mesh {
   };
   std::vector<face> faces_;
 
+  simplex_mesh() = default;
+
   template <typename SimplexRange>  //
   simplex_mesh(SimplexRange const& simplices) {
-    const auto no_simplices = distance(simplices);
+    const auto no_simplices = ranges::distance(simplices);
+
+    // Build bounding volume hierarchy:
+
+    // Allocate triangles in the mesh
 
     faces_.reserve(no_simplices);  // allocate faces
 
@@ -47,7 +53,7 @@ struct simplex_mesh {
     point_t max = point_t::constant(std::numeric_limits<num_t>::lowest());
 
     for (auto const& s : simplices) {
-      for (auto const& v : s.vertices) {
+      RANGES_FOR (auto const& v, vertices(s)) {
         for (dim_t d = 0; d < Nd; ++d) {
           min(d) = std::min(min(d), v(d));
           max(d) = std::max(max(d), v(d));
@@ -56,14 +62,14 @@ struct simplex_mesh {
     }
 
     // Allocate vertices (all points are in the bounding box)
-    box_t bounding_box(min, max);
+    box_t bounding_box(square_bounding_box(aabb_t(min, max)));
     vertices_ = point_set(no_simplices * Nd, bounding_box);
 
     // insert simplices:
     for (auto const& s : simplices) {  // O(N logN)
       face f;
       for (dim_t d = 0; d < Nd; ++d) {
-        f[d] = vertices_.push_back(s.vertices[d]);  // O(logN)
+        f.vertices[d] = vertices_.push_back(vertex(s, d));  // O(logN)
       }
       faces_.push_back(f);
     }
@@ -79,6 +85,21 @@ struct simplex_mesh {
     for (dim_t d = 0; d < Nd; ++d) { s.vertices[d] = vertices_.vertex(f[d]); }
     return s;
   }
+
+  fidx_t size() const noexcept { return faces_.size(); }
+
+  fidx_t vertex_size() const noexcept { return vertices_.size(); }
+
+  auto face_ids() const noexcept { return view::iota(fidx_t(0), size()); }
+  auto vertex_ids() const noexcept {
+    return view::iota(vidx_t(0), vertex_size());
+  }
+
+  auto faces() const noexcept {
+    return face_ids() | view::transform([&](auto&& f) { return simplex(i); });
+  }
+
+  auto vertices() const noexcept { return vertices_.points_; }
 };
 
 }  // namespace geometry

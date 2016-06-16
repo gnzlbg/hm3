@@ -13,7 +13,7 @@ namespace geometry {
 /// Is the aabb spanned by \p x_min and \p x_max a box?
 template <dim_t Nd> constexpr bool is_box(aabb<Nd> const& s) {
   auto l = lengths(s);
-  return all_of(l, [&](auto i) { return math::approx(i, l(0)); });
+  return ranges::all_of(l, [&](auto i) { return math::approx(i, l(0)); });
 }
 
 }  // namespace geometry

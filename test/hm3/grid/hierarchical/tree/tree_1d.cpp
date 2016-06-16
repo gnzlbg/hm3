@@ -117,8 +117,8 @@ template <template <dim_t, class...> class Loc> void test_tree() {
     CHECK(dfs_sort.is(t));
     auto tree_after_coarsen_sorted
      = rewrite_nodes(tree_after_coarsen{}, tree_after_coarsen_sorted_map);
-    sort(tree_after_coarsen_sorted.nodes,
-         [](auto&& a, auto&& b) { return *a.idx < *b.idx; });
+    ranges::sort(tree_after_coarsen_sorted.nodes,
+                 [](auto&& a, auto&& b) { return *a.idx < *b.idx; });
     check_tree(t, tree_after_coarsen_sorted, Loc<1>{});
     check_tree_node_range(t, tree_after_coarsen_sorted);
     check_is_balanced(t, Loc<1>{});

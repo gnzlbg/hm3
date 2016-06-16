@@ -20,5 +20,13 @@ constexpr vector<Nd> lengths(aabb<Nd> const& s) noexcept {
   return vector<Nd>(b.max() - b.min());
 }
 
+/// Max length of the AABB \p s
+template <dim_t Nd>  //
+constexpr num_t max_length(aabb<Nd> const& s) noexcept {
+  auto min = x_min(s);
+  auto max = x_max(s);
+  return (min() - max()).array().abs().maxCoeff();
+}
+
 }  // namespace geometry
 }  // namespace hm3

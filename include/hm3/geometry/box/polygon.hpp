@@ -1,7 +1,7 @@
 #pragma once
 /// \file
 ///
-/// AABB Polygon support
+/// Box Polygon support
 #include <hm3/geometry/box/box.hpp>
 #include <hm3/geometry/polygon/concept.hpp>
 

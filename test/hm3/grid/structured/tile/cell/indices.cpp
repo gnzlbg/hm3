@@ -14,11 +14,11 @@ void closest_cell_tests() {
     for (auto o : Tile::all()) {
       if (c == o) { continue; }
       int cells_visited_upper_bound = math::ipow<suint_t>(
-       2 * accumulate(x_t::dimensions(), suint_t{1},
-                      [&](auto&& acc, auto&& i) {
-                        return std::max(acc,
-                                        math::absdiff(x_t(c)[i], x_t(o)[i]));
-                      })
+       2 * ranges::accumulate(x_t::dimensions(), suint_t{1},
+                              [&](auto&& acc, auto&& i) {
+                                return std::max(
+                                 acc, math::absdiff(x_t(c)[i], x_t(o)[i]));
+                              })
         + 1,
        x_t::dimension());
       int cells_visited = 0;

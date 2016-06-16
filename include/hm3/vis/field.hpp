@@ -54,8 +54,8 @@ template <typename C, typename UC = ranges::uncvref_t<C>,
                             // Same<value_type<UC>, field>{}
                             )>
 bool has_field(C&& c, string const& name) noexcept {
-  const auto count
-   = distance(c | view::filter([&](auto&& i) { return i.name == name; }));
+  const auto count = ranges::distance(
+   c | view::filter([&](auto&& i) { return i.name == name; }));
   HM3_ASSERT(count == 0 || count == 1, "either one or none");
   return count == 1 ? true : false;
 }
@@ -65,7 +65,7 @@ template <typename C, typename UC = ranges::uncvref_t<C>,
                             // Same<value_type<UC>, field>{}
                             )>
 auto find_field(C&& c, string const& name) noexcept {
-  return find_if(c, [&](auto&& i) { return i.name == name; });
+  return ranges::find_if(c, [&](auto&& i) { return i.name == name; });
 }
 
 template <typename C, typename UC = ranges::uncvref_t<C>,

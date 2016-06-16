@@ -1,3 +1,4 @@
+#ifdef ABC
 #include <hm3/geometry/box.hpp>
 #include <hm3/geometry/sd/sphere.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
@@ -455,3 +456,6 @@ int main(int argc, char* argv[]) {
 
   return test::result();
 }
+#else
+int main() { return 0; }
+#endif

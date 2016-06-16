@@ -34,7 +34,7 @@ struct point : point_base_t<Nd>, dimensional<Nd> {
             CONCEPT_REQUIRES_(
              Range<Rng>{} and std::is_same<iterator_value_t<It>, point<Nd>>{})>
   constexpr point(Rng&& rng) : point{*begin(rng)} {
-    HM3_ASSERT(distance(rng) == 1, "?");
+    HM3_ASSERT(ranges::distance(rng) == 1, "?");
   }
 };
 

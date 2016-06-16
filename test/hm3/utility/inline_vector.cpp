@@ -55,7 +55,7 @@ int main() {
     C c;
     C::iterator i = begin(c);
     C::iterator j = end(c);
-    CHECK(distance(i, j) == 0);
+    CHECK(ranges::distance(i, j) == 0);
     CHECK(i == j);
   }
   {  // const iterator
@@ -64,7 +64,7 @@ int main() {
     const C c{};
     C::const_iterator i = begin(c);
     C::const_iterator j = end(c);
-    CHECK(distance(i, j) == 0);
+    CHECK(ranges::distance(i, j) == 0);
     CHECK(i == j);
   }
   {  // cbegin/cend
@@ -73,7 +73,7 @@ int main() {
     C c;
     C::const_iterator i = cbegin(c);
     C::const_iterator j = cend(c);
-    CHECK(distance(i, j) == 0);
+    CHECK(ranges::distance(i, j) == 0);
     CHECK(i == j);
     CHECK(i == end(c));
   }
@@ -89,7 +89,7 @@ int main() {
     CHECK(*i == 1);
     *i = 10;
     CHECK(*i == 10);
-    CHECK(distance(c) == 10);
+    CHECK(ranges::distance(c) == 10);
   }
   {  // iterator constructor
     typedef int T;
@@ -103,7 +103,7 @@ int main() {
     CHECK(*i == 1);
     *i = 10;
     CHECK(*i == 10);
-    CHECK(distance(c) == 10);
+    CHECK(ranges::distance(c) == 10);
   }
   {  // N3644 testing
     typedef inline_vector<int, 10> C;
@@ -304,7 +304,7 @@ int main() {
       vec2[3] = 1;
       vec2[4] = 0;
       stack_vec vec(vec2.size());
-      copy(vec2, begin(vec));
+      ranges::copy(vec2, begin(vec));
       int count_ = 4;
       for (auto i : vec) {
         CHECK(i == count_);

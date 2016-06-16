@@ -26,7 +26,7 @@ struct reader;
 /// Used to store multiple readers polymorphically in paraview plugins
 using readers = std::map<string, std::unique_ptr<reader>>;
 
-using optional_dependency = opt::optional<std::pair<string, io::file::index_t>>;
+using optional_dependency = optional<std::pair<string, io::file::index_t>>;
 
 struct reader {
   virtual ~reader() {}

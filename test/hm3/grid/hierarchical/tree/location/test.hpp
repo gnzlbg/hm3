@@ -40,11 +40,12 @@ void test_location(Loc) {
     }
     test::check_equal(a.levels(), view::iota(1_u, count_ + 1));
     test::check_equal(a(), view::iota(0_u, no_children(Nd)));
-    for_each(view::iota(0_su, no_children(Nd)) | view::reverse, [&](auto&& c) {
-      CHECK(a.pop() == c);
-      count_--;
-      CHECK(a.level() == count_);
-    });
+    ranges::for_each(view::iota(0_su, no_children(Nd)) | view::reverse,
+                     [&](auto&& c) {
+                       CHECK(a.pop() == c);
+                       count_--;
+                       CHECK(a.level() == count_);
+                     });
   }
   {  // test push up to max level (min pip index: 0)
     auto a = l;
@@ -78,7 +79,7 @@ void test_location(Loc) {
 #endif
       for (auto d : dimensions(Nd)) {
         hm3::array<int_t, Nd> offset{};
-        fill(offset, int_t{0});
+        ranges::fill(offset, int_t{0});
 
         auto bs = shift(b, offset);
 #ifdef HM3_TEST_DEBUG_OUTPUT
@@ -123,7 +124,7 @@ void test_location(Loc) {
 #endif
       for (auto d : dimensions(Nd)) {
         hm3::array<int_t, Nd> offset{};
-        fill(offset, int_t{0});
+        ranges::fill(offset, int_t{0});
 
         auto bs = shift(b, offset);
 #ifdef HM3_TEST_DEBUG_OUTPUT

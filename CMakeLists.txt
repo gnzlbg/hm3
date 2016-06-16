@@ -31,5 +31,5 @@ add_subdirectory(vis)
 add_custom_target(check ALL
   COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  DEPENDS check-format test.headers tests tests.mpi
+  DEPENDS test.unit check-format test.headers tests tests.mpi
   COMMENT "Build and then run all the tests.")

@@ -17,13 +17,19 @@ template <typename T> struct is_polygon : std::true_type {};
 
 namespace rc = ranges::concepts;
 
+template <typename T> struct dump;
+
 struct polygon : rc::refines<rc::Regular, Dimensional> {
   template <typename T>
-  auto requires_(T&& t) -> decltype(
-   rc::valid_expr(rc::model_of<rc::RandomAccessRange>(vertices(t))),
-   rc::valid_expr(vertex(t, suint_t{0})),
-   rc::valid_expr(rc::model_of<rc::RandomAccessRange>(vertex_indices(t))),
-   rc::is_true(is_polygon<rc::uncvref_t<T>>{}));
+  static auto requires_(T&& t) -> decltype(                  //
+   rc::valid_expr(                                           //
+    rc::is_true(is_polygon<rc::uncvref_t<T>>{}),             //
+    rc::model_of<rc::RandomAccessRange>(vertices(t)),        //
+    rc::model_of<rc::RandomAccessRange>(vertex_indices(t)),  //
+    vertex(t, suint_t{0}),                                   //
+    static_cast<bool>(empty(t))                              //
+    )                                                        //
+   );
 };
 
 using Polygon = polygon;

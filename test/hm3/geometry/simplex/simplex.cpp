@@ -21,7 +21,7 @@ int main() {
     CHECK(normal(s) == point_t{1.0});
 
     // Bounding box
-    auto sbb  = bounding_box(s);
+    auto sbb  = square_bounding_box(s);
     auto aabb = axis_aligned_bounding_box(s);
     CHECK(sbb == aabb);
     CHECK(centroid(sbb) == centroid(s));
@@ -48,7 +48,7 @@ int main() {
 
     // Bounding box
     auto sbb_s = box_t(point_t{.5, .5}, 1.);
-    auto sbb   = bounding_box(s);
+    auto sbb   = square_bounding_box(s);
     CHECK(sbb == sbb_s);
     auto aabb_s = aabb_t(point_t{.0, .0}, point_t{1., 1.});
     auto aabb   = axis_aligned_bounding_box(s);
@@ -59,7 +59,7 @@ int main() {
       point_t p2[] = {{0.0, 0.0}, {1., .5}};
       simplex<2> s2(p2);
       auto sbb2_s = box_t(point_t{.5, .25}, 1.);
-      auto sbb2   = bounding_box(s2);
+      auto sbb2   = square_bounding_box(s2);
       CHECK(sbb2 == sbb2_s);
 
       auto aabb2_s = aabb_t(point_t{.0, .0}, point_t{1., .5});

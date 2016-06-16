@@ -51,7 +51,7 @@ template <typename Target> struct state {
 
   /// Finds a node in a sorted node_data container using binary search
   node* find(amr_node_idx n) noexcept {
-    auto r = lower_bound(nodes_, n, std::less<>{}, &node::idx);
+    auto r = ranges::lower_bound(nodes_, n, std::less<>{}, &node::idx);
     return r != end(nodes_) && (*r).idx == n ? &(*r) : nullptr;
   }
 
@@ -100,13 +100,13 @@ template <typename Target> struct state {
 
   /// Computes the actions on every node and sorts them
   template <typename Action> void compute_actions(Action&& action) {
-    const auto no_nodes = distance(t_.nodes());
+    const auto no_nodes = ranges::distance(t_.nodes());
     nodes_.clear();
     nodes_.reserve(no_nodes);
     RANGES_FOR (auto&& n, t_.nodes()) {
       nodes_.emplace_back(node{n, action(n)});
     }
-    sort(nodes_, std::less<>{}, &node::idx);
+    ranges::sort(nodes_, std::less<>{}, &node::idx);
   }
 
   /// Enforces 2:1 across all neighbor directions (single step)
@@ -125,14 +125,14 @@ template <typename Target> struct state {
     ///  Can be coarsened (set them to nothing otherwise)
     for (auto&& n : nodes_ | to_coarsen{}()) {
       // If all siblings are at the same level and marked for coarsening: done
-      HM3_ASSERT(distance(siblings(n)) >= 0, "");
-      if (distance(siblings(n), 0_u) == t_.no_siblings()
-          and all_of(siblings(n), to_coarsen{})) {
+      HM3_ASSERT(ranges::distance(siblings(n)) >= 0, "");
+      if (ranges::distance(siblings(n), 0_u) == t_.no_siblings()
+          and ranges::all_of(siblings(n), to_coarsen{})) {
         continue;
       }
 
       // Otherwise: remove coarsening flags
-      for_each(siblings(n), [&](auto&& s) {
+      ranges::for_each(siblings(n), [&](auto&& s) {
         if (s.action == action::coarsen) { s.action = action::none; }
       });
       done = false;
@@ -149,22 +149,24 @@ template <typename Target> struct state {
     /// Or if any of the siblings is at a level greater than the node but not
     /// marked for coarsening
     for (auto&& n : nodes_ | to_coarsen{}()) {
-      HM3_ASSERT(all_of(siblings(n), to_coarsen{}), "node {}", n.idx);
+      HM3_ASSERT(ranges::all_of(siblings(n), to_coarsen{}), "node {}", n.idx);
 
-      if (any_of(siblings(n), [&](auto&& i) {
+      if (ranges::any_of(siblings(n), [&](auto&& i) {
             auto ns = t_.neighbors(i);
             // Neighbor at the same level marked for refinement:
-            return any_of(ns | to_nodes() | view::filter([&](auto&& j) {
-                            return level(n) == level(j);
-                          }),
-                          to_refine{})
+            return ranges::any_of(ns | to_nodes() | view::filter([&](auto&& j) {
+                                    return level(n) == level(j);
+                                  }),
+                                  to_refine{})
                    // Neighbor at a level higher not marked for coarsening:
-                   || any_of(ns | to_nodes() | view::filter([&](auto&& j) {
-                               return level(n) + 1 == level(j);
-                             }),
-                             [&](auto&& j) { return !to_coarsen{}(j); });
+                   || ranges::any_of(
+                       ns | to_nodes() | view::filter([&](auto&& j) {
+                         return level(n) + 1 == level(j);
+                       }),
+                       [&](auto&& j) { return !to_coarsen{}(j); });
           })) {
-        for_each(siblings(n), [&](auto&& s) { s.action = action::none; });
+        ranges::for_each(siblings(n),
+                         [&](auto&& s) { s.action = action::none; });
         done = false;
       }
     }
@@ -180,8 +182,8 @@ template <typename Target> struct state {
         if (level(neighbor) < node_level
             and neighbor.action != action::refine) {
           neighbor.action = action::refine;
-          for_each(siblings(neighbor),
-                   [&](auto&& s) { s.action = action::refine; });
+          ranges::for_each(siblings(neighbor),
+                           [&](auto&& s) { s.action = action::refine; });
           done = false;
         }
       }
@@ -215,7 +217,7 @@ template <typename Target> struct state {
     // Coarse nodes
     for (auto&& n : nodes_ | to_coarsen{}()) {
       // coarse nodes only once
-      for_each(siblings(n), [&](auto&& s) { s.action = action::none; });
+      ranges::for_each(siblings(n), [&](auto&& s) { s.action = action::none; });
 
       // coarsen node to its parent
       t_.coarsen_siblings_of(n);

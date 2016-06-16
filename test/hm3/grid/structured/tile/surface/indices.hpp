@@ -18,7 +18,7 @@ struct test_2d_3 {
   static auto normal(suint_t i) {
     return geometry::point<2>::unit(i <= 11 ? 0 : 1);
   }
-  using opt_i = std2::experimental::optional<suint_t>;
+  using opt_i = optional<suint_t>;
 
   static auto lr(suint_t i) {
     return hm3::array<hm3::array<opt_i, 2>, 24>{{

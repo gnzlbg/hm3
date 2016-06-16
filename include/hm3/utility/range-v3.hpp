@@ -22,11 +22,6 @@
 /// Extensions:
 namespace ranges {
 
-// template <typename T, std::size_t Capacity>
-// struct is_view<boost::container::static_vector<T, Capacity>> :
-// std::false_type {
-// };
-
 template <typename T, class Alloc>
 struct is_view<boost::container::vector<T, Alloc>> : std::false_type {};
 

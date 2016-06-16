@@ -63,7 +63,8 @@ struct bcs {
  public:
   /// Does the boundary condition \p bcidx have the cell \p cidx?
   bool has_cell(cell_idx cidx, bc_idx bcidx) const noexcept {
-    return lower_bound(cells_in_bc(bcidx), cidx) != end(cells_in_bc(bcidx));
+    return ranges::lower_bound(cells_in_bc(bcidx), cidx)
+           != end(cells_in_bc(bcidx));
   }
 
   /// All boundary conditions that cell \p cidx is a part of:
@@ -83,7 +84,7 @@ struct bcs {
 
   /// Sort the cells in the boundary condition
   void sort() {
-    for (auto&& bc_cells : cells_in_bc_) { ::hm3::sort(bc_cells); }
+    for (auto&& bc_cells : cells_in_bc_) { ranges::sort(bc_cells); }
   }
 
   /// Checks that all cells in the boundary condition are unique (i.e. that
@@ -95,7 +96,7 @@ struct bcs {
   /// \warning the cells must be sorted for this to work
   void assert_unique() const noexcept {
     for_each_bc([&](bc_idx i) {
-      HM3_ASSERT(end(cells_in_bc(i)) == adjacent_find(cells_in_bc(i)),
+      HM3_ASSERT(end(cells_in_bc(i)) == ranges::adjacent_find(cells_in_bc(i)),
                  "boundary condition {} has non unique cells", i);
     });
   }

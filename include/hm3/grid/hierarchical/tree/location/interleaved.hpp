@@ -387,7 +387,7 @@ compact_optional<interleaved<Nd, Int>> shift(interleaved<Nd, Int> t,
   auto level         = t.level();
   auto ilevel        = static_cast<morton_idx_t>(*level);
   auto xs            = t.morton_x();  // loc_t::decode(t.value, ilevel);
-  if (none_of(dimensions(Nd), [&](auto&& d) {
+  if (ranges::none_of(dimensions(Nd), [&](auto&& d) {
         return bit::overflows_on_add(xs[d], offset[d], ilevel);
       })) {
     for (auto&& d : dimensions(Nd)) {

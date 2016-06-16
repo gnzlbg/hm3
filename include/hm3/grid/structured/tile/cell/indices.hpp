@@ -396,8 +396,9 @@ struct indices : bounds<Nd, Nc> {
   ///
   /// \warning This is very slow and doesn't get vectorized.
   /// TODO: make random access?
-  struct subtile_view : view_facade<subtile_view, cardinality::finite> {
-    friend range_access;
+  struct subtile_view
+   : ranges::view_facade<subtile_view, ranges::cardinality::finite> {
+    friend ranges::range_access;
 
     coordinate from_, to_;
     coordinate current_;

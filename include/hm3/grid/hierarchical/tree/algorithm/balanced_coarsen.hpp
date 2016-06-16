@@ -31,7 +31,7 @@ struct balanced_coarsen_fn {
   template <typename Tree, typename Restriction = restriction_fn>
   void operator()(Tree& tree, node_idx n, Restriction&& r = Restriction{}) const
    noexcept {
-    if (tree.is_leaf(n) or any_of(tree.children(n), [&](node_idx c) {
+    if (tree.is_leaf(n) or ranges::any_of(tree.children(n), [&](node_idx c) {
           return !tree.is_leaf(c);
         })) {
       return;

@@ -35,7 +35,7 @@ template <typename T>
 static const constexpr T e_v
  = 2.7182818284590452353602874713526624977572470936999595749669676;
 
-static const constexpr num_t eps = e_v<num_t>;
+static const constexpr num_t eps = eps_v<num_t>;
 static const constexpr num_t pi  = pi_v<num_t>;
 static const constexpr num_t e   = e_v<num_t>;
 

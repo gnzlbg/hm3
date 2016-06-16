@@ -28,8 +28,8 @@ template <typename P, typename Pu = uncvref_t<P>,
           CONCEPT_REQUIRES_(std::is_same<Pu, point<Pu::dimension()>>{}
                             and !std::is_rvalue_reference<P>{})>
 constexpr auto vertices(P&& p) noexcept {
-  return view::single(ref(std::forward<P>(p)))
-         | view::transform(unwrap_reference);
+  return view::single(ranges::ref(std::forward<P>(p)))
+         | view::transform(ranges::unwrap_reference);
 }
 
 }  // namespace geometry

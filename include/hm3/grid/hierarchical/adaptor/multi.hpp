@@ -100,8 +100,9 @@ struct multi : TreeGrid {
     node(n, g) = grid_node_idx{};
     auto p = TreeGrid::parent(n);
     if (TreeGrid::is_leaf(n) and !TreeGrid::is_root(n)) {
-      if (all_of(TreeGrid::siblings(n), [&](tree_node_idx m) {
-            return all_of(grid_nodes(m), [&](grid_node_idx i) { return !i; });
+      if (ranges::all_of(TreeGrid::siblings(n), [&](tree_node_idx m) {
+            return ranges::all_of(grid_nodes(m),
+                                  [&](grid_node_idx i) { return !i; });
           })) {
         // TreeGrid::coarsen(p);
         tree::balanced_coarsen(static_cast<TreeGrid&>(*this), p);

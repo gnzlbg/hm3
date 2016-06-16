@@ -14,12 +14,13 @@ namespace geometry {
 template <dim_t Nd>
 constexpr aabb<Nd> axis_aligned_bounding_box(segment<Nd> const& l) {
   if (l.x_0 < l.x_1) { return aabb<Nd>(l.x_0, l.x_1); }
-  return box<Nd>(l.x_1, l.x_0);
+  return aabb<Nd>(l.x_1, l.x_0);
 }
 
 /// Square Bounding Box of the segment \p l
-template <dim_t Nd> constexpr box<Nd> bounding_box(segment<Nd> const& l) {
-  return box<Nd>(axis_aligned_bounding_box(l));
+template <dim_t Nd>
+constexpr box<Nd> square_bounding_box(segment<Nd> const& l) {
+  return box<Nd>(centroid(l), (l.x_0() - l.x_1()).array().abs().maxCoeff());
 }
 
 }  // namespace geometry

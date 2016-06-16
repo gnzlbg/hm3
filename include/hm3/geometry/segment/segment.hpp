@@ -10,15 +10,20 @@ namespace geometry {
 /// Line segment: line bounded by two end-points
 template <dim_t Nd>  //
 struct segment : dimensional<Nd> {
-  point<Nd> x_0, x_1;
-  /// Line that goes through the 2 points \p b and \p e
-  static segment<Nd> through(point<Nd> b, point<Nd> e) noexcept {
-    return segment<Nd>{b, e};
+  using point_t  = point<Nd>;
+  using vector_t = vector<Nd>;
+  point_t x_0, x_1;
+  /// Line segment that goes through the 2 points \p b and \p e : [b, e]
+  static segment through(point_t b, point_t e) noexcept {
+    HM3_ASSERT(b != e, "line through two equal points: {}!", b);
+    return segment{b, e};
   }
 
-  /// Line that goes through the point \p p in direction \p dir
-  static segment<Nd> at(point<Nd> p, vector<Nd> dir) noexcept {
-    return segment<Nd>{b, e};
+  /// Line segment at \p p in direction \p dir : [p, p+dir]
+  static segment at(point_t p, vector_t dir) noexcept {
+    HM3_ASSERT(dir != vector_t::constant(0.), "line with zero direction: {}!",
+               dir);
+    return segment{p, point_t{p() + dir()}};
   }
 
   auto operator()() const noexcept {
@@ -32,8 +37,10 @@ struct segment : dimensional<Nd> {
     x_0    = *b;
     ++b;
     x_1 = *b;
+    HM3_ASSERT(x_0 != x_1, "line through two equal points: {}!", x_0);
   }
 
+  constexpr segment(point_t from, point_t to) : x_0(from), x_1(to) {}
   constexpr segment()               = default;
   constexpr segment(segment const&) = default;
   constexpr segment(segment&&)      = default;

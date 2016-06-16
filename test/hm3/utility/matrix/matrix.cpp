@@ -93,12 +93,12 @@ template <class Vector> void vector_test(const idx_t n) {
     Vector v(n);
 
     /// Initialize to zero:
-    generate(v, []() { return T{0}; });
+    ranges::generate(v, []() { return T{0}; });
     for (idx_t i = 0; i != n; ++i) { CHECK(v(i) == T{0}); }
 
     /// Initialize to increasing sequence starting at zero
     idx_t start = 0;
-    copy(view::iota(idx_t{0}, n), begin(v));
+    ranges::copy(view::iota(idx_t{0}, n), begin(v));
     for (idx_t i = 0; i != n; ++i) {
       CHECK(v(i) == start);
       start++;

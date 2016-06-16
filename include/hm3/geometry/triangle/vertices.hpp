@@ -7,6 +7,13 @@
 namespace hm3 {
 namespace geometry {
 
+/// Vertex indices of a triangle
+template <typename T, typename Tu = uncvref_t<T>,
+          CONCEPT_REQUIRES_(std::is_same<Tu, triangle<Tu::dimension()>>{})>
+constexpr auto vertex_indices(T&&) noexcept {
+  return view::iota(dim_t{0}, dim_t{3});
+}
+
 /// Vertex of a triangle
 template <typename T, typename Tu = uncvref_t<T>,
           CONCEPT_REQUIRES_(std::is_same<Tu, triangle<Tu::dimension()>>{})>
@@ -27,7 +34,7 @@ constexpr auto vertices(T&& t) noexcept {
 template <typename T, typename Tu = uncvref_t<T>,
           CONCEPT_REQUIRES_(std::is_same<Tu, triangle<Tu::dimension()>>{}
                             and !std::is_rvalue_reference<T>{})>
-constexpr auto vertices(T&& t) noexcept {
+constexpr decltype(auto) vertices(T&& t) noexcept {
   return t.vertices;
 }
 

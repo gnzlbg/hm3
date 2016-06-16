@@ -39,10 +39,10 @@ struct neighbor_storage {
     assert_within_capacity(node, HM3_AT_);
     assert_within_capacity(neighbor, HM3_AT_);
     HM3_ASSERT(neighbor, "{}", node);
-    auto it = find(data_[*node], neighbor);
+    auto it = ranges::find(data_[*node], neighbor);
     HM3_ASSERT(
      it == end(data_[*node])
-      || (find(data_[*neighbor], node) != end(data_[*neighbor])),
+      || (ranges::find(data_[*neighbor], node) != end(data_[*neighbor])),
      "if node {} has {} as neighbor, {} must have {} as neighbor as well", node,
      neighbor, neighbor, node);
     return it != end(data_[*node]) ? true : false;

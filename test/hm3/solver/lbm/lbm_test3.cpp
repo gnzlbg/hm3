@@ -296,7 +296,7 @@ void fd_slip(State&& s, Obstacle&& obstacle) {
 
   // num_t dy = cell_length / 2.;
 
-  // auto line_ic_bndry = geometry::line<1>::through(
+  // auto line_ic_bndry = geometry::segment<1>::through(
   //  geometry::point<1>{x_ic(1)}, geometry::point<1>(x_ic(1) + dy));
 
   // hm3::array<num_t, 2> values;
@@ -309,7 +309,7 @@ void fd_slip(State&& s, Obstacle&& obstacle) {
   // num_t u_gc = geometry::interpolate(line_ic_bndry, values, dy_gc);
 
   // auto line2 =
-  // geometry::line<1>::through(geometry::point<1>{x_ic_n(1)},
+  // geometry::segment<1>::through(geometry::point<1>{x_ic_n(1)},
   //                                         geometry::point<1>(x_ic(1)));
 
   // num_t dy_ic = cell_length;

@@ -7,6 +7,7 @@
 #include <hm3/solver/level_set/amr.hpp>
 #include <hm3/solver/level_set/state.hpp>
 #include <hm3/solver/utility.hpp>
+#include <hm3/utility/test.hpp>
 #ifdef HM3_ENABLE_VTK
 #include <hm3/grid/hierarchical/amr/serialization/vtk.hpp>
 #include <hm3/grid/hierarchical/cartesian/serialization/multi_vtk.hpp>
@@ -138,5 +139,5 @@ int main(int argc, char* argv[]) {
     count_++;
   }
 
-  return 0;
+  return test::result();
 }

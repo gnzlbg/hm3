@@ -32,7 +32,7 @@ struct unstructured_grid {
      = [&](auto&& n) -> geometries<nd> { return grid.geometry(n); };
 
     using grid_cell_t   = decltype(geometry(*begin(nodes)));
-    const auto no_cells = distance(use_copy_if_single_pass(nodes));
+    const auto no_cells = ranges::distance(use_copy_if_single_pass(nodes));
 
     // Preallocate cell array:
     log("Allocating \"{}\" cells...", no_cells);

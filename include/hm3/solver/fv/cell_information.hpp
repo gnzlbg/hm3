@@ -17,7 +17,7 @@ unknown           = 3
 };
 
 template <dim_t Nd>  //
-struct surface : line<Nd> {
+struct surface : segment<Nd> {
 point<Nd> x_center;  ///< Surface centroid
 num_t area;          ///< Surfae area
 sidx_t neighbor;     ///< Neighbor,  if any

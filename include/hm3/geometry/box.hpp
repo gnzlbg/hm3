@@ -4,6 +4,7 @@
 /// Box: AABB of constant length
 #include <hm3/geometry/aabb.hpp>
 #include <hm3/geometry/aabb/ostream.hpp>
+#include <hm3/geometry/box/bounding_box.hpp>
 #include <hm3/geometry/box/bounds.hpp>
 #include <hm3/geometry/box/box.hpp>
 #include <hm3/geometry/box/centroid.hpp>

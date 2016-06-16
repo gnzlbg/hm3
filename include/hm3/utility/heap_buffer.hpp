@@ -56,7 +56,7 @@ template <typename T, typename Buffer = buffer> struct view {
 
   /// Fill
   inline void fill(T value = T{}) noexcept {
-    generate(*this, [v = std::move(value)]() { return v; });
+    ranges::generate(*this, [v = std::move(value)]() { return v; });
   }
 
   /// Pointer to raw data

@@ -18,8 +18,8 @@ struct grid_node : node {
   using node::operator=;
   using node::init;
 
-  hm3::opt::optional<std::vector<num_t>> node_coordinates{};
-  hm3::opt::optional<num_t> node_length{};
+  optional<std::vector<num_t>> node_coordinates{};
+  optional<num_t> node_length{};
 
   template <typename Arg, typename... Args,
             CONCEPT_REQUIRES_(!ConvertibleTo<std::decay_t<Arg>, grid_node>{})>
@@ -43,8 +43,9 @@ struct grid_node : node {
 template <typename TreeNodes, typename GridNodes>
 GridNodes extend(TreeNodes ts, GridNodes gs) {
   for (auto&& gn : gs.nodes) {
-    auto idx   = *gn.idx;
-    auto tn_it = find_if(ts.nodes, [&](auto&& n) { return *n.idx == idx; });
+    auto idx = *gn.idx;
+    auto tn_it
+     = ranges::find_if(ts.nodes, [&](auto&& n) { return *n.idx == idx; });
     if (tn_it != end(ts.nodes)) { gn = *tn_it; }
   }
   return gs;

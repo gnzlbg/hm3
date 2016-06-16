@@ -1042,8 +1042,7 @@ template <typename T> struct hash<std2::experimental::optional<T&>> {
 #undef TR2_OPTIONAL_ASSERTED_EXPRESSION
 
 namespace hm3 {
-namespace opt {
-// range-v3 also has an optional type...
+
 template <typename T> using optional = std2::experimental::optional<T>;
-}  // namespace opt
+
 }  // namespace hm3

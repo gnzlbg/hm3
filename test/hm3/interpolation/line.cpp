@@ -11,8 +11,9 @@ int main() {
   using namespace ip::linear;
   // linear interpolation tests
   {
-    auto l0 = line<2>::through(point<2>::constant(0.), point<2>::constant(1.));
-    num_t l = std::sqrt(2.);
+    auto l0
+     = segment<2>::through(point<2>::constant(0.), point<2>::constant(1.));
+    num_t l      = std::sqrt(2.);
     point<2> p_c = point<2>::constant(0.5);
     CHECK(dimension(l0) == 2_u);
     CHECK(length(l0) == l);

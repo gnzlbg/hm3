@@ -30,8 +30,6 @@ namespace test {
 
 using namespace hm3::tree;
 
-using opt::optional;
-
 /// invalid value
 static const constexpr auto i = std::numeric_limits<uint_t>::max();
 
@@ -83,16 +81,16 @@ using nc = tagged_initializer_list<class normalized_coordinates_tag_, num_t>;
 
 /// Test data for a single node
 struct node {
-  hm3::opt::optional<node_idx> idx{};
-  hm3::opt::optional<uint_t> level{};
-  hm3::opt::optional<node_idx> parent{};
-  hm3::opt::optional<std::vector<node_idx>> children{};
-  hm3::opt::optional<std::vector<uint_t>> pos_in_parent{};
-  hm3::opt::optional<std::vector<node_idx>> face_neighbors{};
-  hm3::opt::optional<std::vector<node_idx>> edge_neighbors{};
-  hm3::opt::optional<std::vector<node_idx>> corner_neighbors{};
-  hm3::opt::optional<std::vector<node_idx>> all_neighbors{};
-  hm3::opt::optional<std::vector<num_t>> normalized_coordinates{};
+  optional<node_idx> idx{};
+  optional<uint_t> level{};
+  optional<node_idx> parent{};
+  optional<std::vector<node_idx>> children{};
+  optional<std::vector<uint_t>> pos_in_parent{};
+  optional<std::vector<node_idx>> face_neighbors{};
+  optional<std::vector<node_idx>> edge_neighbors{};
+  optional<std::vector<node_idx>> corner_neighbors{};
+  optional<std::vector<node_idx>> all_neighbors{};
+  optional<std::vector<num_t>> normalized_coordinates{};
 
   node()            = default;
   node(node const&) = default;
@@ -179,8 +177,8 @@ Nodes rewrite_nodes(Nodes ns, Rule&& r) {
 template <typename Tree> void test_parent(Tree const& t, node const& n) {
   // consistency:
   if (t.parent(*n.idx)) {
-    CHECK(any_of(t.children(t.parent(*n.idx)),
-                 [&](auto&& c) { return c == *n.idx; }));
+    CHECK(ranges::any_of(t.children(t.parent(*n.idx)),
+                         [&](auto&& c) { return c == *n.idx; }));
     CHECK(!t.is_root(*n.idx));
   } else {
     CHECK(t.is_root(*n.idx));
@@ -331,12 +329,13 @@ void check_consistent_parent_child_edges(Tree const& tree) {
 
 template <typename Tree> void check_consistent_leaf_nodes(Tree const& tree) {
   for (auto n : tree.nodes() | tree.leaf()) {
-    CHECK(distance(tree.children(n)) == 0);
+    CHECK(ranges::distance(tree.children(n)) == 0);
     CHECK(tree.no_children(n) == 0_u);
     for (auto p : tree.child_positions()) { CHECK(!tree.child(n, p)); }
   }
   for (auto n : tree.nodes() | tree.with_children()) {
-    CHECK(static_cast<uint>(distance(tree.children(n))) == tree.no_children());
+    CHECK(static_cast<uint>(ranges::distance(tree.children(n)))
+          == tree.no_children());
     CHECK(tree.no_children(n) == static_cast<uint_t>(tree.no_children()));
     for (auto p : tree.child_positions()) { CHECK(tree.child(n, p)); }
   }

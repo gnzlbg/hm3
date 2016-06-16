@@ -373,7 +373,7 @@ struct multi : geometry::dimensional<Nd> {
     HM3_ASSERT(tn, "grid node {} of grid {} doesn't have a valid tree node", n,
                idx());
     auto child_nodes = tree().refine(tn);
-    if (distance(child_nodes) == 0) {
+    if (ranges::distance(child_nodes) == 0) {
       HM3_FATAL_ERROR("couldn't refine node {} on grid {}", n, idx());
     }
     for (auto&& i : child_nodes) {
