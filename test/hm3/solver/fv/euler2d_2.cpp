@@ -1,7 +1,7 @@
 #ifdef ABC
 /// Euler cut-off tests
-#include "euler/euler.hpp"
 #include <hm3/utility/test.hpp>
+#include "euler/euler.hpp"
 
 using namespace hm3;
 

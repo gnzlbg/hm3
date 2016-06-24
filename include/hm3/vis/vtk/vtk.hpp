@@ -6,6 +6,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wextra-semi"
 #pragma clang diagnostic ignored "-Wfloat-equal"
+#pragma clang diagnostic ignored "-Wdocumentation"
 // Memory management:
 #include <vtkObjectFactory.h>
 #include <vtkSmartPointer.h>

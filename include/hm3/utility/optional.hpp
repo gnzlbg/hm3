@@ -375,7 +375,7 @@ template <typename T> class optional : private OptionalBase<T> {
   }
 
 #if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
-  constexpr const T& contained_val() const& {
+  constexpr const T& contained_val() const & {
     return OptionalBase<T>::storage_.value_;
   }
 #if OPTIONAL_HAS_MOVE_ACCESSORS == 1
@@ -542,7 +542,7 @@ template <typename T> class optional : private OptionalBase<T> {
     return dataptr();
   }
 
-  constexpr T const& operator*() const& {
+  constexpr T const& operator*() const & {
     return TR2_OPTIONAL_ASSERTED_EXPRESSION(initialized(), contained_val());
   }
 
@@ -556,7 +556,7 @@ template <typename T> class optional : private OptionalBase<T> {
     return constexpr_move(contained_val());
   }
 
-  constexpr T const& value() const& {
+  constexpr T const& value() const & {
     return initialized() ? contained_val()
                          : (throw bad_optional_access("bad optional access"),
                             contained_val());
@@ -605,7 +605,7 @@ template <typename T> class optional : private OptionalBase<T> {
 
 #if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 
-  template <typename V> constexpr T value_or(V&& v) const& {
+  template <typename V> constexpr T value_or(V&& v) const & {
     return *this ? **this : static_cast<T>(constexpr_forward<V>(v));
   }
 

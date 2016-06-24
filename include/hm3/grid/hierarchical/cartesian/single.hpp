@@ -41,7 +41,7 @@ struct single : tree::tree<Nd> {
    : tree_t(std::move(tree_)), bounding_box_(bounding_box) {}
 
   single(single const& other, tree_node_idx new_node_capacity)
-   : tree_t(other, new_node_capacity), bounding_box_(bounding_box) {}
+   : tree_t(other, new_node_capacity), bounding_box_(other.bounding_box()) {}
 
   /// Bounding box of the grid (root node geometry)
   auto bounding_box() const noexcept { return bounding_box_; }

@@ -2,9 +2,8 @@
 /// \file
 ///
 /// Triangle point order
-#include <hm3/geometry/triangle/triangle.hpp>
 #include <hm3/geometry/polygon/order.hpp>
-
+#include <hm3/geometry/triangle/triangle.hpp>
 
 namespace hm3 {
 namespace geometry {

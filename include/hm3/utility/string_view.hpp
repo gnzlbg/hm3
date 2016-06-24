@@ -12,7 +12,7 @@ using std::string_view;
 }  // namespace hm3
 #else
 
-#include <boost/utility/string_ref.hpp>
+#include <hm3/utility/boost/string_ref.hpp>
 
 namespace hm3 {
 using string_view = boost::string_ref;

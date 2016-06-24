@@ -167,14 +167,14 @@ struct matrix : bounds<NoRows, NoCols>,
 
   /// Returns an Eigen view of the matrix
   CONCEPT_REQUIRES(!is_bit())
-  constexpr auto operator()() const& -> const_eigen_map_type {
+  constexpr auto operator()() const & -> const_eigen_map_type {
     return const_eigen_map_type{this->data(), static_cast<int_t>(no_rows()),
                                 static_cast<int_t>(no_cols())};
   }
 
   /// Access vector elements
   CONCEPT_REQUIRES(is_vector())
-  constexpr const_reference operator()(const RowIdx index) const& {
+  constexpr const_reference operator()(const RowIdx index) const & {
     const auto i = unwrap(index);
     HM3_ASSERT(static_cast<std::size_t>(i) < size(),
                "vector index '{}' is out-of-range [0, {})", i, size());
@@ -200,7 +200,7 @@ struct matrix : bounds<NoRows, NoCols>,
 
   /// Access vector elements
   CONCEPT_REQUIRES(is_vector())
-  constexpr const_reference operator[](const RowIdx index) const& {
+  constexpr const_reference operator[](const RowIdx index) const & {
     const auto i = unwrap(index);
     HM3_ASSERT(static_cast<std::size_t>(i) < size(),
                "vector index '{}' is out-of-range [0, {})", i, size());

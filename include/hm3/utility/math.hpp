@@ -140,10 +140,36 @@ constexpr Float robust_sign(Float f) noexcept {
   return std::signbit(f) ? Float{-1} : Float{1};
 }
 
+/// Is a floating point number NaN?
+///
+/// NaNs never compare equal to themselves
+///
+/// \note Workaround until std::isnan becomes constexpr
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr bool is_nan(Float x) {
+  return __builtin_isnan(x);
+}
+
+/// Is a floating point number finite?
+///
+/// \note Workaround until std::isfinite becomes constexpr
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr bool is_finite(Float x) {
+  return __builtin_isfinite(x);
+}
+
+/// Is a floating point number infinite?
+///
+/// \note Workaround until std::isinf becomes constexpr
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr bool is_infinite(Float x) {
+  return __builtin_isinf(x);
+}
+
 /// Sign of a floating point number
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr Float sign(Float f) noexcept {
-  HM3_ASSERT(!std::isnan(f), "");
+  HM3_ASSERT(!is_nan(f), "");
   return fast_sign(f);
 }
 
@@ -169,8 +195,7 @@ constexpr Int binomial_coefficient(const Int n, const Int m) noexcept {
 /// Integer floor
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr int64_t ifloor(Float x) {
-  HM3_ASSERT(!std::isnan(x), "floor of nan");
-  HM3_ASSERT(!std::isinf(x), "floor of infinity");
+  HM3_ASSERT(is_finite(x), "floor of not finite number {}", x);
   int64_t i = x;
   return i - (x < i);
 }
@@ -178,8 +203,7 @@ constexpr int64_t ifloor(Float x) {
 /// Integer ceil
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr int64_t iceil(Float x) {
-  HM3_ASSERT(!std::isnan(x), "ceil of nan");
-  HM3_ASSERT(!std::isinf(x), "ceil of infinity");
+  HM3_ASSERT(is_finite(x), "ceil of not finite number {}", x);
   int64_t i = x;
   return i + (x > i);
 }
