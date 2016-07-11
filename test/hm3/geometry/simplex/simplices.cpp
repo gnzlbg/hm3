@@ -1,4 +1,4 @@
-#include <hm3/geometry/simplex/mesh.hpp>
+#include <hm3/geometry/simplex/simplices.hpp>
 #include <hm3/utility/test.hpp>
 
 int main() {
@@ -8,7 +8,7 @@ int main() {
   {  // 2D
     static constexpr dim_t nd = 2;
 
-    using mesh_t = simplex_mesh<nd>;
+    using mesh_t = simplices<nd>;
     using p_t    = point<nd>;
     using s_t    = simplex<nd>;
 
@@ -66,14 +66,14 @@ int main() {
     // construct from simplex range
     m = mesh_t(ss);
 
-    CHECK(m.size() == 17);
+    CHECK(m.face_size() == 17);
     CHECK(m.vertex_size() == 17);
   }
 
   {  // 3D
     static constexpr dim_t nd = 3;
 
-    using mesh_t = simplex_mesh<nd>;
+    using mesh_t = simplices<nd>;
     using p_t    = point<nd>;
     using s_t    = simplex<nd>;
 
