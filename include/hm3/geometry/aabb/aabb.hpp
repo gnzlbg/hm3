@@ -9,6 +9,8 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 /// Axis-Aligned Bounding Box
 template <dim_t Nd>  //
 struct aabb : dimensional<Nd> {
@@ -49,5 +51,6 @@ constexpr bool operator!=(aabb<Nd> const& l, aabb<Nd> const& r) noexcept {
   return !(l == r);
 }
 
+}  // namespace aabb_primitive
 }  // namespace geometry
 }  // namespace hm3

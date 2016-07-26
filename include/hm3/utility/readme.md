@@ -18,6 +18,8 @@
 - `compact_optional<T>`: efficient `optional` for types that have a sentinel
    value (e.g. if an `int` cannot ever be negative, `-1` can be used to
    represent emptiness).
+   - `optional_idx<T, Tag>` makes is a wrapper around `compact_optional` for
+   indices with a sentinel value.
 - `fmt`: a wrapper around the `<cppformat>` library:
   `hm3::fmt::print("hell{d} {}", 0, "world");` is way faster than `<iostream>`.
 - `heap_buffer`: `view<T, Storage>` an already existing container of type

@@ -4,7 +4,7 @@
 /// Grid types
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/compact_optional.hpp>
+#include <hm3/utility/optional_idx.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -21,10 +21,7 @@ using tree::operator"" _l;
 using gidx_t = dim_t;
 
 /// Index of a grid within a tree
-using grid_idx
- = compact_optional<empty_scalar_value<gidx_t,
-                                       std::numeric_limits<gidx_t>::max()>,
-                    struct grid_idx_tag>;
+using grid_idx = optional_idx<gidx_t, struct grid_idx_tag>;
 
 constexpr grid_idx operator"" _g(unsigned long long int i) {
   return grid_idx{static_cast<gidx_t>(i)};
@@ -34,10 +31,7 @@ constexpr grid_idx operator"" _g(unsigned long long int i) {
 using nidx_t = idx_t;
 
 /// Index of a node within a grid
-using grid_node_idx
- = compact_optional<empty_scalar_value<nidx_t,
-                                       std::numeric_limits<nidx_t>::max()>,
-                    struct grid_node_idx_tag>;
+using grid_node_idx = optional_idx<nidx_t, struct grid_node_idx_tag>;
 
 constexpr grid_node_idx operator"" _gn(unsigned long long int i) {
   return grid_node_idx{static_cast<nidx_t>(i)};

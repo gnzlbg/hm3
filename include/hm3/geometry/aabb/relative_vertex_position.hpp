@@ -9,7 +9,7 @@
 namespace hm3 {
 namespace geometry {
 
-namespace aabb_detail {
+namespace aabb_primitive {
 
 using vidx_t = suint_t;
 
@@ -58,7 +58,7 @@ constexpr point<Nd> relative_vertex_position(vidx_t vertex_pos) noexcept {
                                       std::make_integer_sequence<dim_t, Nd>{});
 }
 
-}  // namespace aabb_detail
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

@@ -3,9 +3,13 @@
 ///
 /// AABB length
 #include <hm3/geometry/aabb/aabb.hpp>
+#include <hm3/geometry/aabb/bounds.hpp>
 #include <hm3/geometry/aabb/x_min_max.hpp>
+
 namespace hm3 {
 namespace geometry {
+
+namespace aabb_primitive {
 
 /// Length of the AABB \p s along the \p d spatial component
 template <dim_t Nd>
@@ -27,6 +31,8 @@ constexpr num_t max_length(aabb<Nd> const& s) noexcept {
   auto max = x_max(s);
   return (min() - max()).array().abs().maxCoeff();
 }
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

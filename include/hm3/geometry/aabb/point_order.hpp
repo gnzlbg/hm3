@@ -12,6 +12,8 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 template <typename Points, CONCEPT_REQUIRES_(RandomAccessRange<Points>{})>
 bool are_aabb_points_in_ccw_order(Points&& ps) {
   using point_t                 = decltype(*begin(ps));
@@ -77,6 +79,8 @@ bool are_aabb_points_in_z_order(Points&& ps) {
     default: { HM3_FATAL_ERROR("unreachable"); }
   }
 }
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

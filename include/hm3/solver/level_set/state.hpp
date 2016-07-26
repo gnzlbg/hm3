@@ -58,7 +58,7 @@ template <dim_t Nd> struct state : geometry::dimensional<Nd> {
 
   /// Reset level-set solver state
   void reset() noexcept {
-    for (auto&& i : signed_distance) { i = std::numeric_limits<num_t>::max(); }
+    for (auto&& i : signed_distance) { i = math::highest<num_t>; }
     g.reset();
   }
 
@@ -107,7 +107,7 @@ template <dim_t Nd> struct state : geometry::dimensional<Nd> {
     interpolate_from_children_to_parent(coarsen_guard.new_parent(),
                                         coarsen_guard.old_children());
     for (auto i : coarsen_guard.old_children()) {
-      signed_distance(i) = std::numeric_limits<num_t>::lowest();
+      signed_distance(i) = math::lowest<num_t>;
     }
     return coarsen_guard.new_parent();
   }

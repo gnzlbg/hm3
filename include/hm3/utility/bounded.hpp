@@ -3,6 +3,7 @@
 ///
 /// Bounded integer type
 #include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {
@@ -22,7 +23,7 @@ template <typename T, T from, T to, typename Tag = void> struct bounded {
 
   static constexpr bounded invalid() noexcept {
     bounded b;
-    b.value = std::numeric_limits<T>::max();
+    b.value = math::highest<T>;
     return b;
   }
 

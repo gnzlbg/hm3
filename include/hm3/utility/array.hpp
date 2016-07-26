@@ -58,9 +58,9 @@ struct array {                    // NOLINT
   constexpr const_reverse_iterator crbegin() const noexcept { return rbegin(); }
   constexpr const_reverse_iterator crend() const noexcept { return rend(); }
   // capacity:
-  constexpr size_type size() const noexcept { return N; }
-  constexpr size_type max_size() const noexcept { return N; }
-  constexpr bool empty() const noexcept { return N == 0; }
+  static constexpr size_type size() noexcept { return N; }
+  static constexpr size_type max_size() noexcept { return N; }
+  static constexpr bool empty() noexcept { return N == 0; }
   // element access:
   constexpr reference operator[](size_type n) { return elems_[n]; }
   constexpr const_reference operator[](size_type n) const { return elems_[n]; }

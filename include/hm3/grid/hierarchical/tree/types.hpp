@@ -5,8 +5,8 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/math.hpp>
+#include <hm3/utility/optional_idx.hpp>
 
 namespace hm3 {
 namespace tree {
@@ -15,10 +15,7 @@ namespace tree {
 using nidx_t = uint_t;
 
 /// Index of a node within a tree
-using node_idx
- = compact_optional<empty_scalar_value<nidx_t,
-                                       std::numeric_limits<nidx_t>::max()>,
-                    struct tree_node_idx_tag>;
+using node_idx = optional_idx<nidx_t, struct tree_node_idx_tag>;
 
 constexpr node_idx operator"" _n(unsigned long long int i) {
   return node_idx{static_cast<nidx_t>(i)};
@@ -28,10 +25,7 @@ constexpr node_idx operator"" _n(unsigned long long int i) {
 using sgidx_t = idx_t;
 
 /// Index of a sibling group within a tree
-using siblings_idx
- = compact_optional<empty_scalar_value<sgidx_t,
-                                       std::numeric_limits<sgidx_t>::max()>,
-                    struct siblings_tag>;
+using siblings_idx = optional_idx<sgidx_t, struct siblings_tag>;
 
 constexpr siblings_idx operator"" _sg(unsigned long long int i) {
   return siblings_idx{static_cast<sgidx_t>(i)};
@@ -41,10 +35,7 @@ constexpr siblings_idx operator"" _sg(unsigned long long int i) {
 using lidx_t = suint_t;
 
 /// Index of a level within a tree
-using level_idx
- = compact_optional<empty_scalar_value<lidx_t,
-                                       std::numeric_limits<lidx_t>::max()>,
-                    struct levels_tag>;
+using level_idx = optional_idx<lidx_t, struct levels_tag>;
 
 constexpr level_idx operator"" _l(unsigned long long int i) {
   return level_idx{static_cast<lidx_t>(i)};

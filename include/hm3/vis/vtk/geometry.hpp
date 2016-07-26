@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Maps different cell type geometries
+#include <hm3/geometry/aabb.hpp>
 #include <hm3/geometry/box.hpp>
 #include <hm3/geometry/polygon.hpp>
 #include <hm3/utility/variant.hpp>
@@ -11,12 +12,14 @@ namespace vis {
 namespace vtk {
 
 template <dim_t Nd> struct supported_geometries {
-  using type = std::experimental::variant<geometry::box<Nd>>;
+  using type
+   = std::experimental::variant<geometry::aabb<Nd>, geometry::box<Nd>>;
 };
 
 template <> struct supported_geometries<2_u> {
   using type
-   = std::experimental::variant<geometry::box<2_u>, geometry::polygon<2_u, 5>>;
+   = std::experimental::variant<geometry::aabb<2_u>, geometry::box<2_u>,
+                                geometry::polygon<2_u, 5>>;
 };
 
 template <dim_t Nd> using geometries = typename supported_geometries<Nd>::type;

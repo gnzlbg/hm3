@@ -134,10 +134,10 @@ template <typename UInt, typename SInt,
 constexpr bool overflows_on_add(UInt value, SInt offset,
                                 UInt no_bits = width<UInt>) {
   if (offset >= SInt{0}) {
-    HM3_ASSERT(offset <= SInt{std::numeric_limits<UInt>::max()}, "");
+    HM3_ASSERT(offset <= SInt{math::highest<UInt>}, "");
     return max_value(no_bits) - value < static_cast<UInt>(offset);
   }
-  HM3_ASSERT(-offset <= SInt{std::numeric_limits<UInt>::max()}, "");
+  HM3_ASSERT(-offset <= SInt{math::highest<UInt>}, "");
   return value < static_cast<UInt>(-offset);
 }
 

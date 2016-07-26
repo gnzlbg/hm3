@@ -19,8 +19,10 @@ if(EXISTS "${spdlog_INCLUDE_DIR}")
 else()
   include(ExternalProject)
   ExternalProject_Add(spdlog
-    DOWNLOAD_COMMAND git clone --depth 1 https://github.com/gabime/spdlog.git
     TIMEOUT 5
+    #DOWNLOAD_COMMAND git clone --depth 1 https://github.com/gabime/spdlog.git
+    GIT_TAG cef7eb0667d998ace38e5f5122805107f22b5042
+    GIT_REPOSITORY https://github.com/gabime/spdlog.git
     CMAKE_ARGS -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     PREFIX "${CMAKE_CURRENT_BINARY_DIR}"
     CONFIGURE_COMMAND "" # Disable configure step

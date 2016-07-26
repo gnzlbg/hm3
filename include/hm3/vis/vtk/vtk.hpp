@@ -96,6 +96,19 @@ template <> struct cell_t<geometry::box<3>> {
   using type = vtkHexahedron;
   static constexpr auto value() { return VTK_HEXAHEDRON; }
 };
+template <> struct cell_t<geometry::aabb<1>> {
+  using type = vtkLine;
+  static constexpr auto value() { return VTK_LINE; }
+};
+template <> struct cell_t<geometry::aabb<2>> {
+  using type = vtkQuad;
+  static constexpr auto value() { return VTK_QUAD; }
+};
+template <> struct cell_t<geometry::aabb<3>> {
+  using type = vtkHexahedron;
+  static constexpr auto value() { return VTK_HEXAHEDRON; }
+};
+
 template <dim_t Nd, suint_t MaxNp> struct cell_t<geometry::polygon<Nd, MaxNp>> {
   using type = vtkPolygon;
   static constexpr auto value() { return VTK_POLYGON; }
@@ -106,11 +119,11 @@ template <typename T> using to_vtk_cell_ptr_t = smart_ptr<to_vtk_cell_t<T>>;
 
 template <typename... Ts>
 using vtk_cell_types_t
- = meta::transform<meta::list<Ts...>, meta::quote<to_vtk_cell_t>>;
+ = meta::unique<meta::transform<meta::list<Ts...>, meta::quote<to_vtk_cell_t>>>;
 
 template <typename... Ts>
-using vtk_cell_ptr_types_t
- = meta::transform<meta::list<Ts...>, meta::quote<to_vtk_cell_ptr_t>>;
+using vtk_cell_ptr_types_t = meta::
+ unique<meta::transform<meta::list<Ts...>, meta::quote<to_vtk_cell_ptr_t>>>;
 
 template <typename... Ts>
 using vtk_cell_ptr_tuple_t

@@ -35,15 +35,29 @@ template <typename T>
 static const constexpr T e_v
  = 2.7182818284590452353602874713526624977572470936999595749669676;
 
+/// Infinity
+template <typename T>
+static const constexpr T inf_v = std::numeric_limits<T>::infinity();
+
 static const constexpr num_t eps = eps_v<num_t>;
 static const constexpr num_t pi  = pi_v<num_t>;
 static const constexpr num_t e   = e_v<num_t>;
+static const constexpr num_t inf = inf_v<num_t>;
+
+template <typename T>
+static const constexpr T highest = std::numeric_limits<T>::max();
+
+template <typename T>
+static const constexpr T lowest = std::numeric_limits<T>::lowest();
 
 }  // namespace constant
 
 using constant::pi;
 using constant::e;
 using constant::eps;
+using constant::inf;
+using constant::lowest;
+using constant::highest;
 
 /// Takes the absolute difference between two unsigned integers (without
 /// wrapping)
@@ -81,8 +95,8 @@ static constexpr sint_t signum(const T& x) noexcept {
 /// Computes integer pow using exponentiation by squaring
 /// Complexiy O(log(e))
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
-[[clang::no_sanitize("integer")]] constexpr Int ipow_impl(Int base,
-                                                          Int exponent) {
+[[clang::no_sanitize("integer")]] constexpr Int ipow_impl(
+ Int base, Int exponent) noexcept {
   Int result = 1;
   while (exponent) {
     if (exponent & 1) { result *= base; }
@@ -94,7 +108,7 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 [[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]] constexpr Int lookup_ipow2(
- Int exponent) {
+ Int exponent) noexcept {
   constexpr unsigned ipow2_v[] = {1, 2, 4};
   HM3_ASSERT(e < std::extent<decltype(ipow2_v)>::value,
              "ipow2 exponent {} is out of bounds [0, {})", exponent,
@@ -109,7 +123,7 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 [[ HM3_FLATTEN, HM3_ALWAYS_INLINE, HM3_HOT ]]  //
  constexpr Int
- ipow(Int base, Int exponent) {
+ ipow(Int base, Int exponent) noexcept {
 #ifdef HM3_IPOW_LOOKUP
   switch (base) {
     case 0: {
@@ -126,6 +140,18 @@ template <typename Int, CONCEPT_REQUIRES_(Integral<Int>{})>
 #else
   return ipow_impl(base, exponent);
 #endif
+}
+
+template <typename F, typename I,
+          CONCEPT_REQUIRES_(std::is_floating_point<F>{} and Integral<I>{})>
+constexpr F ipow(F base, I exponent) noexcept {
+  F result = 1;
+  while (exponent) {
+    if (exponent & 1) { result *= base; }
+    exponent >>= 1;
+    base *= base;
+  }
+  return result;
 }
 
 /// Sign of a floating point number (doesn't handle NaNs)

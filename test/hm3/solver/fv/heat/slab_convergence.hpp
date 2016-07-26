@@ -125,7 +125,9 @@ num_t error_slab_analytical(
                                 cfl, [&](auto&& s, auto&& t, auto&& ts) {});
   fv::vtk::serialize(as0, solver_name + "_", min_grid_level, physics.cv());
 
-  /// Compute Error
+  /// Compute L2-Norm Error:
+  /// ||s_analytic - s_numerical||_L2 =
+  ///    int_omega |s_analytic - s_numerical|^2 dOmega
   num_t error = 0.;
   for (auto& b : as0.tiles()) {
     b.cells().for_each_internal([&](auto&& c) {
@@ -133,7 +135,7 @@ num_t error_slab_analytical(
       auto volume      = b.geometry().cell_volume();
       auto t_analytic  = analytic_solution(x, time_end);
       auto t_numerical = b.variables(c.idx())(0);
-      error += volume * std::abs(t_analytic - t_numerical);
+      error += volume * std::pow(std::abs(t_analytic - t_numerical), 2.);
     });
   }
 

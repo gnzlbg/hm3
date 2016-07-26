@@ -178,6 +178,11 @@ struct point_set {
     // otherwise return nothing:
     return optional_pidx_t{};
   }
+
+  /// Range of points
+  point_storage const& points() const { return points_; }
+  /// Range of points
+  point_storage& points() { return points_; }
 };
 
 }  // namespace geometry

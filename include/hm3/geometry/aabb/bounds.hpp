@@ -9,11 +9,13 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 template <dim_t Nd>  //
 struct aabb_bounds {
   aabb_bounds()
-   : min(point<Nd>::constant(std::numeric_limits<num_t>::max()))
-   , max(point<Nd>::constant(std::numeric_limits<num_t>::lowest())) {}
+   : min(point<Nd>::constant(math::highest<num_t>))
+   , max(point<Nd>::constant(math::lowest<num_t>)) {}
   aabb_bounds(point<Nd> xmin, point<Nd> xmax) : min(xmin), max(xmax) {
     HM3_ASSERT(valid(), "invalid aabb_bounds with xmin: {} and xmax: {}", min,
                max);
@@ -43,6 +45,8 @@ template <dim_t Nd>
 constexpr aabb_bounds<Nd> bounds(aabb<Nd> const& s) noexcept {
   return {x_min(s), x_max(s)};
 }
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

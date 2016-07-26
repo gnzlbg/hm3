@@ -50,11 +50,17 @@ void test_unit_aabb() {
   CHECK(vertex_size(a) == math::ipow(dim_t{2}, nd));
 
   // vertices:
+  point<3> vxs_should[]
+   = {{0., 0., 0.}, {1., 0., 0.}, {1., 1., 0.}, {0., 1., 0.},
+      {0., 0., 1.}, {1., 0., 1.}, {1., 1., 1.}, {0., 1., 1.}};
   auto vxs = vertices(a);
   for (suint_t i = 0; i < vertex_size(a); ++i) {
     CHECK(vertex(a, i) >= pz);
     CHECK(vertex(a, i) <= po);
     CHECK(vertex(a, i) == vxs[i]);
+    for (dim_t d = 0; d < nd; ++d) {
+      CHECK(vertex(a, i)(d) == vxs_should[i][d]);
+    }
   }
 
   // centroid:

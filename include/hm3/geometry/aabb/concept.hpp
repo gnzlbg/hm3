@@ -8,6 +8,8 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 namespace concepts {
 namespace rc = ranges::concepts;
 
@@ -24,6 +26,8 @@ using AABB = aabb;
 
 template <typename T>
 using AABB = concepts::rc::models<concepts::AABB, ranges::uncvref_t<T>>;
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

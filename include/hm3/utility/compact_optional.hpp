@@ -199,6 +199,16 @@ class compact_optional : public detail::compact_optional_base<N> {
     return self{(*a) - (*b)};
   }
 
+  CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
+  friend self operator/(self const& a, self const& b) noexcept {
+    return self{(*a) / (*b)};
+  }
+
+  CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
+  friend self operator*(self const& a, self const& b) noexcept {
+    return self{(*a) * (*b)};
+  }
+
   /// TODO: constrain on <<
   template <typename OStream>
   friend constexpr OStream& operator<<(OStream& os, self const& a) {

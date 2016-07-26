@@ -3,10 +3,12 @@
 ///
 /// Axis-Aligned Bounding Box
 #include <hm3/geometry/aabb/aabb.hpp>
+#include <hm3/geometry/aabb/area.hpp>
 #include <hm3/geometry/aabb/bounding_box.hpp>
 #include <hm3/geometry/aabb/bounds.hpp>
 #include <hm3/geometry/aabb/centroid.hpp>
 #include <hm3/geometry/aabb/contains.hpp>
+#include <hm3/geometry/aabb/intersection.hpp>
 #include <hm3/geometry/aabb/is_box.hpp>
 #include <hm3/geometry/aabb/length.hpp>
 #include <hm3/geometry/aabb/ostream.hpp>

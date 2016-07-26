@@ -17,7 +17,7 @@ endmacro()
 
 # All compilation flags
 # Language flag: version of the C++ standard to use
-hm3_append_flag(HM3_HAS_STDCXX14 -std=c++14)
+hm3_append_flag(HM3_HAS_STDCXX1Z -std=c++1z)
 
 # PITA warning flags:
 hm3_append_flag(HM3_HAS_WSHADOW -Wshadow)
@@ -93,9 +93,9 @@ if (HM3_ENABLE_WERROR)
 endif()
 
 if (HM3_ENABLE_ASAN)
-  #set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined,leak -fno-omit-frame-pointer -fno-sanitize=unsigned-integer-overflow")
+  set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined,leak")
   #set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined -fno-sanitize-recover=address,integer,undefined -fsanitize-blacklist=${PROJECT_SOURCE_DIR}/sanitize.blacklist")
-  #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HM3_ASAN_FLAGS}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HM3_ASAN_FLAGS}")
   hm3_append_flag(HM3_HAS_SANITIZE_FLAGS "-fsanitize=address,integer,undefined")
   hm3_append_flag(HM3_HAS_SANITIZE_NO_RECOVER "-fno-sanitize-recover=address,integer,undefined")
   hm3_append_flag(HM3_HAS_SANITIZE_BLACKLIST "-fsanitize-blacklist=${PROJECT_SOURCE_DIR}/sanitize.blacklist")
@@ -105,7 +105,7 @@ else()
 endif()
 
 if (HM3_ENABLE_MSAN)
-  set(HM3_MSAN_FLAGS "-fsanitize=memory")
+  set(HM3_MSAN_FLAGS "-fsanitize=memory -fsanitize-recover=all")
   hm3_append_flag(HM3_HAS_MSAN "${HM3_MSAN_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HM3_MSAN_FLAGS}")
   hm3_append_flag(HM3_HAS_NO_OMIT_FRAME_POINTER -fno-omit-frame-pointer)

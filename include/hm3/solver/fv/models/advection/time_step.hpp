@@ -13,7 +13,7 @@ struct max_wave_speed_time_step_fn {
   template <typename V, typename S, typename B, typename C>
   constexpr num_t operator()(V&& v, S const& s, num_t length, num_t cfl) const
    noexcept {
-    num_t u_max = std::numeric_limits<num_t>::lowest();
+    num_t u_max = math::lowest<num_t>;
     for (auto d : s.dimensions()) {
       u_max = std::max(u_max, s.max_wave_speed(v, d));
     }

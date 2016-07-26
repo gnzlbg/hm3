@@ -15,6 +15,8 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 template <typename Shape, CONCEPT_REQUIRES_(AABB<Shape>{})>
 constexpr auto vertex_indices(Shape const&) noexcept {
   using idx_t = decltype(vertex_size(Shape{}));
@@ -45,6 +47,8 @@ constexpr auto vertices(aabb<Nd> const& s) noexcept {
   }
   return vxs;
 }
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

@@ -7,7 +7,7 @@
 
 // workaround missing "is_trivially_copyable" in libstdc++ < 5.0
 // TODO: wrong the version of libstdc++ is probably too high
-#if defined(__GLIBCXX__) && __GLIBCXX__ < 20150801
+#if defined(__GLIBCXX__) && __GLIBCXX__ < 20150421
 namespace std {
 template <typename T>
 struct is_trivially_copyable : integral_constant<bool, __has_trivial_copy(T)> {

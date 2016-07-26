@@ -7,6 +7,8 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 /// Number of vertices
 template <dim_t Nd>  //
 constexpr auto vertex_size(aabb<Nd> const&) noexcept {
@@ -28,6 +30,8 @@ template <dim_t Nd>  //
 constexpr bool empty(aabb<Nd> const&) {
   return false;
 }
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

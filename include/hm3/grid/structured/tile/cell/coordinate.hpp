@@ -36,7 +36,7 @@ struct coordinate : geometry::dimensional<Nd> {
   /// \name Array of invalid coordinates
   ///@{
   static constexpr value_t invalid_x_() noexcept {
-    return std::numeric_limits<value_t>::max();
+    return math::highest<value_t>;
   }
   CONCEPT_REQUIRES(Nd == 1)
   static constexpr coordinates_t invalid_xs_() noexcept {
@@ -216,7 +216,7 @@ struct coordinate : geometry::dimensional<Nd> {
     // should always result in an invalid tile, but doing this right would
     // require something like:
     //
-    // n[d] = new_xs >= 0? new_xs : std::numeric_limits<value_t>::max();
+    // n[d] = new_xs >= 0? new_xs : math::highest<value_t>;
     //
     // which introduces a branch. So instead we just rely on the fact that
     // tiles should be small and wrapping unsigned arithmetic:

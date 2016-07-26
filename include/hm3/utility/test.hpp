@@ -27,8 +27,8 @@ inline int& failures() {
 
 template <typename T> struct streamable_base {};
 
-template <typename T>
-std::ostream& operator<<(std::ostream& sout, streamable_base<T> const&) {
+template <typename OStream, typename T>
+OStream& operator<<(OStream& sout, streamable_base<T> const&) {
   return sout << "<non-streamable type>";
 }
 
@@ -38,8 +38,8 @@ template <typename T> struct streamable : streamable_base<T> {
 
  public:
   explicit streamable(T const& t) : t_(t) {}
-  template <typename U = T>
-  friend auto operator<<(std::ostream& sout, streamable const& s)
+  template <typename OStream, typename U = T>
+  friend auto operator<<(OStream& sout, streamable const& s)
    -> decltype(sout << std::declval<U const&>()) {
     return sout << s.t_;
   }
@@ -188,7 +188,7 @@ void check_approx_equal(Rng&& actual, Rng2&& expected) {
   auto begin1 = ranges::begin(expected);
   auto end1   = ranges::end(expected);
   for (; begin0 != end0 && begin1 != end1; ++begin0, ++begin1) {
-    CHECK(std::fabs(*begin0 - *begin1) < std::numeric_limits<num_t>::epsilon());
+    CHECK(std::fabs(*begin0 - *begin1) < math::eps);
   }
   CHECK(begin0 == end0);
   CHECK(begin1 == end1);

@@ -3,6 +3,7 @@
 ///
 /// Compute time step
 #include <hm3/types.hpp>
+#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 #include <limits>
 
@@ -14,7 +15,7 @@ struct compute_time_step_fn {
   template <typename State, typename TimeStepF, typename V>
   constexpr num_t impl(State const& s, num_t cfl, TimeStepF&& tf, V&& v,
                        std::true_type) const noexcept {
-    num_t dt = std::numeric_limits<num_t>::max();
+    num_t dt = math::highest<num_t>;
     for (auto&& t : s.tiles()) {
       auto&& lhs = s.time_integration.lhs(t);
       auto dx    = t.geometry().cell_length();
@@ -27,7 +28,7 @@ struct compute_time_step_fn {
   template <typename State, typename TimeStepF, typename V>
   constexpr num_t impl(State const& s, num_t cfl, TimeStepF&& tf, V&& v,
                        std::false_type) const noexcept {
-    num_t dx = std::numeric_limits<num_t>::max();
+    num_t dx = math::highest<num_t>;
     for (auto&& t : s.tiles()) {
       dx = std::min(dx, t.geometry().cell_length());
     }

@@ -8,12 +8,16 @@
 namespace hm3 {
 namespace geometry {
 
+namespace aabb_primitive {
+
 /// Constructs an unit AABB [0., 1.]
 template <typename Shape, CONCEPT_REQUIRES_(AABB<Shape>{})>
 auto unit(Shape) noexcept {
   static constexpr dim_t nd = dimension(Shape{});
   return Shape{point<nd>::constant(0.), point<nd>::constant(1.)};
 }
+
+}  // namespace aabb_primitive
 
 }  // namespace geometry
 }  // namespace hm3

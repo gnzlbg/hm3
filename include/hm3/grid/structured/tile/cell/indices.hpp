@@ -356,7 +356,7 @@ struct indices : bounds<Nd, Nc> {
                                                    = self::length()) noexcept {
     tidx_t ring = 1;
     indexed_coordinate x_closest;
-    tidx_t d                  = std::numeric_limits<tidx_t>::max();
+    tidx_t d                  = math::highest<tidx_t>;
     coordinate min            = x.offset_if_valid(-1);
     coordinate max            = x.offset_if_valid(1);
     tidx_t count_min_distance = 0;
