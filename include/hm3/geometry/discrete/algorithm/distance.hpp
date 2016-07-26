@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Distance computation.
+#include <hm3/geometry/discrete/algorithm/centroid.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
-#include <hm3/geometry/discrete/algorithm/centroid.hpp>
 
 namespace hm3 {
 namespace geometry {

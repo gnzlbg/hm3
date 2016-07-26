@@ -13,18 +13,5 @@
 #include <hm3/geometry/discrete/primitive/aabb/is_box.hpp>
 #include <hm3/geometry/discrete/primitive/aabb/ostream.hpp>
 #include <hm3/geometry/discrete/primitive/aabb/vertices.hpp>
+#include <hm3/geometry/discrete/primitive/fwd.hpp>
 // #include <hm3/geometry/discrete/primitive/aabb/polygon.hpp>
-
-namespace hm3 {
-namespace geometry {
-namespace discrete {
-
-/// Axis-Aligned Bounding Box primitive
-namespace aabb_primitive {}
-
-}  // namespace discrete
-
-using discrete::aabb;
-
-}  // namespace geometry
-}  // namespace hm

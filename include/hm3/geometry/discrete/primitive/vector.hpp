@@ -26,6 +26,9 @@ struct vector
   explicit operator point_t() const noexcept {
     return point_t{static_cast<point_t const&>(*this)};
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /// Length of the vector.

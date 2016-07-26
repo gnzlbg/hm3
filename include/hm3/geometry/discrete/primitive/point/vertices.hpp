@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Access to vertices of a point
-#include <hm3/geometry/discrete/primitive/point/point.hpp>
 #include <hm3/geometry/discrete/access/vertex.hpp>
+#include <hm3/geometry/discrete/primitive/point/point.hpp>
 
 namespace hm3 {
 namespace geometry {

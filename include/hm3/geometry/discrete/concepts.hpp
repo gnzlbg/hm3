@@ -11,13 +11,9 @@
 ///  |---> VolumePrimitive (volume-like => volume, surface-area)
 ///
 #include <hm3/geometry/discrete/access.hpp>
-#include <hm3/geometry/discrete/algorithm/bounding_length.hpp>
-#include <hm3/geometry/discrete/algorithm/bounding_volume.hpp>
-#include <hm3/geometry/discrete/algorithm/centroid.hpp>
-#include <hm3/geometry/discrete/algorithm/integral.hpp>
-#include <hm3/geometry/discrete/algorithm/intersection.hpp>
-#include <hm3/geometry/discrete/algorithm/normal.hpp>
-#include <hm3/geometry/discrete/primitive/point.hpp>
+#include <hm3/geometry/discrete/algorithms.hpp>
+#include <hm3/geometry/discrete/primitive/fwd.hpp>
+#include <hm3/geometry/discrete/primitive/point/point.hpp>
 #include <hm3/geometry/discrete/primitive/vector.hpp>
 #include <hm3/geometry/rank.hpp>
 

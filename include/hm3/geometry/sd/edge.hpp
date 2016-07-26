@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Implicit signed-distance functions for edges
-#include <hm3/geometry/dimension/dimensional.hpp>
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/dimension/dimension.hpp>
+#include <hm3/geometry/discrete/primitive/point.hpp>
 
 namespace hm3 {
 namespace geometry {

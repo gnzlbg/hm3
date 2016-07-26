@@ -1,9 +1,10 @@
 #pragma once
 /// \file
 ///
-/// Axis-Aligned Bounding Box
+/// Axis-Aligned Bounding Box.
 #include <hm3/geometry/dimension.hpp>
-#include <hm3/geometry/discrete/primitive/point.hpp>
+#include <hm3/geometry/discrete/algorithm/x_min_max.hpp>
+#include <hm3/geometry/discrete/primitive/point/point.hpp>
 #include <hm3/geometry/discrete/primitive/vector.hpp>
 
 namespace hm3 {

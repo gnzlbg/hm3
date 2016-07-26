@@ -71,6 +71,13 @@ The following algorithms are available:
   - smalles: smallest distance between the boundaries of two primitives
 - Intersects: computes the intersection between two primitives
 
+## Data-structures
+
+- `point_set<Nd, MaxPPN>`: Stores a unique set of points in an octree.
+- `simplex_array<Nd>`: Stores an array of simplices with unique vertices.
+- `bvh<Nd>`: Builds a Bounding-Volume-Hierarchy using SAH.
+- `simplex_mesh<Nd>`: Stores a mesh of simplices (`simplex_array` + `bvh`).
+
 
 ## Serialization
 

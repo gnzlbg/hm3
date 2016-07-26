@@ -2,7 +2,7 @@
 // /// \file
 // ///
 // /// Intersection of polygons
-// #include <hm3/geometry/point.hpp>
+// #include <hm3/geometry/discrete/primitive/point.hpp>
 // #include <hm3/geometry/polygon/concept.hpp>
 // #include <hm3/geometry/sd/concept.hpp>
 // #include <hm3/interpolation/linear.hpp>
@@ -70,7 +70,8 @@
 //     const auto corner_sd_sign      = math::signum(corner_sd);
 //     const auto next_corner_sd_sign = math::signum(next_corner_sd);
 
-//     // if a corner is crossed by the zero level set it is part of both polygons
+//     // if a corner is crossed by the zero level set it is part of both
+//     polygons
 //     // (inside and outside) and the cut surface, otherwise it is only part of
 //     // one polygon
 //     if (corner_sd_sign == 0) {
@@ -92,7 +93,8 @@
 //     }
 
 //     // If:
-//     // - the sign of the next corner is the same, this edge is not intersected,
+//     // - the sign of the next corner is the same, this edge is not
+//     intersected,
 //     //   so we just move on to the next edge.
 //     // - the sign of the next corner is zero, it will be handled in the next
 //     //   iteration.
@@ -103,7 +105,8 @@
 //     // Otherwise this edge is intersected by the zero level-set, so find the
 //     // point in the edge with value 0 by interpolating linearly:
 //     auto x_cp = ip::linear::point_with_value(0., shape_vertices[cidx],
-//                                              shape_vertices[n_cidx], corner_sd,
+//                                              shape_vertices[n_cidx],
+//                                              corner_sd,
 //                                              next_corner_sd);
 //     ++no_cutpoints_found;
 
@@ -131,7 +134,8 @@
 //    "signed-distance field");
 
 //   // Check that the result are closed polygons (not a single point or a line)
-//   HM3_ASSERT(cut.inside.size() > 2 || cut.inside.size() == 0, "shape0 size: {}",
+//   HM3_ASSERT(cut.inside.size() > 2 || cut.inside.size() == 0, "shape0 size:
+//   {}",
 //              cut.inside.size());
 //   HM3_ASSERT(cut.outside.size() > 2 || cut.outside.size() == 0,
 //              "shape1 size: {}", cut.outside.size());

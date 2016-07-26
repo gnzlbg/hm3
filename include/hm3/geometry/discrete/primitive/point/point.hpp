@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Point type
-#include <iomanip>
 #include <hm3/geometry/rank.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/matrix.hpp>
+#include <iomanip>
 
 namespace hm3 {
 namespace geometry {
@@ -44,6 +44,9 @@ struct point : point_base_t<Nd>, ranked<Nd, 0> {
   constexpr point(Rng&& rng) : point{*begin(rng)} {
     HM3_ASSERT(ranges::distance(rng) == 1, "?");
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <dim_t Nd>
@@ -80,8 +83,7 @@ template <typename OStream, dim_t Nd>
 OStream& operator<<(OStream& o, point<Nd> const& p) {
   o << "(";
   for (dim_t d = 0; d < Nd; ++d) {
-    o << std::setprecision(std::numeric_limits<num_t>::digits10 + 1)
-      << p(d);
+    o << std::setprecision(std::numeric_limits<num_t>::digits10 + 1) << p(d);
     if (d != Nd - 1) { o << ", "; }
   }
   o << ")";

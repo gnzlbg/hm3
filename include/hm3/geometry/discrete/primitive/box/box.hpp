@@ -2,11 +2,12 @@
 /// \file
 ///
 /// Box: AABB with constant length.
-#include <hm3/geometry/discrete/primitive/point/point.hpp>
+#include <hm3/geometry/discrete/algorithm/x_min_max.hpp>
 #include <hm3/geometry/discrete/primitive/aabb/aabb.hpp>
 #include <hm3/geometry/discrete/primitive/aabb/bounding_length.hpp>
 #include <hm3/geometry/discrete/primitive/aabb/is_box.hpp>
 #include <hm3/geometry/discrete/primitive/aabb/ostream.hpp>
+#include <hm3/geometry/discrete/primitive/point/point.hpp>
 
 namespace hm3 {
 namespace geometry {
@@ -35,7 +36,7 @@ struct box : ranked<Nd, Nd> {
     HM3_ASSERT(length > 0., "box length is {} !> 0.!", length);
   }
 
-  /// Box from AABB \p b
+  /// Box from AABB \p b that is already a box (e.g. with all equal sides).
   constexpr box(aabb_t const& b) : box(centroid(b), bounding_length(b, 0)) {
     HM3_ASSERT(is_box(b), "AABB not a Box: {}", b);
   }

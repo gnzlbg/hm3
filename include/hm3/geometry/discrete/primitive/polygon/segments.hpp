@@ -11,7 +11,8 @@
 
 // /// Segments of a polygon
 // template <typename P,
-//           CONCEPT_REQUIRES_(Polygon<P>{} and std::is_lvalue_reference<P&&>{})>
+//           CONCEPT_REQUIRES_(Polygon<P>{} and
+//           std::is_lvalue_reference<P&&>{})>
 // constexpr auto segments(P&& polygon) noexcept {
 //   constexpr auto nd = uncvref_t<P>::dimension();
 //   return vertex_indices(polygon) | view::transform([&](auto l) {
@@ -22,7 +23,8 @@
 
 // /// Segments of a polygon
 // template <typename P,
-//           CONCEPT_REQUIRES_(Polygon<P>{} and std::is_rvalue_reference<P&&>{})>
+//           CONCEPT_REQUIRES_(Polygon<P>{} and
+//           std::is_rvalue_reference<P&&>{})>
 // constexpr auto segments(P&& polygon) noexcept {
 //   constexpr auto nd = uncvref_t<P>::dimension();
 //   return vertex_indices(polygon) | view::transform([polygon](auto l) {

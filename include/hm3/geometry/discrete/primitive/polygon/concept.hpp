@@ -17,7 +17,7 @@ template <typename T> struct is_polygon : std::true_type {};
 
 namespace rc = ranges::concepts;
 
-  struct polygon { //}: rc::refines</*Primitive*/ concepts::dimensional> {
+struct polygon {  //}: rc::refines</*Primitive*/ concepts::dimensional> {
   template <typename T>
   static auto requires_(T&& t) -> decltype(      //
    rc::valid_expr(                               //
