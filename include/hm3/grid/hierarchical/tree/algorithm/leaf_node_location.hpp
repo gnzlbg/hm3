@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Compute leaf node location algorithm
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_or_parent_at.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/shift_location.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
@@ -22,7 +22,8 @@ struct leaf_node_location_fn {
                   Loc loc = Loc::min()) const noexcept {
     HM3_ASSERT(loc == Loc::min(), "!");
     for (dim_t d = 0; d < Nd; ++d) {
-      HM3_ASSERT(x(d) > 0. and x(d) < 1.0,
+      HM3_ASSERT((x(d) > 0. or math::approx(x(d), 0.))
+                  and (x(d) < 1.0 or math::approx(x(d), 1.0)),
                  "x({}) = {} is not in normalized coordinates [0, 1]", d, x(d));
     }
     return node_or_parent_at(tree, shift_location(loc, x));
@@ -39,9 +40,9 @@ struct leaf_node_location_fn {
     HM3_ASSERT(geometry::contains(bbox, x),
                "point {} is not inside bounding box {}", x, bbox);
     // Normalize x
-    auto x_min = geometry::bounds(bbox).min;
+    auto x_min = geometry::x_min(bbox);
     x() -= x_min();
-    x() /= geometry::length(bbox);
+    x() /= geometry::bounding_length(bbox);
     return (*this)(tree, x, loc);
   }
 };

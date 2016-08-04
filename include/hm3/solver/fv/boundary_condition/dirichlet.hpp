@@ -11,8 +11,8 @@
 //     // compute the corrected position of the cell center:
 
 //     // add its position and value to the interpolation stencil
-//     std::vector<points_t> xs;
-//     std::vector<values> vs;
+//     vector<points_t> xs;
+//     vector<values> vs;
 
 //     // compute the cut point in normal direction from corrected cell center
 //     // and surface
@@ -32,8 +32,8 @@
 //     // add values of all corrected neighbor cells cell surface centroids +
 //     // corrected centers of
 //     // neighboring cells
-//     std::vector<point_t> xs;
-//     std::vector<values> vs;
+//     vector<point_t> xs;
+//     vector<values> vs;
 
 //     // put the gradient of each surface at the corrected cell center, and
 //     // extrapolate

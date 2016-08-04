@@ -5,8 +5,8 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/vector.hpp>
 #include <hm3/vis/field.hpp>
-#include <vector>
 
 namespace hm3 {
 namespace vis {
@@ -23,7 +23,7 @@ namespace vtk {
 /// and a member variable called `log` for logging.
 template <typename DataFieldType> struct data_fields {
   using field  = vis::field;
-  using fields = std::vector<field>;
+  using fields = vector<field>;
 
   /// Data fields in currently loaded grid
   fields current_;

@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Implicit signed-distance functions for spheres
-#include <hm3/geometry/discrete/primitive/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 
 namespace hm3 {
 namespace geometry {

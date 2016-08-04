@@ -5,9 +5,9 @@
 /// given level
 #include <hm3/grid/hierarchical/amr/action.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
+#include <hm3/utility/vector.hpp>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 namespace hm3 {
 namespace grid {
@@ -57,7 +57,7 @@ struct level_till_distance {
 };
 
 template <typename Step> struct multiple {
-  using Steps = std::vector<Step>;
+  using Steps = vector<Step>;
   Steps steps;
 
   multiple()                = default;
@@ -92,7 +92,7 @@ struct level_till_cell_distances {
   template <typename Grid>
   level_till_cell_distances(Grid const& grid, std::initializer_list<step> l)
    : r_(l.size()) {
-    std::vector<step> steps_{l};
+    vector<step> steps_{l};
     ranges::sort(steps_, std::greater<>{}, &step::target_level);
     num_t distance = 0.;
     ranges::transform(steps_, begin(r_.steps), [&](auto&& s) {

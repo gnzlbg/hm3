@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Square tile geometry
-#include <hm3/geometry/box.hpp>
-#include <hm3/geometry/dimensions.hpp>
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/primitive/box.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/structured/tile/cell.hpp>
 
 namespace hm3 {
@@ -102,7 +102,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
 
   /// Compute the cell length from the tile bounding box
   static constexpr num_t cell_length(box_t bbox) noexcept {
-    return cell_length(geometry::length(bbox));
+    return cell_length(geometry::bounding_length(bbox));
   }
 
   /// Bounding box of cell at coordinate \p x
@@ -117,10 +117,10 @@ struct tile_geometry : geometry::dimensional<Nd> {
 
   /// Computes first cell centroid coordinates (idx = 0) from tile bounding box
   static constexpr point_t x_first_cell(box_t bbox) noexcept {
-    HM3_ASSERT(geometry::length(bbox) > 0.,
+    HM3_ASSERT(geometry::bounding_length(bbox) > 0.,
                "bounding box length must be positive, bbox {}", bbox);
-    auto x_min  = geometry::bounds(bbox).min;
-    auto cell_l = cell_length(geometry::length(bbox));
+    auto x_min  = geometry::x_min(geometry::bounding_volume.aabb(bbox));
+    auto cell_l = cell_length(geometry::bounding_length(bbox));
     for (dim_t d = 0; d < Nd; ++d) { x_min(d) += cell_l / 2.; }
     return x_min;
   }

@@ -5,7 +5,7 @@
 #include <hm3/grid/hierarchical/amr/action.hpp>
 #include <hm3/grid/hierarchical/amr/target.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
-#include <vector>
+#include <hm3/utility/vector.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -31,7 +31,7 @@ template <typename Target> struct state {
     action action;
     operator amr_node_idx() const noexcept { return idx; }
   };
-  using node_data = std::vector<node>;
+  using node_data = vector<node>;
 
   /// \name AMR Data
   ///

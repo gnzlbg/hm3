@@ -2,7 +2,7 @@
 /// \file
 ///
 /// n-dimensional octree data structure
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/bounded.hpp>

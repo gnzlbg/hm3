@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Signed-distance function for a rectangle
-#include <hm3/geometry/discrete/primitive/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/utility/matrix.hpp>
 
 namespace hm3 {
@@ -22,7 +22,7 @@ namespace sd {
 /// TODO: implement rotation phi
 template <dim_t Nd>
 num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
-                vector<Nd> const& l) noexcept {
+                vec<Nd> const& l) noexcept {
   auto l_2           = .5 * l();
   num_a<Nd> distance = x_c() - l_2 - x();  // x(d) < x_c(d)
   for (dim_t d = 0; d < Nd; ++d) {
@@ -55,9 +55,9 @@ num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
 
 template <dim_t Nd> struct fixed_rectangle {
   point<Nd> x_c;
-  vector<Nd> l;
+  vec<Nd> l;
 
-  fixed_rectangle(point<Nd> x_c_, vector<Nd> l_) noexcept : x_c(x_c_), l(l_) {}
+  fixed_rectangle(point<Nd> x_c_, vec<Nd> l_) noexcept : x_c(x_c_), l(l_) {}
 
   num_t operator()(point<Nd> const& x) const noexcept {
     return rectangle(x, x_c, l);

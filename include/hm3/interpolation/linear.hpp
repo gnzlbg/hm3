@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Linear interpolation in n spatial dimensions: two points
-#include <hm3/geometry/point.hpp>
-#include <hm3/geometry/segment.hpp>
+#include <hm3/geometry/primitive/point.hpp>
+#include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/interpolation/concept.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
@@ -31,10 +31,10 @@ T interpolate(point<Nd> x, point<Nd> x0, point<Nd> x1, T v0, T v1) noexcept {
 
 template <dim_t Nd, typename T>
 T interpolate(num_t d, segment<Nd> l, T v0, T v1) {
-  HM3_ASSERT((l.x_1() - l.x_0()).norm() > 0.,
-             "points x0 and x1 must be different! x0: {}, x1: {}", l.x_0,
-             l.x_1);
-  return v0 + (v1 - v0) * d / (l.x_1() - l.x_0()).norm();
+  HM3_ASSERT((l.x(1)() - l.x(0)()).norm() > 0.,
+             "points x0 and x1 must be different! x0: {}, x1: {}", l.x(0),
+             l.x(1));
+  return v0 + (v1 - v0) * d / (l.x(1)() - l.x(0)()).norm();
 }
 
 template <dim_t Nd, typename T>
@@ -50,7 +50,7 @@ num_t distance_to_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
 
 template <dim_t Nd, typename T>
 num_t distance_to_value(T v, segment<Nd> l, array<T, 2> vs) {
-  return distance_to_value(v, l.x_0, l.x_1, vs[0], vs[1]);
+  return distance_to_value(v, l.x(0), l.x(1), vs[0], vs[1]);
 }
 
 template <dim_t Nd, typename T>
@@ -61,7 +61,7 @@ point<Nd> point_with_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
 
 template <dim_t Nd, typename T>
 point<Nd> point_with_value(T v, segment<Nd> l, array<T, 2> vs) {
-  return point_with_value(v, l.x_0, l.x_1, vs[0], vs[1]);
+  return point_with_value(v, l.x(0), l.x(1), vs[0], vs[1]);
 }
 
 template <typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>

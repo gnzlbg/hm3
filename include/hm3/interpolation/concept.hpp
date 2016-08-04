@@ -8,7 +8,7 @@
 ///
 /// TODO: figure out a way to verify this at compile time? Or provide an
 /// "StructuredInterpolable" concept?
-#include <hm3/geometry/dimension/concept.hpp>
+#include <hm3/geometry/dimension.hpp>
 
 namespace hm3 {
 namespace ip {

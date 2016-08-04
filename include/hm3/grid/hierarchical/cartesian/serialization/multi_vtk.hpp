@@ -3,7 +3,7 @@
 ///
 /// Serialization of grid::hierarchical::cartesian::multi to VKT
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/box.hpp>
+#include <hm3/geometry/primitive/box.hpp>
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbor.hpp>

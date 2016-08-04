@@ -4,7 +4,7 @@
 /// Stores which boundary cells belong to which boundary condition
 #include <hm3/solver/types.hpp>
 #include <hm3/utility/inline_vector.hpp>
-#include <vector>
+#include <hm3/utility/vector.hpp>
 
 namespace hm3 {
 namespace solver {
@@ -15,8 +15,8 @@ struct bcs {
 
  private:
   /// Boundary cells of each boundary condition:
-  using boundary_cells = std::vector<cell_idx>;
-  std::vector<boundary_cells> cells_in_bc_;
+  using boundary_cells = vector<cell_idx>;
+  vector<boundary_cells> cells_in_bc_;
 
   boundary_cells& cells_in_bc(bc_idx i) noexcept {
     HM3_ASSERT(i < bc_idx(size()),

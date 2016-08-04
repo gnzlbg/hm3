@@ -5,13 +5,13 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/range.hpp>
-#include <vector>
+#include <hm3/utility/vector.hpp>
 
 namespace hm3 {
 namespace memory {
 namespace buffer {
 
-using buffer = std::vector<char>;
+using buffer = vector<char>;
 
 /// Adapt's a memory buffer to the type T
 template <typename T, typename Buffer = buffer> struct view {

@@ -45,8 +45,8 @@
 #include <string>
 #include <tuple>
 // hm3
-#include <hm3/geometry/box.hpp>
-#include <hm3/geometry/polygon.hpp>
+#include <hm3/geometry/primitive/box.hpp>
+#include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3 {
@@ -109,7 +109,8 @@ template <> struct cell_t<geometry::aabb<3>> {
   static constexpr auto value() { return VTK_HEXAHEDRON; }
 };
 
-template <dim_t Nd, suint_t MaxNp> struct cell_t<geometry::polygon<Nd, MaxNp>> {
+template <dim_t Nd, suint_t MaxNp>
+struct cell_t<geometry::bounded_polygon<Nd, MaxNp>> {
   using type = vtkPolygon;
   static constexpr auto value() { return VTK_POLYGON; }
 };

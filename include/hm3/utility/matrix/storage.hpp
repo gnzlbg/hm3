@@ -10,6 +10,7 @@
 #include <hm3/utility/matrix/bounds.hpp>
 #include <hm3/utility/matrix/traits.hpp>
 #include <hm3/utility/range.hpp>
+//#define HM3_MATRIX_STORAGE_USE_ALIGNAS
 
 namespace hm3 {
 namespace dense {
@@ -69,7 +70,10 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using pointer       = value_type*;
   using const_pointer = value_type const*;
 
-  alignas(64) data_container data_;
+#ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
+  alignas(64)
+#endif
+   data_container data_;
 
   constexpr storage()               = default;
   constexpr storage(storage const&) = default;
@@ -130,7 +134,10 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using pointer         = value_type*;
   using const_pointer   = value_type const*;
 
-  alignas(32) data_container data_;
+#ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
+  alignas(32)
+#endif
+   data_container data_;
 
   using max_bounds = max_bounds<MaxRows, MaxCols>;
   using max_bounds::max_no_rows;
@@ -170,6 +177,12 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   constexpr auto data() -> pointer { return data_.data(); }
   constexpr auto data() const -> const_pointer { return data_.data(); }
+
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
 };
 
 /// Stack bit storage implementation
@@ -194,7 +207,10 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using const_reference = const reference;  // note:std::bitset doesn't have a
                                             // const_reference type member
 
-  alignas(32) data_container data_;
+#ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
+  alignas(32)
+#endif
+   data_container data_;
 
   constexpr storage()               = default;
   constexpr storage(storage const&) = default;
@@ -228,6 +244,12 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   constexpr auto container() -> data_container& { return data_; }
   constexpr auto container() const -> data_container const& { return data_; }
+
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
 };
 
 /// Dynamic bit storage
@@ -246,7 +268,10 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using reference       = typename data_container::reference;
   using const_reference = typename data_container::const_reference;
 
-  alignas(32) data_container data_;
+#ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
+  alignas(32)
+#endif
+   data_container data_;
 
   using max_bounds = max_bounds<MaxRows, MaxCols>;
   using max_bounds::max_no_rows;
@@ -309,6 +334,12 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   constexpr auto container() -> data_container& { return data_; }
   constexpr auto container() const -> data_container const& { return data_; }
+
+ public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated"
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+#pragma clang diagnostic pop
 };
 
 }  // namespace dense

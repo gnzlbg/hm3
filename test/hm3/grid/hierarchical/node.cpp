@@ -1,8 +1,8 @@
 /// \file
 ///
 /// Tests hierarchical Cartesian grid node
-#include <hm3/geometry/box.hpp>
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/box.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/cartesian/node.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <hm3/utility/test.hpp>
@@ -41,14 +41,15 @@ void test_node() {
   CHECK(xc != centroid(b_t(pm, xc)));
   CHECK(xc != centroid(b_t(xc, pp)));
 
-  CHECK(length(b_t(pm, pp)) == 1.0);
-  CHECK(length(b_t(pm, xc)) == 0.5);
-  CHECK(length(b_t(xc, pp)) == 0.5);
+  CHECK(geometry::bounding_length(b_t(pm, pp)) == 1.0);
+  CHECK(geometry::bounding_length(b_t(pm, xc)) == 0.5);
+  CHECK(geometry::bounding_length(b_t(xc, pp)) == 0.5);
 
   cartesian::node<Nd> n1(pm, pp);
-  cartesian::node<Nd> n2(centroid(b_t(pm, pp)), length(b_t(pm, pp)));
+  cartesian::node<Nd> n2(centroid(b_t(pm, pp)),
+                         geometry::bounding_length(b_t(pm, pp)));
 
-  CHECK(length(n1) == length(n2));
+  CHECK(geometry::bounding_length(n1) == geometry::bounding_length(n2));
   CHECK(volume(n1) == volume(n2));
   CHECK(dimension(n1) == Nd);
   CHECK(centroid(n1) == centroid(n2));

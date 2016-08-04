@@ -1,7 +1,7 @@
 /// \file
 ///
 /// File I/O tests
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/io/client.hpp>
 #include <hm3/io/session.hpp>
 #include <hm3/types.hpp>

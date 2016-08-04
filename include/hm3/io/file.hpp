@@ -277,7 +277,7 @@ struct file {
 
   template <typename T, CONCEPT_REQUIRES_(Range<T>{})>
   auto constant(string const& constant_name, T = T{}) const -> T {
-    std::vector<num_t> v = fields_[constant_name];
+    vector<num_t> v = fields_[constant_name];
     return T{ranges::begin(v), ranges::end(v)};
   }
 

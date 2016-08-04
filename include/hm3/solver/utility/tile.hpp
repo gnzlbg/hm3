@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/geometry/box.hpp>
+#include <hm3/geometry/primitive/box.hpp>
 #include <hm3/solver/types.hpp>
 
 namespace hm3 {

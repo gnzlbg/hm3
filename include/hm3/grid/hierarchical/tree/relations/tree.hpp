@@ -5,9 +5,9 @@
 ///
 /// TODO: move some of these to grid relations since they are also needed by
 /// structured grids
-#include <hm3/geometry/box.hpp>
-#include <hm3/geometry/dimensions.hpp>
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/primitive/box.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
@@ -225,14 +225,14 @@ template <dim_t Nd>
 constexpr auto child_centroid(const child_pos<Nd> child_position,
                               geometry::box<Nd> parent) -> geometry::point<Nd> {
   return child_centroid(child_position, geometry::centroid(parent),
-                        geometry::length(parent));
+                        geometry::bounding_length(parent));
 }
 
 template <dim_t Nd>
 constexpr auto child_geometry(const child_pos<Nd> child_position,
                               geometry::box<Nd> parent) -> geometry::box<Nd> {
   return {child_centroid(child_position, parent),
-          geometry::length(parent) / 2.};
+          geometry::bounding_length(parent) / 2.};
 }
 
 ///@} // Tree relations

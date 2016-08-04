@@ -408,7 +408,7 @@ void sod_test(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::box<nd>{});
+  auto bounding_box = geometry::box<nd>::unit();
 
   using namespace grid::hierarchical;
 
@@ -491,7 +491,7 @@ void grid_for_paper(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 2;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::box<nd>{});
+  auto bounding_box = geometry::box<nd>::unit();
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);
@@ -603,7 +603,7 @@ void grid_for_paper2(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 3;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::box<nd>{});
+  auto bounding_box = geometry::box<nd>::unit();
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);

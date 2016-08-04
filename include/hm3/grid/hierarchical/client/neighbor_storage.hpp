@@ -5,7 +5,7 @@
 /// multi-tree.
 #include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/utility/inline_vector.hpp>
-#include <vector>
+#include <hm3/utility/vector.hpp>
 
 namespace hm3 {
 namespace grid {
@@ -22,7 +22,7 @@ struct neighbor_storage {
   using node_neighbors = inline_vector<grid_node_idx, neighbor_capacity>;
 
   /// Neighbors of each node
-  std::vector<node_neighbors> data_;
+  vector<node_neighbors> data_;
 
   neighbor_storage(grid_node_idx node_capacity_) : data_(*node_capacity_) {}
 

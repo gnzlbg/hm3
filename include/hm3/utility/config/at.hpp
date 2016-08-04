@@ -41,4 +41,6 @@ struct source_location {
                      (AT).function_name, (AT).file_name, (AT).line_number)
 
 /// Formats a source code location
-#define HM3_PRINT_AT(AT) ::hm3::fmt::print(HM3_FMT_AT(AT))
+#define HM3_PRINT_AT(AT)                                                   \
+  ::hm3::fmt::print("  at function: {}\n  at file: {}\n  at line: {}\n\n", \
+                    (AT).function_name, (AT).file_name, (AT).line_number)

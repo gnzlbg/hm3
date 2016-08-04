@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square structured halo tile bounds
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/structured/halo_tile/index_type.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>

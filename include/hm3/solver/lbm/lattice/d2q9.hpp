@@ -1,6 +1,6 @@
 #pragma once
 /// \file
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/utility/array.hpp>
 
 namespace hm3 {

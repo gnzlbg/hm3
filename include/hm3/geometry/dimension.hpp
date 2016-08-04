@@ -107,13 +107,28 @@ struct dimensional {
                   ));
 };
 
+template <typename T, typename IsDimensional, dim_t Nd>
+struct ndimensional_ : meta::bool_<false> {};
+
+template <typename T>
+struct ndimensional_<T, meta::bool_<true>, math::highest<dim_t>>
+ : meta::bool_<true> {};
+
+template <typename T, dim_t Nd>
+struct ndimensional_<T, meta::bool_<true>, Nd>
+ : meta::bool_<dimension_v<T> == Nd> {};
+
 using Dimensional = dimensional;
+
 }  // namespace concepts
 
+template <typename T>
+using Dimensional_
+ = meta::bool_<concepts::rc::models<concepts::Dimensional, uncvref_t<T>>{}>;
+
 template <typename T, dim_t Nd = math::highest<dim_t>>
-using Dimensional = meta::
- and_<concepts::rc::models<concepts::Dimensional, uncvref_t<T>>,
-      meta::bool_<Nd == math::highest<dim_t> ? true : dimension_v<T> == Nd>>;
+using Dimensional
+ = meta::and_<Dimensional_<T>, concepts::ndimensional_<T, Dimensional_<T>, Nd>>;
 
 }  // namespace geometry
 

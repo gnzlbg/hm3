@@ -321,6 +321,10 @@ struct inline_vector
     emplace_back(std::forward<U>(value));
   }
 
+  void push_back() {
+    emplace_back(T{});
+  }
+
   /// Pop back
   ///
   /// TODO: Cannot be constexpr because it explicitly calls a destructor

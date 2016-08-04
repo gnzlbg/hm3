@@ -395,7 +395,7 @@ template <typename RawType> struct floating_point {
   ///
   /// See the following article for more details on ULP:
   /// http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm.
-  static const constexpr std::size_t k_max_ulps = 4;
+  static const constexpr std::size_t k_max_ulps = 4;  // default = 4
 
   /// Constructs a floating_point from a raw floating-point number.
   ///
@@ -521,7 +521,9 @@ static constexpr bool approx(T const& a, U const& b) noexcept {
    math_detail::floating_point<T>{b});
 }
 
-template <typename T, typename U, CONCEPT_REQUIRES_(!Same<T, U>{})>
+template <typename T, typename U,
+          CONCEPT_REQUIRES_(!Same<T, U>{} and std::is_floating_point<T>{}
+                            and std::is_floating_point<U>{})>
 static constexpr bool approx(T const& a, U const& b) noexcept {
   return approx(num_t(a), num_t(b));
 }

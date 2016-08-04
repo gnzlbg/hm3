@@ -40,7 +40,7 @@ void square(mpi::env& env) {
   auto max_grid_level       = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
-  auto bounding_box = geometry::unit(geometry::square<nd>{});
+  auto bounding_box = geometry::square<nd>::unit();
 
   // Create the grid
   grid::mhc<nd> g(s, node_capacity, no_grids, bounding_box);

@@ -135,6 +135,7 @@ constexpr T&& get(array<T, N>&& a) noexcept {
   return std::move(a.elems_[I]);
 }
 
+static_assert(RandomAccessRange<array<int, 2>>{}, "");
 }  // namespace hm3
 
 namespace std {

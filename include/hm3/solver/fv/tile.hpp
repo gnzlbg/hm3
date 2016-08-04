@@ -61,9 +61,9 @@ using tile_type = typename meta::
 }  // namespace hm3
 
 // tile.hpp
-// #include <hm3/geometry/dimensions.hpp>
-// #include <hm3/geometry/point.hpp>
-// #include <hm3/geometry/box.hpp>
+// #include <hm3/geometry/dimension.hpp>
+// #include <hm3/geometry/primitive/point.hpp>
+// #include <hm3/geometry/primitive/box.hpp>
 // #include <hm3/grid/structured/grid.hpp>
 // #include <hm3/solver/fv/cell_information.hpp>
 // #include <hm3/solver/types.hpp>
@@ -146,10 +146,10 @@ using tile_type = typename meta::
 //   gradient_t gradients_;
 
 //   // /// Cell information
-//   // std::vector<cell_type> types_;
+//   // vector<cell_type> types_;
 
 //   // /// Boundary cell data
-//   // std::vector<boundary_cell> boundary_cells_;
+//   // vector<boundary_cell> boundary_cells_;
 
 //   ///@}  // Data
 

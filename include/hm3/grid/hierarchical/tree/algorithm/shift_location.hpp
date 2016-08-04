@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Shift node location by offset algorithm
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>

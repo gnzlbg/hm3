@@ -49,6 +49,26 @@ template <typename T> streamable<T> stream(T const& t) {
   return streamable<T>{t};
 }
 
+struct approx_fn {
+  template <typename T, typename U>
+  static constexpr auto impl(T&&, U&&, num_t, long) -> bool {
+    fmt::print("ERROR: approx function not found!");
+    return false;
+  }
+
+  template <typename T, typename U>
+  static constexpr auto impl(T&& t, U&& u, num_t tol, int)
+   -> decltype(approx(std::forward<T>(t), std::forward<U>(u), tol)) {
+    return approx(std::forward<T>(t), std::forward<U>(u), tol);
+  }
+
+  template <typename T, typename U>
+  constexpr auto operator()(T&& t, U&& u, num_t tol) const
+   -> decltype(impl(std::forward<T>(t), std::forward<U>(u), tol, 0)) {
+    return impl(std::forward<T>(t), std::forward<U>(u), tol, 0);
+  }
+};
+
 template <typename T> struct ret {
  private:
   T t_;
@@ -56,6 +76,7 @@ template <typename T> struct ret {
   bool dismissed_ = false;
   char const* filename_;
   char const* expr_;
+  num_t tol_ = -1.;
 
   template <typename U> void oops(U const& u) const {
     fmt::print("> ERROR: CHECK failed '{}'\n > \t {} ({})\n", expr_, filename_,
@@ -74,6 +95,13 @@ template <typename T> struct ret {
  public:
   ret(char const* filename, int lineno, char const* expr, T t)
    : t_(std::move(t)), lineno_(lineno), filename_(filename), expr_(expr) {}
+  ret(num_t tol, char const* filename, int lineno, char const* expr, T t)
+   : t_(std::move(t))
+   , lineno_(lineno)
+   , filename_(filename)
+   , expr_(expr)
+   , tol_{tol} {}
+
   ~ret() {
     if (!dismissed_ && eval_(42)) { this->oops(42); }
   }
@@ -81,7 +109,11 @@ template <typename T> struct ret {
                                           && !std::is_floating_point<T>{})>
   void operator==(U const& u) {
     dismiss();
-    if (!(t_ == u)) { this->oops(u); }
+    if (tol_ < 0.) {
+      if (!(t_ == u)) { this->oops(u); }
+    } else {
+      if (!approx_fn{}(t_, u, tol_)) { this->oops(u); }
+    }
   }
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{}
                                           || std::is_floating_point<T>{})>
@@ -117,12 +149,17 @@ struct loc {
   char const* filename_;
   int lineno_;
   char const* expr_;
+  num_t tol_ = -1.;
 
  public:
   loc(char const* filename, int lineno, char const* expr)
    : filename_(filename), lineno_(lineno), expr_(expr) {}
+
+  loc(num_t tol, char const* filename, int lineno, char const* expr)
+   : filename_(filename), lineno_(lineno), expr_(expr), tol_(tol) {}
+
   template <typename T> ret<T> operator->*(T t) {
-    return {filename_, lineno_, expr_, std::move(t)};
+    return {tol_, filename_, lineno_, expr_, std::move(t)};
   }
 };
 
@@ -141,6 +178,10 @@ inline int result() {
   (void)(hm3::test::detail::loc{__FILE__, __LINE__, #__VA_ARGS__} \
           ->*__VA_ARGS__);                                        \
   static_assert(__VA_ARGS__, "") /**/
+
+#define TOL_CHECK(tol, ...)                                            \
+  (void)(hm3::test::detail::loc{tol, __FILE__, __LINE__, #__VA_ARGS__} \
+          ->*__VA_ARGS__) /**/
 
 #define THROWS(expr, ExceptionType)                                        \
   do {                                                                     \

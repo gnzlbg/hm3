@@ -1,6 +1,6 @@
 #pragma once
 /// \file boundary_surfaces.hpp
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 //#include <hm3/geometry/simplex.hpp>
 
 namespace hm3 {

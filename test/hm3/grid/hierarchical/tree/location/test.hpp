@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Location testing functions
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/utility/bit.hpp>

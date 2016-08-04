@@ -1,4 +1,4 @@
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/structured/tile/surface/indices.hpp>
 #include <hm3/utility/optional.hpp>
 #include <hm3/utility/test.hpp>

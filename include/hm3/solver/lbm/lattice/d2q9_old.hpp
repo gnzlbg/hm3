@@ -1,6 +1,6 @@
 #pragma once
 /// \file
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/utility/matrix.hpp>
 

@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Interprets cell variables as conservative variables
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/solver/fv/models/euler/cv.hpp>
 #include <hm3/solver/fv/models/euler/indices.hpp>
 #include <hm3/solver/fv/models/euler/pv.hpp>

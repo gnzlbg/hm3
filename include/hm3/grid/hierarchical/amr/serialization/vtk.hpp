@@ -6,7 +6,7 @@
 /// Note: to use the serialize functionality one needs to link against VTK
 ///
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/amr/state.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>

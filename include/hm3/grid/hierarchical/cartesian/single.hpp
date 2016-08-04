@@ -63,7 +63,7 @@ struct single : tree::tree<Nd> {
  public:
   /// Length of node at level \p l
   num_t length(level_idx l) const noexcept {
-    return geometry::length(bounding_box()) * node_length_at_level(l);
+    return geometry::bounding_length(bounding_box()) * node_length_at_level(l);
   }
 
   /// Length of node \p n
@@ -76,8 +76,8 @@ struct single : tree::tree<Nd> {
   point_t coordinates(tree_node_idx n) const noexcept {
     assert_node_in_use(n, HM3_AT_);
     auto xs    = tree::normalized_coordinates(*this, n);
-    auto x_min = geometry::bounds(bounding_box()).min;
-    return point_t{geometry::length(bounding_box()) * xs() + x_min()};
+    auto x_min = geometry::x_min(bounding_box());
+    return point_t{geometry::bounding_length(bounding_box()) * xs() + x_min()};
   }
 
   /// Node at index \p n

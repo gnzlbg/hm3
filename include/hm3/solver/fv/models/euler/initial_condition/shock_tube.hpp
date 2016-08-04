@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/solver/fv/models/euler/indices.hpp>
 #include <hm3/solver/fv/models/euler/pv.hpp>
 #include <hm3/utility/math.hpp>

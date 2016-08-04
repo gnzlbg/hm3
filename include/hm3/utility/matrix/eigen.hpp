@@ -25,6 +25,9 @@ template <typename T, int NoRows, int NoCols, int Order, int MaxRows = NoRows,
 using aligned_eigen_type
  = Eigen::Matrix<T, NoRows, NoCols, Order | Eigen::AutoAlign, MaxRows, MaxCols>;
 
+template <typename T>
+using vector = std::vector<T, Eigen::aligned_allocator<T>>;
+
 }  // namespace hm3
 
 /// Eigen extensions:

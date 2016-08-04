@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Normalized coordinates algorithm
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_location.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/location/default.hpp>

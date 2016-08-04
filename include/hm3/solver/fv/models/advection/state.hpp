@@ -2,7 +2,7 @@
 /// \file
 ///
 ///
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
 

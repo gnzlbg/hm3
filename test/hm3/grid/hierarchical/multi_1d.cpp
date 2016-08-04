@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
   io::session::remove("hc_multi_1d", comm);
   io::session s(io::create, "hc_multi_1d", comm);
 
-  auto bbox = geometry::unit(geometry::box<1>{});
+  auto bbox = geometry::box<1>::unit();
   cartesian::multi<1> g(s, 20, 2, bbox);
 
   g.refine(0_n);

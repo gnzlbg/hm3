@@ -65,8 +65,7 @@ template <dim_t Nd> struct multi : adaptor::multi<single<Nd>> {
     if (type_ == type(tree::tree<Nd>{})) {
       auto d = from_file(tree::tree<Nd>{}, f, node_capacity);
       return multi<Nd>{
-       s, base_t{
-           0, single<Nd>{geometry::unit(geometry::box<Nd>{}), std::move(d)}}};
+       s, base_t{0, single<Nd>{geometry::box<Nd>::unit(), std::move(d)}}};
     }
 
     HM3_FATAL_ERROR("Cannot read block of type {} and name {} into a "

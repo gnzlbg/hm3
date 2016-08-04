@@ -100,21 +100,21 @@ template <class Vector> void vector_test(const idx_t n) {
     idx_t start = 0;
     ranges::copy(view::iota(idx_t{0}, n), begin(v));
     for (idx_t i = 0; i != n; ++i) {
-      CHECK(v(i) == start);
+      CHECK(v(i) == static_cast<T>(start));
       start++;
     }
 
     /// Use Eigen expressions:
-    v()   = v().unaryExpr([](T i) { return i * 2; });
+    v()   = v().unaryExpr([](T i) { return static_cast<T>(i * 2); });
     start = 0;
     for (idx_t i = 0; i != n; ++i) {
-      CHECK(v(i) == (start * 2));
+      CHECK(v(i) == static_cast<T>(start * 2));
       start++;
     }
 
     /// Test range based for:
     start = 0;
-    for (auto&& i : v) { CHECK(i == (start++ * 2)); }
+    for (auto&& i : v) { CHECK(i == static_cast<T>(start++ * 2)); }
   }
 }
 
@@ -177,7 +177,9 @@ void matrix_test(const idx_t no_rows, const idx_t no_cols) {
   /// Use Eigen expressions:
   m() = m().unaryExpr([](T i) { return i * 2; });
   for (idx_t r = 0; r != no_rows; ++r) {
-    for (idx_t c = 0; c != no_cols; ++c) { CHECK(m(r, c) == (2 * (r + c))); }
+    for (idx_t c = 0; c != no_cols; ++c) {
+      CHECK(m(r, c) == static_cast<T>(2 * (r + c)));
+    }
   }
 
   Matrix m2 = m;

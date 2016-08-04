@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Surface coordinate
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/structured/tile/cell/coordinate.hpp>
 #include <hm3/grid/structured/tile/surface/bounds.hpp>
 #include <hm3/grid/structured/tile/surface/index.hpp>

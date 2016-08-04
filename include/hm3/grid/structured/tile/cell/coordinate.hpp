@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square tile coordinate
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/index.hpp>
 #include <hm3/grid/structured/tile/index_type.hpp>

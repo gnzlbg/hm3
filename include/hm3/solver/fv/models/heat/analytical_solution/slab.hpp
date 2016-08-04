@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Analytical solution for the temperature on a 1D slab
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/solver/fv/models/heat/indices.hpp>
 
 namespace hm3 {
@@ -27,7 +27,7 @@ struct slab {
   num_t temperature_right   = 0.0;
   suint_t no_iterations     = 100;
   num_t int_res;
-  std::vector<num_t> cns;
+  vector<num_t> cns;
 
   template <typename F>
   slab(F&& f, suint_t no_iters = 1000)

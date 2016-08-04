@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Signed distance function concept
-#include <hm3/geometry/discrete/primitive/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
 

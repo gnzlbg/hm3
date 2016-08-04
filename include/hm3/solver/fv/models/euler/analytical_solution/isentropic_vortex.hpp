@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Analytical solution for an isentropic vortex
-#include <hm3/geometry/point.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/solver/fv/models/euler/indices.hpp>
 #include <hm3/solver/fv/models/euler/pv.hpp>
 

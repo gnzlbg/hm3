@@ -12,149 +12,166 @@ namespace sd {
 
 namespace detail {
 /// Inverse of a signed distance field
-struct op_inverse_t {
-  template <typename Point, typename SDFunction>
-  constexpr auto operator()(Point&& x, SDFunction&& f) const {
-    return -f(x);
+struct op_inverse_fn {
+  template <typename Point, typename SDF>
+  constexpr auto operator()(Point&& x, SDF&& f) const {
+    return -f(std::forward<Point>(x));
   }
 };
 }  // namespace detail
 
-constexpr auto&& op_inverse = static_const<detail::op_inverse_t>::value;
+namespace {
+static constexpr auto const& op_inverse
+ = static_const<detail::op_inverse_fn>::value;
+}  // namespace
 
 namespace detail {
-struct neg_t {
-  template <typename SDFunction>
-  constexpr auto operator()(SDFunction&& f) const {
-    return adapt(op_inverse, std::forward<SDFunction>(f));
+struct invert_fn {
+  template <typename SDF> constexpr auto operator()(SDF&& f) const {
+    return adapt(op_inverse, std::forward<SDF>(f));
   }
 };
 }  // namespace detail
 
-constexpr auto&& neg = static_const<detail::neg_t>::value;
+namespace {
+static constexpr auto const& invert = static_const<detail::invert_fn>::value;
+}  // namespace
 
 namespace detail {
-struct op_union_t {
-  template <typename Point, typename SDFunction1, typename SDFunction2>
-  constexpr auto operator()(Point&& x, SDFunction1&& f1,
-                            SDFunction2&& f2) const {
-    return std::min(f1(x), f2(x));
+struct op_neg_union_fn {
+  template <typename Point, typename SDF>
+  constexpr auto operator()(Point&& x, SDF&& f) const {
+    return f(std::forward<Point>(x));
   }
 
-  /// Union of a signed distance field: OR(f1, f2)
-  template <typename Point, typename SDFunction1, typename... SDFunctions>
-  constexpr auto operator()(Point&& x, SDFunction1&& f1,
-                            SDFunctions&&... fs) const {
-    return (*this)(f1, op_union(x, fs...));
+  /// Union of negative side of the figned distance fields \p f1 , \p fs...
+  template <typename Point, typename SDF1, typename... SDFs>
+  constexpr auto operator()(Point&& x, SDF1&& f1, SDFs&&... fs) const {
+    return std::min((*this)(x, std::forward<SDF1>(f1)),
+                    (*this)(x, std::forward<SDFs>(fs)...));
   }
 };
 }  // namespace detail
 
-constexpr auto&& op_union = static_const<detail::op_union_t>::value;
+namespace {
+static constexpr auto const& op_neg_union
+ = static_const<detail::op_neg_union_fn>::value;
+}  // namespace detail
 
 namespace detail {
-/// Union of a signed distance field: OR(f1, f2)
-///
-/// \note this is the union of the "negative regions" of the signed distance
-/// field
-struct add_t {
-  template <typename... SDFunctions>
-  constexpr auto operator()(SDFunctions&&... fs) const {
-    return adapt(op_union, std::forward<SDFunctions>(fs)...);
+/// Union of the negative sides of the signed distance fields f1, ..., fn.
+struct neg_union_fn {
+  template <typename... SDFs> constexpr auto operator()(SDFs&&... fs) const {
+    return adapt(op_neg_union, std::forward<SDFs>(fs)...);
   }
 };
 }  // namespace detail
 
-constexpr auto&& add = static_const<detail::add_t>::value;
+namespace {
+static constexpr auto const& neg_union
+ = static_const<detail::neg_union_fn>::value;
+}  // namespace
 
 namespace detail {
-struct op_union_plus_t {
-  template <typename Point, typename SDFunction1, typename SDFunction2>
-  constexpr auto operator()(Point&& x, SDFunction1&& f1,
-                            SDFunction2&& f2) const {
-    return -std::max(-f1(x), -f2(x));
+struct op_pos_union_fn {
+  template <typename Point, typename SDF>
+  constexpr auto operator()(Point&& x, SDF&& f) const {
+    return f(std::forward<Point>(x));
   }
 
-  /// Union of a signed distance field: OR(f1, f2)
-  template <typename Point, typename SDFunction1, typename... SDFunctions>
-  constexpr auto operator()(Point&& x, SDFunction1&& f1,
-                            SDFunctions&&... fs) const {
-    return (*this)(f1, op_union_plus(x, fs...));
+  /// Union of the positive  side of the signed distance fields \p f1 , \p fs...
+  template <typename Point, typename SDF1, typename... SDFs>
+  constexpr auto operator()(Point&& x, SDF1&& f1, SDFs&&... fs) const {
+    return -std::max(-(*this)(x, std::forward<SDF1>(f1)),
+                     -(*this)(x, std::forward<SDFs>(fs)...));
   }
 };
 }  // namespace detail
 
-constexpr auto&& op_union_plus = static_const<detail::op_union_plus_t>::value;
+namespace {
+static constexpr auto const& op_pos_union
+ = static_const<detail::op_pos_union_fn>::value;
+}  // namespace
 
 namespace detail {
 /// Union of a signed distance field: OR(f1, f2)
 ///
 /// \note union of the "positive" regions of the signed distance field
-struct add_plus_t {
-  template <typename... SDFunctions>
-  constexpr auto operator()(SDFunctions&&... fs) const {
-    return adapt(op_union_plus, std::forward<SDFunctions>(fs)...);
+struct pos_union_fn {
+  template <typename... SDFs> constexpr auto operator()(SDFs&&... fs) const {
+    return adapt(op_pos_union, std::forward<SDFs>(fs)...);
   }
 };
 }  // namespace detail
 
-constexpr auto&& add_plus = static_const<detail::add_plus_t>::value;
+namespace {
+static constexpr auto const& pos_union
+ = static_const<detail::pos_union_fn>::value;
+}  // namespace
 
 namespace detail {
-struct op_intersection_t {
+struct op_intersection_fn {
   /// Intersection of a signed distance field: AND(f1, f2)
-  template <typename Point, typename SDFunction1, typename SDFunction2>
-  constexpr auto operator()(Point&& x, SDFunction1& f1, SDFunction2& f2) const {
-    return std::max(f1(x), f2(x));
+  template <typename Point, typename SDF>
+  constexpr auto operator()(Point&& x, SDF&& f) const {
+    return f(std::forward<Point>(x));
   }
 
   /// Intersection of a signed distance field: AND(f1, f2)
-  template <typename Point, typename SDFunction1, typename... SDFunctions>
-  constexpr auto operator()(Point&& x, SDFunction1&& f1,
-                            SDFunctions&&... fs) const {
-    return (*this)(x, f1, op_intersection(x, fs...));
+  template <typename Point, typename SDF1, typename... SDFs>
+  constexpr auto operator()(Point&& x, SDF1&& f1, SDFs&&... fs) const {
+    return std::max((*this)(x, f1), (*this)(x, fs...));
   }
 };
 }  // namespace detail
 
-constexpr auto&& op_intersection
- = static_const<detail::op_intersection_t>::value;
+namespace {
+static constexpr auto const& op_intersection
+ = static_const<detail::op_intersection_fn>::value;
+}  // namespace
 
 namespace detail {
-struct common_t {
-  template <typename... SDFunctions>
-  constexpr auto operator()(SDFunctions&&... fs) const {
-    return adapt(op_intersection, std::forward<SDFunctions>(fs)...);
+struct intersection_fn {
+  template <typename... SDFs> constexpr auto operator()(SDFs&&... fs) const {
+    return adapt(op_intersection, std::forward<SDFs>(fs)...);
   }
 };
 }  // namespace detail
 
-constexpr auto&& common = static_const<detail::common_t>::value;
+namespace {
+static constexpr auto const& intersection
+ = static_const<detail::intersection_fn>::value;
+}  // namespace
 
 namespace detail {
 
-struct op_difference_t {
+struct op_difference_fn {
   /// Difference of a signed distance field: AND(f1, -f2)
-  template <typename Point, typename SDFunction1, typename SDFunction2>
-  constexpr auto operator()(Point&& x, SDFunction1& f1, SDFunction2& f2) const {
+  template <typename Point, typename SDF1, typename SDF2>
+  constexpr auto operator()(Point&& x, SDF1&& f1, SDF2&& f2) const {
     return std::max(f1(x), -f2(x));
   }
 };
 }  // namespace detail
 
-constexpr auto&& op_difference = static_const<detail::op_difference_t>::value;
+namespace {
+static constexpr auto const& op_difference
+ = static_const<detail::op_difference_fn>::value;
+}  // namespace
 
 namespace detail {
-struct sub_t {
-  template <typename SDFunction0, typename SDFunction1>
-  constexpr auto operator()(SDFunction0&& f0, SDFunction1&& f1) const {
-    return adapt(op_difference, std::forward<SDFunction0>(f0),
-                 std::forward<SDFunction1>(f1));
+struct difference_fn {
+  template <typename SDF0, typename SDF1>
+  constexpr auto operator()(SDF0&& f0, SDF1&& f1) const {
+    return adapt(op_difference, std::forward<SDF0>(f0), std::forward<SDF1>(f1));
   }
 };
 }  // namespace detail
 
-constexpr auto&& sub = static_const<detail::sub_t>::value;
+namespace {
+static constexpr auto const& difference
+ = static_const<detail::difference_fn>::value;
+}  // namespace
 
 }  // namespace sd
 }  // namespace geometry

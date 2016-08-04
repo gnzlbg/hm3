@@ -48,11 +48,11 @@ struct unstructured_grid {
 
     /// Create a unique point inserter
     auto unique_inserter = make_ptr<vtkMergePoints>();
-    auto bounds          = geometry::bounds(grid.bounding_box());
+    auto bounds          = geometry::bounding_volume.aabb(grid.bounding_box());
     num_t bounds_vtk[6]  = {0.0};  // vtk works only in 3D...
     for (auto d : grid.dimensions()) {
-      bounds_vtk[d]     = bounds.min(d);
-      bounds_vtk[d + 3] = bounds.max(d);
+      bounds_vtk[d]     = geometry::x_min(bounds)(d);
+      bounds_vtk[d + 3] = geometry::x_max(bounds)(d);
     }
     unique_inserter->InitPointInsertion(points, bounds_vtk);
 
@@ -60,7 +60,7 @@ struct unstructured_grid {
     log("Generating vtk grid...");
     // auto tmp_cell = make_ptr<vtk_cell_t>(); // TODO: tuple of cell types
     auto tmp_cells = make_tuple_of_cells(grid_cell_t{});
-    std::vector<int> cell_types;
+    vector<int> cell_types;
     cell_types.reserve(no_cells);
     int_t c_c = 0;
     RANGES_FOR (auto&& n, use_copy_if_single_pass(nodes)) {
@@ -87,7 +87,7 @@ struct unstructured_grid {
          //      be painful.
          tmp_cell->GetPointIds()->Reset();
          // Append vertices to the point set, and store the corner ids:
-         RANGES_FOR (auto&& cIdx, vertex_indices(g)) {
+         RANGES_FOR (auto&& cIdx, geometry::vertex_indices(g)) {
            vtkIdType id;
            auto corner_vtk = to_vtk_point(cell_vertices[cIdx]);
            unique_inserter->InsertUniquePoint(corner_vtk.data(), id);

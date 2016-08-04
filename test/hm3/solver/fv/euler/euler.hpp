@@ -38,7 +38,7 @@ auto unit_box_neumann(hm3::mpi::env& env, Parameters p) {
   constexpr suint_t no_grids = 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, p.level)};
-  auto bounding_box = geometry::unit(geometry::box<nd>{});
+  auto bounding_box = geometry::box<nd>::unit();
 
   using namespace grid;
   using namespace grid::hierarchical;

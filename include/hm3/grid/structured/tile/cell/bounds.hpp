@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square tile cell bounds
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/structured/tile/index_type.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/math.hpp>

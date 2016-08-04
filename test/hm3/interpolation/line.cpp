@@ -9,6 +9,7 @@
 int main() {
   using namespace hm3;
   using namespace ip::linear;
+  using namespace geometry;
   // linear interpolation tests
   {
     auto l0
@@ -18,8 +19,8 @@ int main() {
     CHECK(dimension(l0) == 2_u);
     CHECK(length(l0) == l);
     CHECK(centroid(l0) == point<2>::constant(0.5));
-    CHECK(direction(l0) == point<2>::constant(1.0 / l));
-    point<2> n;
+    CHECK(direction(l0) == vec<2>::constant(1.0 / l));
+    vec<2> n;
     n(0) = -1. / l;
     n(1) = 1. / l;
     CHECK(normal(l0) == n);

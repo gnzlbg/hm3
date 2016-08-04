@@ -5,7 +5,7 @@
 ///
 /// \todo Rename file
 /// \todo Remove unstable APIs
-#include <hm3/geometry/dimensions.hpp>
+#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/client/multi.hpp>
 #include <hm3/solver/types.hpp>
 
@@ -31,7 +31,7 @@ struct tiled_hierarchical_grid : geometry::dimensional<Tile::dimension()> {
   using grid_t = typename grid_client_t::tree_t;
 
   /// Tile storage
-  using tiles_t = std::vector<tile_t>;
+  using tiles_t = vector<tile_t>;
 
   /// \name Data
   ///@{
