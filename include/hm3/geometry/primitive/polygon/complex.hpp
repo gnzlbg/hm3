@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Is a polygon complex?
+#include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
 #include <hm3/geometry/concepts.hpp>
-#include <hm3/geometry/primitive/segment/intersection.hpp>
 namespace hm3::geometry {
 
 namespace polygon_primitive {
@@ -19,6 +19,7 @@ struct complex_fn {
   /// - vertices.
   template <typename P, CONCEPT_REQUIRES_(Polygon<P>{})>
   constexpr bool operator()(P&& p) const noexcept {
+    /*
     for (auto&& fi : face_indices(p)) {
       for (auto&& fj : face_indices(p)) {
         if (fi == fj) { continue; }  //
@@ -39,6 +40,7 @@ struct complex_fn {
         }
       }
     }
+    */
     return false;
   }
 };

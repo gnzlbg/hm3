@@ -6,7 +6,6 @@
 using namespace hm3;
 using namespace geometry;
 
-
 template <typename A>  //
 void test_unit_aabb() {
   static constexpr dim_t nd = A::dimension();

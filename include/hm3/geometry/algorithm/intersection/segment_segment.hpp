@@ -5,11 +5,7 @@
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 
-namespace hm3 {
-namespace geometry {
-
-namespace discrete {
-namespace segment_primitive {
+namespace hm3::geometry::segment_primitive {
 
 /// Do two line segments in 1D intersect?
 inline bool intersection_test(segment<1> const& a,
@@ -110,8 +106,4 @@ inline bool intersection_test(segment<3> const& a,
   return false;
 }
 
-}  // namespace segment_primitive
-}  // namespace discrete
-
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry::segment_primitive

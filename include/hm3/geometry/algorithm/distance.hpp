@@ -14,24 +14,24 @@ struct distance_fn {
   /// Distance from centroid to centroid
   template <typename T, typename U>
   static constexpr num_t centroid(T&& t, U&& u) noexcept {
-    auto const& t_xc = discrete::centroid(std::forward<T>(t));
-    auto const& u_xc = discrete::centroid(std::forward<U>(u));
+    auto const& t_xc = hm3::geometry::centroid(std::forward<T>(t));
+    auto const& u_xc = hm3::geometry::centroid(std::forward<U>(u));
     return (t_xc() - u_xc()).norm();
   }
 
   template <typename T, typename U>
-  static constexpr num_t minimum_distance_impl(T&& t, U&& u, long)
-   RANGES_DECLTYPE_NOEXCEPT_AUTO_RETURN(minimum_distance(std::forward<U>(u),
+  static constexpr auto minimum_distance_impl(T&& t, U&& u, long)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(minimum_distance(std::forward<U>(u),
                                                          std::forward<T>(t)));
 
   template <typename T, typename U>
-  static constexpr num_t minimum_distance_impl(T&& t, U&& u, int)
-   RANGES_DECLTYPE_NOEXCEPT_AUTO_RETURN(minimum_distance(std::forward<T>(t),
+  static constexpr auto minimum_distance_impl(T&& t, U&& u, int)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(minimum_distance(std::forward<T>(t),
                                                          std::forward<U>(u)));
 
   template <typename T, typename U>
-  static constexpr num_t minimum(T&& t, U&& u)
-   RANGES_DECLTYPE_NOEXCEPT_AUTO_RETURN(
+  static constexpr auto minimum(T&& t, U&& u)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
     minimum_distance_impl(std::forward<T>(t), std::forward<U>(u), 0));
 };
 

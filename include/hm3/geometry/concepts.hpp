@@ -31,8 +31,7 @@ template <typename T> struct is_bounded : std::true_type {};
 
 template <typename T> struct is_primitive : std::true_type {};
 
-struct primitive : rc::refines<rc::Regular, geometry::concepts::Ranked,
-                               access::concepts::Vertex> {
+struct primitive : rc::refines<rc::Regular, Ranked, access::concepts::Vertex> {
   template <typename T, typename UT = uncvref_t<T>>
   static auto requires_(T&& t) -> decltype(  //
    rc::valid_expr(                           //
@@ -48,7 +47,7 @@ struct segment_primitive : rc::refines<Primitive> {
   template <typename T, typename UT = uncvref_t<T>>
   static auto requires_(T&& t) -> decltype(  //
    rc::valid_expr(                           //
-    rc::is_true(Ranked<T, UT::dimension(), 1>{})));
+    rc::is_true(geometry::Ranked<T, UT::dimension(), 1>{})));
 };
 
 using Segment = segment_primitive;
@@ -58,7 +57,7 @@ struct surface_primitive : rc::refines<Primitive> {
   template <typename T, typename UT = uncvref_t<T>>
   static auto requires_(T&& t) -> decltype(  //
    rc::valid_expr(                           //
-    rc::is_true(Ranked<T, UT::dimension(), UT::dimension() - 1>{})));
+    rc::is_true(geometry::Ranked<T, UT::dimension(), UT::dimension() - 1>{})));
 };
 
 using Surface = surface_primitive;
@@ -68,7 +67,7 @@ struct volume_primitive : rc::refines<Primitive> {
   template <typename T, typename UT = uncvref_t<T>>
   static auto requires_(T&& t) -> decltype(  //
    rc::valid_expr(                           //
-    rc::is_true(Ranked<T, UT::dimension(), UT::dimension()>{})));
+    rc::is_true(geometry::Ranked<T, UT::dimension(), UT::dimension()>{})));
 };
 
 using Volume = volume_primitive;
@@ -77,10 +76,10 @@ template <typename T> struct is_polygon : std::true_type {};
 
 struct polygon : rc::refines<Primitive> {
   template <typename T>
-  static auto requires_(T&& t) -> decltype(       //
-   rc::valid_expr(                                //
-    rc::is_true(is_polygon<rc::uncvref_t<T>>{}),  //
-    rc::is_true(Ranked<T, dimension(T{}), 2>{})   //
+  static auto requires_(T&& t) -> decltype(                //
+   rc::valid_expr(                                         //
+    rc::is_true(is_polygon<rc::uncvref_t<T>>{}),           //
+    rc::is_true(geometry::Ranked<T, dimension(T{}), 2>{})  //
     ));
 };
 

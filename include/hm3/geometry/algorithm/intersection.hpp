@@ -13,51 +13,51 @@
 
 namespace hm3 {
 namespace geometry {
-
+/*
 // clang-format off
 
 template <dim_t Nd> //
 struct volume_intersection {
-  using domain_t = meta::if_c<Nd == 1, segment<Nd>,
-                   meta::if_c<Nd == 2, small_polygon<Nd, 6>,
-                // meta::if_c<Nd == 3, small_polyhedra<Nd, 12>,
-                              void
-                //           >
-                   >>;
+using domain_t = meta::if_c<Nd == 1, segment<Nd>,
+                 meta::if_c<Nd == 2, small_polygon<Nd, 6>,
+              // meta::if_c<Nd == 3, small_polyhedra<Nd, 12>,
+                            void
+              //           >
+                 >>;
 
-  domain_t volume;
-  inline_vector<sidx_t, 2> idx;  // original volume index
-  small_vector<sidx_t, 2> face_ids; // intersection face indices
-  bool inside;
+domain_t volume;
+inline_vector<sidx_t, 2> idx;  // original volume index
+small_vector<sidx_t, 2> face_ids; // intersection face indices
+bool inside;
 };
 
 template <dim_t Nd> //
 struct face_intersection {
-  using domain_t = meta::if_c<Nd == 1, point<Nd>,
-                   meta::if_c<Nd == 2, segment<Nd>,
-                   meta::if_c<Nd == 3, small_polygon<Nd, 9>,
-                              void>>> ;
+using domain_t = meta::if_c<Nd == 1, point<Nd>,
+                 meta::if_c<Nd == 2, segment<Nd>,
+                 meta::if_c<Nd == 3, small_polygon<Nd, 9>,
+                            void>>> ;
 
-  domain_t face;
-  optional_index<sidx_t, struct original_face> idx;  // original volume/face idx
-  inline_vector<sidx_t, 2> volume_ids;  // intersection volume indices
+domain_t face;
+optional_idx<sidx_t, struct original_face> idx;  // original volume/face idx
+inline_vector<sidx_t, 2> volume_ids;  // intersection volume indices
 };
 
 // clang-format on
 
 template <dim_t Nd>  //
 struct intersection_result {
-  using volume_t  = volume_intersection<Nd>;
-  using face_t    = face_intersection<Nd>;
-  using volumes_t = small_vector<volume_t, 3>;
-  using faces_t   = small_vector<face_t, 3>;
+using volume_t  = volume_intersection<Nd>;
+using face_t    = face_intersection<Nd>;
+using volumes_t = small_vector<volume_t, 3>;
+using faces_t   = small_vector<face_t, 3>;
 
-  volumes_t volumes;
-  faces_t faces;
+volumes_t volumes;
+faces_t faces;
 
-  bool empty() const noexcept { return volumes.empty() and faces.empty(); }
+bool empty() const noexcept { return volumes.empty() and faces.empty(); }
 };
-
+*/
 namespace detail {
 
 struct intersection_fn {

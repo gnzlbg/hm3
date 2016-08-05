@@ -5,9 +5,7 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace geometry {
-namespace discrete {
+namespace hm3::geometry {
 
 namespace access {
 
@@ -22,7 +20,7 @@ using face_index_t = typename face_index_type<uncvref_t<T>>::type;
 
 template <typename Rng> using face_t = uncvref_t<ranges::range_value_t<Rng>>;
 
-namespace detail {
+namespace face_detail {
 
 struct face_size_fn {
   template <typename T, typename IT = face_index_t<T>>
@@ -30,14 +28,14 @@ struct face_size_fn {
    static_cast<IT>(face_size(std::forward<T>(t))));
 };
 
-}  // namespace detail
+}  // namespace face_detail
 
 namespace {
 static constexpr auto const& face_size
- = static_const<detail::face_size_fn>::value;
+ = static_const<face_detail::face_size_fn>::value;
 }  // namespace
 
-namespace detail {
+namespace face_detail {
 
 struct face_indices_fn {
   template <typename T, typename IT = face_index_t<T>>
@@ -54,27 +52,27 @@ struct face_indices_fn {
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t), 0));
 };
 
-}  // namespace detail
+}  // namespace face_detail
 
 namespace {
 static constexpr auto const& face_indices
- = static_const<detail::face_indices_fn>::value;
+ = static_const<face_detail::face_indices_fn>::value;
 }  // namespace
 
-namespace detail {
+namespace face_detail {
 
 struct face_fn {
   template <typename T>
   constexpr auto operator()(T&& t, face_index_t<T> i) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(face(std::forward<T>(t), i));
 };
-}  // namespace detail
+}  // namespace face_detail
 
 namespace {
-static constexpr auto const& face = static_const<detail::face_fn>::value;
+static constexpr auto const& face = static_const<face_detail::face_fn>::value;
 }  // namespace
 
-namespace detail {
+namespace face_detail {
 
 struct faces_fn {
   template <typename T>  //
@@ -95,8 +93,7 @@ struct faces_fn {
 
   template <typename T, CONCEPT_REQUIRES_(std::is_rvalue_reference<T>{})>
   static constexpr auto impl2(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-   face_indices(t)
-   | view::transform(transformer<uncvref_t<T>>{std::move(t)}));
+   face_indices(t) | view::transform(transformer<uncvref_t<T>>{std::move(t)}));
 
   template <typename T>
   static constexpr auto impl(T&& t, long)
@@ -112,11 +109,10 @@ struct faces_fn {
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t), 0));
 };
 
-}  // namespace detail
+}  // namespace face_detail
 
 namespace {
-static constexpr auto const& faces
- = static_const<detail::faces_fn>::value;
+static constexpr auto const& faces = static_const<face_detail::faces_fn>::value;
 }  // namespace
 
 namespace concepts {
@@ -125,13 +121,13 @@ namespace rc = ranges::concepts;
 
 struct face_access {
   template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(                  //
-   rc::valid_expr(                                           //
+  static auto requires_(T&& t) -> decltype(                //
+   rc::valid_expr(                                         //
     static_cast<face_index_t<UT>>(0),                      //
-    static_cast<face_index_t<UT>>(face_size(t)),         //
+    static_cast<face_index_t<UT>>(face_size(t)),           //
     rc::model_of<rc::RandomAccessRange>(face_indices(t)),  //
-    face(t, face_index_t<UT>(0)),                        //
-    rc::model_of<rc::RandomAccessRange>(faces(t))         //
+    face(t, face_index_t<UT>(0)),                          //
+    rc::model_of<rc::RandomAccessRange>(faces(t))          //
     ));
 };
 
@@ -149,12 +145,4 @@ using access::face;
 using access::faces;
 using access::face_indices;
 
-}  // namespace discrete
-
-using discrete::face_size;
-using discrete::face;
-using discrete::faces;
-using discrete::face_indices;
-
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry

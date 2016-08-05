@@ -321,9 +321,7 @@ struct inline_vector
     emplace_back(std::forward<U>(value));
   }
 
-  void push_back() {
-    emplace_back(T{});
-  }
+  void push_back() { emplace_back(T{}); }
 
   /// Pop back
   ///

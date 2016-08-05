@@ -27,7 +27,7 @@ struct bounding_volume_fn {
   template <typename Rng, typename Prim = uncvref_t<ranges::range_value_t<Rng>>,
             dim_t Nd = Prim::dimension(),
             CONCEPT_REQUIRES_(!Primitive<Rng>{} and Range<Rng>{})>
-  static constexpr auto aabb(Rng&& rng) -> discrete::aabb<Nd> {
+  static constexpr auto aabb(Rng&& rng) -> geometry::aabb<Nd> {
     auto r_min = point<Nd>::constant(math::highest<num_t>);
     auto r_max = point<Nd>::constant(math::lowest<num_t>);
     for (auto&& o : rng) {
@@ -39,7 +39,7 @@ struct bounding_volume_fn {
         r_max(d) = std::max(r_max(d), x_max(bb)(d));
       }
     }
-    return discrete::aabb<Nd>(r_min, r_max);
+    return geometry::aabb<Nd>(r_min, r_max);
   }
 };
 

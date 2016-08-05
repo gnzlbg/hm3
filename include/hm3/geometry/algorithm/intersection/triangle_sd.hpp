@@ -8,10 +8,7 @@
 #include <hm3/interpolation/linear.hpp>
 #include <hm3/utility/inline_vector.hpp>
 
-namespace hm3 {
-namespace geometry {
-namespace discrete {
-namespace polygon_primitive {
+namespace hm3::geometry::polygon_primitive {
 
 namespace sd_detail {
 
@@ -332,7 +329,4 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
 
 }  // namespace sd_detail
 
-}  // namespace polygon_primitive
-}  // namespace discrete
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry::polygon_primitive

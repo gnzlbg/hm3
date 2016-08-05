@@ -4,7 +4,8 @@
 /// Normal vector of a polygon.
 #include <hm3/geometry/algorithm/normal.hpp>
 #include <hm3/geometry/concepts.hpp>
-#include <hm3/geometry/primitive/polygon/degenerate.hpp>
+#include <hm3/geometry/primitive/polygon/order.hpp>
+#include <hm3/geometry/primitive/polygon/planar.hpp>
 
 namespace hm3::geometry::polygon_primitive {
 

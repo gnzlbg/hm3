@@ -3,8 +3,9 @@
 ///
 /// Centroid of a ccw-sorted polygon.
 #include <hm3/geometry/algorithm/centroid.hpp>
-#include <hm3/geometry/primitive/polygon/degenerate.hpp>
 #include <hm3/geometry/primitive/polygon/integral.hpp>
+#include <hm3/geometry/primitive/polygon/order.hpp>
+#include <hm3/geometry/primitive/polygon/planar.hpp>
 
 /// This macro forces computing the centroid using a generic algorithm
 /// for polygons with N vertices (it disables faster specializations for

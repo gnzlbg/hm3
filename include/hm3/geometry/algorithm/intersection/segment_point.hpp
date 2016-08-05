@@ -5,11 +5,7 @@
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 
-namespace hm3 {
-namespace geometry {
-
-namespace discrete {
-namespace segment_primitive {
+namespace hm3::geometry::segment_primitive {
 
 /// Does the segment \p s intersect/contain the point \p p?
 template <dim_t Nd>
@@ -44,8 +40,4 @@ inline optional<point<Nd>> intersection(segment<Nd> const& s,
   return optional<point<Nd>>{};
 }
 
-}  // namespace segment_primitive
-}  // namespace discrete
-
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry::segment_primitive

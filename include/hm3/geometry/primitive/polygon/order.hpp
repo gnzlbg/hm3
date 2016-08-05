@@ -4,6 +4,7 @@
 /// Computes the order of the vertices of a polygon (clockwise or counter
 /// clockwise).
 #include <hm3/geometry/concepts.hpp>
+#include <hm3/geometry/primitive/polygon/planar.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 
 namespace hm3::geometry {

@@ -4,8 +4,7 @@
 /// Implements the Ranked geometry concept.
 #include <hm3/geometry/dimension.hpp>
 
-namespace hm3 {
-namespace geometry {
+namespace hm3::geometry {
 
 /// Ranked geometric object.
 ///
@@ -130,5 +129,4 @@ using Ranked
                            ? true
                            : decltype(rank(uncvref_t<T>())){} == R>>;
 
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry

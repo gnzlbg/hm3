@@ -6,10 +6,7 @@
 #include <hm3/geometry/concepts.hpp>
 #include <hm3/geometry/sd/concept.hpp>
 
-namespace hm3 {
-namespace geometry {
-namespace discrete {
-namespace polygon_primitive {
+namespace hm3::geometry::polygon_primitive {
 
 struct sd_intersection_test_result {
   bool intersected = false;
@@ -43,7 +40,4 @@ constexpr sd_intersection_test_result intersection_test(
   return {false, sg};
 }
 
-}  // namespace polygon_primitive
-}  // namespace discrete
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry::polygon_primitive

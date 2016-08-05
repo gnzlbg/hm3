@@ -5,9 +5,7 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace geometry {
-namespace discrete {
+namespace hm3::geometry {
 
 namespace access {
 
@@ -22,7 +20,7 @@ using vertex_index_t = typename vertex_index_type<uncvref_t<T>>::type;
 
 template <typename Rng> using vertex_t = uncvref_t<ranges::range_value_t<Rng>>;
 
-namespace detail {
+namespace vertex_detail {
 
 struct vertex_size_fn {
   template <typename T, typename IT = vertex_index_t<T>>
@@ -30,14 +28,14 @@ struct vertex_size_fn {
    static_cast<IT>(vertex_size(std::forward<T>(t))));
 };
 
-}  // namespace detail
+}  // namespace vertex_detail
 
 namespace {
 static constexpr auto const& vertex_size
- = static_const<detail::vertex_size_fn>::value;
+ = static_const<vertex_detail::vertex_size_fn>::value;
 }  // namespace
 
-namespace detail {
+namespace vertex_detail {
 
 struct vertex_indices_fn {
   template <typename T, typename IT = vertex_index_t<T>>
@@ -54,27 +52,28 @@ struct vertex_indices_fn {
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t), 0));
 };
 
-}  // namespace detail
+}  // namespace vertex_detail
 
 namespace {
 static constexpr auto const& vertex_indices
- = static_const<detail::vertex_indices_fn>::value;
+ = static_const<vertex_detail::vertex_indices_fn>::value;
 }  // namespace
 
-namespace detail {
+namespace vertex_detail {
 
 struct vertex_fn {
   template <typename T>
   constexpr auto operator()(T&& t, vertex_index_t<T> i) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(vertex(std::forward<T>(t), i));
 };
-}  // namespace detail
+}  // namespace vertex_detail
 
 namespace {
-static constexpr auto const& vertex = static_const<detail::vertex_fn>::value;
+static constexpr auto const& vertex
+ = static_const<vertex_detail::vertex_fn>::value;
 }  // namespace
 
-namespace detail {
+namespace vertex_detail {
 
 struct vertices_fn {
   template <typename T>  //
@@ -112,11 +111,11 @@ struct vertices_fn {
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t), 0));
 };
 
-}  // namespace detail
+}  // namespace vertex_detail
 
 namespace {
 static constexpr auto const& vertices
- = static_const<detail::vertices_fn>::value;
+ = static_const<vertex_detail::vertices_fn>::value;
 }  // namespace
 
 namespace concepts {
@@ -149,12 +148,4 @@ using access::vertex;
 using access::vertices;
 using access::vertex_indices;
 
-}  // namespace discrete
-
-using discrete::vertex_size;
-using discrete::vertex;
-using discrete::vertices;
-using discrete::vertex_indices;
-
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry

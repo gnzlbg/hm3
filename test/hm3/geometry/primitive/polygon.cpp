@@ -6,8 +6,6 @@
 using namespace hm3;
 using namespace geometry;
 
-
-
 template <dim_t Nd, typename Poly, typename Vertices>
 void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
                point<Nd> centroid_, num_t area_, num_t boundary_,

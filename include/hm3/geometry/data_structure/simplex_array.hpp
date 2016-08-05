@@ -106,8 +106,4 @@ struct simplex_array {
   auto vertices() const noexcept { return vertices_.points(); }
 };
 
-}  // namespace discrete
-
-using discrete::simplex_array;
-
 }  // namespace hm3::geometry

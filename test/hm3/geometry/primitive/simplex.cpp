@@ -7,7 +7,7 @@ int main() {
 
   {  // 1D (points)
     using point_t = point<1>;
-    using vec_t = vec<1>;
+    using vec_t   = vec<1>;
     point_t p[]   = {{.5}};
     simplex<1> s(p);
 
@@ -31,7 +31,7 @@ int main() {
 
   {  // 2D (lines)
     using point_t = point<2>;
-    using vec_t = vec<2>;
+    using vec_t   = vec<2>;
     using box_t   = geometry::box<2>;
     using aabb_t  = aabb<2>;
     point_t p[]   = {{0.0, 0.0}, {1.0, 1.0}};

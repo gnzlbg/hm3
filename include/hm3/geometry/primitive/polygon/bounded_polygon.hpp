@@ -7,7 +7,9 @@
 #include <hm3/geometry/rank.hpp>
 #include <hm3/utility/inline_vector.hpp>
 
-namespace hm3::geometry::polygon_primitive {
+namespace hm3::geometry {
+
+namespace polygon_primitive {
 
 /// Bounded polygon
 ///

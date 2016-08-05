@@ -58,9 +58,9 @@ int main() {
   }
 
   {  // check values:
-    constexpr auto p1  = vec<1>{0.};
-    constexpr auto p3  = vec<3>{0., 1., 2.};
-    const vec<3> p4 = vec<3>::constant(1.);
+    constexpr auto p1 = vec<1>{0.};
+    constexpr auto p3 = vec<3>{0., 1., 2.};
+    const vec<3> p4   = vec<3>::constant(1.);
 
     CHECK(p1(0) == 0.);
     CHECK(p3(0) == 0.);
@@ -72,10 +72,10 @@ int main() {
   }
 
   {  // check vector length:
-    constexpr auto p1a  = vec<1>{0.};
-    constexpr auto p1b  = vec<1>{1.};
-    constexpr auto p1c  = vec<1>{2.};
-    const vec<1> p1d = vec<1>::constant(1.);
+    constexpr auto p1a = vec<1>{0.};
+    constexpr auto p1b = vec<1>{1.};
+    constexpr auto p1c = vec<1>{2.};
+    const vec<1> p1d   = vec<1>::constant(1.);
 
     CHECK(length(p1a) == 0.);
     CHECK(length(p1b) == 1.);

@@ -11,7 +11,7 @@
 
 namespace hm3 {
 namespace geometry {
-namespace discrete {
+
 namespace polygon_primitive {
 
 // todos: the faces of a segment are its corner points
@@ -19,157 +19,157 @@ namespace polygon_primitive {
 // the faces of a polyhedra are its polygons
 
 namespace sd_detail {
-  /*
+/*
 template <dim_t Nd>
 triangle<Nd> triangle_from_segment_and_point(segment<Nd> const& s,
-                                             point<Nd> const& p) {
-  if (Nd == 3) { return triangle<Nd>(s.x(0), s.x(1), p); }
-  triangle<Nd> t(s.x(0), s.x(1), p);
-  auto n = normal(t);
-  if (n(2) > 0.) { return t; }
-  return triangle<Nd>(s.x(1), s.x(0), p);
+                                           point<Nd> const& p) {
+if (Nd == 3) { return triangle<Nd>(s.x(0), s.x(1), p); }
+triangle<Nd> t(s.x(0), s.x(1), p);
+auto n = normal(t);
+if (n(2) > 0.) { return t; }
+return triangle<Nd>(s.x(1), s.x(0), p);
 }
 
 template <typename TriIntRng>
 polygon_intersection_result<Nd>
- merge_triangle_intersections_to_polygon_intersection(TriIntRng&& tis) {
-  auto no_ints = size(tis);
+merge_triangle_intersections_to_polygon_intersection(TriIntRng&& tis) {
+auto no_ints = size(tis);
 
-  // find boundaries and number of regions:
-  auto boundaries = bool_vector(no_ints)(no_ints);
-  {  // find shared boundaries:
-    auto boundary_matrix = bool_vector(no_ints)(no_ints);
+// find boundaries and number of regions:
+auto boundaries = bool_vector(no_ints)(no_ints);
+{  // find shared boundaries:
+  auto boundary_matrix = bool_vector(no_ints)(no_ints);
 
-    // for each triangle intersection:
-    // - if tri has a boundary markt it with one, else zero
+  // for each triangle intersection:
+  // - if tri has a boundary markt it with one, else zero
 
-    // for each triangle i
-    //   - if it has boundary i == i => 1 else continue,
-    //   - boundary bi
-    //   for each triangle j > i:
-    //     - if j doesn't have boundary mark it with zero
-    //     - if j has boundary and the end points match => put one, else zero
+  // for each triangle i
+  //   - if it has boundary i == i => 1 else continue,
+  //   - boundary bi
+  //   for each triangle j > i:
+  //     - if j doesn't have boundary mark it with zero
+  //     - if j has boundary and the end points match => put one, else zero
 
-    // bi = 0
-    // for each triangle i:
-    // if m[i][i] == 1:
-    //   if bi == 0: bi = i, push new boundary, push bi, m[i][i] = 0
-    //   for each  j > i:
-    //   if m[i][j] == 1, bj = j, push bj to bi boundary, m[j][i] = 0
-    //
-  }
+  // bi = 0
+  // for each triangle i:
+  // if m[i][i] == 1:
+  //   if bi == 0: bi = i, push new boundary, push bi, m[i][i] = 0
+  //   for each  j > i:
+  //   if m[i][j] == 1, bj = j, push bj to bi boundary, m[j][i] = 0
+  //
+}
 
-  auto no_boundaries = boundaries.size();
-  // if (no_boundaries > 1) { = > split cell ! }
+auto no_boundaries = boundaries.size();
+// if (no_boundaries > 1) { = > split cell ! }
 
-  // what happens if the boundary is aligned with  one side of the polygon?
-  auto no_regions = no_boundaries + 1;
+// what happens if the boundary is aligned with  one side of the polygon?
+auto no_regions = no_boundaries + 1;
 
-  auto regions = vector(no_regions)(no_ints);
+auto regions = vector(no_regions)(no_ints);
 
-  {  // find regions
-    auto inside_inside_neighbors   = bool_vector(no_ints)(no_ints);
-    auto outside_outside_neighbors = bool_vector(no_ints)(no_ints);
+{  // find regions
+  auto inside_inside_neighbors   = bool_vector(no_ints)(no_ints);
+  auto outside_outside_neighbors = bool_vector(no_ints)(no_ints);
 
-    // for each inside region, find all other inside regions sharing a face
+  // for each inside region, find all other inside regions sharing a face
 
-    // for each outside regin, find all other outside regions sharing a face
+  // for each outside regin, find all other outside regions sharing a face
 
-    // push the regions
+  // push the regions
 
-    // push the regions sign (assert that al polygons of a region have the same
-    // sign)
-  }
+  // push the regions sign (assert that al polygons of a region have the same
+  // sign)
+}
 
-  // so here I have for each boundary, which triangle segment it is formed from
-  // and for each region (multiple inside, multiple outside) which triangle
-  // inside/outside regions they are formed from
+// so here I have for each boundary, which triangle segment it is formed from
+// and for each region (multiple inside, multiple outside) which triangle
+// inside/outside regions they are formed from
 
-  // the boundaries are done, they are just the sgments and can be pushed to the
-  // result
+// the boundaries are done, they are just the sgments and can be pushed to the
+// result
 
-  // the regions need to be merged into  single polygons
+// the regions need to be merged into  single polygons
 
-  auto region_polygons(no_regions);
-  auto region_signs(no_regions);
+auto region_polygons(no_regions);
+auto region_signs(no_regions);
 
-  // for each region:
-  //  - region_polygons.push_back(merge_polygons(region.polys))
+// for each region:
+//  - region_polygons.push_back(merge_polygons(region.polys))
 
-  return result;
+return result;
 }
 
 // note the polygon cannot have holes (there are no equal segments)
 template <typename P, dim_t Nd = uncvref_t<P>::dimension(), typename SDF,
-          CONCEPT_REQUIRES_(SignedDistance<SDF, Nd>{} and Polygon<P, Nd>{})>
+        CONCEPT_REQUIRES_(SignedDistance<SDF, Nd>{} and Polygon<P, Nd>{})>
 polygon_intersection_result<Nd> signed_distance_intersection_polygon(
- P&& poly, SDF&& sdf) {
-  // cache corner signs
-  // if all signs are equal => return empty intersection
+P&& poly, SDF&& sdf) {
+// cache corner signs
+// if all signs are equal => return empty intersection
 
-  if (vertex_size(poly) == 3) {
-    return signed_distance_intersection_triangle(std::forward<P>(poly),
-                                                 std::forward<SDF>(sdf));
+if (vertex_size(poly) == 3) {
+  return signed_distance_intersection_triangle(std::forward<P>(poly),
+                                               std::forward<SDF>(sdf));
+}
+HM3_ASSERT(vertex_size(poly) > 3);
+// HM3_ASSERT(polygon_has_no_holes(poly), "");
+
+if (vertex_size(poly) == 4) {
+  if (not_split(poly, sdf)) {
+    return signed_distance_intersection_quad(
+     poly, sdf);  // use faster version for non-split quads
   }
-  HM3_ASSERT(vertex_size(poly) > 3);
-  // HM3_ASSERT(polygon_has_no_holes(poly), "");
+}
 
-  if (vertex_size(poly) == 4) {
-    if (not_split(poly, sdf)) {
-      return signed_distance_intersection_quad(
-       poly, sdf);  // use faster version for non-split quads
-    }
-  }
+// otherwise triangulate:
 
-  // otherwise triangulate:
+triangle_container tris;
+// is_convex: all its interior angles are less than 180°.
+if (is_convex(poly)) {
+  auto xc           = geometry::centroid(poly);
+  auto triangle_rng = segments(poly) | view::transform([&](auto&& seg) {
+                        return triangle_from_segment_and_point(seg, xc);
+                      });
+  for (auto&& t : triangle_rng) { tris.emplace_back(t); }
+} else {  // is concave
+  HM3_FATAL_ERROR(
+   "unimplemented: singed distance intersection of non-convex polygon");
+  // TODO: to implement this one just needs to be able to triangulate a
+  // non-convex polygon. The simplest solution would be to just use the ear
+  // clipping algorithm.
+}
 
-  triangle_container tris;
-  // is_convex: all its interior angles are less than 180°.
-  if (is_convex(poly)) {
-    auto xc           = geometry::centroid(poly);
-    auto triangle_rng = segments(poly) | view::transform([&](auto&& seg) {
-                          return triangle_from_segment_and_point(seg, xc);
-                        });
-    for (auto&& t : triangle_rng) { tris.emplace_back(t); }
-  } else {  // is concave
-    HM3_FATAL_ERROR(
-     "unimplemented: singed distance intersection of non-convex polygon");
-    // TODO: to implement this one just needs to be able to triangulate a
-    // non-convex polygon. The simplest solution would be to just use the ear
-    // clipping algorithm.
-  }
-
-  intersection_container tri_intersections;
-  for (auto&& t : tris) {
-    tri_intersections.emplace_back(
-     signed_distance_intersection_triangle(t, sdf));
-  }
-  return merge_triangle_intersections_to_polygon_intersection(
-   tri_intersections);
+intersection_container tri_intersections;
+for (auto&& t : tris) {
+  tri_intersections.emplace_back(
+   signed_distance_intersection_triangle(t, sdf));
+}
+return merge_triangle_intersections_to_polygon_intersection(
+ tri_intersections);
 }
 
 void intersection_multi(poly, sdfs) {
-  // compute intersection with each sdf
+// compute intersection with each sdf
 
-  // each sdf has a number representing its "id"
+// each sdf has a number representing its "id"
 
-  // merge the inside region of all intersections
+// merge the inside region of all intersections
 
-  // for each boundary of the intersection => add its id (0, ... N for each
-  // sdf, -1 for part of the original shape)
+// for each boundary of the intersection => add its id (0, ... N for each
+// sdf, -1 for part of the original shape)
 }
-  */
+*/
 }  // namespace sd_detail
 
 }  // namespace polygon_primitive
-}  // namespace discrete
+
 }  // namespace geometry
 }  // namespace hm3
 
 /*
 namespace hm3 {
 namespace geometry {
-namespace discrete {
+
 namespace polygon_primitive {
 
 namespace sd_detail {
@@ -596,7 +596,177 @@ return cut;
 }
 
 }  // namespace polygon_primitive
-}  // namespace discrete
+
+}  // namespace geometry
+}  // namespace hm3
+*/
+
+/*
+
+namespace hm3 {
+namespace geometry {
+
+namespace polygon_primitive {
+
+
+
+constexpr dim_t max_no_cut_surfaces(dim_t max_vertices_in_shape) noexcept {
+  switch (max_vertices_in_shape) {
+    case 1: {
+      return 1;
+    }
+    case 2: {
+      return 1;
+    }
+    case 3: {
+      return 1;
+    }
+    case 4: {
+      return 2;
+    }
+    default: { HM3_FATAL_ERROR("not implemented"); }
+  }
+}
+
+constexpr dim_t max_no_shapes(dim_t max_vertices_in_shape) noexcept {
+  switch (max_vertices_in_shape) {
+    case 1: {
+      return 1;
+    }
+    case 2: {
+      return 2;
+    }
+    case 3: {
+      return 2;
+    }
+    case 4: {
+      return 3;
+    }
+    default: { HM3_FATAL_ERROR("not implemented"); }
+  }
+}
+
+template <typename Shape>  //
+struct intersection_result {
+  static constexpr dim_t max_vs_shape = vertex_capacity(Shape{});
+
+  static constexpr dim_t max_no_cut_surfaces
+   = max_no_cut_surfaces(max_vs_shape);
+
+  static constexpr dim_t max_no_vs_in_cut_surface = 2;
+
+  Shape inside, outside, surface;
+
+  inline_vector<sint_t, Shape::capacity()> signum_inside, signum_outside;
+};
+
+template <typename Shape, typename SDFunction, dim_t Nd = Shape::dimension(),
+          CONCEPT_REQUIRES_(Polygon<Shape>{}
+                            and SignedDistance<SDFunction, Nd>{})>
+intersection_result<Shape> signed_distance_intersection(
+ Shape const& s, SDFunction&& sd) noexcept {
+  intersection_result<Shape> cut;
+  using ppidx_t = access::vertex_index_t<Shape>;
+
+  constexpr dim_t MaxNp = vertex_capacity(Shape{});
+
+  const auto shape_vertices = vertices(s);
+  const suint_t no_vertices = size(shape_vertices);
+  auto corner_ids           = view::iota(0_su, no_vertices);
+
+  // Compute signed distance values at the vertices once:
+  inline_vector<num_t, MaxNp> sd_at_vertices;
+  for (auto c : shape_vertices) { sd_at_vertices.push_back(sd(c)); }
+
+  // Index of the next corner, wraps around for the last corner:
+  auto next_corner
+   = [&](auto&& cidx) { return (cidx != no_vertices - 1) ? cidx + 1 : 0; };
+
+  ppidx_t no_cutpoints_found = 0;
+  /// Adds vertices and cut points to each polygon
+  for (auto cidx : corner_ids) {
+    const auto corner_sd           = sd_at_vertices[cidx];
+    const auto n_cidx              = next_corner(cidx);
+    const auto next_corner_sd      = sd_at_vertices[n_cidx];
+    const auto corner_sd_sign      = math::signum(corner_sd);
+    const auto next_corner_sd_sign = math::signum(next_corner_sd);
+
+    // if a corner is crossed by the zero level set it is part of both polygons
+    // (inside and outside) and the cut surface, otherwise it is only part of
+    // one polygon
+    if (corner_sd_sign == 0) {
+      cut.inside.push_back(shape_vertices[cidx]);
+      cut.outside.push_back(shape_vertices[cidx]);
+      cut.signum_inside.push_back(corner_sd_sign);
+      cut.signum_outside.push_back(corner_sd_sign);
+      cut.surface.push_back(shape_vertices[cidx]);
+      ++no_cutpoints_found;
+      continue;  // we are then done since we found the cut points
+    } else if (corner_sd_sign == 1) {
+      cut.inside.push_back(shape_vertices[cidx]);
+      cut.signum_inside.push_back(corner_sd_sign);
+    } else if (corner_sd_sign == -1) {
+      cut.outside.push_back(shape_vertices[cidx]);
+      cut.signum_outside.push_back(corner_sd_sign);
+    } else {
+      HM3_FATAL_ERROR("unreachable");
+    }
+
+    // If:
+    // - the sign of the next corner is the same, this edge is not
+    // intersected,
+    //   so we just move on to the next edge.
+    // - the sign of the next corner is zero, it will be handled in the next
+    //   iteration.
+    if (corner_sd_sign == next_corner_sd_sign || next_corner_sd_sign == 0) {
+      continue;
+    }
+
+    // Otherwise this edge is intersected by the zero level-set, so find the
+    // point in the edge with value 0 by interpolating linearly:
+    auto x_cp = ip::linear::point_with_value(0., shape_vertices[cidx],
+                                             shape_vertices[n_cidx], corner_sd,
+                                             next_corner_sd);
+    ++no_cutpoints_found;
+
+    // Cut points are part fo both polygons and part of the surface:
+    cut.inside.push_back(x_cp);
+    cut.outside.push_back(x_cp);
+    cut.signum_inside.push_back(0);
+    cut.signum_outside.push_back(0);
+    cut.surface.push_back(x_cp);
+
+    // and we move to the next edge.
+  }
+
+  // remove polygons containing only points where the level-set is zero:
+  if (ranges::all_of(cut.signum_inside, [](auto i) { return i == 0; })) {
+    cut.inside.clear();
+  }
+  if (ranges::all_of(cut.signum_outside, [](auto i) { return i == 0; })) {
+    cut.outside.clear();
+  }
+
+  HM3_ASSERT(
+   no_cutpoints_found == 1 || no_cutpoints_found == 2,
+   "this cannot handle shapes intersected by multiple planes of the same"
+   "signed-distance field");
+
+  // Check that the result are closed polygons (not a single point or a line)
+  HM3_ASSERT(cut.inside.size() > 2 || cut.inside.size() == 0,
+             "shape0 size: {} ", cut.inside.size());
+  HM3_ASSERT(cut.outside.size() > 2 || cut.outside.size() == 0,
+             "shape1 size: {}", cut.outside.size());
+
+  HM3_ASSERT(size(cut.surface) == no_cutpoints_found,
+             "{} cut points found but the cut.surface has {} points",
+             no_cutpoints_found, size(cut.surface));
+
+  return cut;
+}
+
+}  // namespace polygon_primitive
+
 }  // namespace geometry
 }  // namespace hm3
 */

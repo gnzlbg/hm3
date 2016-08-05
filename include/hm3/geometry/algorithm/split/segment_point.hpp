@@ -5,11 +5,7 @@
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 
-namespace hm3 {
-namespace geometry {
-
-namespace discrete {
-namespace segment_primitive {
+namespace hm3::geometry::segment_primitive {
 
 template <dim_t Nd>  //
 struct segment_point_split_result {
@@ -34,8 +30,4 @@ inline segment_point_split_result<Nd> split(segment<Nd> const& s,
   return result;
 }
 
-}  // namespace segment_primitive
-}  // namespace discrete
-
-}  // namespace geometry
-}  // namespace hm3
+}  // namespace hm3::geometry::segment_primitive
