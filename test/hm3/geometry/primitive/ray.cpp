@@ -5,7 +5,8 @@
 
 using namespace hm3;
 
-template <dim_t Nd> void basic_ray_test() {
+template <dim_t Nd>
+void basic_ray_test() {
   using namespace geometry;
 
   static constexpr dim_t nd = Nd;

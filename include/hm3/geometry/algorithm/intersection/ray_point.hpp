@@ -3,8 +3,8 @@
 ///
 /// Intersection of ray with points.
 #include <hm3/geometry/algorithm/intersection.hpp>
-#include <hm3/geometry/primitive/ray/ray.hpp>
 #include <hm3/geometry/primitive/line/parameter.hpp>
+#include <hm3/geometry/primitive/ray/ray.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::ray_primitive {

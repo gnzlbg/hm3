@@ -5,7 +5,7 @@
 // #include <hm3/geometry/concepts.hpp>
 // #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/polygon/intersection_sd_triangle.hpp>
-// #include <hm3/geometry/sd/concept.hpp>
+// #include <hm3/geometry/sd/concepts.hpp>
 // #include <hm3/interpolation/linear.hpp>
 // #include <hm3/utility/inline_vector.hpp>
 

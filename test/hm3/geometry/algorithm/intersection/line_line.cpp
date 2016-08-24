@@ -4,7 +4,8 @@
 
 using namespace hm3;
 
-template <dim_t Nd> void test_line_line_intersection() {
+template <dim_t Nd>
+void test_line_line_intersection() {
   using p_t = geometry::point<Nd>;
   using v_t = geometry::vec<Nd>;
   using l_t = geometry::line<Nd>;

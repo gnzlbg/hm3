@@ -143,7 +143,6 @@ num_t error_slab_analytical(
   for (auto& b : as0.tiles()) {
     b.cells().for_each_internal([&](auto&& c) {
       auto x                  = b.geometry().cell_centroid(c);
-      auto volume             = b.geometry().cell_volume();
       auto t_analytic         = analytic_solution(x, time_end);
       b.variables(c.idx())(0) = t_analytic;
     });

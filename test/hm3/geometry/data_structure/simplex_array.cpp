@@ -66,16 +66,16 @@ int main() {
     // construct from simplex range
     m = mesh_t(ss);
 
-    CHECK(m.face_size() == 17);
-    CHECK(m.vertex_size() == 17);
+    CHECK(m.face_size() == 17_u);
+    CHECK(m.vertex_size() == 17_u);
   }
 
   {  // 3D
     static constexpr dim_t nd = 3;
 
     using mesh_t = simplex_array<nd>;
-    using p_t    = point<nd>;
-    using s_t    = simplex<nd>;
+    // using p_t    = point<nd>;
+    // using s_t    = simplex<nd>;
 
     mesh_t m;
   }

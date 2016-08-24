@@ -14,7 +14,8 @@ constexpr vec<Nd> direction(ray<Nd> const& l) noexcept {
 }
 
 /// Invert direction of ray \p l.
-template <dim_t Nd> constexpr ray<Nd> invert_direction(ray<Nd> l) {
+template <dim_t Nd>
+constexpr ray<Nd> invert_direction(ray<Nd> l) {
   auto d = l.direction();
   return ray<Nd>(l.origin(), vec<Nd>{-1. * d()});
 }

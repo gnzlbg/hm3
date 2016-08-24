@@ -17,8 +17,7 @@ constexpr dim_t face_size(P&& p) noexcept {
 /// Face \p f of the polyline \p p.
 template <typename P, dim_t Nd = uncvref_t<P>::dimension(),
           CONCEPT_REQUIRES_(Polyline<P, Nd>{})>
-constexpr segment<Nd>
- face(P&& p, dim_t f) noexcept {
+constexpr segment<Nd> face(P&& p, dim_t f) noexcept {
   const auto no_vertices = vertex_size(p);
   HM3_ASSERT(f < no_vertices - 1, "face {} out of bounds [0, {})", f,
              no_vertices - 1);

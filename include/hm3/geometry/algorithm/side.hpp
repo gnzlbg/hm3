@@ -10,7 +10,8 @@ namespace side_detail {
 
 enum class side_t : char { pos, neg, neither };
 
-template <typename OStream> OStream& operator<<(OStream& os, side_t const& s) {
+template <typename OStream>
+OStream& operator<<(OStream& os, side_t const& s) {
   switch (s) {
     case side_t::pos: {
       os << "+";

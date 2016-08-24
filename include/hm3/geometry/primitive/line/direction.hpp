@@ -14,7 +14,8 @@ constexpr vec<Nd> direction(line<Nd> const& l) noexcept {
 }
 
 /// Invert direction of line \p l.
-template <dim_t Nd> constexpr line<Nd> invert_direction(line<Nd> l) {
+template <dim_t Nd>
+constexpr line<Nd> invert_direction(line<Nd> l) {
   return line<Nd>(l.origin(), vec<Nd>{-1. * l.direction()()});
 }
 

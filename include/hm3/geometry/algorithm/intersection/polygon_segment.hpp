@@ -5,6 +5,8 @@
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/algorithm/intersection/polygon_point.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
+#include <hm3/utility/small_vector.hpp>
+#include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::segment_primitive {
 

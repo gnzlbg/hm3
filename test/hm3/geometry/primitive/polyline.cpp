@@ -3,7 +3,8 @@
 
 using namespace hm3;
 
-template <dim_t Nd> void test_polyline() {
+template <dim_t Nd>
+void test_polyline() {
   using p_t  = geometry::point<Nd>;
   using v_t  = geometry::vec<Nd>;
   using pl_t = geometry::small_polyline<Nd, 4>;

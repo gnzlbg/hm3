@@ -90,7 +90,8 @@ using line_primitive::not_normalized;
 namespace concepts {
 
 // A line is infinite (unbounded).
-template <dim_t Nd> struct is_bounded<line<Nd>> : std::false_type {};
+template <dim_t Nd>
+struct is_bounded<line<Nd>> : std::false_type {};
 }
 
 }  // namespace hm3::geometry

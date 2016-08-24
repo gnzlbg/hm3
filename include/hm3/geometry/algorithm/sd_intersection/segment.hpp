@@ -4,7 +4,7 @@
 /// Intersection of line segments with signed distance fields.
 #include <hm3/geometry/algorithm/sd_intersection.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
-#include <hm3/geometry/sd/concept.hpp>
+#include <hm3/geometry/sd/concepts.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::segment_primitive {

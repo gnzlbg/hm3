@@ -31,12 +31,14 @@ struct vtk : dimensional<Nd> {
     return view::iota(std::size_t(0), cells.size());
   }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }
 
-  template <typename CellData> void load(CellData&&) const {};
+  template <typename CellData>
+  void load(CellData&&) const {};
 
   template <typename T>
   void push_cell(T&& t) {

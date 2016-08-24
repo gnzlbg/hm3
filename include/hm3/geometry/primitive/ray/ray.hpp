@@ -47,7 +47,8 @@ using ray_primitive::ray;
 namespace concepts {
 
 // A ray is infinite (unbounded).
-template <dim_t Nd> struct is_bounded<ray<Nd>> : std::false_type {};
+template <dim_t Nd>
+struct is_bounded<ray<Nd>> : std::false_type {};
 }
 
 }  // namespace hm3::geometry

@@ -8,7 +8,9 @@
 #include <hm3/geometry/primitive/line.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
+#include <hm3/geometry/primitive/polygon/small_polygon.hpp>
 #include <hm3/geometry/primitive/polyline.hpp>
+#include <hm3/geometry/primitive/polyline/small_polyline.hpp>
 #include <hm3/geometry/primitive/ray.hpp>
 #include <hm3/geometry/primitive/simplex.hpp>
 
@@ -66,7 +68,8 @@ struct any_types<3> {
                           polyline_t<3> /*, polyhedra_t<3> */>;
 };
 
-template <dim_t Nd> using any_types_t = typename any_types<Nd>::type;
+template <dim_t Nd>
+using any_types_t = typename any_types<Nd>::type;
 
 template <dim_t Nd>
 using any_variant_t

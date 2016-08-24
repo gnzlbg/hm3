@@ -20,7 +20,7 @@ constexpr bool intersect_at_point(line<2> const& a, line<2> const& b) noexcept {
 
 inline bool intersect_at_point(line<3> const& a, line<3> const& b) noexcept {
   if (parallel(a, b)) { return false; }
-  
+
   auto ps = parameter(a, b);
   if (!ps) { return false; }
 

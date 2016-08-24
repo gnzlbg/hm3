@@ -163,8 +163,7 @@ inline Ret split(PolyG&& pg, PolyL&& pl) {
   using p_t = point<Nd>;
   using s_t = segment<Nd>;
   Ret result;
-  auto pg_pl    = as_polyline<UPL>(pg);
-  
+  auto pg_pl = as_polyline<UPL>(pg);
 
   small_vector<p_t, 10> intersection_points;
 

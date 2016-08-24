@@ -6,6 +6,7 @@
 #include <hm3/geometry/algorithm/intersection/segment_point.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 #include <hm3/utility/range.hpp>
+#include <hm3/utility/small_vector.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::split_detail {

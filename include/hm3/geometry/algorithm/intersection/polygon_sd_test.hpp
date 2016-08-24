@@ -4,7 +4,7 @@
 /// Intersection of polygons.
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/concepts.hpp>
-#include <hm3/geometry/sd/concept.hpp>
+#include <hm3/geometry/sd/concepts.hpp>
 
 namespace hm3::geometry::polygon_primitive {
 
