@@ -21,7 +21,7 @@ namespace client {
 ///
 /// \note Grid nodes do not necessarily need to be part of the grid tree. For
 /// example ghost nodes might not exist within the tree.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct multi : geometry::dimensional<Nd> {
   using self   = multi<Nd>;
   using tree_t = cartesian::multi<Nd>;
@@ -482,7 +482,8 @@ struct multi : geometry::dimensional<Nd> {
     }
   }
 
-  template <typename DataSwap> void sort(DataSwap&& ds) {
+  template <typename DataSwap>
+  void sort(DataSwap&& ds) {
     min_level_ = level_idx{};
     max_level_ = level_idx{};
     auto i     = grid_node_idx{0};
@@ -501,13 +502,15 @@ struct multi : geometry::dimensional<Nd> {
   }
 };
 
-template <dim_t Nd> bool operator!=(multi<Nd> const& a, multi<Nd> const& b) {
+template <dim_t Nd>
+bool operator!=(multi<Nd> const& a, multi<Nd> const& b) {
   return !(a == b);
 }
 
 /// \name Solver-grid I/O
 ///@{
-template <dim_t Nd> void map_arrays(io::file& f, multi<Nd> const& g) {
+template <dim_t Nd>
+void map_arrays(io::file& f, multi<Nd> const& g) {
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
   HM3_ASSERT(no_nodes == g.size(), "mismatching number of grid nodes");
   f.field("tree_nodes", reinterpret_cast<const idx_t*>(g.data()), *no_nodes);
@@ -529,7 +532,8 @@ multi<Nd> from_file_unread(multi<Nd> const&, io::file& f, Tree& t,
   return g;
 }
 
-template <dim_t Nd> void to_file_unwritten(io::file& f, multi<Nd> const& g) {
+template <dim_t Nd>
+void to_file_unwritten(io::file& f, multi<Nd> const& g) {
   HM3_ASSERT(g.is_compact(), "cannot write non-compact solver grid");
   f.field("grid_idx", *g.idx())
    .field("spatial_dimension", Nd)

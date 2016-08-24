@@ -127,25 +127,29 @@ static constexpr num_t node_length_at_level(level_idx l) {
   return num_t{1.} / math::ipow(nidx_t{2}, static_cast<nidx_t>(*l));
 }
 
-template <dim_t Nd> struct relative_child_positions_ {
+template <dim_t Nd>
+struct relative_child_positions_ {
   static constexpr array<array<rcpidx_t, 0>, 0> stencil{{}};
 };
 
-template <> struct relative_child_positions_<1> {
+template <>
+struct relative_child_positions_<1> {
   static constexpr array<array<rcpidx_t, 1>, 2> stencil{{
    {{-1}}, {{1}}
    //
   }};
 };
 
-template <> struct relative_child_positions_<2> {
+template <>
+struct relative_child_positions_<2> {
   static constexpr array<array<rcpidx_t, 2>, 4> stencil{{
    {{-1, -1}}, {{1, -1}}, {{-1, 1}}, {{1, 1}}
    //
   }};
 };
 
-template <> struct relative_child_positions_<3> {
+template <>
+struct relative_child_positions_<3> {
   static constexpr array<array<rcpidx_t, 3>, 8> stencil{{
    {{-1, -1, -1}},
    {{1, -1, -1}},

@@ -14,7 +14,8 @@ namespace buffer {
 using buffer = vector<char>;
 
 /// Adapt's a memory buffer to the type T
-template <typename T, typename Buffer = buffer> struct view {
+template <typename T, typename Buffer = buffer>
+struct view {
   using value_type      = T;
   using iterator        = T*;
   using const_iterator  = T const*;

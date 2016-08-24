@@ -26,7 +26,7 @@ namespace location {
 /// This location code uses a single integer type in which it stores interleaved
 /// Morton coordinates (xyzxyzxyz... that is, the Morton index).
 ///
-template <dim_t Nd, typename MortonIdxT = uint_t>  //
+template <dim_t Nd, typename MortonIdxT = uint_t>
 struct interleaved : geometry::dimensional<Nd> {
   using self = interleaved<Nd, MortonIdxT>;
 

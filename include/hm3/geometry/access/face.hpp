@@ -10,7 +10,7 @@ namespace hm3::geometry {
 namespace access {
 
 /// Type of the face index of the primitive
-template <typename T>  //
+template <typename T>
 struct face_index_type {
   using type = typename T::face_index_type;
 };
@@ -18,7 +18,8 @@ struct face_index_type {
 template <typename T>
 using face_index_t = typename face_index_type<uncvref_t<T>>::type;
 
-template <typename Rng> using face_t = uncvref_t<ranges::range_value_t<Rng>>;
+template <typename Rng>
+using face_t = uncvref_t<ranges::range_value_t<Rng>>;
 
 namespace face_detail {
 
@@ -75,7 +76,7 @@ static constexpr auto const& face = static_const<face_detail::face_fn>::value;
 namespace face_detail {
 
 struct faces_fn {
-  template <typename T>  //
+  template <typename T>
   struct transformer {
     T value;
     template <typename I>

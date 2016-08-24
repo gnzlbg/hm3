@@ -13,12 +13,23 @@ namespace vec_primitive {
 /// Nd-dimensional Vec.
 ///
 /// \tparam Nd Number of spatial dimensions.
-template <dim_t Nd>  //
-struct vec : point_primitive::point_base_t<Nd>, ranked<Nd, 1> {
+template <dim_t Nd>
+struct vec : private point_primitive::point_base_t<Nd>, public ranked<Nd, 1> {
   using self              = point_primitive::point_base_t<Nd>;
   using vertex_index_type = dim_t;
   using self::self;
   using self::operator=;
+  using self::operator();
+  using self::c;
+  using self::begin;
+  using self::end;
+  using self::zero;
+  using self::ones;
+  using typename self::iterator;
+  using typename self::const_iterator;
+  using typename self::reference;
+  using typename self::const_reference;
+  using typename self::value_type;
 
   constexpr vec() = default;
   constexpr vec(self const& s) : self(s) {}
@@ -39,12 +50,16 @@ struct vec : point_primitive::point_base_t<Nd>, ranked<Nd, 1> {
     HM3_ASSERT(ranges::distance(rng) == 1, "?");
   }
 
+  auto normalized() const noexcept { return vec<Nd>((*this)().normalized()); }
+
+  operator self() const noexcept = delete;
+
   explicit vec(point<Nd> const& p) noexcept {
-    static_cast<self&>(*this) = static_cast<self const&>(p);
+    reinterpret_cast<self&>(*this) = reinterpret_cast<self const&>(p);
   }
 
   explicit operator point<Nd>() const noexcept {
-    return point<Nd>(static_cast<self const&>(*this));
+    return point<Nd>(reinterpret_cast<self const&>(*this));
   }
 
  public:
@@ -85,6 +100,53 @@ constexpr auto cross(V const& v0, V const& v1) noexcept {
   vec<3> v0_{v0(0), v0(1), 0.};
   vec<3> v1_{v1(0), v1(1), 0.};
   return cross(v0_, v1_);
+}
+
+/// Computes the perp product of the 2D vectors \p v0 and \p v1.
+///
+/// Defined as:
+///
+/// $\mathbf{u}^{inverse_T} \cdot \mathbf{v} = u_0v_1 - u_1 v_0$
+template <typename V, typename UV = uncvref_t<V>, dim_t Nd = UV::dimension(),
+          CONCEPT_REQUIRES_(Nd == 2 and Same<UV, vec<Nd>>{})>
+constexpr num_t perp_product(V const& v0, V const& v1) noexcept {
+  return v0(0) * v1(1) - v0(1) * v1(0);
+}
+
+template <typename V, typename UV = uncvref_t<V>, dim_t Nd = UV::dimension(),
+          CONCEPT_REQUIRES_(Nd == 2 and Same<UV, vec<Nd>>{})>
+constexpr num_t perp_product_norm(V const& v0, V const& v1) noexcept {
+  return std::abs(perp_product(v0, v1));
+}
+
+/// Computes the perp product of the 3D vectors \p v0 and \p v1.
+///
+/// Defined as: $|v0 x v1|$
+template <typename V, typename UV = uncvref_t<V>, dim_t Nd = UV::dimension(),
+          CONCEPT_REQUIRES_(Nd == 3 and Same<UV, vec<Nd>>{})>
+constexpr num_t perp_product_norm(V const& v0, V const& v1) noexcept {
+  return v0().cross(v1()).norm();
+}
+
+/// Are the 1D vectors \p v0 and \p v1 parallel?
+///
+/// Always. In particular zero vectors are always parallel to any other vector
+/// including other zero vectors.
+template <typename V, typename UV = uncvref_t<V>, dim_t Nd = UV::dimension(),
+          CONCEPT_REQUIRES_(Nd == 1 and Same<UV, vec<Nd>>{})>
+constexpr bool parallel(V const&, V const&, num_t = 0.) noexcept {
+  return true;
+}
+
+/// Are the 2D/3D vectors \p v0 and \p v1 parallel?
+///
+/// Uses the perp product:
+///
+/// $\mathbf{u}^{inverse_T} \cdot \mathbf{v} = |v0 x v1|$
+template <typename V, typename UV = uncvref_t<V>, dim_t Nd = UV::dimension(),
+          CONCEPT_REQUIRES_((Nd == 2 or Nd == 3) and Same<UV, vec<Nd>>{})>
+constexpr bool parallel(V const& v0, V const& v1, num_t tol = 0.) noexcept {
+  return math::approx(perp_product_norm(v0, v1), tol);
 }
 
 template <dim_t Nd>

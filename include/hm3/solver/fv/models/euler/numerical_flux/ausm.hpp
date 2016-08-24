@@ -54,7 +54,7 @@ constexpr num_t interface_pressure(num_t mach, Sign) noexcept {
 /// Computes the d-th flux vector component divided by the d-th velocity (it
 /// is multiplied by the interface speed-of-sound in ausm)
 template <typename VT, typename V,
-          typename var_v = num_a<std::decay_t<VT>::nvars()>>
+          typename var_v = num_a<uncvref_t<VT>::nvars()>>
 constexpr var_v theta(VT&& vt, V&& v, num_t speed_of_sound) noexcept {
   var_v f;
   vt.rho(f)   = vt.rho(v);
@@ -72,7 +72,7 @@ struct ausm_fn {
   /// Liou, M.-S. and Steffen, C., "A New Flux Splitting Scheme", J. Comput.
   /// Phys., Vol. 107, 23-39, 1993.
   template <typename V, typename VT, typename State,
-            typename var_v = num_a<std::decay_t<VT>::nvars()>>
+            typename var_v = num_a<uncvref_t<VT>::nvars()>>
   constexpr var_v operator()(VT&& vt, V&& v_l, V&& v_r, dim_t d,
                              State&& /*s*/) const noexcept {
     using ausm_detail::interface_mach;

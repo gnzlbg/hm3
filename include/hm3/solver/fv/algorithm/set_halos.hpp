@@ -97,7 +97,7 @@ struct set_halos_fn {
   }
 
   /// Set halo cell values of all tiles
-  template <typename State, typename Limiter>  //
+  template <typename State, typename Limiter>
   void operator()(State& s, Limiter&& lim) const noexcept {
     // 1. Copy internal cells into equal level halo cells and restrict from
     // finer to coarser levels

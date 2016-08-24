@@ -87,7 +87,8 @@ template struct dense::matrix<num_t, 10, dense::dynamic, opaque_idx, opaque_idx,
 /// List of types to test for each case:
 using test_types = meta::list<num_t, idx_t, int_t, sidx_t, sint_t>;
 
-template <class Vector> void vector_test(const idx_t n) {
+template <class Vector>
+void vector_test(const idx_t n) {
   using T = typename Vector::value_type;
   {
     Vector v(n);
@@ -118,27 +119,37 @@ template <class Vector> void vector_test(const idx_t n) {
   }
 }
 
-template <template <class> class Vector> void vector_test_all(const idx_t n) {
+template <template <class> class Vector>
+void vector_test_all(const idx_t n) {
   meta::for_each(test_types{}, [n](auto v) {
     vector_test<meta::_t<Vector<decltype(v)>>>(n);
   });
 }
 
-template <class T> struct dynamic_vector {
+template <class T>
+struct dynamic_vector {
   using type = dense::vector<T, dense::dynamic>;
 };
 
-template <class T> struct dynamic_vector_static_storage {
+template <class T>
+struct dynamic_vector_static_storage {
   using type = dense::vector<T, dense::dynamic, idx_t, 20>;
 };
 
-template <class T> struct static_vector_10 {
+template <class T>
+struct static_vector_10 {
   using type = dense::vector<T, 10>;
 };
 
-template <class T> struct static_vector_0 { using type = dense::vector<T, 0>; };
+template <class T>
+struct static_vector_0 {
+  using type = dense::vector<T, 0>;
+};
 
-template <class T> struct static_vector_1 { using type = dense::vector<T, 1>; };
+template <class T>
+struct static_vector_1 {
+  using type = dense::vector<T, 1>;
+};
 
 void test_vectors() {
   vector_test_all<dynamic_vector>(10);
@@ -197,41 +208,49 @@ void matrix_test_all(const idx_t no_rows, const idx_t no_cols) {
   });
 }
 
-template <class T> struct dynamic_matrix_rm_ds {
+template <class T>
+struct dynamic_matrix_rm_ds {
   using type
    = dense::matrix<T, dense::dynamic, dense::dynamic, idx_t, idx_t,
                    dense::row_major_t, dense::dynamic, dense::dynamic>;
 };
 
-template <class T> struct dynamic_matrix_cm_ds {
+template <class T>
+struct dynamic_matrix_cm_ds {
   using type
    = dense::matrix<T, dense::dynamic, dense::dynamic, idx_t, idx_t,
                    dense::col_major_t, dense::dynamic, dense::dynamic>;
 };
 
-template <class T> struct static_matrix_rm_ss_10_20 {
+template <class T>
+struct static_matrix_rm_ss_10_20 {
   using type
    = dense::matrix<T, 10, 20, idx_t, idx_t, dense::row_major_t, 10, 20>;
 };
 
-template <class T> struct static_matrix_cm_ss_10_20 {
+template <class T>
+struct static_matrix_cm_ss_10_20 {
   using type
    = dense::matrix<T, 10, 20, idx_t, idx_t, dense::col_major_t, 10, 20>;
 };
 
-template <class T> struct static_matrix_rm_ss_1_1 {
+template <class T>
+struct static_matrix_rm_ss_1_1 {
   using type = dense::matrix<T, 1, 1, idx_t, idx_t, dense::row_major_t, 1, 1>;
 };
 
-template <class T> struct static_matrix_cm_ss_1_1 {
+template <class T>
+struct static_matrix_cm_ss_1_1 {
   using type = dense::matrix<T, 1, 1, idx_t, idx_t, dense::col_major_t, 1, 1>;
 };
 
-template <class T> struct static_matrix_rm_ss_0_0 {
+template <class T>
+struct static_matrix_rm_ss_0_0 {
   using type = dense::matrix<T, 0, 0, idx_t, idx_t, dense::row_major_t, 0, 0>;
 };
 
-template <class T> struct static_matrix_cm_ss_0_0 {
+template <class T>
+struct static_matrix_cm_ss_0_0 {
   using type = dense::matrix<T, 0, 0, idx_t, idx_t, dense::col_major_t, 0, 0>;
 };
 

@@ -24,7 +24,7 @@ namespace client {
 ///
 /// This store a grid client and a internal copy of neighbors across all
 /// manifolds.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct multi_wn : multi<Nd> {
   using self   = multi_wn<Nd>;
   using base   = multi<Nd>;

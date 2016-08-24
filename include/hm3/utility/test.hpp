@@ -25,14 +25,16 @@ inline int& failures() {
   return no_failures;
 }
 
-template <typename T> struct streamable_base {};
+template <typename T>
+struct streamable_base {};
 
 template <typename OStream, typename T>
 OStream& operator<<(OStream& sout, streamable_base<T> const&) {
   return sout << "<non-streamable type>";
 }
 
-template <typename T> struct streamable : streamable_base<T> {
+template <typename T>
+struct streamable : streamable_base<T> {
  private:
   T const& t_;
 
@@ -45,7 +47,8 @@ template <typename T> struct streamable : streamable_base<T> {
   }
 };
 
-template <typename T> streamable<T> stream(T const& t) {
+template <typename T>
+streamable<T> stream(T const& t) {
   return streamable<T>{t};
 }
 
@@ -69,7 +72,8 @@ struct approx_fn {
   }
 };
 
-template <typename T> struct ret {
+template <typename T>
+struct ret {
  private:
   T t_;
   int lineno_;
@@ -78,7 +82,8 @@ template <typename T> struct ret {
   char const* expr_;
   num_t tol_ = -1.;
 
-  template <typename U> void oops(U const& u) const {
+  template <typename U>
+  void oops(U const& u) const {
     fmt::print("> ERROR: CHECK failed '{}'\n > \t {} ({})\n", expr_, filename_,
                lineno_);
     if (dismissed_) {
@@ -87,7 +92,8 @@ template <typename T> struct ret {
     ++failures();
   }
   void dismiss() { dismissed_ = true; }
-  template <typename V = T> auto eval_(int) -> decltype(!std::declval<V>()) {
+  template <typename V = T>
+  auto eval_(int) -> decltype(!std::declval<V>()) {
     return !t_;
   }
   bool eval_(long) { return true; }
@@ -126,19 +132,23 @@ template <typename T> struct ret {
     return dismiss();
     if (!(t_ != u)) { this->oops(u); }
   }
-  template <typename U> void operator<(U const& u) {
+  template <typename U>
+  void operator<(U const& u) {
     dismiss();
     if (!(t_ < u)) { this->oops(u); }
   }
-  template <typename U> void operator<=(U const& u) {
+  template <typename U>
+  void operator<=(U const& u) {
     dismiss();
     if (!(t_ <= u)) { this->oops(u); }
   }
-  template <typename U> void operator>(U const& u) {
+  template <typename U>
+  void operator>(U const& u) {
     dismiss();
     if (!(t_ > u)) { this->oops(u); }
   }
-  template <typename U> void operator>=(U const& u) {
+  template <typename U>
+  void operator>=(U const& u) {
     dismiss();
     if (!(t_ >= u)) { this->oops(u); }
   }
@@ -158,7 +168,8 @@ struct loc {
   loc(num_t tol, char const* filename, int lineno, char const* expr)
    : filename_(filename), lineno_(lineno), expr_(expr), tol_(tol) {}
 
-  template <typename T> ret<T> operator->*(T t) {
+  template <typename T>
+  ret<T> operator->*(T t) {
     return {tol_, filename_, lineno_, expr_, std::move(t)};
   }
 };

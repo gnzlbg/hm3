@@ -16,7 +16,7 @@ namespace sd_detail {
 /// - shapes in the positive and negative regions of the signed-distance field
 /// (inside/outside)
 /// - boundary segments of the zero-th level
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct triangle_intersection_result {
   struct shape_t {
     shape_t()               = default;

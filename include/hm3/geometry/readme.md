@@ -23,7 +23,7 @@ The main concept is the geometry `Primitive` which is:
 
 The rank of the geometry determines whether it is a refinement of `Primitive`:
 
-  - `SegmentPrimitive`: rank 1.
+  - `PathPrimitive`: rank 1.
   - `SurfacePrimitive`: rank `Nd - 1`
   - `VolumePrimitive`: rank `Nd`
   - `Polygon`: rank 2 and closed (as opposed to a line stripe).
@@ -34,7 +34,11 @@ The rank of the geometry determines whether it is a refinement of `Primitive`:
 The following primitives are available:
 
 - Point
-- Line Segment
+- Paths
+  - Line (unbounded)
+  - Ray (unbounded, positive values of the line parameter only)
+  - Segment (bounded, line parameter in range [0, 1])
+  - Polyline (bounded range of contiguous segments)
 - Polygons:
   - Polygon: used to represent cut-cells
     - Triangle

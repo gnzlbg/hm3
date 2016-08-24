@@ -68,7 +68,7 @@ struct compact_bool : compact_optional_type<bool, char, bool> {
 
 namespace detail {
 
-template <typename N>  //
+template <typename N>
 class compact_optional_base {
  protected:
   using value_type     = typename N::value_type;
@@ -102,7 +102,7 @@ class compact_optional_base {
 
 }  // namespace detail
 
-template <typename N, typename Tag = default_tag>  //
+template <typename N, typename Tag = default_tag>
 class compact_optional : public detail::compact_optional_base<N> {
   using tag   = Tag;
   using self  = compact_optional<N, tag>;
@@ -227,13 +227,15 @@ class compact_optional : public detail::compact_optional_base<N> {
   }
 };
 
-template <typename T> using get_tag_t = typename T::tag;
+template <typename T>
+using get_tag_t = typename T::tag;
 
 }  // namespace hm3
 
 namespace std {
 
-template <typename N, typename Tag> struct hash<hm3::compact_optional<N, Tag>> {
+template <typename N, typename Tag>
+struct hash<hm3::compact_optional<N, Tag>> {
   using Key         = hm3::compact_optional<N, Tag>;
   using result_type = size_t;
   using value_type  = typename N::value_type;

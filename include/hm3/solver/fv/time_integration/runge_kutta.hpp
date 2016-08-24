@@ -14,7 +14,7 @@ namespace hm3 {
 namespace solver {
 namespace fv {
 
-template <suint_t NoStages>  //
+template <suint_t NoStages>
 struct runge_kutta {
   /// \name Time integration state
   ///@{
@@ -39,13 +39,15 @@ struct runge_kutta {
   ///
   /// Sets Runge-Kutta stage to zero and copies the LHS into the Runge-Kutta
   /// intermediate storage (new_lhs)
-  template <typename State> void initialize(State&& s) {
+  template <typename State>
+  void initialize(State&& s) {
     stage = 0;
     for (auto&& t : s.tiles()) { t.new_lhs() = t.lhs(); }
   }
 
   /// Initializes the time integration step
-  template <typename State> constexpr void initialize_step(State&& s) noexcept {
+  template <typename State>
+  constexpr void initialize_step(State&& s) noexcept {
     for (auto&& t : s.tiles()) { t.rhs()().fill(0.); }
   }
 
@@ -58,19 +60,23 @@ struct runge_kutta {
   /// \name LHS/RHS of the current step
   ///@{
 
-  template <typename Tile> auto rhs(Tile&& t) const noexcept {
+  template <typename Tile>
+  auto rhs(Tile&& t) const noexcept {
     return [&](auto&& c) -> decltype(auto) { return t.rhs(c); };
   }
 
-  template <typename Tile> auto rhs(Tile&& t) noexcept {
+  template <typename Tile>
+  auto rhs(Tile&& t) noexcept {
     return [&](auto&& c) -> decltype(auto) { return t.rhs(c); };
   }
 
-  template <typename Tile> auto lhs(Tile&& t) const noexcept {
+  template <typename Tile>
+  auto lhs(Tile&& t) const noexcept {
     return [&](auto&& c) -> decltype(auto) { return t.new_lhs(c); };
   }
 
-  template <typename Tile> auto lhs(Tile&& t) noexcept {
+  template <typename Tile>
+  auto lhs(Tile&& t) noexcept {
     return [&](auto&& c) -> decltype(auto) { return t.new_lhs(c); };
   }
 

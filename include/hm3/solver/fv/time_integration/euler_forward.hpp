@@ -28,12 +28,14 @@ struct euler_forward {
   ///@}  // Time integration state
 
   /// Initializes the time integration
-  template <typename State> constexpr void initialize(State&& s) noexcept {
+  template <typename State>
+  constexpr void initialize(State&& s) noexcept {
     done_ = false;
   }
 
   /// Initializes the time integration step
-  template <typename State> constexpr void initialize_step(State&& s) noexcept {
+  template <typename State>
+  constexpr void initialize_step(State&& s) noexcept {
     for (auto&& t : s.tiles()) { t.rhs()().fill(0.); }
   }
 
@@ -43,26 +45,31 @@ struct euler_forward {
   /// \name LHS/RHS of the current step
   ///@{
 
-  template <typename Tile> auto rhs(Tile&& t) const noexcept {
+  template <typename Tile>
+  auto rhs(Tile&& t) const noexcept {
     return [&](auto&& c) -> auto { return t.rhs(c); };
   }
 
-  template <typename Tile> auto lhs(Tile&& t) const noexcept {
+  template <typename Tile>
+  auto lhs(Tile&& t) const noexcept {
     return [&](auto&& c) -> auto { return t.lhs(c); };
   }
 
-  template <typename Tile> auto rhs(Tile&& t) noexcept {
+  template <typename Tile>
+  auto rhs(Tile&& t) noexcept {
     return [&](auto&& c) -> auto { return t.rhs(c); };
   }
 
-  template <typename Tile> auto lhs(Tile&& t) noexcept {
+  template <typename Tile>
+  auto lhs(Tile&& t) noexcept {
     return [&](auto&& c) -> auto { return t.lhs(c); };
   }
 
   ///@} // LHS/RHS of the current step
 
   /// Advance solution by one Euler-Forward step
-  template <typename State> void advance(State&& s, num_t dt) noexcept {
+  template <typename State>
+  void advance(State&& s, num_t dt) noexcept {
     for (auto&& t : s.tiles()) {
       t.cells().for_each_internal([&](auto&& c) { t.lhs(c) += dt * t.rhs(c); });
     }

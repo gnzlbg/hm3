@@ -5,7 +5,8 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/utility/log.hpp>
 #include <hm3/utility/variant.hpp>
-#include <hm3/vis/vtk/geometry.hpp>
+
+#include <hm3/geometry/primitive/any.hpp>
 #include <hm3/vis/vtk/vtk.hpp>
 
 namespace hm3 {
@@ -26,10 +27,10 @@ struct unstructured_grid {
   template <typename NodeRange, typename Grid,
             CONCEPT_REQUIRES_(InputRange<NodeRange>{})>
   void append_internal_cells(NodeRange&& nodes, Grid&& grid) noexcept {
-    using grid_t             = std::decay_t<Grid>;
+    using grid_t             = uncvref_t<Grid>;
     static constexpr auto nd = grid_t::dimension();
     auto geometry
-     = [&](auto&& n) -> geometries<nd> { return grid.geometry(n); };
+     = [&](auto&& n) -> geometry::any<nd> { return grid.geometry(n); };
 
     using grid_cell_t   = decltype(geometry(*begin(nodes)));
     const auto no_cells = ranges::distance(use_copy_if_single_pass(nodes));
@@ -58,16 +59,15 @@ struct unstructured_grid {
 
     /// Create a temporary cell:
     log("Generating vtk grid...");
-    // auto tmp_cell = make_ptr<vtk_cell_t>(); // TODO: tuple of cell types
     auto tmp_cells = make_tuple_of_cells(grid_cell_t{});
     vector<int> cell_types;
     cell_types.reserve(no_cells);
     int_t c_c = 0;
     RANGES_FOR (auto&& n, use_copy_if_single_pass(nodes)) {
       auto cell_geometry = geometry(n);
-      std::experimental::visit(
+      visit(
        [&](auto&& g) {
-         using geometry_t   = std::decay_t<decltype(g)>;
+         using geometry_t   = uncvref_t<decltype(g)>;
          auto cell_vertices = vertices(g);
          auto&& tmp_cell = std::get<to_vtk_cell_ptr_t<geometry_t>>(tmp_cells);
          HM3_ASSERT(size(cell_vertices) > 0_u,

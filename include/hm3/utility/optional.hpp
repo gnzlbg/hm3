@@ -135,12 +135,15 @@ using is_trivially_destructible = std::has_trivial_destructor<T>;
 #else
 
 // workaround for missing traits in GCC and CLANG
-template <typename T> struct is_nothrow_move_constructible {
+template <typename T>
+struct is_nothrow_move_constructible {
   constexpr static bool value = std::is_nothrow_constructible<T, T&&>::value;
 };
 
-template <typename T, typename U> struct is_assignable {
-  template <typename X, typename Y> static constexpr bool has_assign(...) {
+template <typename T, typename U>
+struct is_assignable {
+  template <typename X, typename Y>
+  static constexpr bool has_assign(...) {
     return false;
   }
 
@@ -154,13 +157,15 @@ template <typename T, typename U> struct is_assignable {
   constexpr static bool value = has_assign<T, U>(true);
 };
 
-template <typename T> struct is_nothrow_move_assignable {
+template <typename T>
+struct is_nothrow_move_assignable {
   template <typename X, bool has_any_move_massign>
   struct has_nothrow_move_assign {
     constexpr static bool value = false;
   };
 
-  template <typename X> struct has_nothrow_move_assign<X, true> {
+  template <typename X>
+  struct has_nothrow_move_assign<X, true> {
     constexpr static bool value
      = noexcept(std::declval<X&>() = std::declval<X&&>());
   };
@@ -173,10 +178,12 @@ template <typename T> struct is_nothrow_move_assignable {
 #endif
 
 // 20.5.4, optional for object types
-template <typename T> class optional;
+template <typename T>
+class optional;
 
 // 20.5.5, optional for lvalue reference types
-template <typename T> class optional<T&>;
+template <typename T>
+class optional<T&>;
 
 // workaround: std utility functions aren't constexpr yet
 template <typename T>
@@ -214,8 +221,10 @@ inline void fail(const char* expr, const char* file, unsigned line) {
 }
 #endif
 
-template <typename T> struct has_overloaded_addressof {
-  template <typename X> static constexpr bool has_overload(...) {
+template <typename T>
+struct has_overloaded_addressof {
+  template <typename X>
+  static constexpr bool has_overload(...) {
     return false;
   }
 
@@ -237,11 +246,13 @@ T* static_addressof(T& ref) {
   return std::addressof(ref);
 }
 
-template <typename U> struct is_not_optional {
+template <typename U>
+struct is_not_optional {
   constexpr static bool value = true;
 };
 
-template <typename T> struct is_not_optional<optional<T>> {
+template <typename T>
+struct is_not_optional<optional<T>> {
   constexpr static bool value = false;
 };
 
@@ -267,7 +278,8 @@ class bad_optional_access : public logic_error {
   explicit bad_optional_access(const char* what_arg) : logic_error{what_arg} {}
 };
 
-template <typename T> union storage_t {
+template <typename T>
+union storage_t {
   unsigned char dummy_;
   T value_;
 
@@ -280,7 +292,8 @@ template <typename T> union storage_t {
   ~storage_t(){};  // NOLINT
 };
 
-template <typename T> union constexpr_storage_t {
+template <typename T>
+union constexpr_storage_t {
   unsigned char dummy_;
   T value_;
 
@@ -296,7 +309,8 @@ template <typename T> union constexpr_storage_t {
 constexpr struct only_set_initialized_t {
 } only_set_initialized{};
 
-template <typename T> struct optional_base {
+template <typename T>
+struct optional_base {
   bool init_;
   storage_t<T> storage_;
 
@@ -326,7 +340,8 @@ template <typename T> struct optional_base {
   }
 };
 
-template <typename T> struct constexpr_optional_base {
+template <typename T>
+struct constexpr_optional_base {
   bool init_;
   constexpr_storage_t<T> storage_;
 
@@ -362,7 +377,8 @@ using OptionalBase =
  typename std::conditional<is_trivially_destructible<T>::value,
                            constexpr_optional_base<T>, optional_base<T>>::type;
 
-template <typename T> class optional : private OptionalBase<T> {
+template <typename T>
+class optional : private OptionalBase<T> {
   static_assert(!std::is_same<typename std::decay<T>::type, nullopt_t>::value,
                 "bad T");
   static_assert(!std::is_same<typename std::decay<T>::type, in_place_t>::value,
@@ -500,7 +516,8 @@ template <typename T> class optional : private OptionalBase<T> {
     return *this;
   }
 
-  template <typename... Args> void emplace(Args&&... args) {
+  template <typename... Args>
+  void emplace(Args&&... args) {
     clear();
     initialize(std::forward<Args>(args)...);
   }
@@ -605,13 +622,15 @@ template <typename T> class optional : private OptionalBase<T> {
 
 #if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 
-  template <typename V> constexpr T value_or(V&& v) const & {
+  template <typename V>
+  constexpr T value_or(V&& v) const & {
     return *this ? **this : static_cast<T>(constexpr_forward<V>(v));
   }
 
 #if OPTIONAL_HAS_MOVE_ACCESSORS == 1
 
-  template <typename V> OPTIONAL_MUTABLE_CONSTEXPR T value_or(V&& v) && {
+  template <typename V>
+  OPTIONAL_MUTABLE_CONSTEXPR T value_or(V&& v) && {
     return *this
             ? constexpr_move(const_cast<optional<T>&>(*this).contained_val())
             : static_cast<T>(constexpr_forward<V>(v));
@@ -619,7 +638,8 @@ template <typename T> class optional : private OptionalBase<T> {
 
 #else
 
-  template <typename V> T value_or(V&& v) && {
+  template <typename V>
+  T value_or(V&& v) && {
     return *this
             ? constexpr_move(const_cast<optional<T>&>(*this).contained_val())
             : static_cast<T>(constexpr_forward<V>(v));
@@ -629,14 +649,16 @@ template <typename T> class optional : private OptionalBase<T> {
 
 #else
 
-  template <typename V> constexpr T value_or(V&& v) const {
+  template <typename V>
+  constexpr T value_or(V&& v) const {
     return *this ? **this : static_cast<T>(constexpr_forward<V>(v));
   }
 
 #endif
 };
 
-template <typename T> class optional<T&> {
+template <typename T>
+class optional<T&> {
   static_assert(!std::is_same<T, nullopt_t>::value, "bad T");
   static_assert(!std::is_same<T, in_place_t>::value, "bad T");
   T* ref_;
@@ -720,7 +742,8 @@ template <typename T> class optional<T&> {
   }
 };
 
-template <typename T> class optional<T&&> {
+template <typename T>
+class optional<T&&> {
   static_assert(sizeof(T) == 0, "optional rvalue referencs disallowed");
 };
 
@@ -1019,7 +1042,8 @@ constexpr optional<X&> make_optional(reference_wrapper<X> v) {
 }  // namespace std2
 
 namespace std {
-template <typename T> struct hash<std2::experimental::optional<T>> {
+template <typename T>
+struct hash<std2::experimental::optional<T>> {
   typedef typename hash<T>::result_type result_type;
   typedef std2::experimental::optional<T> argument_type;
 
@@ -1028,7 +1052,8 @@ template <typename T> struct hash<std2::experimental::optional<T>> {
   }
 };
 
-template <typename T> struct hash<std2::experimental::optional<T&>> {
+template <typename T>
+struct hash<std2::experimental::optional<T&>> {
   typedef typename hash<T>::result_type result_type;
   typedef std2::experimental::optional<T&> argument_type;
 
@@ -1043,6 +1068,7 @@ template <typename T> struct hash<std2::experimental::optional<T&>> {
 
 namespace hm3 {
 
-template <typename T> using optional = std2::experimental::optional<T>;
+template <typename T>
+using optional = std2::experimental::optional<T>;
 
 }  // namespace hm3

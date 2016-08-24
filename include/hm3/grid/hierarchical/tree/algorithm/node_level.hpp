@@ -45,7 +45,8 @@ struct node_level_fn {
   ///
   /// Time complexity: O(logN) per node, applied to a range of N nodes O(NlogN)
   /// Space complexity: O(1)
-  template <typename Tree> static auto filter(Tree const& t, level_idx level) {
+  template <typename Tree>
+  static auto filter(Tree const& t, level_idx level) {
     return view::filter(
      [&t, level](node_idx n) { return node_level_fn{}(t, n) == level; });
   }

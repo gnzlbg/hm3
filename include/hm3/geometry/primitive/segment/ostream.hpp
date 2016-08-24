@@ -8,7 +8,7 @@ namespace hm3::geometry::segment_primitive {
 
 template <typename OStream, dim_t Nd>
 OStream& operator<<(OStream& o, segment<Nd> const& s) {
-  o << "(x(0): " << s.x(0) << ", x(1): " << s.x(1) << ")";
+  o << "[x(0): " << s.x(0) << ", x(1): " << s.x(1) << "]";
   return o;
 }
 

@@ -13,7 +13,8 @@
 
 using namespace hm3;
 
-template <typename T> void ignore(T&&) {}
+template <typename T>
+void ignore(T&&) {}
 
 void test_value_ctor() {
   {

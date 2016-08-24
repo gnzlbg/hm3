@@ -22,7 +22,7 @@ namespace surface {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per dimension
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct indices : bounds<Nd, Nc> {
   using self            = indices<Nd, Nc>;
   using cell_bounds     = cell::bounds<Nd, Nc>;

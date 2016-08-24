@@ -8,7 +8,7 @@
 
 namespace hm3::geometry {
 
-template <dim_t Nd>  //
+template <dim_t Nd>
 using bounding_volume_hierarchy = bvh::bvh<Nd>;
 
 }  // namespace hm3::geometry

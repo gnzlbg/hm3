@@ -15,7 +15,7 @@ namespace hm3::geometry {
 /// Backed up by an octree.
 ///
 /// TODO: support deletion.
-template <dim_t Nd, suint_t MaxPointsPerNode = 9>  //
+template <dim_t Nd, suint_t MaxPointsPerNode = 9>
 struct point_set {
   using point_t       = point<Nd>;
   using bbox_t        = box<Nd>;

@@ -9,8 +9,25 @@ namespace hm3::geometry {
 
 namespace access {
 
+// TODO: clean this mess
+//@{
+
+template <class T, class R = void>
+struct enable_if_has_vertex_index_type {
+  typedef R type;
+};
+
+template <class T, class Enable = void>
+struct HasVertexIndexType : std::false_type {};
+
+template <class T>
+struct HasVertexIndexType<T, typename enable_if_has_vertex_index_type<
+                              typename T::vertex_index_type>::type>
+ : std::true_type {};
+//@}  // TODO
+
 /// Type of the vertex index of the primitive
-template <typename T>  //
+template <typename T>
 struct vertex_index_type {
   using type = typename T::vertex_index_type;
 };
@@ -18,14 +35,15 @@ struct vertex_index_type {
 template <typename T>
 using vertex_index_t = typename vertex_index_type<uncvref_t<T>>::type;
 
-template <typename Rng> using vertex_t = uncvref_t<ranges::range_value_t<Rng>>;
+template <typename Rng>
+using vertex_t = uncvref_t<ranges::range_value_t<Rng>>;
 
 namespace vertex_detail {
 
 struct vertex_size_fn {
-  template <typename T, typename IT = vertex_index_t<T>>
+  template <typename T, CONCEPT_REQUIRES_(HasVertexIndexType<uncvref_t<T>>{})>
   constexpr auto operator()(T&& t) const RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-   static_cast<IT>(vertex_size(std::forward<T>(t))));
+   static_cast<vertex_index_t<T>>(vertex_size(std::forward<T>(t))));
 };
 
 }  // namespace vertex_detail
@@ -38,10 +56,10 @@ static constexpr auto const& vertex_size
 namespace vertex_detail {
 
 struct vertex_indices_fn {
-  template <typename T, typename IT = vertex_index_t<T>>
-  static constexpr auto impl(T&& t, long)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(view::iota(
-    static_cast<IT>(0), static_cast<IT>(vertex_size(std::forward<T>(t)))));
+  template <typename T, CONCEPT_REQUIRES_(HasVertexIndexType<uncvref_t<T>>{})>
+  static constexpr auto impl(T&& t, long) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+   view::iota(static_cast<vertex_index_t<T>>(0),
+              static_cast<vertex_index_t<T>>(vertex_size(std::forward<T>(t)))));
 
   template <typename T>
   static constexpr auto impl(T&& t, int)
@@ -76,7 +94,7 @@ static constexpr auto const& vertex
 namespace vertex_detail {
 
 struct vertices_fn {
-  template <typename T>  //
+  template <typename T>
   struct transformer {
     T value;
     template <typename I>
@@ -118,6 +136,36 @@ static constexpr auto const& vertices
  = static_const<vertex_detail::vertices_fn>::value;
 }  // namespace
 
+namespace vertex_detail {
+
+struct first_vertex_fn {
+  template <typename T, CONCEPT_REQUIRES_(HasVertexIndexType<uncvref_t<T>>{})>
+  constexpr auto operator()(T&& t) const
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(vertex(t, 0));
+};
+
+}  // namespace vertex_detail
+
+namespace {
+static constexpr auto const& first_vertex
+ = static_const<vertex_detail::first_vertex_fn>::value;
+}  // namespace
+
+namespace vertex_detail {
+
+struct last_vertex_fn {
+  template <typename T, CONCEPT_REQUIRES_(HasVertexIndexType<uncvref_t<T>>{})>
+  constexpr auto operator()(T&& t) const
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(vertex(t, vertex_size(t) - 1));
+};
+
+}  // namespace vertex_detail
+
+namespace {
+static constexpr auto const& last_vertex
+ = static_const<vertex_detail::last_vertex_fn>::value;
+}  // namespace
+
 namespace concepts {
 
 namespace rc = ranges::concepts;
@@ -147,5 +195,7 @@ using access::vertex_size;
 using access::vertex;
 using access::vertices;
 using access::vertex_indices;
+using access::first_vertex;
+using access::last_vertex;
 
 }  // namespace hm3::geometry

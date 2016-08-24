@@ -48,17 +48,20 @@ struct mesh {
   std::size_t size() const { return elements.size(); }
 };
 
-template <typename T> inline bool set_mesh_name(mesh<T>& m, std::string name) {
+template <typename T>
+inline bool set_mesh_name(mesh<T>& m, std::string name) {
   m.name = std::move(name);
   return true;
 }
 
-template <typename T> inline bool push_triangle(mesh<T>& m, T t) {
+template <typename T>
+inline bool push_triangle(mesh<T>& m, T t) {
   m.elements.push_back(t);
   return true;
 }
 
-template <typename T> inline bool reserve(mesh<T>& m, std::uint32_t n) {
+template <typename T>
+inline bool reserve(mesh<T>& m, std::uint32_t n) {
   std::cout << "reserving memory for " << n << " triangles" << std::endl;
   m.elements.reserve(n);
   return true;

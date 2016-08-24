@@ -23,7 +23,7 @@ struct node_at_fn {
   template <typename Tree, typename Loc, CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc, node_idx n = 0_n) const noexcept
    -> node_idx {
-    static_assert(Tree::dimension() == std::decay_t<Loc>::dimension(), "");
+    static_assert(Tree::dimension() == uncvref_t<Loc>::dimension(), "");
     for (auto&& p : loc()) {
       n = t.child(n, child_pos_t<Tree>(p));
       if (!n) { return node_idx{}; }

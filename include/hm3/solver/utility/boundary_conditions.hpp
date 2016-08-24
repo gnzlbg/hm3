@@ -53,10 +53,12 @@ struct bcs {
   }
 
  private:
-  template <typename F> void for_each_bc(F&& f) noexcept {
+  template <typename F>
+  void for_each_bc(F&& f) noexcept {
     for (bc_idx i = 0; i != size(); ++i) { f(i); }
   }
-  template <typename F> void for_each_bc(F&& f) const noexcept {
+  template <typename F>
+  void for_each_bc(F&& f) const noexcept {
     for (bc_idx i = 0; i != size(); ++i) { f(i); }
   }
 
@@ -109,7 +111,8 @@ struct bcs {
     action::remove_if(cells_in_bc(i), std::forward<UnaryPredicate>(up));
   }
 
-  template <typename BinaryPredicate> void remove(BinaryPredicate&& bp) {
+  template <typename BinaryPredicate>
+  void remove(BinaryPredicate&& bp) {
     for_each_bc(
      [&](bc_idx i) { remove(i, [&](cell_idx j) { return bp(j, i); }); });
   }
@@ -148,7 +151,8 @@ struct bcs {
       s_.remove(b, std::forward<UnaryPredicate>(up));
     }
 
-    template <typename BinaryPredicate> void remove(BinaryPredicate&& bp) {
+    template <typename BinaryPredicate>
+    void remove(BinaryPredicate&& bp) {
       s_.remove(std::forward<BinaryPredicate>(bp));
     }
   };

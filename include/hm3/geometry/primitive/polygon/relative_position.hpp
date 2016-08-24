@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Relative position of polygons with respect to other shapes
+#include <hm3/geometry/algorith/intersection/polygon_sd.hpp>
 #include <hm3/geometry/algorithm/relative_position.hpp>
 #include <hm3/geometry/concepts.hpp>
-#include <hm3/geometry/primitive/polygon/intersection_test.hpp>
 #include <hm3/geometry/sd/concept.hpp>
 
 namespace hm3::geometry::polygon_primitive {

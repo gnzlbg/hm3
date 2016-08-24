@@ -17,7 +17,7 @@ namespace hierarchical {
 namespace adaptor {
 
 /// Stores multiple grids inside a tree-like grid
-template <typename TreeGrid>  //
+template <typename TreeGrid>
 struct multi : TreeGrid {
   /// Multi grid indices
   using data_t = dense::matrix<grid_node_idx, dense::dynamic, dense::dynamic,
@@ -213,11 +213,13 @@ bool operator!=(multi<TreeGrid> const& a, multi<TreeGrid> const& b) noexcept {
   return !(a == b);
 }
 
-template <typename TreeGrid> string type(multi<TreeGrid> const&) {
+template <typename TreeGrid>
+string type(multi<TreeGrid> const&) {
   return "multi_" + type(TreeGrid{});
 }
 
-template <typename TreeGrid> string name(multi<TreeGrid> const&) {
+template <typename TreeGrid>
+string name(multi<TreeGrid> const&) {
   return "multi_" + name(TreeGrid{});
 }
 

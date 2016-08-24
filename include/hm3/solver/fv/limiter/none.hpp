@@ -12,7 +12,7 @@ namespace limiter {
 
 struct none_fn {
   template <typename Grad,
-            typename Vars = num_a<std::decay_t<Grad>::SizeAtCompileTime>>
+            typename Vars = num_a<uncvref_t<Grad>::SizeAtCompileTime>>
   Vars operator()(Grad&& /*g_l*/, Grad&& /*g_r*/) const noexcept {
     return Vars::Ones();
   }

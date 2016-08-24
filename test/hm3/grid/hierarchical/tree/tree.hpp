@@ -36,7 +36,8 @@ static const constexpr auto i = std::numeric_limits<uint_t>::max();
 std::vector<uint_t> is(std::size_t n) { return std::vector<uint_t>(n, i); }
 
 /// Testing utility for constructing a node with named argument lists
-template <typename Tag, typename T = uint_t> struct tagged_initializer_list {
+template <typename Tag, typename T = uint_t>
+struct tagged_initializer_list {
   tagged_initializer_list(std::vector<T>&& other) : data{std::move(other)} {}
   template <typename... Args, class = decltype(std::vector<T>{
                                static_cast<T>(std::declval<Args>())...})>
@@ -174,7 +175,8 @@ Nodes rewrite_nodes(Nodes ns, Rule&& r) {
   return ns;
 }
 
-template <typename Tree> void test_parent(Tree const& t, node const& n) {
+template <typename Tree>
+void test_parent(Tree const& t, node const& n) {
   // consistency:
   if (t.parent(*n.idx)) {
     CHECK(ranges::any_of(t.children(t.parent(*n.idx)),
@@ -187,7 +189,8 @@ template <typename Tree> void test_parent(Tree const& t, node const& n) {
   if (n.parent) { CHECK(t.parent(*n.idx) == *n.parent); }
 }
 
-template <typename Tree> void test_level(Tree const& t, node const& n) {
+template <typename Tree>
+void test_level(Tree const& t, node const& n) {
   // consistency:
   if (node_level(t, *n.idx) == 0) {
     CHECK(t.is_root(*n.idx));
@@ -197,7 +200,8 @@ template <typename Tree> void test_level(Tree const& t, node const& n) {
   // check node level:
   if (n.level) { CHECK(node_level(t, *n.idx) == *n.level); }
 }
-template <typename Tree> void test_children(Tree const& t, node const& n) {
+template <typename Tree>
+void test_children(Tree const& t, node const& n) {
   // consistency
   if (t.no_children(*n.idx) == 0_u) {
     CHECK(t.is_leaf(*n.idx));
@@ -327,7 +331,8 @@ void check_consistent_parent_child_edges(Tree const& tree) {
   }
 }
 
-template <typename Tree> void check_consistent_leaf_nodes(Tree const& tree) {
+template <typename Tree>
+void check_consistent_leaf_nodes(Tree const& tree) {
   for (auto n : tree.nodes() | tree.leaf()) {
     CHECK(ranges::distance(tree.children(n)) == 0);
     CHECK(tree.no_children(n) == 0_u);

@@ -13,13 +13,15 @@ namespace hm3::geometry {
 /// Stores a collection of simplices with unique vertices
 ///
 /// \tparam Nd number of spatial dimensions.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct simplex_array {
   using point_t   = point<Nd>;
   using simplex_t = simplex<Nd>;
   using point_set = point_set<Nd>;
   using box_t     = box<Nd>;
   using aabb_t    = aabb<Nd>;
+
+  static constexpr dim_t no_face_vertices() noexcept { return Nd; }
 
   /// Vertex index:
   using vidx_t = typename point_set::pidx_t;
@@ -34,13 +36,13 @@ struct simplex_array {
 
   /// Face vertices
   struct face_t {
-    array<vidx_t, Nd> vertices;
+    array<vidx_t, no_face_vertices()> vertices;
   };
   vector<face_t> faces_;
 
   simplex_array() = default;
 
-  template <typename SimplexRange>  //
+  template <typename SimplexRange>
   simplex_array(SimplexRange const& simplices) {
     const auto no_simplices = ranges::distance(simplices);
 
@@ -48,27 +50,17 @@ struct simplex_array {
     faces_.reserve(no_simplices);  // allocate faces
 
     // compute box bounding box over all simplices: O(N)
-    point_t min = point_t::constant(math::highest<num_t>);
-    point_t max = point_t::constant(math::lowest<num_t>);
-
-    for (auto const& s : simplices) {
-      RANGES_FOR (auto const& v, ::hm3::geometry::vertices(s)) {
-        for (dim_t d = 0; d < Nd; ++d) {
-          min(d) = std::min(min(d), v(d));
-          max(d) = std::max(max(d), v(d));
-        }
-      }
-    }
+    auto aabb = bounding_volume.aabb(simplices);
 
     // Allocate vertices (all points are in the bounding box)
-    box_t bounding_box(bounding_volume.box(aabb_t(min, max)));
-    vertices_ = point_set(no_simplices * Nd, bounding_box);
+    auto bbox = bounding_volume.box(aabb);
+    vertices_ = point_set(no_simplices * Nd, bbox);
 
     // insert simplices:
-    for (auto const& s : simplices) {  // O(N logN)
+    for (auto const& s : simplices) {  // ~O(N logN)
       face_t f;
-      for (dim_t d = 0; d < Nd; ++d) {
-        f.vertices[d] = vertices_.push_back(vertex(s, d));  // O(logN)
+      for (dim_t vx = 0; vx < no_face_vertices(); ++vx) {
+        f.vertices[vx] = vertices_.push_back(vertex(s, vx));  // O(logN)
       }
       faces_.push_back(f);
     }
@@ -83,7 +75,9 @@ struct simplex_array {
   constexpr simplex_t face(fidx_t i) const noexcept {
     simplex_t s;
     const auto f = faces_[i];
-    for (dim_t d = 0; d < Nd; ++d) { s.vertices[d] = vertices_.vertex(f[d]); }
+    for (dim_t vx = 0; vx < no_face_vertices(); ++vx) {
+      s.vertices[vx] = vertices_.vertex(f[vx]);
+    }
     return s;
   }
 

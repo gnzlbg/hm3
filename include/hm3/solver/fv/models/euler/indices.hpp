@@ -10,7 +10,7 @@ namespace solver {
 namespace fv {
 namespace euler {
 
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct indices {
   static constexpr suint_t nvars() noexcept { return Nd + 2; }
   static constexpr auto variables() noexcept { return view::iota(0, nvars()); }

@@ -3,6 +3,10 @@
 ///
 /// Serialization to a VTK unstructured grid
 #ifdef HM3_ENABLE_VTK
+
+/// Define this to switch to ASCII output format for VTK files
+//#define HM3_VTK_OUTPUT_ASCII
+
 #include <hm3/vis/vtk/cell_data.hpp>
 #include <hm3/vis/vtk/unstructured_grid.hpp>
 
@@ -16,7 +20,8 @@ namespace rc = ranges::concepts;
 /// SerializableToVTK concept
 struct serializable_to_vtk {
   struct unary_fn {
-    template <typename TRange> void operator()(TRange&&) const {}
+    template <typename TRange>
+    void operator()(TRange&&) const {}
   };
 
   template <typename T,                           //
@@ -57,8 +62,11 @@ void serialize(Source const& s, string file_name_, log::serial log) {
    = vtkSmartPointer<vtkXMLUnstructuredGridWriter>::New();
   writer->SetFileName(file_name.c_str());
   writer->SetInputData(vtk_grid.vtk_grid);
+#ifdef HM3_VTK_OUTPUT_ASCII
   writer->SetDataMode(vtkXMLWriter::Ascii);
-  // writer->SetDataMode(vtkXMLWriter::Binary);
+#else
+  writer->SetDataMode(vtkXMLWriter::Binary);
+#endif  // HM3_VTK_OUTPUT_ASCII
   writer->Write();
 }
 

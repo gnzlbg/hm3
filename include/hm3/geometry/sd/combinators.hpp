@@ -27,7 +27,8 @@ static constexpr auto const& op_inverse
 
 namespace detail {
 struct invert_fn {
-  template <typename SDF> constexpr auto operator()(SDF&& f) const {
+  template <typename SDF>
+  constexpr auto operator()(SDF&& f) const {
     return adapt(op_inverse, std::forward<SDF>(f));
   }
 };
@@ -61,7 +62,8 @@ static constexpr auto const& op_neg_union
 namespace detail {
 /// Union of the negative sides of the signed distance fields f1, ..., fn.
 struct neg_union_fn {
-  template <typename... SDFs> constexpr auto operator()(SDFs&&... fs) const {
+  template <typename... SDFs>
+  constexpr auto operator()(SDFs&&... fs) const {
     return adapt(op_neg_union, std::forward<SDFs>(fs)...);
   }
 };
@@ -98,7 +100,8 @@ namespace detail {
 ///
 /// \note union of the "positive" regions of the signed distance field
 struct pos_union_fn {
-  template <typename... SDFs> constexpr auto operator()(SDFs&&... fs) const {
+  template <typename... SDFs>
+  constexpr auto operator()(SDFs&&... fs) const {
     return adapt(op_pos_union, std::forward<SDFs>(fs)...);
   }
 };
@@ -132,7 +135,8 @@ static constexpr auto const& op_intersection
 
 namespace detail {
 struct intersection_fn {
-  template <typename... SDFs> constexpr auto operator()(SDFs&&... fs) const {
+  template <typename... SDFs>
+  constexpr auto operator()(SDFs&&... fs) const {
     return adapt(op_intersection, std::forward<SDFs>(fs)...);
   }
 };

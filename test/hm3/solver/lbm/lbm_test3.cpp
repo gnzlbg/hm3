@@ -377,7 +377,8 @@ void slip1(State&& s, Obstacle&& obstacle) {
   }
 }
 
-template <typename State> void set_halos(State&& s, num_t v) {
+template <typename State>
+void set_halos(State&& s, num_t v) {
   for (auto&& b : s.blocks()) {
     b.for_each_halo([&](auto cidx) {
       RANGES_FOR (auto&& d, s.physics.all()) {

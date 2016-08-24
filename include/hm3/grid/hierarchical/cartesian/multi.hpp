@@ -15,7 +15,8 @@ namespace cartesian {
 /// Multiple hierarchical Cartesian Grids
 ///
 ///
-template <dim_t Nd> struct multi : adaptor::multi<single<Nd>> {
+template <dim_t Nd>
+struct multi : adaptor::multi<single<Nd>> {
   using base_t = adaptor::multi<single<Nd>>;
   io::client io_;
   hm3::log::serial log;
@@ -74,11 +75,13 @@ template <dim_t Nd> struct multi : adaptor::multi<single<Nd>> {
   }
 };
 
-template <dim_t Nd> string name(multi<Nd>) {
+template <dim_t Nd>
+string name(multi<Nd>) {
   return name(typename multi<Nd>::base_t{});
 }
 
-template <dim_t Nd> string type(multi<Nd>) {
+template <dim_t Nd>
+string type(multi<Nd>) {
   return type(typename multi<Nd>::base_t{});
 }
 

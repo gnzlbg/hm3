@@ -14,7 +14,7 @@ namespace euler {
 /// Analytical solutions for the Euler equations
 namespace as {
 
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct isentropic_vortex {
   using i       = indices<Nd>;
   using p       = pv_base<Nd>;

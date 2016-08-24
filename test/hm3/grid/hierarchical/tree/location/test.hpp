@@ -148,7 +148,8 @@ void test_location(Loc) {
   }
 }
 
-template <template <hm3::dim_t, class...> class Loc> void test_location_2() {
+template <template <hm3::dim_t, class...> class Loc>
+void test_location_2() {
   using namespace hm3;
   using namespace tree;
   {

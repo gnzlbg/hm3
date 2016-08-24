@@ -302,14 +302,16 @@ namespace math_detail {
 /// For now it only handles UInt (unsigned int) as that's all Google Test
 /// needs.  Other types can be easily added in the future if need
 /// arises.
-template <std::size_t Size> struct type_with_size {
+template <std::size_t Size>
+struct type_with_size {
   /// This prevents the user from using type_with_size<N> with incorrect
   /// values of N.
   using UInt = void;
 };
 
 /// The specialization for size 4.
-template <> struct type_with_size<4> {
+template <>
+struct type_with_size<4> {
   /// unsigned int has size 4 in both gcc and MSVC.
   ///
   /// As base/basictypes.h doesn't compile on Windows, we cannot use
@@ -319,7 +321,8 @@ template <> struct type_with_size<4> {
 };
 
 /// The specialization for size 8.
-template <> struct type_with_size<8> {
+template <>
+struct type_with_size<8> {
   using Int  = long long;
   using UInt = unsigned long long;
 };
@@ -353,7 +356,8 @@ template <> struct type_with_size<8> {
 /// Template parameter:
 ///
 /// \tparam RawType The raw floating-point type (either float or double)
-template <typename RawType> struct floating_point {
+template <typename RawType, std::size_t KMaxULPS = 4>
+struct floating_point {
   /// Defines the unsigned integer type that has the same size as the
   /// floating point number.
   using Bits = typename type_with_size<sizeof(RawType)>::UInt;
@@ -395,7 +399,7 @@ template <typename RawType> struct floating_point {
   ///
   /// See the following article for more details on ULP:
   /// http://www.cygnus-software.com/papers/comparingfloats/comparingfloats.htm.
-  static const constexpr std::size_t k_max_ulps = 4;  // default = 4
+  static const constexpr std::size_t k_max_ulps = KMaxULPS;  // default = 4
 
   /// Constructs a floating_point from a raw floating-point number.
   ///
@@ -515,17 +519,21 @@ template <typename RawType> struct floating_point {
 
 /// Compares two floating point values for equality
 template <typename T, typename U,
+          typename KMaxULPS = std::integral_constant<std::size_t, 4>,
           CONCEPT_REQUIRES_(Same<T, U>{} and std::is_floating_point<T>{})>
-static constexpr bool approx(T const& a, U const& b) noexcept {
-  return math_detail::floating_point<T>{a}.almost_equals(
-   math_detail::floating_point<T>{b});
+static constexpr bool approx(T const& a, U const& b,
+                             KMaxULPS = KMaxULPS{}) noexcept {
+  return math_detail::floating_point<T, KMaxULPS::value>{a}.almost_equals(
+   math_detail::floating_point<T, KMaxULPS::value>{b});
 }
 
 template <typename T, typename U,
+          typename KMaxULPS = std::integral_constant<std::size_t, 4>,
           CONCEPT_REQUIRES_(!Same<T, U>{} and std::is_floating_point<T>{}
                             and std::is_floating_point<U>{})>
-static constexpr bool approx(T const& a, U const& b) noexcept {
-  return approx(num_t(a), num_t(b));
+static constexpr bool approx(T const& a, U const& b,
+                             KMaxULPS = KMaxULPS{}) noexcept {
+  return approx(num_t(a), num_t(b), KMaxULPS{});
 }
 
 /// Adds a signed integral to an unsigned integral

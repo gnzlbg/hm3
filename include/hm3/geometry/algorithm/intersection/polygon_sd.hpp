@@ -226,7 +226,7 @@ constexpr dim_t max_no_shape_vertices(dim_t no_vertices) noexcept {
   }
 }
 
-template <typename Shape>  //
+template <typename Shape>
 struct result {
   static constexpr dim_t nd = Shape::dimension();
   static constexpr dim_t original_shape_vertex_capacity
@@ -249,7 +249,7 @@ struct result {
   signums_t signum_inside, signum_outside;
 };
 
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct tri_result {
   struct shape_t {
     bounded_polygon<Nd, 4> vertices;
@@ -646,7 +646,7 @@ constexpr dim_t max_no_shapes(dim_t max_vertices_in_shape) noexcept {
   }
 }
 
-template <typename Shape>  //
+template <typename Shape>
 struct intersection_result {
   static constexpr dim_t max_vs_shape = vertex_capacity(Shape{});
 
@@ -766,7 +766,7 @@ intersection_result<Shape> signed_distance_intersection(
 }
 
 }  // namespace polygon_primitive
-
+}  // namespace discrete
 }  // namespace geometry
 }  // namespace hm3
 */

@@ -56,7 +56,8 @@ struct level_till_distance {
   }
 };
 
-template <typename Step> struct multiple {
+template <typename Step>
+struct multiple {
   using Steps = vector<Step>;
   Steps steps;
 

@@ -4,9 +4,44 @@
 /// Range utitilties
 #include <hm3/utility/range-v3.hpp>
 
+namespace ranges {
+inline namespace v3 {
+template <typename T, typename U,
+          CONCEPT_REQUIRES_(EqualityComparable<T>{}
+                            and EqualityComparable<U>{})>
+bool operator==(compressed_pair<T, U> const& t,
+                compressed_pair<T, U> const& u) {
+  return t.first() == u.first() and t.second() == u.second();
+}
+
+template <typename T, typename U,
+          CONCEPT_REQUIRES_(EqualityComparable<T>{}
+                            and EqualityComparable<U>{})>
+bool operator!=(compressed_pair<T, U> const& t,
+                compressed_pair<T, U> const& u) {
+  return !(t == u);
+}
+
+template <typename OStream, typename T, typename U>
+OStream& operator<<(OStream& os, compressed_pair<T, U> const& t) {
+  os << "(" << t.first() << ", " << t.second() << ")";
+  return os;
+}
+
+}  // inline namespace v3
+}  // namespace ranges
+
 namespace hm3 {
 
-template <typename T> using static_const = ranges::static_const<T>;
+template <typename T, typename U>
+using pair = ranges::compressed_pair<T, U>;
+
+template <typename T, typename U>
+auto make_pair(T&& t, U&& u) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+ ranges::make_compressed_pair(std::forward<T>(t), std::forward<U>(u)));
+
+template <typename T>
+using static_const = ranges::static_const<T>;
 
 // namespace ranges = ranges::v3;
 namespace view   = ranges::view;
@@ -19,6 +54,7 @@ using ranges::difference_type;
 using ranges::range_iterator_t;
 using ranges::unwrap_reference;
 using ranges::tuple_indices_t;
+using ranges::range_value_t;
 
 // standard concepts:
 using ranges::Same;

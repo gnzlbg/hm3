@@ -76,7 +76,8 @@ struct serial {
 #endif
   }
 
-  template <typename... Args> void operator()(Args&&... args) const {
+  template <typename... Args>
+  void operator()(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
     if (console_output_) { console_logger_->info(args...); }
     file_logger_->info(std::forward<Args>(args)...);
@@ -92,13 +93,15 @@ struct serial {
     file_logger_->set_level(value);
   }
 
-  template <typename... Args> void debug(Args&&... args) const {
+  template <typename... Args>
+  void debug(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
     if (console_output_) { console_logger_->debug(args...); }
     file_logger_->debug(std::forward<Args>(args)...);
   }
 
-  template <typename... Args> void error(Args&&... args) const {
+  template <typename... Args>
+  void error(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
     if (console_output_) { console_logger_->error(args...); }
     file_logger_->error(std::forward<Args>(args)...);

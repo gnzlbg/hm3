@@ -28,41 +28,48 @@ struct stack_storage {};
 /// Bit storage
 struct bit {};
 
-template <typename Order> struct to_eigen_order {};
+template <typename Order>
+struct to_eigen_order {};
 
-template <> struct to_eigen_order<row_major_t> {
+template <>
+struct to_eigen_order<row_major_t> {
   static constexpr int_t value = Eigen::RowMajor;
 };
 
-template <> struct to_eigen_order<col_major_t> {
+template <>
+struct to_eigen_order<col_major_t> {
   static constexpr int_t value = Eigen::ColMajor;
 };
 
 /// Select storage type:
 //  if MaxRows != dynamic && MaxCols != dynamic
 //  => stack storage
-template <int_t MaxRows, int_t MaxCols> struct storage_type {
+template <int_t MaxRows, int_t MaxCols>
+struct storage_type {
   using type = stack_storage;
 };
 
 /// Select storage type:
 //  if MaxRows == dynamic
 //  => dynamic storage
-template <int_t MaxCols> struct storage_type<dynamic, MaxCols> {
+template <int_t MaxCols>
+struct storage_type<dynamic, MaxCols> {
   using type = dynamic_storage;
 };
 
 /// Select storage type:
 //  if MaxCols == dynamic
 //  => dynamic storage
-template <int_t MaxRows> struct storage_type<MaxRows, dynamic> {
+template <int_t MaxRows>
+struct storage_type<MaxRows, dynamic> {
   using type = dynamic_storage;
 };
 
 /// Select storage type:
 //  if MaxRows == dynamic && MaxCols == dynamic
 //  => dynamic storage
-template <> struct storage_type<dynamic, dynamic> {
+template <>
+struct storage_type<dynamic, dynamic> {
   using type = dynamic_storage;
 };
 

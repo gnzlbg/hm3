@@ -12,10 +12,12 @@ namespace grid {
 namespace hierarchical {
 
 /// Single hierarchical Cartesian Grid
-template <dim_t Nd> using cs = cartesian::single<Nd>;
+template <dim_t Nd>
+using cs = cartesian::single<Nd>;
 
 /// Multi hierarchical Cartesian Grid
-template <dim_t Nd> using cm = cartesian::multi<Nd>;
+template <dim_t Nd>
+using cm = cartesian::multi<Nd>;
 
 }  // namespace hierarchical
 }  // namespace grid

@@ -19,12 +19,24 @@ using point_base_t = dense::vector<num_t, static_cast<int_t>(Nd), dim_t>;
 /// Nd-dimensional point.
 ///
 /// \tparam Nd Number of spatial dimensions.
-template <dim_t Nd>  //
-struct point : point_base_t<Nd>, ranked<Nd, 0> {
+template <dim_t Nd>
+struct point : private point_base_t<Nd>, public ranked<Nd, 0> {
   using self              = point_base_t<Nd>;
   using vertex_index_type = dim_t;
   using self::self;
   using self::operator=;
+  using self::operator();
+  using self::operator[];
+  using self::c;
+  using self::begin;
+  using self::end;
+  using self::zero;
+  using self::ones;
+  using typename self::iterator;
+  using typename self::const_iterator;
+  using typename self::reference;
+  using typename self::const_reference;
+  using typename self::value_type;
 
   constexpr point() = default;
   constexpr point(self const& s) : self(s) {}
@@ -41,9 +53,11 @@ struct point : point_base_t<Nd>, ranked<Nd, 0> {
   template <typename Rng, typename It = range_iterator_t<Rng>,
             CONCEPT_REQUIRES_(
              Range<Rng>{} and std::is_same<iterator_value_t<It>, point<Nd>>{})>
-  constexpr point(Rng&& rng) : point{*begin(rng)} {
+  constexpr point(Rng&& rng) : point{*ranges::begin(rng)} {
     HM3_ASSERT(ranges::distance(rng) == 1, "?");
   }
+
+  operator self() const noexcept = delete;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

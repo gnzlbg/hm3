@@ -8,7 +8,7 @@
 namespace hm3::geometry::point_primitive {
 
 /// Number of vertices in a point
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr suint_t vertex_size(point<Nd> const&) noexcept {
   return 1;
 }

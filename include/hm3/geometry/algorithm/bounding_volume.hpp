@@ -14,7 +14,7 @@ namespace bounding_volume_detail {
 struct bounding_volume_fn {
   using self = bounding_volume_fn;
   /// Axis-Aligned Bounding Box
-  template <typename T, CONCEPT_REQUIRES_(Primitive<T>{})>
+  template <typename T>
   static constexpr auto aabb(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
    axis_aligned_bounding_box(std::forward<T>(t)));
 

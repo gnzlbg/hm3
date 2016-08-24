@@ -14,13 +14,13 @@ constexpr num_t bounding_length(box<Nd> const& b, dim_t) noexcept {
 }
 
 /// Bounding lengths of the box \p b along all spatial components.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr vec<Nd> all_bounding_lengths(box<Nd> const& b) noexcept {
   return vec<Nd>::constant(b.length_);
 }
 
 /// Max bounding length of the box \p b.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr num_t max_bounding_length(box<Nd> const& b) noexcept {
   return b.length_;
 }

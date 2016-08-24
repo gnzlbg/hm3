@@ -8,16 +8,15 @@
 namespace hm3::geometry::polygon_primitive {
 
 /// Number of faces of the polygon \p p.
-template <typename P, CONCEPT_REQUIRES_(Polygon<P>{})>  //
+template <typename P, CONCEPT_REQUIRES_(Polygon<P>{})>
 constexpr dim_t face_size(P&& p) noexcept {
   return vertex_size(p);
 }
 
 /// Face \p f of the polygon \p p.
 template <typename P, dim_t Nd = uncvref_t<P>::dimension(),
-          CONCEPT_REQUIRES_(Polygon<P, Nd>{})>  //
-constexpr segment<Nd>
- face(P&& p, dim_t f) noexcept {
+          CONCEPT_REQUIRES_(Polygon<P, Nd>{})>
+constexpr segment<Nd> face(P&& p, dim_t f) noexcept {
   const auto no_vertices = vertex_size(p);
   HM3_ASSERT(f < no_vertices, "face {} out of bounds [0, {})", f, no_vertices);
   const auto vx0 = f;

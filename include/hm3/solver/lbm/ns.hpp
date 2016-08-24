@@ -9,7 +9,7 @@ namespace solver {
 namespace lbm {
 namespace ns {
 
-template <typename Lattice>  //
+template <typename Lattice>
 struct physics : Lattice {
   using typename Lattice::indices;
   using l = Lattice;
@@ -43,7 +43,7 @@ struct physics : Lattice {
   }
 
   template <typename Distributions,
-            CONCEPT_REQUIRES_(!Same<num_t, std::decay_t<Distributions>>{})>
+            CONCEPT_REQUIRES_(!Same<num_t, uncvref_t<Distributions>>{})>
   static constexpr num_t rho(Distributions&& d) noexcept {
     num_t tmp = 0.;
     RANGES_FOR (auto&& d_i, l::all()) { tmp += d[d_i]; }
@@ -138,7 +138,7 @@ struct physics : Lattice {
   }
 
   template <typename Distributions,
-            CONCEPT_REQUIRES_(!Same<std::decay_t<Distributions>, variables>{})>
+            CONCEPT_REQUIRES_(!Same<uncvref_t<Distributions>, variables>{})>
   static constexpr dist_t equilibrium_distribution(
    Distributions&& distributions) {
     // compute density and velocity components:
@@ -148,7 +148,7 @@ struct physics : Lattice {
   }
 
   template <typename Distributions,
-            CONCEPT_REQUIRES_(!Same<std::decay_t<Distributions>, variables>{})>
+            CONCEPT_REQUIRES_(!Same<uncvref_t<Distributions>, variables>{})>
   static constexpr dist_t non_equilibrium_distribution(
    Distributions&& distributions) {
     auto eq = equilibrium_distribution(distributions);

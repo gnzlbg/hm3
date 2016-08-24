@@ -27,9 +27,11 @@ namespace concepts {
 
 namespace rc = ranges::concepts;
 
-template <typename T> struct is_bounded : std::true_type {};
+template <typename T>
+struct is_bounded : std::true_type {};
 
-template <typename T> struct is_primitive : std::true_type {};
+template <typename T>
+struct is_primitive : std::true_type {};
 
 struct primitive : rc::refines<rc::Regular, Ranked, access::concepts::Vertex> {
   template <typename T, typename UT = uncvref_t<T>>
@@ -72,18 +74,33 @@ struct volume_primitive : rc::refines<Primitive> {
 
 using Volume = volume_primitive;
 
-template <typename T> struct is_polygon : std::true_type {};
+template <typename T>
+struct is_polygon : std::true_type {};
 
 struct polygon : rc::refines<Primitive> {
-  template <typename T>
-  static auto requires_(T&& t) -> decltype(                //
-   rc::valid_expr(                                         //
-    rc::is_true(is_polygon<rc::uncvref_t<T>>{}),           //
-    rc::is_true(geometry::Ranked<T, dimension(T{}), 2>{})  //
+  template <typename T, typename UT = uncvref_t<T>>
+  static auto requires_(T&& t) -> decltype(                 //
+   rc::valid_expr(                                          //
+    rc::is_true(is_polygon<UT>{}),                          //
+    rc::is_true(geometry::Ranked<T, UT::dimension(), 2>{})  //
     ));
 };
 
 using Polygon = polygon;
+
+template <typename T>
+struct is_polyline : std::true_type {};
+
+struct polyline : rc::refines<Primitive> {
+  template <typename T, typename UT = uncvref_t<T>>
+  static auto requires_(T&& t) -> decltype(                 //
+   rc::valid_expr(                                          //
+    rc::is_true(is_polyline<UT>{}),                         //
+    rc::is_true(geometry::Ranked<T, UT::dimension(), 1>{})  //
+    ));
+};
+
+using Polyline = polyline;
 
 }  // namespace concepts
 
@@ -102,6 +119,11 @@ using Volume = concepts::rc::models<concepts::Volume, uncvref_t<T>>;
 template <typename T, dim_t Nd = math::highest<dim_t>>
 using Polygon
  = meta::and_<concepts::rc::models<concepts::Polygon, ranges::uncvref_t<T>>,
+              meta::bool_<Dimensional<T, Nd>{}>>;
+
+template <typename T, dim_t Nd = math::highest<dim_t>>
+using Polyline
+ = meta::and_<concepts::rc::models<concepts::Polyline, ranges::uncvref_t<T>>,
               meta::bool_<Dimensional<T, Nd>{}>>;
 
 }  // namespace hm3::geometry

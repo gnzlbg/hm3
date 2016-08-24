@@ -16,7 +16,8 @@ namespace polygon_primitive {
 /// \tparam Nd Number of spatial dimensions.
 /// \tparam MaxNv Maximum number of vertices that the polygon can contain.
 template <dim_t Nd, dim_t MaxNv>
-struct bounded_polygon : ranked<Nd, 2>, inline_vector<point<Nd>, MaxNv> {
+struct bounded_polygon : ranked<Nd, 2>,
+                         private inline_vector<point<Nd>, MaxNv> {
   static_assert(MaxNv > 2, "");
   using vertex_index_type = dim_t;
   using face_index_type   = dim_t;
@@ -24,10 +25,20 @@ struct bounded_polygon : ranked<Nd, 2>, inline_vector<point<Nd>, MaxNv> {
   using vector_t = inline_vector<point<Nd>, MaxNv>;
   using vector_t::vector_t;
   using vector_t::operator=;
+  using vector_t::size;
+  using vector_t::empty;
+  using vector_t::push_back;
+  using vector_t::pop_back;
+  using vector_t::operator[];
+  using vector_t::begin;
+  using vector_t::end;
+  using vector_t::max_size;
 
   bounded_polygon() = default;
 
-  template <typename Vertices, CONCEPT_REQUIRES_(Range<Vertices>{})>
+  template <typename Vertices,
+            CONCEPT_REQUIRES_(!access::Vertex<Vertices>{} and Range<Vertices>{}
+                              and !Polyline<Vertices>{})>
   bounded_polygon(Vertices&& vs) noexcept {
     HM3_ASSERT(ranges::distance(vs) > 2,
                "cannot construct polygon with less than 3 vertices: {}",
@@ -37,12 +48,21 @@ struct bounded_polygon : ranked<Nd, 2>, inline_vector<point<Nd>, MaxNv> {
      "polygon vertex capacity is {} but the number of vertices is {}: {}",
      MaxNv, ranges::distance(vs), view::all(vs));
     for (auto&& v : vs) { this->push_back(v); }
+    HM3_ASSERT((*this)[0] != (*this)[size() - 1],
+               "polygon's last vertex equals its first!");
   }
 
   template <typename P, CONCEPT_REQUIRES_(
-                         Polygon<P>{} and !Range<P>{}
-                         and !Same<bounded_polygon<Nd, MaxNv>, uncvref_t<P>>{})>
-  bounded_polygon(P&& p) noexcept : bounded_polygon(vertices(p)) {}
+                         access::Vertex<P>{}  // and !Range<P>{}
+                         and !Same<bounded_polygon<Nd, MaxNv>, uncvref_t<P>>{}
+                         and !Polyline<P, Nd>{})>
+  bounded_polygon(P&& p) noexcept : bounded_polygon(geometry::vertices(p)) {}
+
+  vector_t const& vertices() const & noexcept {
+    return static_cast<vector_t const&>(*this);
+  }
+  vector_t& vertices() & noexcept { return static_cast<vector_t&>(*this); }
+  vector_t vertices() && noexcept { return static_cast<vector_t&&>(*this); }
 };
 
 template <dim_t Nd, dim_t MaxNv>
@@ -69,8 +89,19 @@ constexpr auto vertex_size(bounded_polygon<Nd, MaxNv> const& p) noexcept {
 
 /// Polygon vertices
 template <dim_t Nd, dim_t MaxNv>
-constexpr auto vertices(bounded_polygon<Nd, MaxNv> p) noexcept {
-  return p;
+constexpr decltype(auto) vertices(
+ bounded_polygon<Nd, MaxNv> const& p) noexcept {
+  return p.vertices();
+}
+
+template <dim_t Nd, dim_t MaxNv>
+constexpr decltype(auto) vertices(bounded_polygon<Nd, MaxNv>&& p) noexcept {
+  return p.vertices();
+}
+
+template <dim_t Nd, dim_t MaxNv>
+constexpr decltype(auto) vertices(bounded_polygon<Nd, MaxNv>& p) noexcept {
+  return p.vertices();
 }
 
 /// Polygon vertices

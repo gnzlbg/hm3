@@ -10,7 +10,8 @@ inline auto to_string(string&& s) -> string { return s; }
 inline auto to_string(string const& s) -> string { return s; }
 inline auto to_string(string& s) -> string& { return s; }
 
-template <typename T> decltype(auto) to_string(T&& t) {
+template <typename T>
+decltype(auto) to_string(T&& t) {
   using std::to_string;
   return to_string(std::forward<T>(t));
 }

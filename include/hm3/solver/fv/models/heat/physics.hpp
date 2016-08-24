@@ -11,7 +11,8 @@ namespace solver {
 namespace fv {
 namespace heat {
 
-template <dim_t Nd> struct physics : geometry::dimensional<Nd>, indices<Nd> {
+template <dim_t Nd>
+struct physics : geometry::dimensional<Nd>, indices<Nd> {
   struct tile_variables {
     template <typename Grid, typename Order = dense::col_major_t>
     using invoke = meta::list<  //

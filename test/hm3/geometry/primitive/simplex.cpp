@@ -24,7 +24,7 @@ int main() {
     // Bounding box
     auto sbb  = bounding_volume.box(s);
     auto aabb = bounding_volume.aabb(s);
-    CHECK(sbb == aabb);
+    CHECK(sbb == box<1>(x_min(aabb), x_max(aabb)));
     CHECK(centroid(sbb) == centroid(s));
     CHECK(centroid(aabb) == centroid(s));
   }

@@ -11,7 +11,8 @@ namespace solver {
 namespace level_set {
 
 /// Adaptive mesh refinement target for the level set solver
-template <dim_t Nd> struct amr : geometry::dimensional<Nd> {
+template <dim_t Nd>
+struct amr : geometry::dimensional<Nd> {
   using amr_node_idx = grid_node_idx;
 
   state<Nd>* ls_;
@@ -41,7 +42,8 @@ template <dim_t Nd> struct amr : geometry::dimensional<Nd> {
   /// Nodes of the level set solver grid
   auto nodes() const { return ls_->g.in_use(); }
 
-  template <typename... Args> auto log(Args&&... args) const {
+  template <typename... Args>
+  auto log(Args&&... args) const {
     return ls_->log(std::forward<Args>(args)...);
   }
 

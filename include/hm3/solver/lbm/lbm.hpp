@@ -61,7 +61,8 @@ void collide(State&& s, Solid&& solid, num_t omega) noexcept {
   }
 }
 
-template <typename State> void propagate(State&& s) noexcept {
+template <typename State>
+void propagate(State&& s) noexcept {
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
       RANGES_FOR (auto&& d, s.physics.all()) {
@@ -100,7 +101,7 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
 
 // template <typename State, typename BCs>
 // void propagate(State&& s, BCs&& bcs) noexcept {
-//   using l = typename std::decay_t<State>::lattice_t;
+//   using l = typename uncvref_t<State>::lattice_t;
 //   for (auto&& b : s.blocks()) {
 //     b.for_each_internal([&](auto&& c) {
 //       RANGES_FOR (auto&& d, l::node_ids_without_center()) {
@@ -117,7 +118,7 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
 // }
 
 // template <typename State> num_t compute_total_density(State&& s) {
-//   using l   = typename std::decay_t<State>::lattice_t;
+//   using l   = typename uncvref_t<State>::lattice_t;
 //   num_t rho = 0.;
 //   for (auto&& b : s.blocks()) {
 //     num_t rho_l = 0.;
@@ -127,7 +128,7 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
 //   return rho;
 // }
 
-// template <typename State, typename BCs>  //
+// template <typename State, typename BCs>
 // num_t advance(State&& s, BCs&& bcs, uint_t no_iterations = 1) {
 //   num_t d   = 0.;
 //   int count = 1;

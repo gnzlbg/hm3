@@ -6,7 +6,10 @@
 namespace hm3 {
 namespace solver {
 
-template <typename Solver> void write(Solver&& s) { s.write(); }
+template <typename Solver>
+void write(Solver&& s) {
+  s.write();
+}
 
 template <typename Solver, typename... Solvers>
 void write(Solver&& s, Solvers&&... ss) {

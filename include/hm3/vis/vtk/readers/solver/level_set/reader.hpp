@@ -13,7 +13,8 @@ namespace vis {
 namespace vtk {
 namespace level_set {
 
-template <dim_t Nd> struct reader : ::hm3::vis::vtk::reader {
+template <dim_t Nd>
+struct reader : ::hm3::vis::vtk::reader {
   using grid_reader_t = ::hm3::vis::vtk::grid::reader<Nd>;
   using level_set_s   = ::hm3::solver::level_set::state<Nd>;
 
@@ -32,7 +33,8 @@ template <dim_t Nd> struct reader : ::hm3::vis::vtk::reader {
   /// Level-Set state
   std::unique_ptr<level_set_s> level_set = nullptr;
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(level_set->g.in_use());
     return std::forward<F>(f);
   }

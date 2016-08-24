@@ -15,7 +15,8 @@ namespace advection {
 /// Initial conditions for the advection equation
 namespace ic {
 
-template <int Nd> struct constant {
+template <int Nd>
+struct constant {
   using i       = indices<Nd>;
   using var_v   = num_a<i::nvars()>;
   using point_t = geometry::point<Nd>;
@@ -27,7 +28,8 @@ template <int Nd> struct constant {
   var_v operator()(point_t) const noexcept { return value; }
 };
 
-template <int Nd> struct box {
+template <int Nd>
+struct box {
   using i       = indices<Nd>;
   using var_v   = num_a<i::nvars()>;
   using point_t = geometry::point<Nd>;

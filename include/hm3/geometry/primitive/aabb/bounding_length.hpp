@@ -14,13 +14,13 @@ constexpr num_t bounding_length(aabb<Nd> const& s, dim_t d) noexcept {
 }
 
 /// Bounding lengths of the AABB \p s along all spatial components.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr vec<Nd> all_bounding_lengths(aabb<Nd> const& s) noexcept {
   return vec<Nd>(x_max(s)() - x_min(s)());
 }
 
 /// Max bounding length of the AABB \p s.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr num_t max_bounding_length(aabb<Nd> const& s) noexcept {
   return (x_min(s)() - x_max(s)()).array().abs().maxCoeff();
 }

@@ -71,12 +71,14 @@ void test_node_length(Grid const& g, grid_node const& n) {
   }
 }
 
-template <typename Grid> void check_grid_node(Grid const& g, grid_node n) {
+template <typename Grid>
+void check_grid_node(Grid const& g, grid_node n) {
   test_node_coordinates(g, n);
   test_node_length(g, n);
 }
 
-template <typename Grid> void grid_consistency_checks(Grid const& g) {
+template <typename Grid>
+void grid_consistency_checks(Grid const& g) {
   auto bounding_box = g.bounding_box();
   auto xc_0         = g.coordinates(0_n);
   auto l_0          = g.length(0_n);

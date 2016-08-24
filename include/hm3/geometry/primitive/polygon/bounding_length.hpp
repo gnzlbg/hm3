@@ -28,14 +28,15 @@ constexpr num_t bounding_length(P&& p, dim_t d) noexcept {
 template <typename P, typename UP = uncvref_t<P>, dim_t Nd = UP::dimension(),
           CONCEPT_REQUIRES_(Polygon<UP, Nd>{})>
 constexpr vec<Nd> all_bounding_lengths(P&& p) noexcept {
-  return all_bounding_lengths(axis_aligned_bounding_box(p));
+  return aabb_primitive::all_bounding_lengths(axis_aligned_bounding_box(p));
 }
 
 /// Max bounding length of the polygon \p p.
 template <typename P, typename UP = uncvref_t<P>, dim_t Nd = UP::dimension(),
           CONCEPT_REQUIRES_(Polygon<UP, Nd>{})>
 constexpr num_t max_bounding_length(P&& p) noexcept {
-  return all_bounding_lengths(p)().array().maxCoeff();
+  auto ls = all_bounding_lengths(p);
+  return ls().array().maxCoeff();
 }
 
 }  // namespace hm3::geometry::polygon_primitive

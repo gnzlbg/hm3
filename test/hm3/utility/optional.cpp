@@ -19,7 +19,10 @@
 #include <vector>
 
 struct caller {
-  template <class T> caller(T fun) { fun(); }
+  template <class T>
+  caller(T fun) {
+    fun();
+  }
 };
 #define CAT2(X, Y) X##Y
 #define CAT(X, Y) CAT2(X, Y)
@@ -210,7 +213,8 @@ TEST(assignment) {
   assert(!oi);
 };
 
-template <class T> struct move_awaree {
+template <class T>
+struct move_awaree {
   T val;
   bool moved;
   move_awaree(T val) : val(val), moved(false) {}
@@ -506,7 +510,8 @@ std2::experimental::optional<char> read_next_char() { return {}; }
 void run(std2::experimental::optional<std::string>) {}
 void run(std::complex<double>) {}
 
-template <class T> void assign_norebind(tr2::optional<T&>& optref, T& obj) {
+template <class T>
+void assign_norebind(tr2::optional<T&>& optref, T& obj) {
   if (optref) {
     *optref = obj;
   } else {
@@ -514,7 +519,8 @@ template <class T> void assign_norebind(tr2::optional<T&>& optref, T& obj) {
   }
 }
 
-template <typename T> void unused(T&&) {}
+template <typename T>
+void unused(T&&) {}
 
 TEST(example_conceptual_model) {
   using namespace std2::experimental;
@@ -1012,15 +1018,21 @@ TEST(optional_hashing) {
 };
 
 // optional_ref_emulation
-template <class T> struct generic { typedef T type; };
+template <class T>
+struct generic {
+  typedef T type;
+};
 
-template <class U> struct generic<U&> {
+template <class U>
+struct generic<U&> {
   typedef std::reference_wrapper<U> type;
 };
 
-template <class T> using Generic = typename generic<T>::type;
+template <class T>
+using Generic = typename generic<T>::type;
 
-template <class X> bool generic_fun() {
+template <class X>
+bool generic_fun() {
   std2::experimental::optional<Generic<X>> op;
   return bool(op);
 }
@@ -1377,7 +1389,8 @@ static_assert(oil->len == 4, "WTF!");
 
 struct vec {
   std::vector<int> v;
-  template <typename... X> vec(X&&... x) : v(std::forward<X>(x)...) {}
+  template <typename... X>
+  vec(X&&... x) : v(std::forward<X>(x)...) {}
 
   template <typename U, typename... X>
   vec(std::initializer_list<U> il, X&&... x) : v(il, std::forward<X>(x)...) {}

@@ -9,7 +9,7 @@ namespace hm3 {
 namespace geometry {
 namespace sd {
 
-// template <typename Vec>  //
+// template <typename Vec>
 // num_t rectangle(Vec&& x, Vec&& l) {
 //   auto tmp = x.array().abs() - l().array();
 //   return tmp.array().max(Eigen::Zero().array()).norm()
@@ -53,7 +53,8 @@ num_t rectangle(point<Nd> const& x, point<Nd> const& x_c,
   HM3_FATAL_ERROR("unreachable: x: {}, x_c: {}, l: {}", x, x_c, l);
 }
 
-template <dim_t Nd> struct fixed_rectangle {
+template <dim_t Nd>
+struct fixed_rectangle {
   point<Nd> x_c;
   vec<Nd> l;
 

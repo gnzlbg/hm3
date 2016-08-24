@@ -1,7 +1,11 @@
 #pragma once
 /// \file
 ///
-/// Line segment
+/// Line segment.
+///
+/// TODO: make segment and line interfaces consistent with respect to through
+/// and at (these are not needed anymore since the constructor can take p_t, p_t
+/// and p_t, v_t).
 #include <hm3/geometry/primitive/point.hpp>
 
 namespace hm3::geometry {
@@ -12,20 +16,26 @@ namespace segment_primitive {
 /// Line segment: line bounded by two end-points.
 ///
 /// \tparam Nd Number of spatial dimensions.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct segment : ranked<Nd, 1> {
   using point_t           = point<Nd>;
   using vector_t          = vec<Nd>;
   using vertex_index_type = dim_t;
   using face_index_type   = dim_t;
 
-  point_t xs_[2];
+  array<point_t, 2> xs_;
 
+  /// Access the endpoint \p i of the segment.
+  ///
+  /// \pre \p i must be in range [0, 2).
   point_t& x(dim_t i) noexcept {
     HM3_ASSERT(i < 2, "index {} out-of-bounds [0, 2)", i);
     return xs_[i];
   }
 
+  /// Access the endpoint \p i of the segment.
+  ///
+  /// \pre \p i must be in range [0, 2).
   point_t const& x(dim_t i) const noexcept {
     HM3_ASSERT(i < 2, "index {} out-of-bounds [0, 2)", i);
     return xs_[i];
@@ -44,10 +54,17 @@ struct segment : ranked<Nd, 1> {
     return segment{p, point_t{p() + dir()}};
   }
 
+  /// Obtains an unbounded line from the segment.
+  auto line() const noexcept { return geometry::line<Nd>::through(x(0), x(1)); }
+
+  /// Obtains an unbounded Eigen::ParametrizedLine from the segment.
   auto operator()() const noexcept {
     return Eigen::ParametrizedLine<num_t, Nd>::Through(x(0)(), x(1)());
   }
 
+  /// Construct a segment from the range of points \p rng.
+  ///
+  /// \pre `size(rng) == 2`.
   template <typename Rng,
             CONCEPT_REQUIRES_(
              Range<Rng>{}
@@ -58,7 +75,10 @@ struct segment : ranked<Nd, 1> {
     HM3_ASSERT(x(0) != x(1), "line through two equal points: {}!", x(0));
   }
 
-  constexpr segment(point_t from, point_t to) : xs_{from, to} {}
+  constexpr segment(point_t from, point_t to) : xs_{{from, to}} {
+    HM3_ASSERT(x(0) != x(1), "segment through two equal points: {} == {}!",
+               x(0), x(1));
+  }
   constexpr segment()               = default;
   constexpr segment(segment const&) = default;
   constexpr segment(segment&&)      = default;

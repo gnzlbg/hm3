@@ -88,7 +88,7 @@ struct state {
   }
 
   /// Start \p sub_timer .
-  template <typename S, CONCEPT_REQUIRES_(ConvertibleTo<S, string>{})>  //
+  template <typename S, CONCEPT_REQUIRES_(ConvertibleTo<S, string>{})>
   updater start(S&& sub_timer) {
     init_timer(sub_timer);
     return sub_timers.at(std::forward<S>(sub_timer)).start();
@@ -169,7 +169,7 @@ io::json gather(state const& t) {
   return data;
 }
 
-template <typename F>  //
+template <typename F>
 void top_down(io::json const& d, F&& f) {
   f(d);
   if (io::has_field(d, "children")) {

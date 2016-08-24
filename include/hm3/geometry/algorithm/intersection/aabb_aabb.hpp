@@ -37,7 +37,7 @@ constexpr bool intersection_test(aabb<Nd> const& a,
 /// - Case C4: corner => 3D(point)
 ///
 /*
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct result_t {
   enum type_t { empty = 0, contained = 1, overlap = 2 };
 

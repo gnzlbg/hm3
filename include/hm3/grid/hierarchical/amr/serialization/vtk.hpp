@@ -27,7 +27,8 @@ struct serializable : geometry::dimensional<Target::dimension()> {
 
   serializable(state<Target> const& s) : s_{s} {}
 
-  template <typename NodeIdx> auto geometry(NodeIdx&& n) const {
+  template <typename NodeIdx>
+  auto geometry(NodeIdx&& n) const {
     return s_.target().geometry(std::forward<NodeIdx>(n));
   }
 
@@ -37,12 +38,14 @@ struct serializable : geometry::dimensional<Target::dimension()> {
 
   auto bounding_box() const { return s_.target().bounding_box(); }
 
-  template <typename F> auto for_each_cell(F&& f) const {
+  template <typename F>
+  auto for_each_cell(F&& f) const {
     f(nodes());
     return f;
   }
 
-  template <typename CellData> void load(CellData&& cell_data) const {
+  template <typename CellData>
+  void load(CellData&& cell_data) const {
     cell_data.load("action", [&](auto&& n, auto&&) {
       auto i = s_.find(n);
       HM3_ASSERT(i, "??");

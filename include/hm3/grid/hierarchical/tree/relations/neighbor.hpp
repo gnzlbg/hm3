@@ -52,7 +52,8 @@ static constexpr npidx_t no_neighbors(dim_t nd, dim_t m, child_level_tag) {
 /// of dimension nd
 ///@{
 
-template <dim_t Nd, dim_t M> struct neighbor_children_sharing_face_ {
+template <dim_t Nd, dim_t M>
+struct neighbor_children_sharing_face_ {
   static constexpr inline_vector<inline_vector<child_pos<Nd>, 0>, 0> stencil() {
     return {};
   }
@@ -63,21 +64,25 @@ template <dim_t Nd, dim_t M> struct neighbor_children_sharing_face_ {
 ///  |-- Left neighbor --|-- Node --|-- Right neighbor --|
 ///  |         | child 1 |          | child 0  |         |
 ///
-template <> struct neighbor_children_sharing_face_<1, 0> {
+template <>
+struct neighbor_children_sharing_face_<1, 0> {
   static constexpr array<array<child_pos<1>, 1>, 2> stencil{{{{1}}, {{0}}}};
 };
 
-template <> struct neighbor_children_sharing_face_<2, 1> {
+template <>
+struct neighbor_children_sharing_face_<2, 1> {
   static constexpr array<array<child_pos<2>, 2>, 4> stencil{
    {{{1, 3}}, {{0, 2}}, {{2, 3}}, {{0, 1}}}};
 };
 
-template <> struct neighbor_children_sharing_face_<2, 0> {
+template <>
+struct neighbor_children_sharing_face_<2, 0> {
   static constexpr array<array<child_pos<2>, 1>, 4> stencil{
    {{{3}}, {{2}}, {{1}}, {{0}}}};
 };
 
-template <> struct neighbor_children_sharing_face_<3, 2> {
+template <>
+struct neighbor_children_sharing_face_<3, 2> {
   static constexpr array<array<child_pos<3>, 4>, 6> stencil{{{{1, 3, 5, 7}},
                                                              {{0, 2, 4, 6}},
                                                              {{2, 3, 6, 7}},
@@ -86,7 +91,8 @@ template <> struct neighbor_children_sharing_face_<3, 2> {
                                                              {{0, 1, 2, 3}}}};
 };
 
-template <> struct neighbor_children_sharing_face_<3, 1> {
+template <>
+struct neighbor_children_sharing_face_<3, 1> {
   static constexpr array<array<child_pos<3>, 2>, 12> stencil{{{{3, 7}},
                                                               {{2, 6}},
                                                               {{1, 5}},
@@ -101,7 +107,8 @@ template <> struct neighbor_children_sharing_face_<3, 1> {
                                                               {{0, 1}}}};
 };
 
-template <> struct neighbor_children_sharing_face_<3, 0> {
+template <>
+struct neighbor_children_sharing_face_<3, 0> {
   static constexpr array<array<child_pos<3>, 1>, 8> stencil{
    {{{7}}, {{6}}, {{5}}, {{4}}, {{3}}, {{2}}, {{1}}, {{0}}}};
 };
@@ -116,7 +123,8 @@ static constexpr auto neighbor_children_sharing_face
 
 /// Normalized displacement from node center to node neighbor. The unit length
 /// is the length of the node.
-template <dim_t Nd> using neighbor_offset = offset_t<Nd>;
+template <dim_t Nd>
+using neighbor_offset = offset_t<Nd>;
 
 /// \name Neighbor lookup tables
 ///
@@ -157,33 +165,38 @@ template <dim_t Nd> using neighbor_offset = offset_t<Nd>;
 ///
 ///@{
 
-template <dim_t Nd, dim_t M> struct neighbor_lookup_table_ {
+template <dim_t Nd, dim_t M>
+struct neighbor_lookup_table_ {
   static constexpr inline_vector<neighbor_offset<Nd>, 0> stencil{};
 };
 
 /// 1D: across faces
-template <> struct neighbor_lookup_table_<1, 0> {
+template <>
+struct neighbor_lookup_table_<1, 0> {
   static constexpr array<neighbor_offset<1>, 2> stencil{{
    {{-1}}, {{1}}  //
   }};
 };
 
 /// 2D: across faces
-template <> struct neighbor_lookup_table_<2, 1> {
+template <>
+struct neighbor_lookup_table_<2, 1> {
   static constexpr array<neighbor_offset<2>, 4> stencil{{
    {{-1, 0}}, {{1, 0}}, {{0, -1}}, {{0, 1}}  //
   }};
 };
 
 /// 2D: across edges
-template <> struct neighbor_lookup_table_<2, 0> {
+template <>
+struct neighbor_lookup_table_<2, 0> {
   static constexpr array<neighbor_offset<2>, 4> stencil{{
    {{-1, -1}}, {{1, -1}}, {{-1, 1}}, {{1, 1}}  //
   }};
 };
 
 /// 3D: across faces
-template <> struct neighbor_lookup_table_<3, 2> {
+template <>
+struct neighbor_lookup_table_<3, 2> {
   static constexpr array<neighbor_offset<3>, 6> stencil{{
    {{-1, 0, 0}},
    {{1, 0, 0}},
@@ -195,7 +208,8 @@ template <> struct neighbor_lookup_table_<3, 2> {
 };
 
 /// 3D: across edges
-template <> struct neighbor_lookup_table_<3, 1> {
+template <>
+struct neighbor_lookup_table_<3, 1> {
   static constexpr array<neighbor_offset<3>, 12> stencil{{
    {{-1, -1, 0}},
    {{1, -1, 0}},
@@ -214,7 +228,8 @@ template <> struct neighbor_lookup_table_<3, 1> {
 };
 
 /// 3D: across corners
-template <> struct neighbor_lookup_table_<3, 0> {
+template <>
+struct neighbor_lookup_table_<3, 0> {
   static constexpr array<neighbor_offset<3>, 8> stencil{{
    {{-1, -1, -1}},
    {{1, -1, -1}},
@@ -234,13 +249,14 @@ constexpr auto neighbor_lookup_table = neighbor_lookup_table_<Nd, M>::stencil;
 
 ///@}  // Neighbor lookup tables
 
-template <dim_t Nd, dim_t M> struct manifold_neighbors;
+template <dim_t Nd, dim_t M>
+struct manifold_neighbors;
 
 /// Neighbor of an Nd-dimensional node across a (Nd - M)-dimensional face
 ///
 /// TODO: simplify this and provide a way of constructing custom neighbor search
 /// tables
-template <dim_t Nd, dim_t M>  //
+template <dim_t Nd, dim_t M>
 struct manifold_neighbors : geometry::dimensional<Nd> {
   static_assert(Nd >= 0 and Nd <= 3, "");
 
@@ -338,11 +354,15 @@ struct manifold_neighbors : geometry::dimensional<Nd> {
   }
 };
 
-template <typename T> using neighbor_idx_t = typename T::neighbor_idx;
+template <typename T>
+using neighbor_idx_t = typename T::neighbor_idx;
 
-template <dim_t Nd> using face_neighbors   = manifold_neighbors<Nd, 1>;
-template <dim_t Nd> using edge_neighbors   = manifold_neighbors<Nd, 2>;
-template <dim_t Nd> using corner_neighbors = manifold_neighbors<Nd, 3>;
+template <dim_t Nd>
+using face_neighbors = manifold_neighbors<Nd, 1>;
+template <dim_t Nd>
+using edge_neighbors = manifold_neighbors<Nd, 2>;
+template <dim_t Nd>
+using corner_neighbors = manifold_neighbors<Nd, 3>;
 
 /// neighbor of a nd-dimensional node across an m dimensional surface
 template <dim_t Nd, dim_t M>
@@ -398,7 +418,7 @@ constexpr auto opposite(NeighborIdx p) -> NeighborIdx {
 }
 
 /// Calls the unary function F with each neighbor manifold
-template <dim_t Nd, typename F>  //
+template <dim_t Nd, typename F>
 void for_each_neighbor_manifold(F&& f) {
   using manifold_rng = meta::as_list<meta::integer_range<dim_t, 1, Nd + 1>>;
   meta::for_each(manifold_rng{}, [&](auto m) {

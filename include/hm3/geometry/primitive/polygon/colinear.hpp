@@ -28,11 +28,13 @@ struct colinear_fn {
     };
 
     if (vertex(p, 0) == vertex(p, 1)) { return true; }
-    auto past_dir = line_dir(0, 1);  // note: directions are always normalized
-    HM3_ASSERT(past_dir().norm() == 1, "");
+    auto past_dir = line_dir(0, 1);
+    HM3_ASSERT(math::approx(past_dir().norm(), 1.),
+               "line directions are always normalized");
     for (dim_t v = 1; v < no_vertices - 1; ++v) {
       auto new_dir = line_dir(v, v + 1);
-      HM3_ASSERT(new_dir().norm() == 1, "");
+      HM3_ASSERT(math::approx(new_dir().norm(), 1.),
+                 "line directions are always normalized");
       if (vertex(p, v) == vertex(p, v + 1) or past_dir == new_dir) {
         return true;
       }

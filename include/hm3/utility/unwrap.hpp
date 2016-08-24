@@ -6,7 +6,8 @@
 
 namespace hm3 {
 
-template <typename T> constexpr decltype(auto) unwrap(T&& t) noexcept {
+template <typename T>
+constexpr decltype(auto) unwrap(T&& t) noexcept {
   return std::forward<T>(t);
 }
 

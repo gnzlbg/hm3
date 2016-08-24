@@ -18,7 +18,7 @@ namespace surface {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 struct indices
  : tile::surface::indices<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
   using self         = indices<Nd, Nic, Nhl>;

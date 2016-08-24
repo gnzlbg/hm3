@@ -18,7 +18,7 @@ namespace cell {
 /// \tparam Nd  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 struct indices : bounds<Nd, Nic, Nhl>,
                  tile::cell::indices<Nd, bounds<Nd, Nic, Nhl>::length()> {
   static_assert(Nhl > 0, "zero halo layers not supported");
@@ -49,7 +49,8 @@ struct indices : bounds<Nd, Nic, Nhl>,
   ///@{
 
   /// Iterates over all cells in the grid
-  template <typename F> static constexpr void for_each(F&& f) noexcept {
+  template <typename F>
+  static constexpr void for_each(F&& f) noexcept {
     tile_cell_indices::for_each(
      [&f](auto&& i) { return f(coordinate(std::forward<decltype(i)>(i))); });
   }
@@ -70,7 +71,7 @@ struct indices : bounds<Nd, Nic, Nhl>,
   /// Iterates over all the halo cells in the grid
   ///
   /// \note To be used when performing grid-local operations
-  template <typename F>  //
+  template <typename F>
   static constexpr void for_each_halo(F&& f) noexcept {
     auto g
      = [&f](auto&& i) { return f(coordinate(std::forward<decltype(i)>(i))); };

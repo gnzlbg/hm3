@@ -14,10 +14,13 @@
 #include <boost/spirit/include/phoenix.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/support_multi_pass.hpp>
+#include <hm3/utility/range.hpp>
 #include <string>
 #include <type_traits>
 
 namespace stl {
+
+using hm3::uncvref_t;
 
 struct ascii_t {};
 static constexpr ascii_t ascii{};
@@ -28,9 +31,13 @@ static constexpr binary_t binary{};
 inline namespace v1 {
 namespace utility {
 
-template <class T> struct static_const { static constexpr T value{}; };
+template <class T>
+struct static_const {
+  static constexpr T value{};
+};
 
-template <class T> constexpr T static_const<T>::value;
+template <class T>
+constexpr T static_const<T>::value;
 
 }  // namespace utility
 
@@ -41,12 +48,13 @@ namespace customization {
 
 /// Specialize this type trait to allow discovering the associated triangle type
 /// of a mesh automatically (it can be still manually specified on the parsers).
-template <typename Mesh>  //
+template <typename Mesh>
 struct triangle_type {
   using type = typename Mesh::triangle_type;
 };
 
-template <typename Mesh> using triangle_t = typename triangle_type<Mesh>::type;
+template <typename Mesh>
+using triangle_t = typename triangle_type<Mesh>::type;
 
 /// How to set a triangle normal vector component
 struct set_normal_fn {
@@ -160,7 +168,7 @@ namespace ka = boost::spirit::karma;
 namespace ascii_parser {
 
 /// Parses a single STL triangle
-template <typename It, typename Tri>  //
+template <typename It, typename Tri>
 struct triangle
  : qi::grammar<It, Tri(), qi::blank_type, qi::locals<size_t, size_t>> {
   triangle() : triangle::base_type(start, "stl_ascii_triangle") {
@@ -214,7 +222,7 @@ struct triangle
 
 /// Parses a STL mesh
 template <typename It, typename Mesh,
-          typename Tri = customization::triangle_t<Mesh>>  //
+          typename Tri = customization::triangle_t<Mesh>>
 struct mesh : qi::grammar<It, Mesh(), qi::blank_type, qi::locals<std::string>> {
   mesh() : mesh::base_type(start) {
     using qi::lit;
@@ -262,9 +270,10 @@ struct mesh : qi::grammar<It, Mesh(), qi::blank_type, qi::locals<std::string>> {
 namespace ascii_generator {
 
 /// Parses a single STL triangle
-template <typename It, typename Tri>  //
+template <typename It, typename Tri>
 struct triangle : ka::grammar<It, Tri(), ka::locals<std::size_t, std::size_t>> {
-  template <typename Num> struct float_policy : ka::real_policies<Num> {
+  template <typename Num>
+  struct float_policy : ka::real_policies<Num> {
     using base = ka::real_policies<Num>;
     static int floatfield(Num) { return base::fmtflags::scientific; }
     static bool force_sign(Num) { return true; }
@@ -313,7 +322,7 @@ struct triangle : ka::grammar<It, Tri(), ka::locals<std::size_t, std::size_t>> {
 namespace binary_parser {
 
 /// Parses a single STL triangle
-template <typename It, typename Tri>  //
+template <typename It, typename Tri>
 struct triangle : qi::grammar<It, Tri(), qi::locals<size_t, size_t>> {
   triangle() : triangle::base_type(start) {
     auto&& f_ = qi::bin_float;
@@ -347,7 +356,7 @@ struct triangle : qi::grammar<It, Tri(), qi::locals<size_t, size_t>> {
 
 /// Parses a STL mesh
 template <typename It, typename Mesh,
-          typename Tri = customization::triangle_t<Mesh>>  //
+          typename Tri = customization::triangle_t<Mesh>>
 struct mesh : qi::grammar<It, Mesh(), qi::blank_type, qi::locals<unsigned>> {
   mesh() : mesh::base_type(start) {
     using qi::repeat;
@@ -378,7 +387,7 @@ struct mesh : qi::grammar<It, Mesh(), qi::blank_type, qi::locals<unsigned>> {
 /// Parses an ASCII STL mesh in range [\p f, \p l) into the Mesh \p m
 template <typename InputIt, typename Mesh>
 bool parse_mesh(InputIt f, InputIt l, Mesh& m, ascii_t) {
-  using mesh_type = std::remove_reference_t<std::remove_cv_t<Mesh>>;
+  using mesh_type = uncvref_t<Mesh>;
   return qi::phrase_parse(f, l, ascii_parser::mesh<InputIt, mesh_type>{},
                           qi::blank, m);
 }
@@ -394,7 +403,7 @@ bool parse_mesh(InputRange& rng, Mesh& m, ascii_t) {
 /// Parses an ASCII STL triangle in range [\p f, \p l) into the Triangle \p t
 template <typename InputIt, typename Triangle>
 bool parse_triangle(InputIt f, InputIt l, Triangle& t, ascii_t) {
-  using triangle = std::remove_reference_t<std::remove_cv_t<Triangle>>;
+  using triangle = uncvref_t<Triangle>;
   return qi::phrase_parse(f, l, ascii_parser::triangle<InputIt, triangle>{},
                           qi::blank, t);
 }
@@ -411,7 +420,7 @@ bool parse_triangle(InputRange& rng, Triangle& t, ascii_t) {
 /// Parses an Binary STL triangle in range [\p f, \p l) into the Triangle \p t
 template <typename InputIt, typename Triangle>
 bool parse_triangle(InputIt f, InputIt l, Triangle& t, binary_t) {
-  using triangle = std::remove_reference_t<std::remove_cv_t<Triangle>>;
+  using triangle = uncvref_t<Triangle>;
   using iterator_value_type =
    typename std::iterator_traits<InputIt>::value_type;
   static_assert(std::is_same<iterator_value_type, char>{},
@@ -428,7 +437,7 @@ bool parse_mesh(InputIt f, InputIt l, Mesh& m, binary_t) {
   static_assert(std::is_same<iterator_value_type, char>{},
                 "stl binary parsers require a range of bytes (chars)");
 
-  using mesh_type = std::remove_reference_t<std::remove_cv_t<Mesh>>;
+  using mesh_type = uncvref_t<Mesh>;
   return qi::phrase_parse(f, l, binary_parser::mesh<InputIt, mesh_type>{},
                           qi::blank, m);
 }
@@ -436,7 +445,7 @@ bool parse_mesh(InputIt f, InputIt l, Mesh& m, binary_t) {
 /// Write a triangle \p t into an OutputIt \p out in ASCII format
 template <typename OutputIt, typename Triangle>
 std::pair<OutputIt, bool> write_triangle(OutputIt& out, Triangle& t, ascii_t) {
-  using triangle = std::remove_reference_t<std::remove_cv_t<Triangle>>;
+  using triangle = uncvref_t<Triangle>;
   ascii_generator::triangle<OutputIt, triangle> g{};
   auto b = ka::generate(out, g, t);
   return {out, b};

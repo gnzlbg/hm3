@@ -12,11 +12,10 @@ namespace fv {
 
 template <typename NumFluxF, typename V, typename Tile, typename CIdx,
           typename LHS>
-num_a<std::decay_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf,
-                                                          num_t dt, V&& v,
-                                                          Tile&& b, CIdx&& c,
-                                                          LHS&& lhs) {
-  using var_v = num_a<std::decay_t<V>::nvars()>;
+num_a<uncvref_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf, num_t dt,
+                                                       V&& v, Tile&& b,
+                                                       CIdx&& c, LHS&& lhs) {
+  using var_v = num_a<uncvref_t<V>::nvars()>;
   auto variables_at
    = [](auto&& vidx, auto&& g, num_t dx) { return vidx + g * dx; };
 

@@ -10,8 +10,8 @@
 namespace hm3 {
 
 /// A constexpr-friendly implementation of std::array
-template <typename T, suint_t N>  //
-struct array {                    // NOLINT
+template <typename T, suint_t N>
+struct array {  // NOLINT
   using self                   = array;
   using value_type             = T;
   using reference              = value_type&;
@@ -149,7 +149,7 @@ template <class T, hm3::suint_t N>
 struct tuple_size<hm3::array<T, N>>
  : public integral_constant<hm3::suint_t, N> {};
 
-template <size_t I, class T, hm3::suint_t N>  //
+template <size_t I, class T, hm3::suint_t N>
 struct tuple_element<I, hm3::array<T, N>> {
  public:
   using type = T;

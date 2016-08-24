@@ -14,7 +14,7 @@ namespace heat {
 namespace as {
 
 /// Analytical solution on a 1D slab
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct slab {
   using i       = indices<Nd>;
   using point_t = geometry::point<Nd>;
@@ -35,7 +35,8 @@ struct slab {
     initialize(std::forward<F>(f));
   }
 
-  template <typename F> void initialize(F&& initial_condition) {
+  template <typename F>
+  void initialize(F&& initial_condition) {
     for (suint_t n = 1; n <= no_iterations; ++n) {
       auto f = [&](num_t x) {
         HM3_ASSERT(x >= 0. and x <= 1, "");

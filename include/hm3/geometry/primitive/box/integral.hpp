@@ -8,7 +8,7 @@
 namespace hm3::geometry::box_primitive {
 
 /// Volume of the box \p s
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr auto integral(box<Nd> const& s, volume_integral<box<Nd>>) noexcept {
   return math::ipow(s.length_, Nd);
 }

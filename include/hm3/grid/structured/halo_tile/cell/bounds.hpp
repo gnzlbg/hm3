@@ -38,7 +38,10 @@ constexpr tidx_t last_halo_right(tidx_t nic, tidx_t nhl) noexcept {
   return 2 * nhl + nic - 1;
 }
 
-template <dim_t Nd> struct subtile_bounds { array<tile::tidx_t, Nd> from, to; };
+template <dim_t Nd>
+struct subtile_bounds {
+  array<tile::tidx_t, Nd> from, to;
+};
 
 }  // namespace detail
 
@@ -48,7 +51,7 @@ template <dim_t Nd> struct subtile_bounds { array<tile::tidx_t, Nd> from, to; };
 /// Nic: number of internal cells per dimension
 /// Nhl: number of of halo layers
 ///
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
   using self = bounds;
   /// \name Sizes
@@ -134,13 +137,13 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
 
 namespace detail {
 
-template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_ {
   static constexpr array<subtile_bounds<0>, 0> indices{};
 };
 
 // 1D face halo tiles
-template <tidx_t Nic, tidx_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_<1, 1, Nic, Nhl> {
   using b = bounds<1, Nic, Nhl>;
   static constexpr array<subtile_bounds<1>, 2> indices{{
@@ -155,7 +158,7 @@ struct halo_tiles_lookup_table_<1, 1, Nic, Nhl> {
 };
 
 // 2D face halo tiles
-template <tidx_t Nic, tidx_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_<2, 1, Nic, Nhl> {
   using b = bounds<2, Nic, Nhl>;
   static constexpr array<subtile_bounds<2>, 4> indices{{
@@ -176,7 +179,7 @@ struct halo_tiles_lookup_table_<2, 1, Nic, Nhl> {
 };
 
 // 2D edge (corner) halo tiles
-template <tidx_t Nic, tidx_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_<2, 2, Nic, Nhl> {
   using b = bounds<2, Nic, Nhl>;
   static constexpr array<subtile_bounds<2>, 4> indices{{
@@ -197,7 +200,7 @@ struct halo_tiles_lookup_table_<2, 2, Nic, Nhl> {
 };
 
 // 3D face halo tiles
-template <tidx_t Nic, tidx_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_<3, 1, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
   static constexpr array<subtile_bounds<3>, 6> indices{{
@@ -224,7 +227,7 @@ struct halo_tiles_lookup_table_<3, 1, Nic, Nhl> {
 };
 
 // 3D edge halo tiles
-template <tidx_t Nic, tidx_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_<3, 2, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
   static constexpr array<subtile_bounds<3>, 12> indices{{
@@ -269,7 +272,7 @@ struct halo_tiles_lookup_table_<3, 2, Nic, Nhl> {
 };
 
 // 3D corner halo tiles
-template <tidx_t Nic, tidx_t Nhl>  //
+template <tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_<3, 3, Nic, Nhl> {
   using b = bounds<3, Nic, Nhl>;
   static constexpr array<subtile_bounds<3>, 8> indices{{
@@ -302,7 +305,7 @@ struct halo_tiles_lookup_table_<3, 3, Nic, Nhl> {
 };
 
 namespace {
-template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>
 static constexpr auto halo_tiles_lookup_table
  = halo_tiles_lookup_table_<Nd, M, Nic, Nhl>::indices;
 }  // namespace

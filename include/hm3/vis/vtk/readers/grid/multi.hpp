@@ -11,7 +11,7 @@ namespace vtk {
 namespace grid {
 
 /// Multi hierarchical Cartesian grid reader
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct multi : tree<Nd> {
   using tree<Nd>::grid;
   using grid_idx = ::hm3::hierarchical::grid_idx;

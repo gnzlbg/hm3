@@ -41,12 +41,14 @@ struct serializable : geometry::dimensional<State::dimension()> {
 
   auto bounding_box() const noexcept { return s.grid.tree().bounding_box(); }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }
 
-  template <typename CellData> void load(CellData&& cell_data) const {
+  template <typename CellData>
+  void load(CellData&& cell_data) const {
     cell_data.load("cell_idx", [&](cell_idx n, auto&&) {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
@@ -105,7 +107,8 @@ struct ls_serializable : serializable<State, Solid> {
            });
   }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }

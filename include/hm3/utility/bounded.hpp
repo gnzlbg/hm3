@@ -9,7 +9,8 @@
 namespace hm3 {
 
 /// A tagged type with values in range [from, to)
-template <typename T, T from, T to, typename Tag = void> struct bounded {
+template <typename T, T from, T to, typename Tag = void>
+struct bounded {
   using self           = bounded<T, from, to, Tag>;
   using value_type     = T;
   using tag            = Tag;

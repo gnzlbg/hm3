@@ -2,7 +2,6 @@
 
 This is `hm3`'s directory structure in a nutshell:
 
-
 - `geometry/`: geometry primitive and algorithms.
     - `sd/`: signed-distance functions.
 - `grid/`: grid data-structure and algorithms:
@@ -21,10 +20,5 @@ This is `hm3`'s directory structure in a nutshell:
     - `config/`: configurable macros.
 - `vis/`: visualization framework (for building ParaView plugins).
 
-Namespaces in `hm3` try to follow a structure closely related to this directory's
-structure.
-
-**TODO**:
-
-- strip fast location from tree (use only slim, and rename it to location or
-  something)
+Namespaces in `hm3` try to follow a structure closely related to this
+directory's structure.

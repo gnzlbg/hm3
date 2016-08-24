@@ -13,22 +13,28 @@
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
-template <typename T> struct dump;
+template <typename T>
+struct dump;
 
 using namespace hm3;
 using namespace solver;
 
-template <typename F> struct BoundaryConditions {
+template <typename F>
+struct BoundaryConditions {
   F f;
   BoundaryConditions(F f_) : f(f_) {}
-  template <typename State> constexpr void apply(State& s) {
+  template <typename State>
+  constexpr void apply(State& s) {
     for (auto&& b : s.blocks()) {
       b.for_each_halo([&](auto&& c) { b.variables(c) = f(b, c); });
     }
   }
 };
 
-template <typename F> auto make_bcs(F&& f) { return BoundaryConditions<F>(f); }
+template <typename F>
+auto make_bcs(F&& f) {
+  return BoundaryConditions<F>(f);
+}
 
 struct NeumannBoundaryConditions {
   template <typename State, typename To>
@@ -75,7 +81,8 @@ struct NeumannBoundaryConditions {
 //   }
 // };
 
-template <uint_t Nd> struct test_state {
+template <uint_t Nd>
+struct test_state {
   using var_v = num_a<Nd + 2>;
   var_v cv;
   var_v pv;

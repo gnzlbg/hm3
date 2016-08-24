@@ -19,7 +19,7 @@ namespace cell {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per dimension
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct indices : bounds<Nd, Nc> {
   using self               = indices<Nd, Nc>;
   using index              = index<Nd, Nc>;
@@ -30,7 +30,7 @@ struct indices : bounds<Nd, Nc> {
   ///@{
 
   /// Executes \p f for each cell in the tile
-  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>  //
+  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
 #ifdef HM3_COMPILER_CLANG
@@ -42,7 +42,7 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each cell in the tile
-  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>  //
+  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
     for (tidx_t j = 0; j < l; ++j) {
@@ -56,7 +56,7 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each cell in the tile
-  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>  //
+  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
     for (tidx_t k = 0; k < l; ++k) {
@@ -142,7 +142,7 @@ struct indices : bounds<Nd, Nc> {
   ///@}  // Iteration offsets for sub-tiles
 
   /// Executes \p f for each sub-tile (\p from, \p to)
-  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>  //
+  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(
    const coordinate from, const coordinate to, F&& f) noexcept {
     assert_from_to(from, to);
@@ -155,7 +155,7 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each sub-tile (\p from, \p to)
-  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>  //
+  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>
   [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(
    const coordinate from, const coordinate to, F&& f) noexcept {
     assert_from_to(from, to);
@@ -170,7 +170,7 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each sub-tile (\p from, \p to)
-  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>  //
+  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>
   [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto for_each(
    const coordinate from, const coordinate to, F&& f) noexcept {
     assert_from_to(from, to);

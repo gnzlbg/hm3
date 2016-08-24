@@ -41,7 +41,7 @@ template <typename State, typename Tile, typename CIdx, typename Limiter>
 auto compute_local_central_difference_structured_gradient(State& s, Tile& b,
                                                           CIdx c, dim_t d,
                                                           Limiter& limiter) {
-  using vars     = num_a<std::decay_t<State>::nvars()>;
+  using vars     = num_a<uncvref_t<State>::nvars()>;
   const auto dx  = b.geometry().cell_length();
   const auto dx2 = 2. * dx;
   auto&& lhs     = s.time_integration.lhs(b);

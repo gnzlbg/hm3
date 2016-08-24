@@ -12,7 +12,7 @@ namespace grid {
 namespace structured {
 namespace tile {
 
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct cell_geometry : geometry::box<Nd>, cell::indices<Nd, Nc>::coordinate {
   using box_t        = geometry::box<Nd>;
   using coordinate_t = typename cell::indices<Nd, Nc>::coordinate;
@@ -30,7 +30,7 @@ struct cell_geometry : geometry::box<Nd>, cell::indices<Nd, Nc>::coordinate {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct tile_geometry : geometry::dimensional<Nd> {
   using bounds          = cell::bounds<Nd, Nc>;
   using point_t         = geometry::point<Nd>;

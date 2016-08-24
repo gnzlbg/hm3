@@ -1,4 +1,8 @@
-#include <hm3/geometry/discrete/primitive/polygon.hpp>
+int main() { return 0; }
+
+#ifdef ABC
+
+#include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/geometry/sd/combinators.hpp>
 #include <hm3/geometry/sd/edge.hpp>
 #include <hm3/utility/test.hpp>
@@ -403,3 +407,4 @@ int main() {
   return test::result();
 }
 */
+#endif

@@ -13,7 +13,7 @@ namespace lbm {
 template <typename Physics>
 using block_t_ = block<Physics::dimension(), Physics::size(), 128, 0>;
 
-template <typename Physics>  //
+template <typename Physics>
 struct state : hierarchical_block_structured_grid<block_t_<Physics>> {
   using block_t   = block_t_<Physics>;
   using hbsg      = hierarchical_block_structured_grid<block_t>;

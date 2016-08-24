@@ -8,7 +8,7 @@
 namespace hm3 {
 namespace solver {
 
-template <typename B, typename T, typename F>  //
+template <typename B, typename T, typename F>
 void call_as(T&& t, F&& f) {
   using base_type_ref
    = std::add_lvalue_reference_t<std::conditional_t<std::is_const<T>{},
@@ -22,7 +22,7 @@ auto call_as(T&& t, F&& f) -> std::enable_if_t<(sizeof...(Bs) > 0), void> {
   call_as<Bs...>(t, f);
 }
 
-template <typename BoxGrid, typename... Vars>  //
+template <typename BoxGrid, typename... Vars>
 struct tile : BoxGrid, Vars... {
   using grid_t = BoxGrid;
   using bbox_t = geometry::box<BoxGrid::dimension()>;

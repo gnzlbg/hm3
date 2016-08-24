@@ -10,7 +10,8 @@
 #include <hm3/solver/utility.hpp>
 #include <hm3/utility/test.hpp>
 
-template <typename T> struct dump;
+template <typename T>
+struct dump;
 
 using namespace hm3;
 using namespace solver;

@@ -39,7 +39,8 @@ inline void abort(int error_code) {
 };
 
 /// Calls MPI function f
-template <typename F, typename At> void call(F&& f, At&& at) {
+template <typename F, typename At>
+void call(F&& f, At&& at) {
   handle_error(f(), at);
 }
 

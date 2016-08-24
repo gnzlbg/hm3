@@ -30,7 +30,8 @@ inline string data_type(suint_t) { return "unsigned integer"; }
 inline string data_type(num_t) { return "number"; }
 inline string data_type(bool) { return "boolean"; }
 
-template <typename T> bool correct_datatype(T, string const& s) {
+template <typename T>
+bool correct_datatype(T, string const& s) {
   return data_type(T{}) == s;
 }
 
@@ -156,7 +157,8 @@ struct file {
   }
 
   /// Adds field named \p field_name of constant \p value:
-  template <typename T> file& field(string const& field_name, T value) {
+  template <typename T>
+  file& field(string const& field_name, T value) {
     HM3_ASSERT(!has_field(field_name),
                "file \"{}\" already has a field named \"{}\"", name(),
                field_name);

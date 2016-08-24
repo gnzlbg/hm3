@@ -11,17 +11,25 @@ namespace solver {
 namespace level_set {
 
 /// Solver-state type-name
-template <dim_t Nd> string type(state<Nd> const&) { return "level_set"; }
+template <dim_t Nd>
+string type(state<Nd> const&) {
+  return "level_set";
+}
 
 /// Name of the level-set solver state
-template <dim_t Nd> string name(state<Nd> const& s, grid_idx idx) {
+template <dim_t Nd>
+string name(state<Nd> const& s, grid_idx idx) {
   using std::to_string;
   return type(s) + "_" + to_string(*idx);
 }
 
-template <dim_t Nd> string name(state<Nd> const& s) { return name(s, s.idx()); }
+template <dim_t Nd>
+string name(state<Nd> const& s) {
+  return name(s, s.idx());
+}
 
-template <dim_t Nd> struct state : geometry::dimensional<Nd> {
+template <dim_t Nd>
+struct state : geometry::dimensional<Nd> {
   using grid = ::hm3::grid::hierarchical::client::multi<Nd>;
 
   using tree_t   = typename grid::tree_t;
@@ -112,7 +120,8 @@ template <dim_t Nd> struct state : geometry::dimensional<Nd> {
     return coarsen_guard.new_parent();
   }
 
-  template <typename SD> void set_node_values(SD&& sd) noexcept {
+  template <typename SD>
+  void set_node_values(SD&& sd) noexcept {
     RANGES_FOR (auto&& n, g.in_use()) {
       signed_distance(n) = sd(g.coordinates(n));
     }
@@ -150,11 +159,13 @@ template <dim_t Nd> struct state : geometry::dimensional<Nd> {
   }
 };
 
-template <dim_t Nd> bool operator==(state<Nd> const& a, state<Nd> const& b) {
+template <dim_t Nd>
+bool operator==(state<Nd> const& a, state<Nd> const& b) {
   return a.g == b.g and equal(a.signed_distance, b.signed_distance);
 }
 
-template <dim_t Nd> bool operator!=(state<Nd> const& a, state<Nd> const& b) {
+template <dim_t Nd>
+bool operator!=(state<Nd> const& a, state<Nd> const& b) {
   return !(a == b);
 }
 

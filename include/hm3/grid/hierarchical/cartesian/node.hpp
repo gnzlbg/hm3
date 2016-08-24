@@ -12,7 +12,7 @@ namespace hierarchical {
 namespace cartesian {
 
 /// Hierarchical Cartesian grid node
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct node : geometry::box<Nd>, tree_node_idx {
   using point_t               = geometry::point<Nd>;
   using box_t                 = geometry::box<Nd>;

@@ -4,6 +4,7 @@
 /// Intersection between two points.
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/point/point.hpp>
+#include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::point_primitive {
 
@@ -14,10 +15,10 @@ constexpr bool intersection_test(point<Nd> const& a,
 }
 
 template <dim_t Nd>
-constexpr optional<point<Nd>> intersection(point<Nd> const& a,
-                                           point<Nd> const& b) noexcept {
+constexpr variant<monostate, point<Nd>> intersection(
+ point<Nd> const& a, point<Nd> const& b) noexcept {
   if (intersection_test(a, b)) { return a; }
-  return optional<point<Nd>>{};
+  return {};
 }
 
 }  // namespace hm3::geometry::point_geometry

@@ -12,7 +12,8 @@ namespace sd {
 ///@{
 
 /// Signed distance to a sphere centered at zero
-template <dim_t Nd> num_t sphere(point<Nd> x, const num_t r) noexcept {
+template <dim_t Nd>
+num_t sphere(point<Nd> x, const num_t r) noexcept {
   return x().norm() - r;
 }
 
@@ -27,7 +28,8 @@ num_t sphere(point<Nd> const& x, point<Nd> const& x_c, const num_t r) noexcept {
 /// \name Fixed Sphere
 ///@{
 
-template <dim_t Nd> struct sphere_t : dimensional<Nd> {
+template <dim_t Nd>
+struct sphere_t : dimensional<Nd> {
   point<Nd> centroid;
   num_t radius;
   constexpr sphere_t() = default;
@@ -43,7 +45,8 @@ template <dim_t Nd> struct sphere_t : dimensional<Nd> {
 /// \name Time-dependent rigid sphere
 ///@{
 
-template <dim_t Nd> struct moving_sphere : dimensional<Nd> {
+template <dim_t Nd>
+struct moving_sphere : dimensional<Nd> {
   const num_t radius;
   point<Nd> centroid;
   constexpr moving_sphere(const num_t radius_) : radius{radius_} {}

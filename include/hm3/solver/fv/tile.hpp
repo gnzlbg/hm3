@@ -11,14 +11,14 @@ namespace solver {
 namespace fv {
 
 /// Grid client type of FV state
-template <typename Tile>  //
+template <typename Tile>
 using grid_client_type = tiled_hierarchical_grid<Tile>;
 
 /// Finite Volume tile layout
 template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 using tile_layout = grid::structured::grid<Nd, Nic, Nhl>;
 
-template <typename T>  //
+template <typename T>
 using tile_variables_t = typename T::tile_variables;
 
 /// Helper to create a meta::list<Vars...> of tile variables
@@ -29,12 +29,11 @@ using tile_variables =                                             //
   meta::invoke<tile_variables_t<Physics>, Grid>,                   //
   meta::invoke<tile_variables_t<TimeIntegration>, Grid, Physics>,  //
   meta::invoke<tile_variables_t<Method>, Grid, Physics, TimeIntegration,
-               NumFlux>  //
-  >;
+               NumFlux>>;
 
 /// This unwraps the variables from the meta::list<Vars...> into
 /// `tile<Grid,Args...>`.
-template <typename Arg, typename... Args>  //
+template <typename Arg, typename... Args>
 struct unwrap_variables_into_tile {
   using type =
    // If you get this error it is most likely that you are passing the tile
@@ -74,7 +73,7 @@ using tile_type = typename meta::
 
 // using tidx_t = grid::structured::tidx_t;
 
-// template <dim_t Nd, uint_t Nv, tidx_t Nic, tidx_t Nhl>  //
+// template <dim_t Nd, uint_t Nv, tidx_t Nic, tidx_t Nhl>
 // struct tile_base : grid::structured::grid<Nd, Nic, Nhl> {
 //   using grid_t = grid::structured::grid<Nd, Nic, Nhl>;
 //   using grid_t::dimension;
@@ -233,7 +232,7 @@ using tile_type = typename meta::
 // #pragma clang diagnostic pop
 // };
 
-// template <typename TileBase, typename TimeIntegrationState>  //
+// template <typename TileBase, typename TimeIntegrationState>
 // struct tile : TileBase, TimeIntegrationState {
 //   using TileBase::TileBase;
 //   using TileBase::operator=;

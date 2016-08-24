@@ -9,14 +9,16 @@ template <dim_t Nd, tidx_t Nc>
 using tile_geom = grid::structured::tile::tile_geometry<Nd, Nc>;
 
 // Bounding box at the origin with length 1
-template <dim_t Nd> constexpr geometry::box<Nd> bbox_orig() {
+template <dim_t Nd>
+constexpr geometry::box<Nd> bbox_orig() {
   auto x_c = geometry::point<Nd>::constant(0.);
   auto l   = 1.0;
   return geometry::box<Nd>{x_c, l};
 }
 
 // Bounding box at x=(-3., -3, ...) ith length 2
-template <dim_t Nd> constexpr geometry::box<Nd> bbox_off() {
+template <dim_t Nd>
+constexpr geometry::box<Nd> bbox_off() {
   auto x_c = geometry::point<Nd>::constant(-3.);
   auto l   = 2.0;
   return geometry::box<Nd>{x_c, l};
@@ -78,7 +80,8 @@ void test_off5(TileGeometry) {
   }
 }
 
-template <dim_t Nd> void test_tile() {
+template <dim_t Nd>
+void test_tile() {
   {  // orig, 1 cell
     using g_t = tile_geom<Nd, 1>;
     test_orig(g_t{}, 1);

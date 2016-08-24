@@ -13,7 +13,7 @@ namespace structured {
 namespace tile {
 namespace surface {
 
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct coordinate {
   using self            = coordinate;
   using cell_coordinate = cell::coordinate<Nd, Nc>;

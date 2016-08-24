@@ -1,4 +1,5 @@
 #include "aabb.hpp"
+#include <hm3/geometry/algorithm/intersection/aabb.hpp>
 #include <hm3/geometry/primitive/aabb.hpp>
 #include <hm3/utility/test.hpp>
 

@@ -18,7 +18,8 @@ constexpr num_t edge(point<Nd> x, point<Nd> p, vec<Nd> n) noexcept {
 
 /// Oriented edge at point centroid with normal vec. Signed distance is
 /// positive in positive normal direction.
-template <int_t Nd> struct fixed_edge : dimensional<Nd> {
+template <int_t Nd>
+struct fixed_edge : dimensional<Nd> {
   point<Nd> centroid;
   vec<Nd> normal;
 

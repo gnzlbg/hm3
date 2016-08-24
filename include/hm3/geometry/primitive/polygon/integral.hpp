@@ -135,7 +135,7 @@ constexpr num_t area_triangle(Triangle&& t) noexcept {
 }
 
 /// Area of the polygon \p p.
-template <typename P>  //
+template <typename P>
 constexpr num_t area(P&& p) noexcept {
 #if !defined(HM3_GEOMETRY_POLYGON_USE_GENERIC_SIGNED_AREA)
   if (vertex_size(p) == 3) { return area_triangle(std::forward<P>(p)); }

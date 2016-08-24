@@ -15,9 +15,8 @@ namespace rc = ranges::concepts;
 
 struct signed_distance {
   template <typename T, typename U>
-  auto requires_(T&& t, U &&)
-   -> decltype(rc::valid_expr(rc::convertible_to<num_t>(
-    t(std::declval<point<std::decay_t<U>::value>>()))));
+  auto requires_(T&& t, U &&) -> decltype(rc::valid_expr(
+   rc::convertible_to<num_t>(t(std::declval<point<uncvref_t<U>::value>>()))));
 };
 
 using SignedDistance = signed_distance;

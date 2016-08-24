@@ -10,7 +10,8 @@ namespace hm3::geometry {
 namespace integral_detail {
 
 /// Rank of the integral to be computed.
-template <dim_t IR> using integral_rank = std::integral_constant<dim_t, IR>;
+template <dim_t IR>
+using integral_rank = std::integral_constant<dim_t, IR>;
 
 /// Volume integral.
 ///

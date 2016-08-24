@@ -10,8 +10,7 @@ namespace hm3 {
 
 namespace inline_vector_detail {
 
-template <typename T, std::size_t Capacity,
-          bool IsTriviallyDestructible>  //
+template <typename T, std::size_t Capacity, bool IsTriviallyDestructible>
 struct storage {
   static_assert(Capacity != std::size_t{0}, "");
   std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value>
@@ -40,7 +39,7 @@ struct storage {
   ~storage() { destroy_all(); }
 };
 
-template <typename T, std::size_t Capacity>  //
+template <typename T, std::size_t Capacity>
 struct storage<T, Capacity, true> {
   static_assert(Capacity != std::size_t{0}, "");
   std::aligned_storage_t<sizeof(T), std::alignment_of<T>::value> data_[Capacity]
@@ -59,7 +58,8 @@ struct storage<T, Capacity, true> {
   static constexpr void destroy_all() noexcept {}
 };
 
-template <typename T> struct empty_storage {
+template <typename T>
+struct empty_storage {
   constexpr const T* data() const noexcept { return nullptr; }
   constexpr T* data() noexcept { return nullptr; }
 
@@ -72,10 +72,10 @@ template <typename T> struct empty_storage {
   static constexpr void destroy_all() noexcept {}
 };
 
-template <typename T>  //
+template <typename T>
 struct storage<T, 0, true> : empty_storage<T> {};
 
-template <typename T>  //
+template <typename T>
 struct storage<T, 0, false> : empty_storage<T> {};
 
 }  // namespace inline_vector_detail
@@ -89,7 +89,7 @@ struct storage<T, 0, false> : empty_storage<T> {};
 /// - implement the rest of the std::vector interface
 /// - make it as exception safe as possible
 /// - document undefined behavior
-template <typename T, std::size_t Capacity>  //
+template <typename T, std::size_t Capacity>
 struct inline_vector
  : inline_vector_detail::storage<T, Capacity,
                                  std::is_trivially_destructible<T>{}> {

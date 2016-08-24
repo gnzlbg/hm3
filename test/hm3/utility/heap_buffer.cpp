@@ -54,7 +54,8 @@ void is_filled_with(memory::buffer::view<num_t> const& b, const num_t value) {
   CHECK(b.size() == c);
 }
 
-template <class T> void basic_buffer_test(memory::buffer::buffer& buf) {
+template <class T>
+void basic_buffer_test(memory::buffer::buffer& buf) {
   /// Create a buffer view of 10 Ts
   {
     memory::buffer::view<T> b{buf, 10};
@@ -78,7 +79,8 @@ template <class T> void basic_buffer_test(memory::buffer::buffer& buf) {
   }
 }
 
-template <class T> void basic_buffer_test() {
+template <class T>
+void basic_buffer_test() {
   memory::buffer::buffer b;
   basic_buffer_test<T>(b);
 }

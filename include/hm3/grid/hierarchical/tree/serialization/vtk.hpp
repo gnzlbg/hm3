@@ -22,7 +22,8 @@ namespace vtk {
 ///  - a bounding_box() method
 ///  - a dimensions() method
 ///  - a for_each_cell(F&&) method
-template <dim_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
+template <dim_t Nd>
+struct serializable_tree : geometry::dimensional<Nd> {
   tree<Nd> const& t_;
   sint_t level_ = -1;
 
@@ -49,12 +50,14 @@ template <dim_t Nd> struct serializable_tree : geometry::dimensional<Nd> {
     return geometry::box<Nd>(geometry::point<Nd>::constant(0.5), 1.0);
   }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }
 
-  template <typename CellData> void load(CellData&& cell_data) const {
+  template <typename CellData>
+  void load(CellData&& cell_data) const {
     cell_data.load("idx", [&](node_idx n, auto&&) {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });

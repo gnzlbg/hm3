@@ -29,16 +29,30 @@ struct fixed_polygon : ranked<Nd, 2>, array<point<Nd>, Nv> {
 
   fixed_polygon() = default;
 
-  template <typename Vertices, CONCEPT_REQUIRES_(Range<Vertices>{})>
+  template <typename Vertices,
+            CONCEPT_REQUIRES_(!access::Vertex<Vertices>{} and Range<Vertices>{}
+                              and !Polyline<Vertices>{})>
   fixed_polygon(Vertices&& vs) noexcept {
     HM3_ASSERT(ranges::distance(vs) == Nv, "");
     ranges::copy(vs, begin(*this));
   }
 
+  template <typename P,
+            CONCEPT_REQUIRES_(access::Vertex<P>{}
+                              and !Same<fixed_polygon<Nd, Nv>, uncvref_t<P>>{}
+                              and !Polyline<P, Nd>{})>
+  fixed_polygon(P&& p) noexcept : fixed_polygon(geometry::vertices(p)) {}
+
   fixed_polygon(std::initializer_list<point<Nd>> vs) noexcept {
     HM3_ASSERT(ranges::distance(vs) == Nv, "");
     ranges::copy(vs, begin(*this));
   }
+
+  array_t const& vertices() const & noexcept {
+    return static_cast<array_t const&>(*this);
+  }
+  array_t& vertices() & noexcept { return static_cast<array_t&>(*this); }
+  array_t vertices() && noexcept { return static_cast<array_t>(*this); }
 };
 
 template <dim_t Nd, dim_t Nv>
@@ -68,7 +82,7 @@ template <typename FixedPoly, typename UFP = uncvref_t<FixedPoly>,
           dim_t Nd = UFP::dimension(), dim_t Nv = UFP::size(),
           CONCEPT_REQUIRES_(Same<UFP, fixed_polygon<Nd, Nv>>{})>
 constexpr decltype(auto) vertices(FixedPoly&& p) noexcept {
-  return std::forward<FixedPoly>(p);
+  return p.vertices();
 }
 
 /// Vertex \p v of the polygon \p p.

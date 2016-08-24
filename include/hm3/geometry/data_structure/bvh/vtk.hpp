@@ -25,12 +25,13 @@ struct serializable : geometry::dimensional<State::dimension()> {
     return bounding_volume.box(s.nodes_[0].bound);
   }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }
 
-  template <typename CellData>  //
+  template <typename CellData>
   void load(CellData&& cell_data) const {
     cell_data.load("node_idx", [&](vtk_cell_idx n, auto&&) {
       return n ? static_cast<int_t>(*n) : int_t{-1};
@@ -45,7 +46,8 @@ struct serializable : geometry::dimensional<State::dimension()> {
   serializable(State const& s_) : s(s_) {}
 };
 
-template <typename State> void serialize(State const& state, string file_name) {
+template <typename State>
+void serialize(State const& state, string file_name) {
   using std::to_string;
   hm3::log::serial log("bvh-serialization-to-vtk");
 

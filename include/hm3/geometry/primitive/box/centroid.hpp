@@ -8,7 +8,7 @@
 namespace hm3::geometry::box_primitive {
 
 /// Box centroid coordinates
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr point<Nd> centroid(box<Nd> const& b) noexcept {
   return b.centroid_;
 }

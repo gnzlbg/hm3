@@ -11,7 +11,7 @@ namespace hm3::geometry {
 /// \tparam Nd Number of spatial dimensions.
 /// \tparam R Rank (Nd >= R).
 ///
-template <dim_t Nd, dim_t R>  //
+template <dim_t Nd, dim_t R>
 struct ranked : dimensional<Nd> {
   static_assert(Nd >= R, "The rank of a geometric object cannot exceed the "
                          "number of spatial dimensions");
@@ -51,7 +51,7 @@ struct ranked : dimensional<Nd> {
 
 namespace geometry_detail {
 
-template <dim_t Nd, dim_t R>  //
+template <dim_t Nd, dim_t R>
 constexpr auto rank(ranked<Nd, R> const&) noexcept {
   return ranked<Nd, R>::rank();
 }
@@ -78,11 +78,12 @@ static constexpr auto const& rank
 template <typename T>
 using rank_t = decltype(rank(std::declval<uncvref_t<T>>()));
 
-template <typename T> static constexpr auto rank_v = rank_t<T>{};
+template <typename T>
+static constexpr auto rank_v = rank_t<T>{};
 
 namespace geometry_detail {
 
-template <typename T>  //
+template <typename T>
 constexpr auto ranks(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
  view::iota(dim_t{0}, static_cast<dim_t>(hm3::geometry::rank(t))));
 

@@ -4,6 +4,7 @@
 /// Closed polygon.
 #include <hm3/geometry/concepts.hpp>
 #include <hm3/geometry/primitive/fwd.hpp>
+#include <hm3/geometry/primitive/polygon/as_polyline.hpp>
 #include <hm3/geometry/primitive/polygon/bounded_polygon.hpp>
 #include <hm3/geometry/primitive/polygon/bounding_length.hpp>
 #include <hm3/geometry/primitive/polygon/bounding_volume.hpp>

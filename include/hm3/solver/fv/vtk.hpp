@@ -3,9 +3,9 @@
 ///
 /// Serialization of FV solver to VTK
 #ifdef HM3_ENABLE_VTK
+#include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
-#include <hm3/geometry/primitive/polygon/intersection.hpp>
 #include <hm3/solver/fv/state.hpp>
 #include <hm3/utility/variant.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
@@ -36,12 +36,14 @@ struct serializable : geometry::dimensional<State::dimension()> {
 
   auto bounding_box() const noexcept { return s.tree().bounding_box(); }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }
 
-  template <typename CellData> void load(CellData&& cell_data) const {
+  template <typename CellData>
+  void load(CellData&& cell_data) const {
     cell_data.load("cell_idx", [&](cell_idx n, auto&&) {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
@@ -77,7 +79,7 @@ struct ls_serializable : serializable<State, T> {
 
   vis::vtk::geometries<nd> geometry(cell_idx c) const noexcept {
     auto g = s.geometry(c);
-    if (!geometry::is_intersected(g, ls)) { return g; }
+    if (!geometry::intersection.test(g, ls)) { return g; }
     return std::get<0>(intersect(g, ls));
   }
 
@@ -92,12 +94,14 @@ struct ls_serializable : serializable<State, T> {
            });
   }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     f(nodes());
     return f;
   }
 
-  template <typename CellData> void load(CellData&& cell_data) const {
+  template <typename CellData>
+  void load(CellData&& cell_data) const {
     serializable<State, T>::load(cell_data);
     cell_data.load("level_set", [&](cell_idx n, auto&&) {
       auto x_i = geometry::centroid(s.geometry(n));

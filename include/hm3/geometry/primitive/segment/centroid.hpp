@@ -8,7 +8,7 @@
 namespace hm3::geometry::segment_primitive {
 
 /// Centroid coordinates of the line segment \p s.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr point<Nd> centroid(segment<Nd> const& s) noexcept {
   point<Nd> v;
   v() = s.x(0)() + 0.5 * (s.x(1)() - s.x(0)());

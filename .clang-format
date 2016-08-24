@@ -1,7 +1,8 @@
 BasedOnStyle: Google
 AccessModifierOffset: -1
-AlignAfterOpenBracket: true
+AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: false
 AlignEscapedNewlinesLeft: true
 AlignOperands: true
 AlignTrailingComments: true
@@ -13,12 +14,13 @@ AllowShortIfStatementsOnASingleLine: true
 AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AlwaysBreakTemplateDeclarations: false
+AlwaysBreakTemplateDeclarations: true
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: true
 BreakBeforeBraces: Attach
 BreakBeforeTernaryOperators: true
+BreakStringLiterals: true
 BreakConstructorInitializersBeforeComma: true
 ColumnLimit: 80
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
@@ -38,6 +40,7 @@ MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
 PenaltyBreakBeforeFirstCallParameter: 10
 PointerAlignment: Left
+ReflowComments: true
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
 SpaceBeforeParens: ControlStatements

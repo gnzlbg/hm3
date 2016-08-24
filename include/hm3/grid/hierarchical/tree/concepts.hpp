@@ -12,8 +12,10 @@
 namespace hm3 {
 namespace tree {
 
-template <typename Loc> using morton_idx_t = typename Loc::morton_idx_t;
-template <typename Loc> using morton_x_t   = typename Loc::morton_x_t;
+template <typename Loc>
+using morton_idx_t = typename Loc::morton_idx_t;
+template <typename Loc>
+using morton_x_t = typename Loc::morton_x_t;
 
 namespace concepts {
 namespace rc = ranges::concepts;
@@ -21,8 +23,8 @@ namespace rc = ranges::concepts;
 /// Locational codes model the location concept
 struct location : rc::refines<rc::Regular, geometry::concepts::Dimensional,
                               rc::TotallyOrdered> {
-  template <typename T, typename IdxT = morton_idx_t<std::decay_t<T>>,
-            typename XT = morton_x_t<std::decay_t<T>>>
+  template <typename T, typename IdxT = morton_idx_t<uncvref_t<T>>,
+            typename XT = morton_x_t<uncvref_t<T>>>
   auto requires_(T&& t) -> decltype(
    rc::valid_expr((t.push(cpidx_t{0}), 42),  //
                   rc::convertible_to<cpidx_t>(t.pop()),

@@ -3,7 +3,8 @@
 
 using namespace hm3;
 
-template <dim_t Nd> void basic_segment_test() {
+template <dim_t Nd>
+void basic_segment_test() {
   using namespace hm3;
   using namespace geometry;
 
@@ -23,10 +24,10 @@ template <dim_t Nd> void basic_segment_test() {
 
   // constructors:
   auto l0 = l_t::through(zero, one);
-  auto l1 = l_t::at(zero, one);
+  auto l1 = l_t::at(zero, v_t{one});
 
   auto l2 = l_t::through(one, zero);
-  auto l3 = l_t::at(one, mone);
+  auto l3 = l_t::at(one, v_t{mone});
 
   auto d0 = p_t::constant(1. / std::sqrt(nd));
   auto d1 = p_t::constant(-1. / std::sqrt(nd));
@@ -111,15 +112,15 @@ int main() {
     using namespace geometry;
 
     static constexpr dim_t nd = 2;
-    using l_t                 = segment<nd>;
+    using s_t                 = segment<nd>;
     using p_t                 = point<nd>;
     using v_t                 = vec<nd>;
 
     p_t zero = p_t::constant(0.);
     p_t one  = p_t::constant(1.);
 
-    auto l0 = l_t::through(zero, one);
-    auto l1 = l_t::through(one, zero);
+    auto s0 = s_t::through(zero, one);
+    auto s1 = s_t::through(one, zero);
 
     auto d0 = v_t::constant(1. / std::sqrt(2));
     auto d1 = v_t::constant(-1. / std::sqrt(2));
@@ -129,18 +130,43 @@ int main() {
     auto n1 = d0;
     n1(1) *= -1.;
 
-    CHECK(direction(l0) == d0);
-    CHECK(direction(l1) == d1);
+    CHECK(direction(s0) == d0);
+    CHECK(direction(s1) == d1);
 
-    CHECK(normal(l0) == n0);
-    CHECK(normal(l1) == n1);
-    CHECK(area(l1) == length(l1));
+    CHECK(normal(s0) == n0);
+    CHECK(normal(s1) == n1);
+    CHECK(area(s1) == length(s1));
 
-    auto l2  = l_t::through(zero, p_t{{1.0, 0.5}});
+    auto l2  = s_t::through(zero, p_t{{1.0, 0.5}});
     auto abb = aabb<nd>(zero, p_t{{1.0, 0.5}});
     auto bb  = geometry::box<nd>(p_t{{0.5, 0.25}}, 1.0);
     CHECK(bounding_volume.aabb(l2) == abb);
     CHECK(bounding_volume.box(l2) == bb);
+
+    using geometry::distance;
+
+    p_t p0{-1., -1.};
+    CHECK(math::approx(distance.minimum(s0, p0), std::sqrt(2.)));
+    p_t p1{2., 2.};
+    CHECK(math::approx(distance.minimum(s0, p1), std::sqrt(2.)));
+
+    p_t p2{0., .5};
+    CHECK(distance.minimum(s0, p2) == std::sqrt(2. * std::pow(0.25, 2.)));
+
+    p_t p3{.5, .0};
+    CHECK(distance.minimum(s0, p3) == std::sqrt(2. * std::pow(0.25, 2.)));
+
+    p_t p4{-1, .0};
+    CHECK(distance.minimum(s0, p4) == 1.);
+
+    p_t p5{2., 1.};
+    CHECK(distance.minimum(s0, p5) == 1.);
+
+    p_t p6{0., -1.};
+    CHECK(distance.minimum(s0, p6) == 1.);
+
+    p_t p7{1., 2.};
+    CHECK(distance.minimum(s0, p7) == 1.);
   }
   return test::result();
 }

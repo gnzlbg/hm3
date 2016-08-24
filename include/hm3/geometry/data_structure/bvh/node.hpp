@@ -8,7 +8,7 @@
 namespace hm3::geometry::bvh {
 
 /// BVH Node
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct node {
   node_idx left       = node_idx{};
   node_idx right      = node_idx{};

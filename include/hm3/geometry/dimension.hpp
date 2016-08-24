@@ -14,7 +14,7 @@ namespace geometry {
 /// Spatial dimension of an object.
 ///
 /// \tparam Nd Number of spatial dimensions.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct dimensional {
   static_assert(Nd > 0, "");
   static_assert(Nd <= 3, "more than 3 spatial dimensions are never tested");
@@ -38,7 +38,7 @@ struct dimensional {
 
 namespace geometry_detail {
 
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr auto dimension(dimensional<Nd> const&) noexcept {
   return dimensional<Nd>::dimension();
 }
@@ -65,14 +65,15 @@ static constexpr auto const& dimension
 template <typename T>
 using dimension_t = decltype(dimension(std::declval<uncvref_t<T>>()));
 
-template <typename T> static constexpr auto dimension_v = dimension_t<T>{};
+template <typename T>
+static constexpr auto dimension_v = dimension_t<T>{};
 
 namespace geometry_detail {
 
 auto dimensions(dim_t nd)
  RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(view::iota(dim_t{0}, nd));
 
-template <typename T>  //
+template <typename T>
 constexpr auto dimensions(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
  view::iota(dim_t{0}, static_cast<dim_t>(hm3::geometry::dimension(t))));
 

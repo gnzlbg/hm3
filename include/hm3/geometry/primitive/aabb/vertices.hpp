@@ -17,7 +17,7 @@ constexpr dim_t vertex_size(dim_t nd) noexcept {
 }
 
 /// Number of vertices in an AABB.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr dim_t vertex_size(aabb<Nd> const&) noexcept {
   return vertex_size(Nd);
 }
@@ -31,13 +31,13 @@ constexpr dim_t face_size(dim_t nd, dim_t m) noexcept {
 }
 
 /// Number of m-dimensional edges
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr dim_t face_size(aabb<Nd> const&, dim_t m) noexcept {
   return face_size(Nd, m);
 }
 
 /// Vertex \p v of the AABB \p s.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr point<Nd> vertex(aabb<Nd> const& s, dim_t v) noexcept {
   HM3_ASSERT(v < vertex_size(s), "");
   const auto lengths_     = all_bounding_lengths(s);
@@ -48,7 +48,7 @@ constexpr point<Nd> vertex(aabb<Nd> const& s, dim_t v) noexcept {
 }
 
 /// Vertices of the AABB \p s.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr auto vertices(aabb<Nd> const& s) noexcept {
   constexpr auto nvxs = vertex_size(aabb<Nd>{});
   array<point<Nd>, nvxs> vxs;

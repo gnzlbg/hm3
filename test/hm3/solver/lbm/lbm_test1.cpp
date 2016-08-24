@@ -18,7 +18,8 @@ namespace lbm {
 using lattice = solver::lbm::lattice::d2q9;
 namespace ns  = solver::lbm::ns;
 
-template <class I> using Range = std::decay_t<decltype(view::iota(I{0}, I{4}))>;
+template <class I>
+using Range = std::decay_t<decltype(view::iota(I{0}, I{4}))>;
 // thrust::iterator_range<thrust::counting_iterator<I>>;
 
 struct cylinder {
@@ -140,40 +141,47 @@ struct data_structure {
 
   bool obst(const idx_t cidx_t) const { return obst(x(cidx_t), y(cidx_t)); }
 
-  template <class T> num_t d_loc(T, const idx_t cidx_t) const {
+  template <class T>
+  num_t d_loc(T, const idx_t cidx_t) const {
     return ns::physics<lattice>::rho(vars(T{}, cidx_t));
   }
 
-  template <class T> num_t p(T, const idx_t cidx_t) const {
+  template <class T>
+  num_t p(T, const idx_t cidx_t) const {
     if (obst(cidx_t)) { return ns::physics<lattice>::p(density); }
     return ns::physics<lattice>::p(vars(T{}, cidx_t));
   }
 
-  template <class T> std::vector<num_t> ps(T) const {
+  template <class T>
+  std::vector<num_t> ps(T) const {
     std::vector<num_t> ps_(no_cells());
     ranges::transform(cell_ids(), ps_.begin(),
                       [&](auto i) { return p(T{}, i); });
     return ps_;
   }
 
-  template <class T> num_t u(T, const idx_t cidx_t) const {
+  template <class T>
+  num_t u(T, const idx_t cidx_t) const {
     if (obst(cidx_t)) { return 0.; }
     return ns::physics<lattice>::u(vars(T{}, cidx_t));
   }
 
-  template <class T> std::vector<num_t> us(T) const {
+  template <class T>
+  std::vector<num_t> us(T) const {
     std::vector<num_t> ps_(no_cells());
     ranges::transform(cell_ids(), ps_.begin(),
                       [&](auto i) { return u(T{}, i); });
     return ps_;
   }
 
-  template <class T> num_t v(T, const idx_t cidx_t) const {
+  template <class T>
+  num_t v(T, const idx_t cidx_t) const {
     if (obst(cidx_t)) { return 0.; }
     return ns::physics<lattice>::v(vars(T{}, cidx_t));
   }
 
-  template <class T> std::vector<num_t> vs(T) const {
+  template <class T>
+  std::vector<num_t> vs(T) const {
     std::vector<num_t> ps_(no_cells());
     ranges::transform(cell_ids(), ps_.begin(),
                       [&](auto i) { return v(T{}, i); });

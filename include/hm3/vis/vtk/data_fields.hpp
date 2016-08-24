@@ -21,7 +21,8 @@ namespace vtk {
 ///   loads a particular data field,
 ///
 /// and a member variable called `log` for logging.
-template <typename DataFieldType> struct data_fields {
+template <typename DataFieldType>
+struct data_fields {
   using field  = vis::field;
   using fields = vector<field>;
 

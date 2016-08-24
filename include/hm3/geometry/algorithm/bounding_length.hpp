@@ -21,6 +21,7 @@ struct bounding_length_fn {
    all_bounding_lengths(std::forward<T>(t)));
 
   /// Bounding length across dimension \p d of \p t.
+  /// TODO: remove default argument d = 0 (force specification of d)
   template <typename T>
   constexpr auto operator()(T&& t, dim_t d = 0) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(bounding_length(std::forward<T>(t), d));

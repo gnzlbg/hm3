@@ -25,7 +25,7 @@ namespace hm3::geometry {
 namespace bvh {
 
 /// Bonding-Voulme Hierarchy.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct bvh : dimensional<Nd> {
   using self = bvh<Nd>;
 
@@ -71,7 +71,7 @@ struct bvh : dimensional<Nd> {
   }
 
   /// Creates nodes for the simplices. These are the leafs of the BVH.
-  template <typename Simplices>  //
+  template <typename Simplices>
   void create_simplex_nodes(Simplices const& mesh) {
     HM3_TIME("bvh", "rebuild", "create_simplex_nodes");
     nodes_.reserve(mesh.size());
@@ -216,7 +216,7 @@ struct bvh : dimensional<Nd> {
   /// Create non-leaf tree nodes.
   ///
   /// \pre The leaf nodes must already be inserted in the tree.
-  template <typename Simplices>  //
+  template <typename Simplices>
   node_idx create_tree_nodes(Simplices const& mesh) {
     HM3_TIME("bvh", "rebuild", "create_tree_nodes");
     HM3_ASSERT(nodes_.size() == mesh.size(), "");
@@ -309,7 +309,7 @@ struct bvh : dimensional<Nd> {
   }
 
   /// Rebuilds the BVH
-  template <typename Simplices>  //
+  template <typename Simplices>
   void rebuild(Simplices const& mesh) {
     HM3_TIME("bvh", "rebuild");
     HM3_ASSERT(mesh.size() > 0_u, "trying to create a BVH from an empty mesh");

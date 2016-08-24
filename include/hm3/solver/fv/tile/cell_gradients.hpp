@@ -8,7 +8,7 @@ namespace hm3 {
 namespace solver {
 namespace fv {
 
-template <typename Grid, vidx_t Nv, typename Order = dense::col_major_t>  //
+template <typename Grid, vidx_t Nv, typename Order = dense::col_major_t>
 struct cell_gradients {
   using grid_t   = Grid;
   using cell_idx = typename grid_t::cell_indices_t::coordinate;

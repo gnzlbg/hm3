@@ -18,7 +18,7 @@ struct complex_fn {
   /// - any two consecutive segments intersect somewhere else beside their
   /// - vertices.
   template <typename P, CONCEPT_REQUIRES_(Polygon<P>{})>
-  constexpr bool operator()(P&& p) const noexcept {
+  constexpr bool operator()(P&&) const noexcept {
     /*
     for (auto&& fi : face_indices(p)) {
       for (auto&& fj : face_indices(p)) {

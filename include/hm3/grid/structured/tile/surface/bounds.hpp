@@ -42,7 +42,7 @@ constexpr tidx_t size_per_cell(dim_t nd, tidx_t /*nc*/) noexcept {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length (the tile is square)
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct bounds : geometry::dimensional<Nd> {
   /// Nubmer of sides per direction
   static constexpr tidx_t sides_per_dir() noexcept {

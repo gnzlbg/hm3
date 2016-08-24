@@ -12,8 +12,9 @@ namespace hm3::geometry::segment_primitive {
 /// Axis-Aligned Bounding Box of the segment \p s.
 template <dim_t Nd>
 constexpr aabb<Nd> axis_aligned_bounding_box(segment<Nd> const& s) {
-  if (s.x(0) < s.x(1)) { return aabb<Nd>(s.x(0), s.x(1)); }
-  return aabb<Nd>(s.x(1), s.x(0));
+  using p_t = point<Nd>;
+  return aabb<Nd>(p_t(s.x(0)().array().min(s.x(1)().array())),
+                  p_t(s.x(0)().array().max(s.x(1)().array())));
 }
 
 /// Square Bounding Box of the segment \p s.

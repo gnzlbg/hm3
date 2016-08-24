@@ -2,6 +2,10 @@
 /// \file
 ///
 /// Dense matrix implementation
+///
+/// TODO: when returning an eigen view of the matrix using operator() return an
+/// EigenMap only when the matrix is an lvalue (& or const&), and return an
+/// EigenMatrix when the matrix is an rvalue (&&).
 #include <hm3/utility/matrix/access.hpp>
 #include <hm3/utility/matrix/storage.hpp>
 #include <hm3/utility/unwrap.hpp>
@@ -76,31 +80,39 @@ struct matrix : bounds<NoRows, NoCols>,
   // template <typename Int,
   //           CONCEPT_REQUIRES_(is_vector() and std::is_integral<Int>{})>
   CONCEPT_REQUIRES(is_vector())
-  constexpr matrix(const suint_t no_elements)
+  explicit constexpr matrix(const uint_t no_elements)
    : bounds(no_elements, 1), storage(no_elements) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
+  }
+
+  template <typename U,
+            CONCEPT_REQUIRES_(is_vector() and NoRows == 1 and NoCols == 1
+                              and !Same<uncvref_t<U>, uint_t>{}
+                              and ranges::Assignable<U, T>{})>
+  explicit constexpr matrix(U value) : bounds(1, 1), storage(1) {
+    operator()(static_cast<RowIdx>(0)) = std::move(value);
   }
 
   CONCEPT_REQUIRES(is_vector())
   constexpr matrix(std::initializer_list<T> args)
    : bounds(args.size(), 1), storage(std::move(args)) {}
 
-  constexpr matrix(const uint_t no_rows_, const uint_t no_cols_)
+  explicit constexpr matrix(const uint_t no_rows_, const uint_t no_cols_)
    : bounds(no_rows_, no_cols_), storage(no_rows_, no_cols_) {}
 
   template <
-   typename I, typename U = std::remove_reference_t<std::remove_cv_t<I>>,
+   typename I, typename U = uncvref_t<I>,
    CONCEPT_REQUIRES_(
     is_vector()
     && std::is_same<typename std::iterator_traits<U>::value_type, T>{})>
-  constexpr matrix(I begin, I end)
+  explicit constexpr matrix(I begin, I end)
    : bounds(end - begin, 1), storage(end - begin, 1) {
     for (uint_t i = 0, e = no_rows(); i != e; ++i) {
       operator()(static_cast<RowIdx>(i)) = *(begin + i);
     }
   }
 
-  template <typename Other>  //
+  template <typename Other>
   constexpr void element_wise_assign(Other&& o) {
     if (std::is_same<Order, col_major_t>{}) {
       for (uint_t c = 0, ce = no_cols(); c != ce; ++c) {
@@ -120,7 +132,7 @@ struct matrix : bounds<NoRows, NoCols>,
   /// Construct from Eigen expression:
   template <typename Expr, int Rows, int Cols, bool I,
             CONCEPT_REQUIRES_(!is_bit())>
-  constexpr matrix(Eigen::Block<Expr, Rows, Cols, I> const& view)
+  explicit constexpr matrix(Eigen::Block<Expr, Rows, Cols, I> const& view)
    : bounds(view.rows(), view.cols()), storage(view.rows(), view.cols()) {
     HM3_ASSERT(Rows == no_rows() && Cols == no_cols(),
                "dimension mismatch | rows (runtime: {}, compile-time: {}) | "

@@ -28,12 +28,13 @@ void test_unit_aabb() {
 
   auto pz = p_t::constant(0.);
   auto po = p_t::constant(1.);
+  auto vo = v_t::constant(1.);
   auto pm = p_t::constant(.5);
 
   // constructors:
   aabb_t a;
   aabb_t b(pz, po);
-  aabb_t c = aabb_t::at(pm, po);
+  aabb_t c = aabb_t::at(pm, vo);
   aabb_t e = aabb_t::unit();
   CHECK(b == c);
   CHECK(e == c);

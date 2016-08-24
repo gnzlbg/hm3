@@ -16,7 +16,7 @@ namespace client {
 ///
 /// \tparam neighbor_capacity Number of neighbors to be stored per grid node.
 ///
-template <suint_t neighbor_capacity>  //
+template <suint_t neighbor_capacity>
 struct neighbor_storage {
   using self           = neighbor_storage<neighbor_capacity>;
   using node_neighbors = inline_vector<grid_node_idx, neighbor_capacity>;

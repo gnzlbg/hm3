@@ -2,32 +2,39 @@
 /// \file
 ///
 /// Split line segment at a point.
-#include <hm3/geometry/algorithm/intersection.hpp>
+#include <hm3/geometry/algorithm/distance.hpp>
+#include <hm3/geometry/algorithm/intersection/segment_point.hpp>
+#include <hm3/geometry/algorithm/split.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
+#include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::segment_primitive {
 
-template <dim_t Nd>  //
-struct segment_point_split_result {
-  inline_vector<segment<Nd>, 2> segments;
-};
-
 /// Splits the segment \p s at the point \p p.
-template <dim_t Nd>
-inline segment_point_split_result<Nd> split(segment<Nd> const& s,
-                                            point<Nd> const& p) {
-  segment_point_split_result<Nd> result;
-  if (!intersection_test(s, p)) { return result; }
+template <dim_t Nd, typename s_t = segment<Nd>>
+constexpr variant<monostate, s_t, pair<s_t, s_t>> split(segment<Nd> const& s,
+                                                        point<Nd> const& p) {
+  using p_t = point<Nd>;
+  using r_t = variant<monostate, s_t, pair<s_t, s_t>>;
+  auto ir   = intersection(s, p);
 
-  // If the point is a segment end point, the result is just the segment:
-  if (a.x(0) == p or a.x(1) == p) {
-    result.segments.push_back(s);
-    return result;
-  }
-
-  result.segments.push_back(segment<Nd>::through(a.x(0), p));
-  result.segments.push_back(segment<Nd>::through(p, a.x(1)));
-  return result;
+  return visit(
+   [&](auto&& v) {
+     using T = uncvref_t<decltype(v)>;
+     if
+       constexpr(Same<T, p_t>{}) {
+         if (distance.approx(s.x(0), p) or distance.approx(s.x(1), p)) {
+           return r_t{s};
+         }
+         return r_t{make_pair(s_t(s.x(0), p), s_t(p, s.x(1)))};
+       }
+     else if
+       constexpr(Same<T, monostate>{}) { return r_t{monostate{}}; }
+     else {
+       static_assert(fail<T>{}, "non-exhaustive visitor");
+     }
+   },
+   ir);
 }
 
 }  // namespace hm3::geometry::segment_primitive

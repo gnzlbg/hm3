@@ -42,7 +42,8 @@ constexpr level_idx operator"" _l(unsigned long long int i) {
 }
 
 /// nd-tree
-template <dim_t Nd> struct tree;
+template <dim_t Nd>
+struct tree;
 
 /// Child-position index (weakly-typed)
 using cpidx_t = suint_t;
@@ -57,7 +58,8 @@ template <dim_t Nd>
 using child_pos = bounded<cpidx_t, 0, math::ipow(cpidx_t(2), cpidx_t(Nd)),
                           struct child_pos_tag>;
 
-template <typename Tree> using child_pos_t = typename Tree::child_pos;
+template <typename Tree>
+using child_pos_t = typename Tree::child_pos;
 
 /// Neighbor tags
 struct same_level_tag {};
@@ -72,7 +74,8 @@ using coidx_t = std::make_signed_t<nidx_t>;  // signed version of node index
 /// Coordinate offset
 ///
 /// Coordinate type must be signed and can be arbitrarily long
-template <dim_t Nd> using offset_t = array<coidx_t, Nd>;
+template <dim_t Nd>
+using offset_t = array<coidx_t, Nd>;
 
 }  // namespace tree
 }  // namespace hm3

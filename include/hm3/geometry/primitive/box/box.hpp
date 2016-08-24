@@ -2,12 +2,14 @@
 /// \file
 ///
 /// Box: AABB with constant length.
+/// TODO: remove at method
 #include <hm3/geometry/algorithm/x_min_max.hpp>
 #include <hm3/geometry/primitive/aabb/aabb.hpp>
 #include <hm3/geometry/primitive/aabb/bounding_length.hpp>
 #include <hm3/geometry/primitive/aabb/is_box.hpp>
 #include <hm3/geometry/primitive/aabb/ostream.hpp>
 #include <hm3/geometry/primitive/point/point.hpp>
+#include <hm3/geometry/primitive/vec.hpp>
 
 namespace hm3::geometry {
 
@@ -15,9 +17,10 @@ namespace hm3::geometry {
 namespace box_primitive {
 
 /// Box: AABB with constant length.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct box : ranked<Nd, Nd> {
   using point_t           = point<Nd>;
+  using vec_t             = vec<Nd>;
   using aabb_t            = aabb<Nd>;
   using vertex_index_type = dim_t;
 
@@ -46,7 +49,7 @@ struct box : ranked<Nd, Nd> {
    : box(aabb_t(x_min, x_max)) {}
 
   /// Box from centroid and lengths.
-  static constexpr box<Nd> at(point_t const& x_c, point_t const& lengths) {
+  static constexpr box<Nd> at(point_t const& x_c, vec_t const& lengths) {
     return box<Nd>(aabb_t::at(x_c, lengths));
   }
 
@@ -67,18 +70,21 @@ bool operator!=(box<Nd> const& l, box<Nd> const& r) noexcept {
 }
 
 /// Minimum vertex
-template <dim_t Nd> constexpr point<Nd> x_min(box<Nd> const& s) noexcept {
+template <dim_t Nd>
+constexpr point<Nd> x_min(box<Nd> const& s) noexcept {
   const auto xc = centroid(s);
   return point<Nd>{xc() - point<Nd>::c(.5 * s.length_)};
 }
 
 /// Maximum vertex
-template <dim_t Nd> constexpr point<Nd> x_max(box<Nd> const& s) noexcept {
+template <dim_t Nd>
+constexpr point<Nd> x_max(box<Nd> const& s) noexcept {
   const auto xc = centroid(s);
   return point<Nd>{xc() + point<Nd>::c(.5 * s.length_)};
 }
 
-template <dim_t Nd> constexpr bool is_box(box<Nd> const&) noexcept {
+template <dim_t Nd>
+constexpr bool is_box(box<Nd> const&) noexcept {
   return true;
 }
 

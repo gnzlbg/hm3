@@ -9,7 +9,7 @@
 namespace hm3::geometry::aabb_primitive {
 
 /// Integral over the volume of the AABB \p s.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr auto integral(aabb<Nd> const& s, volume_integral<aabb<Nd>>) noexcept {
   num_t vol    = 1;
   const auto l = all_bounding_lengths(s);
@@ -23,7 +23,7 @@ constexpr num_t integral(aabb<1> const& s, volume_integral<aabb<1>>) noexcept {
 }
 
 /// Integral over the boundary of the AABB \p s.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr auto integral(aabb<Nd> const& s,
                         boundary_integral<aabb<Nd>>) noexcept {
   switch (Nd) {

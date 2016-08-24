@@ -11,7 +11,8 @@ namespace vtk {
 namespace grid {
 
 /// Tree grid reader
-template <dim_t Nd> struct tree : reader<Nd> {
+template <dim_t Nd>
+struct tree : reader<Nd> {
   using typename reader<Nd>::grid_t;
   using child_pos = ::hm3::tree::child_pos<grid_t::dimension()>;
   using cpidx_t   = ::hm3::tree::cpidx_t;

@@ -7,38 +7,61 @@
 namespace hm3::geometry {
 
 namespace point_primitive {
-template <dim_t Nd> struct point;
+template <dim_t Nd>
+struct point;
 }  // namespace point_primitive
 using point_primitive::point;
 
 namespace vec_primitive {
-template <dim_t Nd> struct vec;
+template <dim_t Nd>
+struct vec;
 }  // namespace vec_primitive
 using vec_primitive::vec;
 
 namespace aabb_primitive {
-template <dim_t Nd> struct aabb;
+template <dim_t Nd>
+struct aabb;
 }  // namespace aabb_primitive
 using aabb_primitive::aabb;
 
 namespace box_primitive {
-template <dim_t Nd> struct box;
+template <dim_t Nd>
+struct box;
 }  // namespace box_primitive
 using box_primitive::box;
 
+namespace line_primitive {
+template <dim_t Nd>
+struct line;
+}  // namespace segment_primitive
+using line_primitive::line;
+
+namespace ray_primitive {
+template <dim_t Nd>
+struct ray;
+}  // namespace ray_primitive
+
 namespace segment_primitive {
-template <dim_t Nd> struct segment;
+template <dim_t Nd>
+struct segment;
 }  // namespace segment_primitive
 using segment_primitive::segment;
 
 namespace polygon_primitive {
-template <dim_t Nd, dim_t Np> struct fixed_polygon;
-template <dim_t Nd, dim_t MaxNp> struct bounded_polygon;
+template <dim_t Nd, dim_t Np>
+struct fixed_polygon;
+template <dim_t Nd, dim_t MaxNp>
+struct bounded_polygon;
+template <dim_t Nd, dim_t EstNp>
+struct small_polygon;
 }  // namespace polygon_primitive
 using polygon_primitive::fixed_polygon;
 using polygon_primitive::bounded_polygon;
-template <dim_t Nd> using triangle = fixed_polygon<Nd, 3>;
-template <dim_t Nd> using quad     = fixed_polygon<Nd, 4>;
+using polygon_primitive::small_polygon;
+template <dim_t Nd>
+using triangle = fixed_polygon<Nd, 3>;
+template <dim_t Nd>
+using quad = fixed_polygon<Nd, 4>;
 
 namespace simplex_primitive {
 
@@ -61,5 +84,11 @@ using simplex = std::conditional_t<Nd == 1, point<Nd>,
 }  // namespace simplex_primitive
 
 using simplex_primitive::simplex;
+
+namespace any_primitive {
+template <dim_t Nd>
+struct any;
+}
+using any_primitive::any;
 
 }  // namespace hm3::geometry

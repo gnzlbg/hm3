@@ -52,7 +52,8 @@ BOOST_UNITS_STATIC_CONSTANT(joule_per_kilogram_kelvin, specific_gas_constant);
 }  // namespace si
 
 #define DECLARE_BASE_UNIT_INFO(base_unit_, name_, symbol_) \
-  template <> struct base_unit_info<base_unit_> {          \
+  template <>                                              \
+  struct base_unit_info<base_unit_> {                      \
     static const char* name() { return name_; }            \
     static const char* symbol() { return symbol_; }        \
   };
@@ -165,18 +166,21 @@ static const constexpr auto gigabytes = boost::units::gigabytes;
 /// Memory unit utilities
 namespace memory {
 
-template <typename T> unit::mega_byte amount(T* from, T* to) {
+template <typename T>
+unit::mega_byte amount(T* from, T* to) {
   char* from_c = reinterpret_cast<char*>(from);
   char* to_c   = reinterpret_cast<char*>(to);
   return unit::mega_byte{num_t{to_c - from_c} * unit::bytes};
 }
 
-template <typename T> unit::mega_byte amount(T* from, Ind size) {
+template <typename T>
+unit::mega_byte amount(T* from, Ind size) {
   T* to = from + size;
   return amount(from, to);
 }
 
-template <typename Container> unit::mega_byte amount(Container&& c) {
+template <typename Container>
+unit::mega_byte amount(Container&& c) {
   return amount(c.data(), c.size());
 }
 

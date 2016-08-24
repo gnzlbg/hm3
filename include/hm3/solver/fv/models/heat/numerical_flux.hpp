@@ -15,7 +15,7 @@ namespace flux {
 
 // struct three_point_fn {
 //   template <typename V, typename VT, typename State,
-//             typename Vars = num_a<std::decay_t<VT>::nvars()>>
+//             typename Vars = num_a<uncvref_t<VT>::nvars()>>
 //   constexpr Vars operator()(VT&& vt, V&& v_l, V&& v_r, dim_t, State&& s)
 //   const
 //    noexcept {
@@ -38,7 +38,7 @@ struct three_point_fn {
     num_t thermal_diffusivity = math::pi;
   };
 
-  template <typename Surface, typename S = std::decay_t<Surface>,
+  template <typename Surface, typename S = uncvref_t<Surface>,
             typename Vars = num_a<S::nvars()>>
   constexpr Vars operator()(Surface&& s) const noexcept {
     Vars f;
@@ -67,7 +67,7 @@ struct five_point_fn {
     num_t thermal_diffusivity = math::pi;
   };
 
-  template <typename Surface, typename S = std::decay_t<Surface>,
+  template <typename Surface, typename S = uncvref_t<Surface>,
             typename Vars = num_a<S::nvars()>>
   constexpr Vars operator()(Surface&& s) const noexcept {
     Vars f;

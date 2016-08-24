@@ -15,7 +15,7 @@ namespace limiter {
 
 struct van_albada_fn {
   template <typename Grad,
-            typename vars = num_a<std::decay_t<Grad>::SizeAtCompileTime>>
+            typename vars = num_a<uncvref_t<Grad>::SizeAtCompileTime>>
   vars operator()(Grad&& g_l, Grad&& g_r) const noexcept {
     vars r = (g_l.array() / (g_r.array() + math::eps)).eval();
     vars rf

@@ -10,7 +10,8 @@ namespace hm3 {
 namespace geometry {
 namespace sd {
 
-template <int_t Nd, typename... Args> auto fixed_box(Args&&... args) {
+template <int_t Nd, typename... Args>
+auto fixed_box(Args&&... args) {
   return move_adapt(op_inverse,
                     fixed_rectangle<Nd>(std::forward<Args>(args)...));
 }

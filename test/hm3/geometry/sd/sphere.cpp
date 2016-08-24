@@ -8,12 +8,14 @@ static_assert(geometry::SignedDistance<geometry::sd::sphere_t<1>, 1>{}, "");
 // static_assert(geometry::SignedDistance<geometry::sd::fixed_sphere<2>, 2>{},
 // "");
 
-template <uint_t Nd> struct p_and_v {
+template <uint_t Nd>
+struct p_and_v {
   geometry::point<Nd> p;
   num_t v;
 };
 
-template <typename SD, typename PVs> void check_sd(SD&& sd, PVs&& pvs) {
+template <typename SD, typename PVs>
+void check_sd(SD&& sd, PVs&& pvs) {
   for (auto&& pv : pvs) { CHECK(sd(pv.p) == pv.v); }
 }
 

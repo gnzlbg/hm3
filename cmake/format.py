@@ -2,7 +2,7 @@
 # Copyright Gonzalo Brito Gadeschi 2015
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
-"""Recursively formats C/C++ files using clang-format
+"""Recursively formats C/C++ files checked into a git repository (using clang-format).
 
 Usage:
   format.py <clang_format_path> <project_src_path> [options]
@@ -10,7 +10,7 @@ Usage:
   format.py --version
 
   <clang_format_path>  Path to clang-format's binary.
-  <project_src_path>   Path to the project's source directory.
+  <project_src_path>   Path to the project's source directory (must be a git repo).
 
 Options:
   -h --help  Show this screen.
@@ -21,11 +21,12 @@ Options:
 from docopt import docopt
 import os
 import subprocess
+from threading import Thread
 
 file_extensions = ['.c', '.h', '.cpp', '.cc', '.cxx', 
                    '.hpp', '.hh', '.hxx', '.c++', '.h++']
 
-def run_clang_format(clang_format, path, apply_format, verbose):
+def run_clang_format(clang_format, path, apply_format, verbose, results):
     if apply_format:
         cmd = clang_format + ' -style=file -i ' + path
     else:
@@ -44,20 +45,21 @@ def run_clang_format(clang_format, path, apply_format, verbose):
 
     if not p.returncode == 0 or len(err) > 0 or len(out) > 0:
         if verbose: print("failed!")
-        return False
+        results.append(False)
     else:
         if verbose: print("success!")
-        return True
+        results.append(True)
 
 def run(clang_format_path, file_paths, apply_format, verbose):
-    result = True
+    threads = []
+    results = []
     for p in file_paths:
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
-            r = run_clang_format(clang_format_path, p, apply_format, verbose)
-            if not r:
-                result = False
-    return result
+            threads.append(Thread(target=run_clang_format, args=(clang_format_path, p, apply_format, verbose, results)))
+    [t.start() for t in threads]
+    [t.join() for t in threads]
+    return all(results)
 
 def main():
     args = docopt(__doc__)

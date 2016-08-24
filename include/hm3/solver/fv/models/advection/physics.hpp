@@ -15,7 +15,8 @@ template <dim_t Nd>
 struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
   using self = physics<Nd>;
 
-  template <typename V> static decltype(auto) marker(V&& v) noexcept {
+  template <typename V>
+  static decltype(auto) marker(V&& v) noexcept {
     return v(indices<Nd>::marker());
   }
 
@@ -24,7 +25,8 @@ struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
     return std::abs(this->velocity(d));
   }
 
-  template <typename V> num_a<1> flux(V&& v, dim_t d) const noexcept {
+  template <typename V>
+  num_a<1> flux(V&& v, dim_t d) const noexcept {
     using vars = num_a<1>;
     vars f     = vars::Zero();
     f(0)       = this->velocity(d) * v(0);

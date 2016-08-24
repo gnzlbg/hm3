@@ -13,7 +13,7 @@ namespace solver {
 namespace fv {
 namespace euler {
 
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct cv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   using equation_of_state::mach_number;
   using equation_of_state::pressure;
@@ -163,7 +163,8 @@ struct cv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
 };
 
-template <dim_t Nd> struct cv : cv_base<Nd>, state {
+template <dim_t Nd>
+struct cv : cv_base<Nd>, state {
   using b = cv_base<Nd>;
   using state::gamma;
   using state::gamma_m1;
@@ -207,9 +208,9 @@ template <dim_t Nd> struct cv : cv_base<Nd>, state {
     return b::speed_of_sound(std::forward<V>(v), gamma, gamma_m1);
   }
 
-  template <typename V,
-            CONCEPT_REQUIRES_(
-             !rvref<V&&> and !std::is_floating_point<std::decay_t<V>>{})>
+  template <
+   typename V,
+   CONCEPT_REQUIRES_(!rvref<V&&> and !std::is_floating_point<uncvref_t<V>>{})>
   constexpr num_t mach_number(V&& v, dim_t d) const noexcept {
     return b::mach_number(std::forward<V>(v), d, gamma, gamma_m1);
   }

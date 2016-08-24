@@ -15,7 +15,7 @@ namespace aabb_primitive {
 /// Axis-Aligned Bounding Box.
 ///
 /// \tparam Nd Number of spatial dimensions.
-template <dim_t Nd>  //
+template <dim_t Nd>
 struct aabb : ranked<Nd, Nd> {
   using self              = aabb<Nd>;
   using point_t           = point<Nd>;

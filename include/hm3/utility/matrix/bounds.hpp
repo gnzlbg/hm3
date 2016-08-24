@@ -9,7 +9,8 @@
 namespace hm3 {
 namespace dense {
 
-template <int_t NoRows, int_t NoCols> struct bounds {
+template <int_t NoRows, int_t NoCols>
+struct bounds {
   static constexpr auto no_rows() noexcept {
     return static_cast<uint_t>(NoRows);
   }
@@ -34,7 +35,8 @@ template <int_t NoRows, int_t NoCols> struct bounds {
   }
 };
 
-template <int_t NoCols> struct bounds<dynamic, NoCols> {
+template <int_t NoCols>
+struct bounds<dynamic, NoCols> {
   uint_t no_rows_ = 0;
   auto no_rows() const noexcept { return static_cast<uint_t>(no_rows_); }
   static constexpr auto no_cols() noexcept { return NoCols; }
@@ -54,7 +56,8 @@ template <int_t NoCols> struct bounds<dynamic, NoCols> {
   }
 };
 
-template <int_t NoRows> struct bounds<NoRows, dynamic> {
+template <int_t NoRows>
+struct bounds<NoRows, dynamic> {
   uint_t no_cols_ = 0;
   static constexpr auto no_rows() noexcept {
     return static_cast<uint_t>(NoRows);
@@ -76,7 +79,8 @@ template <int_t NoRows> struct bounds<NoRows, dynamic> {
   }
 };
 
-template <> struct bounds<dynamic, dynamic> {
+template <>
+struct bounds<dynamic, dynamic> {
   uint_t no_rows_ = 0;
   uint_t no_cols_ = 0;
   auto no_rows() const noexcept { return no_rows_; }
@@ -92,7 +96,8 @@ template <> struct bounds<dynamic, dynamic> {
   bounds(int_t nrows, int_t ncols) : no_rows_(nrows), no_cols_(ncols) {}
 };
 
-template <int_t MaxRows, int_t MaxCols> struct max_bounds {
+template <int_t MaxRows, int_t MaxCols>
+struct max_bounds {
   static constexpr auto max_no_rows() noexcept {
     return static_cast<uint_t>(MaxRows);
   }
@@ -112,7 +117,8 @@ template <int_t MaxRows, int_t MaxCols> struct max_bounds {
   constexpr max_bounds(int_t, int_t) {}
 };
 
-template <int_t MaxCols> struct max_bounds<dynamic, MaxCols> {
+template <int_t MaxCols>
+struct max_bounds<dynamic, MaxCols> {
   uint_t max_no_rows_ = 0;
   auto max_no_rows() const noexcept {
     return static_cast<uint_t>(max_no_rows_);
@@ -134,7 +140,8 @@ template <int_t MaxCols> struct max_bounds<dynamic, MaxCols> {
   }
 };
 
-template <int_t MaxRows> struct max_bounds<MaxRows, dynamic> {
+template <int_t MaxRows>
+struct max_bounds<MaxRows, dynamic> {
   uint_t max_no_cols_ = 0;
   static constexpr auto max_no_rows() noexcept {
     return static_cast<uint_t>(MaxRows);
@@ -158,7 +165,8 @@ template <int_t MaxRows> struct max_bounds<MaxRows, dynamic> {
   }
 };
 
-template <> struct max_bounds<dynamic, dynamic> {
+template <>
+struct max_bounds<dynamic, dynamic> {
   uint_t max_no_rows_ = 0;
   uint_t max_no_cols_ = 0;
   auto max_no_rows() const noexcept { return max_no_rows_; }

@@ -12,7 +12,8 @@ namespace hm3 {
 namespace tree {
 
 /// Maps arrays in the file descriptor to memory addresses
-template <dim_t Nd> void map_arrays(io::file& f, tree<Nd> const& t) {
+template <dim_t Nd>
+void map_arrays(io::file& f, tree<Nd> const& t) {
   f.field("parents", reinterpret_cast<nidx_t const*>(t.parents_.get()),
           *t.no_sibling_groups(t.size()))
    .field("first_children",
@@ -65,7 +66,8 @@ tree<Nd> from_file(tree<Nd> const&, io::file& f,
 }
 
 /// Appends constants and map arrays to file \p f
-template <dim_t Nd> void to_file_unwritten(io::file& f, tree<Nd> const& t) {
+template <dim_t Nd>
+void to_file_unwritten(io::file& f, tree<Nd> const& t) {
   f.field("spatial_dimension", Nd).field("no_tree_nodes", *t.size());
   map_arrays(f, t);
 }

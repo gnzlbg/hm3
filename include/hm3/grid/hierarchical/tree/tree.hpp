@@ -16,7 +16,8 @@ namespace hm3 {
 namespace tree {
 
 /// Nd-octree data-structure
-template <dim_t Nd> struct tree : geometry::dimensional<Nd> {
+template <dim_t Nd>
+struct tree : geometry::dimensional<Nd> {
   /// \name Data (all member variables of the tree)
   ///
   /// Memory layout: siblings (node with the same parent) are stored
@@ -573,9 +574,13 @@ using quad_tree = tree<2>;
 /// Oct-tree
 using oct_tree = tree<3>;
 
-template <dim_t Nd> string type(tree<Nd> const&) { return "tree"; }
+template <dim_t Nd>
+string type(tree<Nd> const&) {
+  return "tree";
+}
 
-template <dim_t Nd> string name(tree<Nd> const&) {
+template <dim_t Nd>
+string name(tree<Nd> const&) {
   return type(tree<Nd>{}) + "_" + std::to_string(Nd) + "D";
 }
 

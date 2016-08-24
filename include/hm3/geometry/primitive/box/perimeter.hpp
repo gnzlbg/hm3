@@ -29,7 +29,7 @@ constexpr num_t perimeter(box<3> const& b) noexcept {
 }
 
 /// Surface area is a synonym for perimeter.
-template <dim_t Nd>  //
+template <dim_t Nd>
 constexpr num_t surface_area(box<Nd> const& s) noexcept {
   return perimeter(s);
 }

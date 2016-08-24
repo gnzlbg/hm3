@@ -13,7 +13,8 @@ namespace hierarchical {
 namespace amr {
 
 /// Adaptive mesh refinement algorithm
-template <typename Target> struct state {
+template <typename Target>
+struct state {
  private:
   /// Node idx type
   using amr_node_idx = amr_node_idx_t<Target>;
@@ -99,7 +100,8 @@ template <typename Target> struct state {
   node_data const& data() const noexcept { return nodes_; }
 
   /// Computes the actions on every node and sorts them
-  template <typename Action> void compute_actions(Action&& action) {
+  template <typename Action>
+  void compute_actions(Action&& action) {
     const auto no_nodes = ranges::distance(t_.nodes());
     nodes_.clear();
     nodes_.reserve(no_nodes);

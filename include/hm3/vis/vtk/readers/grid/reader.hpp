@@ -36,7 +36,8 @@ namespace grid {
 /// The current vtk grid displayed as well as the cell data
 /// are cached inside the reader.
 ///
-template <dim_t Nd> struct reader : ::hm3::vis::vtk::reader {
+template <dim_t Nd>
+struct reader : ::hm3::vis::vtk::reader {
   using grid_t       = ::hm3::grid::hierarchical::cartesian::multi<Nd>;
   using vtk_cell_idx = tree::node_idx;
 
@@ -121,7 +122,8 @@ template <dim_t Nd> struct reader : ::hm3::vis::vtk::reader {
     }
   }
 
-  template <typename F> auto for_each_cell(F&& f) const noexcept {
+  template <typename F>
+  auto for_each_cell(F&& f) const noexcept {
     log("Applying to visualization level {}...", visualization_level());
     if (visualization_level() < 0) {
       f(grid->nodes() | grid->leaf());

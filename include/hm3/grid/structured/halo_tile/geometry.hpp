@@ -12,7 +12,7 @@ namespace grid {
 namespace structured {
 namespace halo_tile {
 
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 struct cell_geometry : geometry::box<Nd>,
                        cell::indices<Nd, Nic, Nhl>::coordinate {
   using box_t        = geometry::box<Nd>;
@@ -35,7 +35,7 @@ struct cell_geometry : geometry::box<Nd>,
 /// \tparam Nd  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
 struct tile_geometry
  : private tile::tile_geometry<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
   using bounds                 = cell::bounds<Nd, Nic, Nhl>;

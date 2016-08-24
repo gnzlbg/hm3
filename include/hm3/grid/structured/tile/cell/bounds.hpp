@@ -25,7 +25,7 @@ constexpr tidx_t size(dim_t nd, tidx_t nc) {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length (the tile is square)
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct bounds : geometry::dimensional<Nd> {
   /// Number of cells per length in the square tile.
   static constexpr tidx_t length() noexcept { return static_cast<tidx_t>(Nc); }

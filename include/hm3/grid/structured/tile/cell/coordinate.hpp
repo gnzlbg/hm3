@@ -20,7 +20,7 @@ namespace cell {
 ///
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per length
-template <dim_t Nd, tidx_t Nc>  //
+template <dim_t Nd, tidx_t Nc>
 struct coordinate : geometry::dimensional<Nd> {
   using self           = coordinate;
   using value_t        = tidx_t;
