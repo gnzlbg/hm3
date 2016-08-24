@@ -52,6 +52,20 @@ constexpr bool intersection_test(P const& poly, point<Nd> const& p) noexcept {
   return no_crossings % 2 != 0;  // even => outside, odd => inside
 }
 
+template <typename P, dim_t Nd = dimension_v<P>,
+          CONCEPT_REQUIRES_(Nd == 3 and Polygon<P, Nd>{})>
+constexpr bool intersection_test(P const& poly, point<Nd> const& p) noexcept {
+  // auto plane = Eigen::Hyperplane<num_t, 3>::Through(
+  //  vertex(poly, 0), vertex(poly, 1), vertex(poly, 2));
+  // if (plane.absDistance(p) > math::eps) { return false; }
+
+  // auto b     = planar.basis(p);
+  // auto ppoly = planar.to(poly, b);
+  // auto p     = planar.to(p, b);
+  // return contains_detail::contains(ppoly, pp);
+  HM3_FATAL_ERROR("unimplemented");
+}
+
 /// Intersection of a polygon \p poly with a point \p p (either the point or
 /// nothing).
 template <typename P, dim_t Nd = dimension_v<P>,

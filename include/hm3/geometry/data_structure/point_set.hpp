@@ -134,7 +134,8 @@ struct point_set {
            for (auto&& id : parent_ids) {
              auto node_point = points_[id];
              for (auto child : tree_.siblings(children)) {
-               if (geometry::contains(tree_.geometry(child), node_point)) {
+               if (geometry::intersection_test(tree_.geometry(child),
+                                               node_point)) {
                  nodes_[child].push_back(id);
                }
              }
@@ -149,7 +150,7 @@ struct point_set {
 
       // move to the child that contains the point and repeat
       for (auto child : tree_.siblings(new_children)) {
-        if (geometry::contains(tree_.geometry(child), p)) {
+        if (geometry::intersection_test(p, tree_.geometry(child))) {
           n = child;
           break;
         }
@@ -163,7 +164,7 @@ struct point_set {
   /// Is the point \p in the set?
   optional_pidx_t contains(point_t p) {
     // if not in the bounding box, return nothing:
-    if (!geometry::contains(tree_.bounding_box(), p)) {
+    if (!geometry::intersection_test(p, tree_.bounding_box())) {
       return optional_pidx_t{};
     }
     auto n = tree_.leaf_node_containing(p);

@@ -5,6 +5,8 @@
 #include <hm3/geometry/data_structure/bvh.hpp>
 #include <hm3/geometry/data_structure/simplex_array.hpp>
 
+namespace hm3::geometry {
+
 template <dim_t Nd>
 struct mesh : simplices<Nd>, bvh<Nd> {
   using array_t = simplex_array<Nd>;
@@ -18,3 +20,5 @@ struct mesh : simplices<Nd>, bvh<Nd> {
 
 template <dim_t Nd>
 bool intersects(aabb<Nd> const& a, mesh<Nd> const& m) noexcept {}
+
+}  // namespace hm3::geometry

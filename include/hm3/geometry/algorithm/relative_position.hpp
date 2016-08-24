@@ -2,33 +2,16 @@
 /// \file
 ///
 /// The relative position of one primitive with respect to another.
+#include <hm3/geometry/algorithm/sd_intersection_test.hpp>
+#include <hm3/geometry/relative_position.hpp>
+#include <hm3/geometry/sd/concepts.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3::geometry {
 
-/// Result of a relative position query between two primitives
-enum class relative_position_t : suint_t { inside, outside, intersected };
-
-namespace relative_position_detail {
-
-relative_position_t invert(relative_position_t o) {
-  switch (o) {
-    case relative_position_t::inside: {
-      return relative_position_t::outside;
-    }
-    case relative_position_t::outside: {
-      return relative_position_t::inside;
-    }
-    case relative_position_t::intersected: {
-      return relative_position_t::intersected;
-    }
-  }
-}
-
 template <typename P, typename SDF>
 relative_position_t sd_relative_position(P&& p, SDF&& sdf) {
-  return static_cast<relative_position_t>(
-   sd_intersection_test(std::forward<P>(p), std::forward<SDF>(sdf)));
+  return sd_intersection_test(std::forward<P>(p), std::forward<SDF>(sdf));
 }
 
 struct relative_position_fn {

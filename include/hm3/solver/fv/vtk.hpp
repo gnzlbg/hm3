@@ -3,7 +3,7 @@
 ///
 /// Serialization of FV solver to VTK
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/algorithm/intersection.hpp>
+#include <hm3/geometry/algorithm/relative_position.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/solver/fv/state.hpp>
@@ -86,9 +86,9 @@ struct ls_serializable : serializable<State, T> {
   auto nodes() const noexcept {
     return s.all_cells() | view::filter([&](cell_idx c) {
              if (!idx) {
+               auto rp = geometry::relative_position(s.geometry(c), ls);
                return s.is_internal(c)
-                      and (geometry::is_completely_inside(s.geometry(c), ls)
-                           or geometry::is_intersected(s.geometry(c), ls));
+                 and rp == geometry::inside or rp == geometry::intersected);
              }
              return s.is_in_tile(c, idx);
            });

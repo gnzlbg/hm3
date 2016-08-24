@@ -1,2 +1,4 @@
+# Todo
+
 side test (inside/outside), only for rank<Nd, Nd> objects
-contains, for all objects
+Deprecated: contains, for all objects, use relative_position instead
