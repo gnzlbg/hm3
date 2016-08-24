@@ -126,7 +126,9 @@ struct single : tree::tree<Nd> {
 
   /// Index of leaf node containing the point \p p
   tree_node_idx leaf_node_containing(point_t p) {
-    if (!geometry::contains(bounding_box(), p)) { return tree_node_idx{}; }
+    if (!geometry::intersection.test(bounding_box(), p)) {
+      return tree_node_idx{};
+    }
     return tree::leaf_node_location(*this, bounding_box(), p).idx;
   }
 };

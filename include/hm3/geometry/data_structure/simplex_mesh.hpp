@@ -8,17 +8,17 @@
 namespace hm3::geometry {
 
 template <dim_t Nd>
-struct mesh : simplices<Nd>, bvh<Nd> {
+struct mesh : simplex_array<Nd>, bounding_volume_hierarchy<Nd> {
   using array_t = simplex_array<Nd>;
-  using bvh_t   = bvh<Nd>;
+  using bvh_t   = bounding_volume_hierarchy<Nd>;
 
   template <typename SimplexRange>
-  mesh(SimplexRange const& simplices) : simplices_t(simplices) {
-    this->rebuild(static_cast<simplices_t const&>(*this));
+  mesh(SimplexRange const& simplices) : array_t(simplices) {
+    this->rebuild(static_cast<array_t const&>(*this));
   }
 };
 
-template <dim_t Nd>
-bool intersects(aabb<Nd> const& a, mesh<Nd> const& m) noexcept {}
+// template <dim_t Nd>
+// bool intersects(aabb<Nd> const&, mesh<Nd> const&) noexcept {}
 
 }  // namespace hm3::geometry

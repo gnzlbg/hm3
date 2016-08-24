@@ -87,8 +87,8 @@ struct ls_serializable : serializable<State, T> {
     return s.all_cells() | view::filter([&](cell_idx c) {
              if (!idx) {
                auto rp = geometry::relative_position(s.geometry(c), ls);
-               return s.is_internal(c)
-                 and rp == geometry::inside or rp == geometry::intersected);
+               return (s.is_internal(c) and rp == geometry::inside)
+                      or rp == geometry::intersected;
              }
              return s.is_in_tile(c, idx);
            });

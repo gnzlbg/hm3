@@ -2,8 +2,11 @@
 /// \file
 ///
 /// Does the box intersect a point?
-#include <hm3/geometry/algorithm/contains.hpp>
+#include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/box/box.hpp>
+#include <hm3/geometry/primitive/point/point.hpp>
+#include <hm3/utility/variant.hpp>
+
 namespace hm3::geometry::box_primitive {
 
 /// Does the BOX \p s and the point \p p intersect?

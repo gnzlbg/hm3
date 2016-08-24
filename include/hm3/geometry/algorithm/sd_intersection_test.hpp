@@ -36,8 +36,7 @@ template <
  typename SDValueRng,
  CONCEPT_REQUIRES_(Range<SDValueRng>{}
                    and Same<num_t, uncvref_t<range_value_t<SDValueRng>>>{})>
-constexpr sd_intersection_test_t sd_intersection_test(
- SDValueRng&& rng) noexcept {
+constexpr relative_position_t sd_intersection_test(SDValueRng&& rng) noexcept {
   return sd_intersection_test(
    rng | view::transform([](auto&& v) { return math::signum(v); }));
 }
@@ -45,8 +44,8 @@ constexpr sd_intersection_test_t sd_intersection_test(
 /// Is the primitive \p p intersected by the signed-distance field \p sdf?
 template <typename P, typename SD, dim_t Nd = dimension_v<P>,
           CONCEPT_REQUIRES_(Primitive<P>{} and SignedDistance<SD, Nd>{})>
-static constexpr sd_intersection_test_t sd_intersection_test(
- P&& p, SD&& sdf) noexcept {
+static constexpr relative_position_t sd_intersection_test(P&& p,
+                                                          SD&& sdf) noexcept {
   return sd_intersection_test(vertices(p)
                               | transform([&sdf](auto&& x) { return sdf(x); }));
 }

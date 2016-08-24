@@ -25,7 +25,7 @@ import subprocess
 
 file_extensions = ['.c', '.cpp', '.cc', '.cxx', '.c++']
 
-def run_clang_tidy(clang_tidy, path, build_path, apply_tidy, verbose, supp):
+def run_clang_tidy(clang_tidy, path, build_path, apply_tidy, verbose, supp, results):
 
     if apply_tidy:
         cmd = clang_tidy + ' -p=' + build_path + ' -fix ' + ' -line-filter=' + supp + ' ' + path 
@@ -43,18 +43,19 @@ def run_clang_tidy(clang_tidy, path, build_path, apply_tidy, verbose, supp):
     if len(err) > 0:
         print err
 
-    return p.returncode == 0
+    results.append(p.returncode == 0)
+
 
 def run(clang_tidy_path, file_paths, build_path, apply_tidy, verbose, supp):
-    result = True
+    threads = []
+    results = []
     for p in file_paths:
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
-            r = run_clang_tidy(clang_tidy_path, p, build_path, apply_tidy, verbose, supp)
-            if not r:
-                result = False
-    return result
-
+            threads.append(Thread(target=run_clang_tidy, args=(clang_tidy_path, p, build_path, apply_tidy, verbose, supp, results)))
+    [t.start() for t in threads]
+    [t.join() for t in threads]
+    return all(results)
 
 def main():
     args = docopt(__doc__)

@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Relative position type.
+#include <hm3/types.hpp>
 
 namespace hm3::geometry {
 

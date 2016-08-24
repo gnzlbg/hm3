@@ -2,8 +2,10 @@
 /// \file
 ///
 /// Does the AABB intersect a point?
-#include <hm3/geometry/algorithm/contains.hpp>
+#include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/aabb/aabb.hpp>
+#include <hm3/utility/variant.hpp>
+
 namespace hm3::geometry::aabb_primitive {
 
 /// Does the AABB \p s and the point \p p intersect?

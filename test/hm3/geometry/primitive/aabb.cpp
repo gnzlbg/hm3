@@ -38,14 +38,14 @@ int main() {
     CHECK(centroid(a) == p_t{0.5, 0.25});
 
     // contains:
-    CHECK(contains(a, p_t{0.1, 0.1}));
-    CHECK(contains(a, p_t{0.1, 0.4}));
-    CHECK(contains(a, p_t{0.9, 0.1}));
-    CHECK(contains(a, p_t{0.9, 0.4}));
-    CHECK(!contains(a, p_t{-0.1, -0.1}));
-    CHECK(!contains(a, p_t{-0.1, 0.6}));
-    CHECK(!contains(a, p_t{1.1, -0.1}));
-    CHECK(!contains(a, p_t{1.1, 0.6}));
+    CHECK(intersection.test(a, p_t{0.1, 0.1}));
+    CHECK(intersection.test(a, p_t{0.1, 0.4}));
+    CHECK(intersection.test(a, p_t{0.9, 0.1}));
+    CHECK(intersection.test(a, p_t{0.9, 0.4}));
+    CHECK(!intersection.test(a, p_t{-0.1, -0.1}));
+    CHECK(!intersection.test(a, p_t{-0.1, 0.6}));
+    CHECK(!intersection.test(a, p_t{1.1, -0.1}));
+    CHECK(!intersection.test(a, p_t{1.1, 0.6}));
 
     // volume:
     CHECK(volume(a) == 0.5);

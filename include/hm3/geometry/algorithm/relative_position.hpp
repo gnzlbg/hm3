@@ -9,6 +9,8 @@
 
 namespace hm3::geometry {
 
+namespace relative_position_detail {
+
 template <typename P, typename SDF>
 relative_position_t sd_relative_position(P&& p, SDF&& sdf) {
   return sd_intersection_test(std::forward<P>(p), std::forward<SDF>(sdf));
@@ -32,9 +34,9 @@ struct relative_position_fn {
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             std::forward<U>(u), 0,
-                                             SignedDistance<U>{}));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+    impl(std::forward<T>(t), std::forward<U>(u), 0,
+         SignedDistance<U, dimension_v<T>>{}));
 };
 
 }  // namespace relative_position_detail

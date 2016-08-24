@@ -2,6 +2,8 @@
 /// \file
 ///
 /// Compute leaf node location algorithm
+#include <hm3/geometry/algorithm/intersection.hpp>
+#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_or_parent_at.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/shift_location.hpp>
@@ -37,7 +39,7 @@ struct leaf_node_location_fn {
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& tree, geometry::box<Nd> bbox,
                   geometry::point<Nd> x, Loc loc = Loc::min()) const noexcept {
-    HM3_ASSERT(geometry::contains(bbox, x),
+    HM3_ASSERT(geometry::intersection.test(bbox, x),
                "point {} is not inside bounding box {}", x, bbox);
     // Normalize x
     auto x_min = geometry::x_min(bbox);

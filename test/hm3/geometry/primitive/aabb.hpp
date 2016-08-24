@@ -1,4 +1,6 @@
 #pragma once
+#include <hm3/geometry/algorithm/intersection/aabb_point.hpp>
+#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/geometry/primitive/aabb.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/utility/test.hpp>
@@ -68,10 +70,15 @@ void test_unit_aabb() {
   CHECK(centroid(b) == pm);
 
   // contains:
-  CHECK(contains(b, p_t::constant(0.1)));
-  CHECK(contains(b, p_t::constant(0.9)));
-  CHECK(!contains(b, p_t::constant(-0.1)));
-  CHECK(!contains(b, p_t::constant(1.1)));
+  CHECK(intersection.test(b, p_t::constant(0.1)));
+  CHECK(intersection.test(b, p_t::constant(0.9)));
+  CHECK(intersection.test(b, p_t::constant(0.0)));
+  CHECK(intersection.test(b, p_t::constant(1.0)));
+
+  CHECK(!intersection.test(b, p_t::constant(-0.1)));
+  CHECK(!intersection.test(b, p_t::constant(1.1)));
+  CHECK(!intersection.test(b, p_t::constant(-0.00000000000001)));
+  CHECK(!intersection.test(b, p_t::constant(+1.00000000000001)));
 
   // volume:
   CHECK(volume(b) == 1.);

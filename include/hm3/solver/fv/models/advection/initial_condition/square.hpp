@@ -4,6 +4,7 @@
 ///
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/point.hpp>
+#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/solver/fv/models/advection/indices.hpp>
 #include <hm3/utility/math.hpp>
 
@@ -30,7 +31,7 @@ struct box {
 
   num_a<1> operator()(point_t x) const noexcept {
     num_a<1> v;
-    v(0) = geometry::contains(box_, x) ? inside_ : outside_;
+    v(0) = geometry::intersection.test(box_, x) ? inside_ : outside_;
     return v;
   }
 };

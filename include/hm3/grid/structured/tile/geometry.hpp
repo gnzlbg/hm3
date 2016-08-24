@@ -2,6 +2,8 @@
 /// \file
 ///
 /// Square tile geometry
+#include <hm3/geometry/algorithm/intersection.hpp>
+#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/geometry/dimension.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/point.hpp>
@@ -127,7 +129,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
 
   /// Lies point \p x inside the tile?
   constexpr bool contains(point_t x) const noexcept {
-    return geometry::contains(tile_bounding_box(), x);
+    return geometry::intersection.test(tile_bounding_box(), x);
   }
 
   /// Cell containing the point \p x
