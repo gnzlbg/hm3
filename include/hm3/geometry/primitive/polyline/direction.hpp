@@ -3,7 +3,7 @@
 ///
 /// Inverts the direction of a polyline.
 #include <hm3/geometry/algorithm/direction.hpp>
-#include <hm3/geometry/concept.hpp>
+#include <hm3/geometry/concepts.hpp>
 #include <hm3/types.hpp>
 
 namespace hm3::geometry::polyline_primitive {
