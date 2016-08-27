@@ -125,11 +125,14 @@ struct single : tree::tree<Nd> {
   }
 
   /// Index of leaf node containing the point \p p
-  tree_node_idx leaf_node_containing(point_t p) {
+  tree_node_idx leaf_node_containing(point_t p) const noexcept {
     if (!geometry::intersection.test(bounding_box(), p)) {
       return tree_node_idx{};
     }
-    return tree::leaf_node_location(*this, bounding_box(), p).idx;
+    auto r = tree::leaf_node_location(*this, bounding_box(), p).idx;
+    HM3_ASSERT(r, "point {} in grid bbox: {} but not in tree?", p,
+               bounding_box());
+    return r;
   }
 };
 

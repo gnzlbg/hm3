@@ -24,7 +24,7 @@ struct colinear_fn {
     auto no_vertices = vertex_size(p);
 
     auto line_dir = [&](dim_t i, dim_t j) {
-      return direction(segment<Nd>::through(vertex(p, i), vertex(p, j)));
+      return direction(segment<Nd>(vertex(p, i), vertex(p, j)));
     };
 
     if (vertex(p, 0) == vertex(p, 1)) { return true; }

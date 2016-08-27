@@ -3,7 +3,7 @@
 ///
 /// Conversion to a polygon.
 #include <hm3/geometry/access/vertex.hpp>
-#include <hm3/geometry/algorithm/distance.hpp>
+#include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/primitive/polyline/faces.hpp>
 
 namespace hm3::geometry {
@@ -16,7 +16,7 @@ template <typename T, typename P, typename UP = uncvref_t<P>,
 constexpr T as_polygon(P&& p) {
   HM3_ASSERT(vertex_size(p) > 2,
              "polyline {} needs > 2 vertex to be a polygon");
-  HM3_ASSERT(distance.approx(first_vertex(p), last_vertex(p)),
+  HM3_ASSERT(approx(first_vertex(p), last_vertex(p)),
              "first and last polyline vertices must be equal: {} != {}",
              first_vertex(p), last_vertex(p));
   T result;

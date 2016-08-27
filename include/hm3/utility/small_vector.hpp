@@ -3,11 +3,14 @@
 ///
 /// A small vector.
 #include <boost/container/small_vector.hpp>
+#include <hm3/utility/matrix/eigen.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {
 
-using boost::container::small_vector;
+template <typename T, std::size_t N>
+using small_vector
+ = boost::container::small_vector<T, N, Eigen::aligned_allocator<T>>;
 
 }  // namespace hm3
 

@@ -28,7 +28,7 @@ void basic_line_test() {
   auto l2 = l_t(o2, d1);
   auto l3 = l_t(o0, d1);
 
-  auto l0_ = l_t::through(o0, o1);
+  auto l0_ = l_t(o0, o1);
 
   {  // assignment
     l_t l = l0;
@@ -173,8 +173,8 @@ int main() {
     p_t p5{2., 3.};
     p_t p6{3., 2.};
 
-    auto l0 = l_t::through(p0, p1);
-    auto l1 = l_t::through(p1, p0);
+    auto l0 = l_t(p0, p1);
+    auto l1 = l_t(p1, p0);
 
     using geometry::side_t;
     using geometry::side;

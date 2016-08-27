@@ -48,7 +48,7 @@ void test_polyline() {
   CHECK(geometry::bounding_volume.box(pl) == box);
 
   auto xc = p_t::constant(1.5);
-  CHECK(geometry::distance.approx(geometry::centroid(pl), xc));
+  CHECK(geometry::approx(geometry::centroid(pl), xc));
 
   auto p4 = p_t::constant(3.);
   auto p5 = p_t::constant(4.);

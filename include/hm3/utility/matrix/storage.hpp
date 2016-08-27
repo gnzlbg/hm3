@@ -10,7 +10,7 @@
 #include <hm3/utility/matrix/bounds.hpp>
 #include <hm3/utility/matrix/traits.hpp>
 #include <hm3/utility/range.hpp>
-//#define HM3_MATRIX_STORAGE_USE_ALIGNAS
+#define HM3_MATRIX_STORAGE_USE_ALIGNAS
 
 namespace hm3 {
 namespace dense {
@@ -60,18 +60,17 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using const_reference = typename data_container::const_reference;
   using value_type      = typename data_container::value_type;
 
-  // using data_container  = Eigen::Matrix<T, max_size(), 1>;
-  // using iterator        = T*;
-  // using const_iterator  = T const*;
-  // using reference       = T&;
-  // using const_reference = T const&;
-  // using value_type = T;
+  /// Alignment requirement
+  static constexpr suint_t alignment() noexcept {
+    return max_size() > 1 ? 16 : 0;
+  }
 
   using pointer       = value_type*;
   using const_pointer = value_type const*;
 
 #ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
-  alignas(64)
+  alignas(alignment())  // Required for correctness, since we force EigenMap to
+                        // assume proper alignment!
 #endif
    data_container data_;
 
@@ -134,10 +133,10 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using pointer         = value_type*;
   using const_pointer   = value_type const*;
 
-#ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
-  alignas(32)
-#endif
-   data_container data_;
+  // #ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
+  //   alignas(32)
+  // #endif
+  data_container data_;
 
   using max_bounds = max_bounds<MaxRows, MaxCols>;
   using max_bounds::max_no_rows;
@@ -207,8 +206,10 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using const_reference = const reference;  // note:std::bitset doesn't have a
                                             // const_reference type member
 
+  static constexpr suint_t alignment() noexcept { return 16; }
+
 #ifdef HM3_MATRIX_STORAGE_USE_ALIGNAS
-  alignas(32)
+  alignas(alignment())
 #endif
    data_container data_;
 

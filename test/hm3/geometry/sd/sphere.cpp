@@ -5,8 +5,7 @@
 using namespace hm3;
 
 static_assert(geometry::SignedDistance<geometry::sd::sphere_t<1>, 1>{}, "");
-// static_assert(geometry::SignedDistance<geometry::sd::fixed_sphere<2>, 2>{},
-// "");
+static_assert(geometry::SignedDistance<geometry::sd::sphere_t<2>, 2>{}, "");
 
 template <uint_t Nd>
 struct p_and_v {

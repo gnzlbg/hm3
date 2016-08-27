@@ -18,16 +18,14 @@ struct convex_fn {
     auto no_faces = face_size(p);
 
     auto compute_angle = [&](auto&& f0, auto&& f1) {
-      auto d0 = direction(f0);
-      auto d1 = direction(f1);
-
-      return std::acos(d0().normalized().dot(d1().normalized()));
+      return std::acos(
+       direction(f0)().normalized().dot(direction(f1)().normalized()));
     };
 
     for (dim_t f = 0; f < no_faces - 1; ++f) {
       auto f0 = face(p, f);
       auto f1 = face(p, (f == no_faces - 1) ? 0 : f + 1);
-      if (compute_angle(f0, f1) > math::pi) { return false; }
+      if (std::abs(compute_angle(f0, f1)) > math::pi) { return false; }
     }
     return true;
   }

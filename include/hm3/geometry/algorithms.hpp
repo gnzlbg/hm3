@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Discrete geometry algorithms.
+#include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/bounding_length.hpp>
 #include <hm3/geometry/algorithm/bounding_volume.hpp>
 #include <hm3/geometry/algorithm/centroid.hpp>

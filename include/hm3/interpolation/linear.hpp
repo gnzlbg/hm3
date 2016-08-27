@@ -55,7 +55,7 @@ num_t distance_to_value(T v, segment<Nd> l, array<T, 2> vs) {
 
 template <dim_t Nd, typename T>
 point<Nd> point_with_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
-  auto dir = direction(segment<Nd>::through(x0, x1));
+  auto dir = direction(segment<Nd>(x0, x1));
   return point<Nd>{x0() + dir() * distance_to_value(v, x0, x1, v0, v1)};
 }
 

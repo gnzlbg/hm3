@@ -27,9 +27,10 @@ constexpr dim_t face_size(box<Nd> const&, dim_t m) noexcept {
 template <dim_t Nd>
 constexpr point<Nd> vertex(box<Nd> const& s, dim_t v) noexcept {
   HM3_ASSERT(v < vertex_size(s), "");
-  const auto x_p          = aabb_primitive::relative_vertex_position<Nd>(v);
-  const num_t half_length = 0.5 * s.length_;
-  return point<Nd>{s.centroid_().array() + half_length * x_p().array()};
+  return point<Nd>{
+   s.centroid_().array()
+   + 0.5 * s.length_
+      * aabb_primitive::relative_vertex_position<Nd>(v)().array()};
 }
 
 /// Vertices of the box \p s.

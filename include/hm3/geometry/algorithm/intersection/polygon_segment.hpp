@@ -56,8 +56,8 @@ variant<monostate, point<Nd>, segment<Nd>> intersection(segment<Nd> const& s,
     // returns a segment that preserves the direction of the input segment
     auto l      = s.line();
     num_t ts[2] = {parameter(l, p0).value(), parameter(l, p1).value()};
-    if (ts[0] <= ts[1]) { return segment<Nd>::through(p0, p1); }
-    return segment<Nd>::through(p1, p0);
+    if (ts[0] <= ts[1]) { return segment<Nd>(p0, p1); }
+    return segment<Nd>(p1, p0);
   };
 
   switch (size(points)) {
@@ -65,18 +65,36 @@ variant<monostate, point<Nd>, segment<Nd>> intersection(segment<Nd> const& s,
       if (p0_inside or p1_inside) { return s; }
       return monostate{};
     }
-    case 1: {
+    case 1: {  // segment interescts a single point
       if (!p0_inside and !p1_inside) { return points[0]; }
       point<Nd> lp = p0_inside ? s.x(0) : s.x(1);
+      // the segment can be either outside, s.t. the result is the single point:
+      if (lp == points[0]) { return points[0]; }
+      // or inside, s.t. the result is the segment up to the intersection point:
       return make_segment(lp, points[0]);
     }
-    default: {
-      HM3_UNREACHABLE();
-      HM3_FATAL_ERROR("polygon: {}\nsegment: {}\nintersection points: {}\n", p,
-                      s, view::all(points));
-    }
-    case 2: {
+    case 2: {  // segment intersects two points, can happen along a face:
+      HM3_ASSERT(points[0] != points[1], "cannot happen");
       return make_segment(points[0], points[1]);
+    }
+    default: {  // segment intersects multipe points, can happen along a face
+                // with colinear vertices:
+      auto p0 = points.back();
+      points.pop_back();
+      auto p1 = points.back();
+      points.pop_back();
+      auto rs = segment<Nd>(p0, p1);
+      while (!points.empty()) {
+        auto n = points.back();
+        points.pop_back();
+        auto t_ = parameter(rs, n, false);
+        HM3_ASSERT(  // not colinear ?!
+         t_, "point {} is not on the line spanned by the segment {} ??", n, rs);
+        auto t = t_.value();
+        if (t < 0.) { rs = segment<Nd>(n, rs.x(1)); }
+        if (t > 1.) { rs = segment<Nd>(rs.x(0), n); }
+      }
+      return make_segment(rs.x(0), rs.x(1));
     }
   }
 }

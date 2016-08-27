@@ -37,7 +37,7 @@ int main() {
     // centroid:
     CHECK(centroid(a) == p_t{0.5, 0.25});
 
-    // contains:
+    // point intersection:
     CHECK(intersection.test(a, p_t{0.1, 0.1}));
     CHECK(intersection.test(a, p_t{0.1, 0.4}));
     CHECK(intersection.test(a, p_t{0.9, 0.1}));
@@ -47,6 +47,8 @@ int main() {
     CHECK(!intersection.test(a, p_t{1.1, -0.1}));
     CHECK(!intersection.test(a, p_t{1.1, 0.6}));
 
+    // relative position:
+
     // volume:
     CHECK(volume(a) == 0.5);
 
@@ -54,122 +56,132 @@ int main() {
     CHECK(!is_box(a));
   }
 
-  {  // intersection tests
+  {// intersection tests
 
-    {  // 1D
-      static constexpr dim_t nd = 1;
+   {// 1D
+    static constexpr dim_t nd = 1;
 
-      using p_t = point<nd>;
-      using a_t = aabb<nd>;
+  using p_t = point<nd>;
+  using a_t = aabb<nd>;
 
-      a_t a{p_t::constant(-1.), p_t::constant(0.)};
-      a_t b{p_t::constant(1.), p_t::constant(2.)};
-      a_t c{p_t::constant(1.25), p_t::constant(1.75)};
-      a_t d{p_t::constant(-.5), p_t::constant(.5)};
+  a_t a{p_t::constant(-1.), p_t::constant(0.)};
+  a_t b{p_t::constant(1.), p_t::constant(2.)};
+  a_t c{p_t::constant(1.25), p_t::constant(1.75)};
+  a_t d{p_t::constant(-.5), p_t::constant(.5)};
 
-      // Case A:
-      CHECK(intersection.test(a, b));
-      CHECK(intersection.test(b, a));
+  // Case A:
+  CHECK(!intersection.test(a, b));
+  CHECK(!intersection.test(b, a));
 
-      // Case B1:
-      CHECK(!intersection.test(c, b));
-      // Case B2:
-      CHECK(!intersection.test(b, c));
+  // Case B1:
+  CHECK(intersection.test(c, b));
+  // Case B2:
+  CHECK(intersection.test(b, c));
 
-      // Case C1:
-      CHECK(!intersection.test(a, a));
-      CHECK(!intersection.test(b, b));
-      CHECK(!intersection.test(a, d));
-      CHECK(!intersection.test(d, a));
-    }
+  // Case C1:
+  CHECK(intersection.test(a, a));
+  CHECK(intersection.test(b, b));
+  CHECK(intersection.test(a, d));
+  CHECK(intersection.test(d, a));
+}
 
-    {  // 2D:
-      static constexpr dim_t nd = 2;
+{  // 2D:
+  static constexpr dim_t nd = 2;
 
-      using p_t = point<nd>;
-      using a_t = aabb<nd>;
+  using p_t = point<nd>;
+  using a_t = aabb<nd>;
 
-      a_t a{p_t::constant(-1.), p_t::constant(0.)};
-      a_t b{p_t::constant(1.), p_t::constant(2.)};
-      a_t c{p_t::constant(1.25), p_t::constant(1.75)};
-      a_t d{p_t::constant(-.5), p_t::constant(.5)};
-      a_t e{p_t{0., -1.}, p_t{1., 0.}};
-      a_t f{p_t::constant(0.), p_t::constant(1.)};
+  a_t a{p_t::constant(-1.), p_t::constant(0.)};
+  a_t b{p_t::constant(1.), p_t::constant(2.)};
+  a_t c{p_t::constant(1.25), p_t::constant(1.75)};
+  a_t d{p_t::constant(-.5), p_t::constant(.5)};
+  a_t e{p_t{0., -1.}, p_t{1., 0.}};
+  a_t f{p_t::constant(0.), p_t::constant(1.)};
 
-      // Case A:
-      CHECK(intersection.test(a, b));
-      CHECK(intersection.test(b, a));
-      CHECK(intersection.test(e, b));
-      CHECK(intersection.test(e, c));
+  // Case A:
+  CHECK(!intersection.test(a, b));
+  CHECK(!intersection.test(b, a));
+  CHECK(!intersection.test(e, b));
+  CHECK(!intersection.test(e, c));
 
-      // Case B1:
-      CHECK(!intersection.test(c, b));
-      // Case B2:
-      CHECK(!intersection.test(b, c));
+  // Case B1:
+  CHECK(intersection.test(c, b));
+  // Case B2:
+  CHECK(intersection.test(b, c));
 
-      // Case C1: volume
-      CHECK(!intersection.test(a, a));
-      CHECK(!intersection.test(b, b));
-      CHECK(!intersection.test(a, d));
-      CHECK(!intersection.test(d, a));
+  // Case C1: volume
+  CHECK(intersection.test(a, a));
+  CHECK(intersection.test(b, b));
+  CHECK(intersection.test(a, d));
+  CHECK(intersection.test(d, a));
 
-      // Case C2: face
-      CHECK(!intersection.test(a, e));
-      CHECK(!intersection.test(e, a));
+  // Case C2: face
+  CHECK(intersection.test(a, e));
+  CHECK(intersection.test(e, a));
 
-      // Case C3: edge (point)
-      CHECK(!intersection.test(a, f));
-      CHECK(!intersection.test(f, a));
-      CHECK(!intersection.test(b, f));
-      CHECK(!intersection.test(f, b));
-    }
+  // Case C3: edge (point)
+  CHECK(intersection.test(a, f));
+  CHECK(intersection.test(f, a));
+  CHECK(intersection.test(b, f));
+  CHECK(intersection.test(f, b));
+}
 
-    {  // 3D:
-      static constexpr dim_t nd = 3;
+{  // 3D:
+  static constexpr dim_t nd = 3;
 
-      using p_t = point<nd>;
-      using a_t = aabb<nd>;
+  using p_t = point<nd>;
+  using a_t = aabb<nd>;
 
-      a_t a{p_t::constant(-1.), p_t::constant(0.)};
-      a_t b{p_t::constant(1.), p_t::constant(2.)};
-      a_t c{p_t::constant(1.25), p_t::constant(1.75)};
-      a_t d{p_t::constant(-.5), p_t::constant(.5)};
-      a_t e{p_t{0., -1., -1.}, p_t{1., 0., 0.}};
-      a_t f{p_t::constant(0.), p_t::constant(1.)};
-      a_t g{p_t{0., 0., -1}, p_t{1., 0., 0.}};
+  a_t a{p_t::constant(-1.), p_t::constant(0.)};
+  a_t b{p_t::constant(1.), p_t::constant(2.)};
+  a_t c{p_t::constant(1.25), p_t::constant(1.75)};
+  a_t d{p_t::constant(-.5), p_t::constant(.5)};
+  a_t e{p_t{0., -1., -1.}, p_t{1., 0., 0.}};
+  a_t f{p_t::constant(0.), p_t::constant(1.)};
+  a_t g{p_t{0., 0., -1}, p_t{1., 0., 0.}};
 
-      // Case A:
-      CHECK(intersection.test(a, b));
-      CHECK(intersection.test(b, a));
-      CHECK(intersection.test(e, b));
-      CHECK(intersection.test(e, c));
+  // Case A:
+  CHECK(!intersection.test(a, b));
+  CHECK(!intersection.test(b, a));
+  CHECK(!intersection.test(e, b));
+  CHECK(!intersection.test(e, c));
 
-      // Case B1:
-      CHECK(!intersection.test(c, b));
-      // Case B2:
-      CHECK(!intersection.test(b, c));
+  // Case B1:
+  CHECK(intersection.test(c, b));
+  // Case B2:
+  CHECK(intersection.test(b, c));
 
-      // Case C1: volume
-      CHECK(!intersection.test(a, a));
-      CHECK(!intersection.test(b, b));
-      CHECK(!intersection.test(a, d));
-      CHECK(!intersection.test(d, a));
+  // Case C1: volume
+  CHECK(intersection.test(a, a));
+  CHECK(intersection.test(b, b));
+  CHECK(intersection.test(a, d));
+  CHECK(intersection.test(d, a));
 
-      // Case C2: face
-      CHECK(!intersection.test(a, e));
-      CHECK(!intersection.test(e, a));
+  // Case C2: face
+  CHECK(intersection.test(a, e));
+  CHECK(intersection.test(e, a));
 
-      // Case C3: edge (line)
-      CHECK(!intersection.test(a, g));
-      CHECK(!intersection.test(g, a));
+  // Case C3: edge (line)
+  CHECK(intersection.test(a, g));
+  CHECK(intersection.test(g, a));
 
-      // Case C4: corner (point)
-      CHECK(!intersection.test(a, f));
-      CHECK(!intersection.test(f, a));
-      CHECK(!intersection.test(b, f));
-      CHECK(!intersection.test(f, b));
-    }
-  }
+  // Case C4: corner (point)
+  CHECK(intersection.test(a, f));
+  CHECK(intersection.test(f, a));
+  CHECK(intersection.test(b, f));
+  CHECK(intersection.test(f, b));
+}
+}
 
-  return test::result();
+{  // 2D bug
+  point<2> p0{-1.791, -1.76};
+  point<2> p1{0.747, 0.75};
+  aabb<2> a(p0, p1);
+  box<2> b = bounding_volume.box(a);
+  CHECK(centroid(a) == centroid(b));
+  CHECK(x_min(b) <= x_min(a));
+  CHECK(x_max(b) >= x_max(a));
+}
+
+return test::result();
 }

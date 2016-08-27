@@ -46,7 +46,8 @@ int main() {
     CHECK(centroid(s) == point_t{0.5, 0.5});
 
     // Normal:
-    CHECK(normal(s) == vec_t{-1. / std::sqrt(2.), 1. / std::sqrt(2.)});
+    CHECK(geometry::approx(normal(s),
+                           vec_t{-1. / std::sqrt(2.), 1. / std::sqrt(2.)}));
 
     // Bounding box
     auto sbb_s = box_t(point_t{.5, .5}, 1.);

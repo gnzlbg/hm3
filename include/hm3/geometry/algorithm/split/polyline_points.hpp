@@ -8,6 +8,7 @@
 #include <hm3/utility/range.hpp>
 #include <hm3/utility/small_vector.hpp>
 #include <hm3/utility/variant.hpp>
+#include <hm3/utility/vector.hpp>
 
 namespace hm3::geometry::split_detail {
 
@@ -15,7 +16,7 @@ namespace hm3::geometry::split_detail {
 template <typename P, typename Points, typename UP = uncvref_t<P>,
           dim_t Nd       = UP::dimension(),
           typename Point = uncvref_t<range_value_t<Points>>,
-          typename Ret   = std::vector<UP>, /* = small_vector<UP, 4>, */
+          typename Ret   = vector<UP>, /* = small_vector<UP, 4>, */
           CONCEPT_REQUIRES_(Polyline<P, Nd>{} and Range<Points>{}
                             and Same<Point, point<Nd>>{})>
 inline auto split(P&& pl, Points&& ps) -> Ret {

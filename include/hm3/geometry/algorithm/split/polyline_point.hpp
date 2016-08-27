@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Split polyline at a point.
-#include <hm3/geometry/algorithm/distance.hpp>
+#include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_point.hpp>
 #include <hm3/geometry/algorithm/split.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
@@ -32,7 +32,7 @@ constexpr variant<monostate, UP, pair<UP, UP>> split(P&& pl,
     for (suint_t vidx = svidx; vidx < no_vids; ++vidx) {
       pl_r.push_back(vertex(pl_, vidx));
     }
-    return r_t{make_pair(pl_l, pl_r)};
+    return r_t{hm3::make_pair(pl_l, pl_r)};
   };
 
   for (auto&& sidx : face_indices(pl)) {
@@ -43,10 +43,8 @@ constexpr variant<monostate, UP, pair<UP, UP>> split(P&& pl,
        using T = uncvref_t<decltype(v)>;
        if
          constexpr(Same<T, p_t>{}) {
-           if (distance.approx(s.x(0), p)) {
-             return split_polyline_at_vertex(pl, sidx);
-           }
-           if (distance.approx(s.x(1), p)) {
+           if (approx(s.x(0), p)) { return split_polyline_at_vertex(pl, sidx); }
+           if (approx(s.x(1), p)) {
              return split_polyline_at_vertex(pl, sidx + 1);
            }
            insert_vertex(pl, sidx, v);

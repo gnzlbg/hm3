@@ -56,12 +56,23 @@ int main() {
   CHECK(intersection(p, s6) == i_t{});
   CHECK(intersection(p, s7) == i_t{s_t(p_t{1.0, 0.0}, p_t{1.0, 1.0})});
   CHECK(intersection(p, s8) == i_t{s8});
+
   CHECK(intersection(p, s9) == i_t{p_t{1.0, 1.0}});
   CHECK(intersection(p, s10) == i_t{s10});
   CHECK(intersection(p, s11) == i_t{s10});
   CHECK(intersection(p, s12) == i_t{s12});
   CHECK(intersection(p, s13) == i_t{s12});
   CHECK(intersection(p, s14) == i_t{s_t(p_t{.5, .5}, p_t{1.0, .5})});
+
+  {  // polygon with colinear vertices
+    auto p4 = p_t{0.5, 0.0};
+
+    sp_t pc({p0, p4, p1, p2, p3});
+    s_t s(p0, p1);
+    CHECK(intersection(pc, s) == i_t{s});
+    using geometry::direction;
+    CHECK(intersection(pc, direction.invert(s)) == i_t{direction.invert(s)});
+  }
 
 #ifdef HM3_ENABLE_VTK
   geometry::io::vtk<2> o{};

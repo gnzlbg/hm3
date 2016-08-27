@@ -11,6 +11,7 @@
 #include <hm3/geometry/primitive/polyline/as_polygon.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 #include <hm3/utility/variant.hpp>
+#include <hm3/utility/vector.hpp>
 
 namespace hm3::geometry::split_detail {
 
@@ -156,7 +157,7 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
 /// - against the polyline pieces.
 template <typename PolyG, typename PolyL, typename UPG = uncvref_t<PolyG>,
           typename UPL = uncvref_t<PolyL>, dim_t Nd = UPG::dimension(),
-          typename Ret = std::vector<UPG> /* small_vector<UPG, 3> */,
+          typename Ret = vector<UPG> /* small_vector<UPG, 3> */,
           CONCEPT_REQUIRES_(Nd == UPL::dimension() and Polygon<UPG, Nd>()
                             and Polyline<UPL, Nd>{})>
 inline Ret split(PolyG&& pg, PolyL&& pl) {

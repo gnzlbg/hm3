@@ -17,7 +17,7 @@
 #include <hm3/geometry/algorithm/normal.hpp>
 #include <hm3/geometry/primitive/fwd.hpp>
 #include <hm3/geometry/primitive/point/point.hpp>
-#include <hm3/geometry/primitive/vec.hpp>
+#include <hm3/geometry/primitive/vec/vec.hpp>
 #include <hm3/geometry/rank.hpp>
 
 namespace hm3::geometry {
@@ -125,5 +125,44 @@ template <typename T, dim_t Nd = math::highest<dim_t>>
 using Polyline
  = meta::and_<concepts::rc::models<concepts::Polyline, ranges::uncvref_t<T>>,
               meta::bool_<Dimensional<T, Nd>{}>>;
+
+namespace concepts {
+
+namespace rc = ranges::concepts;
+
+struct pushbackable {
+  template <typename T, typename U>
+  static auto requires_(T&& t, U&& u) -> decltype(  //
+   rc::valid_expr(((void)t.push_back(std::forward<U>(u)), 42)));
+};
+
+using PushBackable = pushbackable;
+
+struct popbackable {
+  template <typename T>
+  static auto requires_(T&& t) -> decltype(  //
+   rc::valid_expr(((void)t.pop_back(), 42)));
+};
+
+using PopBackable = popbackable;
+
+struct reservable {
+  template <typename T>
+  static auto requires_(T&& t) -> decltype(  //
+   rc::valid_expr(((void)t.reserve(0), 42)));
+};
+
+using Reservable = reservable;
+}  // concepts
+
+template <typename T, typename U>
+using PushBackable
+ = concepts::rc::models<concepts::PushBackable, uncvref_t<T>, uncvref_t<U>>;
+
+template <typename T>
+using PopBackable = concepts::rc::models<concepts::PopBackable, uncvref_t<T>>;
+
+template <typename T>
+using Reservable = concepts::rc::models<concepts::Reservable, uncvref_t<T>>;
 
 }  // namespace hm3::geometry

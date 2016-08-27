@@ -48,14 +48,13 @@ constexpr num_t signed_area(P&& p) noexcept {
 /// \note This is 6x slower than the approach followed below.
 template <typename P, CONCEPT_REQUIRES_(Polygon<P, 3>{})>
 constexpr num_t signed_area_stokes(P&& p) noexcept {
-  auto n           = normal(p);
   auto tmp         = vec<3>::constant(0.);
   auto no_vertices = vertex_size(p);
   for (dim_t v = 0; v < no_vertices - 1; ++v) {
     tmp() += vertex(p, v)().cross(vertex(p, v + 1)());
   }
   tmp() += vertex(p, no_vertices - 1)().cross(vertex(p, 0)());
-  return 0.5 * n().dot(tmp());
+  return 0.5 * normal(p)().dot(tmp());
 }
 
 /// Compute the signed area of a three dimensional polygon \p p.

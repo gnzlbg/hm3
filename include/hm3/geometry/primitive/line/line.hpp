@@ -29,14 +29,6 @@ struct line : ranked<Nd, 1> {
   /// Point at \p t * 1. from the origin along the line.
   point_t x(num_t t) const noexcept { return point_t{l_.pointAt(t)}; }
 
-  /// Line line that goes through the 2 points \p b and \p e : [b, e]
-  static line through(point_t b, point_t e) noexcept {
-    HM3_ASSERT(b != e, "line through two equal points: {} == {}!", b, e);
-    line l;
-    l.l_ = storage_t::Through(b(), e());
-    return l;
-  }
-
   /// Origin of the line.
   point_t origin() const noexcept { return point_t{l_.origin()}; }
 
@@ -60,15 +52,25 @@ struct line : ranked<Nd, 1> {
   constexpr line(point_t origin, vector_t direction, not_normalized_t) noexcept
    : l_(origin(), direction()) {}
 
+  /// Line that goes through the 2 points \p b and \p e : [b, e]
+  line(point_t b, point_t e) noexcept : l_(storage_t::Through(b(), e())) {
+    HM3_ASSERT(b != e, "line through two equal points: {} == {}!", b, e);
+  }
+
   constexpr line()            = default;
   constexpr line(line const&) = default;
   constexpr line(line&&)      = default;
   constexpr line& operator=(line const&) = default;
   constexpr line& operator=(line&&) = default;
 
+  /// Converts the line into a segment of length \p line_length centered at the
+  /// line's origin.
   segment<Nd> as_segment(num_t line_length = 1e200) const noexcept {
-    return segment<Nd>::through(x(-.5 * line_length), x(.5 * line_length));
+    return segment<Nd>(x(-.5 * line_length), x(.5 * line_length));
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /// Is the representation of the lines \p a and \p b equal?

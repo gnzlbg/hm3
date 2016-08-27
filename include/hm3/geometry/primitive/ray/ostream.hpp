@@ -7,8 +7,8 @@
 namespace hm3::geometry::ray_primitive {
 
 template <typename OStream, dim_t Nd>
-OStream& operator<<(OStream& o, line<Nd> const& l) {
-  o << "[o: " << l.origin() << ", d: " << l.direction() << "]";
+OStream& operator<<(OStream& o, ray<Nd> const& r) {
+  o << "[o: " << r.origin() << ", d: " << r.direction() << "]";
   return o;
 }
 

@@ -26,15 +26,15 @@ void test_polyline_point_split() {
   auto r1 = geometry::split(pl, p0);
   CHECK(r1 == r_t{pl});
   auto r2 = geometry::split(pl, p1);
-  CHECK(r2 == r_t{make_pair(pl_t({p0, p1}), pl_t({p1, p2, p3, p4}))});
+  CHECK(r2 == r_t{hm3::make_pair(pl_t({p0, p1}), pl_t({p1, p2, p3, p4}))});
   auto r3 = geometry::split(pl, p2);
-  CHECK(r3 == r_t{make_pair(pl_t({p0, p1, p2}), pl_t({p2, p3, p4}))});
+  CHECK(r3 == r_t{hm3::make_pair(pl_t({p0, p1, p2}), pl_t({p2, p3, p4}))});
   auto r4 = geometry::split(pl, p3);
-  CHECK(r4 == r_t{make_pair(pl_t({p0, p1, p2, p3}), pl_t({p3, p4}))});
+  CHECK(r4 == r_t{hm3::make_pair(pl_t({p0, p1, p2, p3}), pl_t({p3, p4}))});
   auto r5 = geometry::split(pl, p4);
   CHECK(r5 == r_t{pl_t({p0, p1, p2, p3, p4})});
   auto r6 = geometry::split(pl, p5);
-  CHECK(r6 == r_t{make_pair(pl_t({p0, p1, p5}), pl_t({p5, p2, p3, p4}))});
+  CHECK(r6 == r_t{hm3::make_pair(pl_t({p0, p1, p5}), pl_t({p5, p2, p3, p4}))});
 }
 
 int main() {

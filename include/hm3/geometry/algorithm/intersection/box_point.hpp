@@ -4,6 +4,7 @@
 /// Does the box intersect a point?
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/primitive/box/box.hpp>
+#include <hm3/geometry/primitive/point/approx.hpp>
 #include <hm3/geometry/primitive/point/point.hpp>
 #include <hm3/utility/variant.hpp>
 
@@ -13,6 +14,10 @@ namespace hm3::geometry::box_primitive {
 template <dim_t Nd>
 constexpr bool intersection_test(box<Nd> const& s,
                                  point<Nd> const& p) noexcept {
+  // auto min_ = x_min(s);
+  // auto max_ = x_max(s);
+  // return (min_ < p or geometry::approx(min_, p))
+  //        and (max_ > p or geometry::approx(max_, p));
   return x_min(s) <= p and x_max(s) >= p;
 }
 

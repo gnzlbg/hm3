@@ -21,7 +21,7 @@ constexpr segment<Nd> face(P&& p, dim_t f) noexcept {
   const auto no_vertices = vertex_size(p);
   HM3_ASSERT(f < no_vertices - 1, "face {} out of bounds [0, {})", f,
              no_vertices - 1);
-  return segment<Nd>::through(vertex(p, f), vertex(p, f + 1));
+  return segment<Nd>(vertex(p, f), vertex(p, f + 1));
 }
 
 /// Faces of the polyline \p p.

@@ -32,16 +32,16 @@ static constexpr num_t ray_length(point<Nd> const& origin, point<Nd> const& x0,
 }  // namespace ray_detail
 
 template <dim_t Nd>
-bool intersection_test(ray<Nd> const& a, segment<Nd> const& b) noexcept {
-  return intersection.test(
-   a.as_segment(ray_detail::ray_length(a.origin(), b.x(0), b.x(1))), b);
+bool intersection_test(ray<Nd> const& r, segment<Nd> const& s) noexcept {
+  return geometry::intersection.test(
+   r.as_segment(ray_detail::ray_length(r.origin(), s.x(0), s.x(1))), s);
 }
 
 template <dim_t Nd>
 variant<monostate, segment<Nd>, point<Nd>> intersection(
- ray<Nd> const& a, segment<Nd> const& b) noexcept {
-  return intersection(
-   a.as_segment(ray_detail::ray_length(a.origin(), b.x(0), b.x(1))), b);
+ ray<Nd> const& r, segment<Nd> const& s) noexcept {
+  return geometry::intersection(
+   r.as_segment(ray_detail::ray_length(r.origin(), s.x(0), s.x(1))), s);
 }
 
 }  // namespace hm3::geometry::ray_primitive

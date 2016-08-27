@@ -6,7 +6,7 @@
 #include <hm3/geometry/primitive/polyline/ostream.hpp>
 #include <hm3/geometry/rank.hpp>
 #include <hm3/utility/small_vector.hpp>
-
+/*
 namespace hm3::geometry {
 
 namespace polyline_primitive {
@@ -88,6 +88,9 @@ struct small_polyline : ranked<Nd, 1>, private small_vector<point<Nd>, EstNp> {
   }
   vector_t& vertices() & { return static_cast<vector_t&>(*this); }
   vector_t vertices() && { return static_cast<vector_t&&>(*this); }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <dim_t Nd, dim_t EstNp>
@@ -151,3 +154,4 @@ OStream& operator<<(OStream& os, small_polyline<Nd, EstNp> const& p) noexcept {
 using polyline_primitive::small_polyline;
 
 }  // namespace hm3::geometry
+*/

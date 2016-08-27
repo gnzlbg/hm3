@@ -21,14 +21,14 @@ int main() {
   }
 
   {  // signum
-    STATIC_CHECK(signum(0u) == 0u);
-    STATIC_CHECK(signum(1u) == 1u);
-    STATIC_CHECK(signum(2u) == 1u);
-    STATIC_CHECK(signum(0) == 0);
-    STATIC_CHECK(signum(1) == 1);
-    STATIC_CHECK(signum(2) == 1);
-    STATIC_CHECK(signum(-1) == -1);
-    STATIC_CHECK(signum(-2) == -1);
+    STATIC_CHECK(signum(0u) == signum_t::zero());
+    STATIC_CHECK(signum(1u) == signum_t::positive());
+    STATIC_CHECK(signum(2u) == signum_t::positive());
+    STATIC_CHECK(signum(0) == signum_t::zero());
+    STATIC_CHECK(signum(1) == signum_t::positive());
+    STATIC_CHECK(signum(2) == signum_t::positive());
+    STATIC_CHECK(signum(-1) == signum_t::negative());
+    STATIC_CHECK(signum(-2) == signum_t::negative());
   }
 
   {  // ipow
@@ -41,8 +41,8 @@ int main() {
 
   {  // sign
     for (num_t i = -100.; i < 100.; i += 1.) {
-      CHECK(approx(fast_sign(i), robust_sign(i)));
-      CHECK(approx(sign(i), robust_sign(i)));
+      CHECK(fast_sign(i) == robust_sign(i));
+      CHECK(sign(i) == robust_sign(i));
     }
   }
 

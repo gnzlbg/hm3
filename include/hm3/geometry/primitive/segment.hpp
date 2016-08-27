@@ -3,6 +3,7 @@
 ///
 /// Line segment.
 #include <hm3/geometry/primitive/fwd.hpp>
+#include <hm3/geometry/primitive/segment/approx.hpp>
 #include <hm3/geometry/primitive/segment/bounding_length.hpp>
 #include <hm3/geometry/primitive/segment/bounding_volume.hpp>
 #include <hm3/geometry/primitive/segment/centroid.hpp>

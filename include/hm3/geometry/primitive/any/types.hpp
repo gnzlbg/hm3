@@ -8,9 +8,7 @@
 #include <hm3/geometry/primitive/line.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
-#include <hm3/geometry/primitive/polygon/small_polygon.hpp>
 #include <hm3/geometry/primitive/polyline.hpp>
-#include <hm3/geometry/primitive/polyline/small_polyline.hpp>
 #include <hm3/geometry/primitive/ray.hpp>
 #include <hm3/geometry/primitive/simplex.hpp>
 

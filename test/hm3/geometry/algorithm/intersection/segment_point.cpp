@@ -13,7 +13,7 @@ void test_segment_point_intersection() {
   auto x0 = p_t::constant(0.);
   auto x1 = p_t::constant(2.);
 
-  auto s = s_t::through(x0, x1);
+  auto s = s_t(x0, x1);
 
   auto m = p_t::constant(0.5);
 

@@ -15,15 +15,15 @@ template <dim_t Nd, typename SD, CONCEPT_REQUIRES_(SignedDistance<SD, Nd>{})>
 constexpr variant<monostate, point<Nd>, segment<Nd>>
  signed_distance_intersection(segment<Nd> const& s, SD&& sdf) {
   array<num_t, 2> sdv{sdf(s.x(0)), sdf(s.x(1))};
-  array<sint_t, 2> sgv{{math::signum(sdv[0]), math::signum(sdv[1])}};
+  array<math::signum_t, 2> sgv{{math::signum(sdv[0]), math::signum(sdv[1])}};
 
   switch (sd_intersection.test(sgv)) {
     case intersected: {
       if (sgv[0] == sgv[1]) {
-        HM3_ASSERT(sgv[0] == 0, "");
+        HM3_ASSERT(sgv[0] == math::signum_t::zero(), "");
         return s;
       }
-      return point<Nd>{}; //linear_interpolation::point_at(s, sdv, 0.);
+      return point<Nd>{};  // linear_interpolation::point_at(s, sdv, 0.);
     }
     case inside:
     case outside: {

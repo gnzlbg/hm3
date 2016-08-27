@@ -21,7 +21,7 @@ constexpr segment<Nd> face(P&& p, dim_t f) noexcept {
   HM3_ASSERT(f < no_vertices, "face {} out of bounds [0, {})", f, no_vertices);
   const auto vx0 = f;
   const auto vx1 = (vx0 == no_vertices - 1) ? 0 : f + 1;
-  return segment<Nd>::through(vertex(p, vx0), vertex(p, vx1));
+  return segment<Nd>(vertex(p, vx0), vertex(p, vx1));
 }
 
 /// Faces of the polygon \p p.

@@ -11,12 +11,12 @@ namespace hm3::geometry::aabb_primitive {
 template <dim_t Nd>
 constexpr bool intersection_test(aabb<Nd> const& a,
                                  aabb<Nd> const& b) noexcept {
-  auto const& a_min = x_min(a);
-  auto const& a_max = x_max(a);
-  auto const& b_min = x_min(b);
-  auto const& b_max = x_max(b);
-  return (a_min().array() <= b_max().array()).all()
-         and (a_max().array() >= b_min().array()).all();
+  // auto const& a_min = x_min(a);
+  // auto const& a_max = x_max(a);
+  // auto const& b_min = x_min(b);
+  // auto const& b_max = x_max(b);
+  return (x_min(a)().array() <= x_max(b)().array()).all()
+         and (x_max(a)().array() >= x_min(b)().array()).all();
 }
 
 /// Computes the intersection between two AABBs.

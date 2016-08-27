@@ -16,15 +16,15 @@ namespace tree {
 struct shift_location_fn {
   /// Shifts the location \p loc by normalized \p offset at \p level
   ///
-  /// TODO: if offset is out of bounds -> undefined behavior (right now
-  /// an assertion triggers in location's constructor)
+  /// If offset is out of bounds returns an empty location.
   template <typename Loc, typename Array, dim_t Nd = Loc::dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
-  auto operator()(Loc loc, Array offset) const noexcept -> Loc {
+  auto operator()(Loc loc, Array offset) const noexcept
+   -> compact_optional<Loc> {
     const num_t scale = math::ipow(lidx_t{2}, *loc.level());
     offset_t<Nd> o;
     for (dim_t d = 0; d < Nd; ++d) { o[d] = offset[d] * scale; }
-    return *shift(loc, o);
+    return shift(loc, o);
   }
 
   /// Shifts the location \p loc by \p offset

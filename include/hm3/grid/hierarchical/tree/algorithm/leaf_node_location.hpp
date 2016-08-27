@@ -27,8 +27,14 @@ struct leaf_node_location_fn {
       HM3_ASSERT((x(d) > 0. or math::approx(x(d), 0.))
                   and (x(d) < 1.0 or math::approx(x(d), 1.0)),
                  "x({}) = {} is not in normalized coordinates [0, 1]", d, x(d));
+
+      // TODO: figure out why this is needed: probably because the coordinates
+      // must be in range [0, 1), but maybe that is fixable ?
+      if (math::approx(x(d), 1.0)) { x(d) -= math::eps; }
     }
-    return node_or_parent_at(tree, shift_location(loc, x));
+
+    auto leaf_node_loc = shift_location(loc, x);
+    return node_or_parent_at(tree, leaf_node_loc);
   }
   /// Location code of the leaf node at spatial position \p x within the tree
   /// with bounding box \p bbox
@@ -41,10 +47,12 @@ struct leaf_node_location_fn {
                   geometry::point<Nd> x, Loc loc = Loc::min()) const noexcept {
     HM3_ASSERT(geometry::intersection.test(bbox, x),
                "point {} is not inside bounding box {}", x, bbox);
+
     // Normalize x
     auto x_min = geometry::x_min(bbox);
     x() -= x_min();
     x() /= geometry::bounding_length(bbox);
+
     return (*this)(tree, x, loc);
   }
 };

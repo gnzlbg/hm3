@@ -175,41 +175,107 @@ int main() {
     constexpr auto p1 = point<1>{1.5};
     CHECK(integral.area(p1) == 1.);
     CHECK(area(p1) == 1.);
-    CHECK(integral.boundary(p1) == 0.);
-    CHECK(perimeter(p1) == 0.);
     CHECK(normal(p1) == vec<1>::constant(1.));
   }
 
-  {    // distance between two points
-    {  // 1D
-      constexpr auto p1 = point<1>{-1.0};
-      constexpr auto p2 = point<1>{1.0};
-      constexpr auto p3 = point<1>{0.0};
+  { // distance between two points
+   {// 1D
 
-      CHECK(distance.centroid(p1, p2) == 2.);
-      CHECK(distance.centroid(p2, p1) == 2.);
-      CHECK(distance.centroid(p1, p3) == 1.);
-      CHECK(distance.centroid(p3, p1) == 1.);
-      CHECK(distance.centroid(p2, p3) == 1.);
-      CHECK(distance.centroid(p3, p2) == 1.);
-    }
+    constexpr auto p1 = point<1>{-1.0};
+  constexpr auto p2   = point<1>{1.0};
+  constexpr auto p3   = point<1>{0.0};
 
-    {  // 2D
-      constexpr auto p1 = point<2>{-1.0, -1.0};
-      constexpr auto p2 = point<2>{1.0, 1.0};
-      constexpr auto p3 = point<2>{0.0, 0.0};
+  CHECK(distance.centroid(p1, p2) == 2.);
+  CHECK(distance.centroid(p2, p1) == 2.);
+  CHECK(distance.centroid(p1, p3) == 1.);
+  CHECK(distance.centroid(p3, p1) == 1.);
+  CHECK(distance.centroid(p2, p3) == 1.);
+  CHECK(distance.centroid(p3, p2) == 1.);
+}
 
-      CHECK(distance.centroid(p1, p2) == std::sqrt(8.));
-      CHECK(distance.centroid(p2, p1) == std::sqrt(8.));
-      CHECK(distance.centroid(p1, p3) == std::sqrt(2.));
-      CHECK(distance.centroid(p3, p1) == std::sqrt(2.));
-      CHECK(distance.centroid(p2, p3) == std::sqrt(2.));
-      CHECK(distance.centroid(p3, p2) == std::sqrt(2.));
-    }
+{  // 2D
+  constexpr auto p1 = point<2>{-1.0, -1.0};
+  constexpr auto p2 = point<2>{1.0, 1.0};
+  constexpr auto p3 = point<2>{0.0, 0.0};
 
-    {  //
-    }
+  CHECK(distance.centroid(p1, p2) == std::sqrt(8.));
+  CHECK(distance.centroid(p2, p1) == std::sqrt(8.));
+  CHECK(distance.centroid(p1, p3) == std::sqrt(2.));
+  CHECK(distance.centroid(p3, p1) == std::sqrt(2.));
+  CHECK(distance.centroid(p2, p3) == std::sqrt(2.));
+  CHECK(distance.centroid(p3, p2) == std::sqrt(2.));
+}
+{  // 3D
+  constexpr auto p1 = point<3>{1.0, 1.0, 1.0};
+  constexpr auto p2 = point<3>{0.0, 0.0, 0.0};
+  CHECK(distance.centroid(p1, p2) == std::sqrt(3.));
+  CHECK(distance.centroid(p2, p1) == std::sqrt(3.));
+}
+}
+
+// {  // single element bug
+//   using p_t = point<1>;
+//   optional<pair<num_t, num_t>> o = make_pair(3.5, 2.5);
+//   p_t p{o.value().first()};
+//   CHECK(p(0) == 3.5);
+//   p_t p2{o.value().second()};
+//   CHECK(p2(0) == 2.5);
+
+//   p_t p3{{o.value().first()}};
+//   CHECK(p3(0) == p(0));
+//   p_t p4{{o.value().second()}};
+//   CHECK(p4(0) == p2(0));
+// }
+
+{    // exhaustive constructor check
+  {  // 1D
+    using p_t = point<1>;
+    p_t p1(3.5);
+    p_t p2{3.5};
+    auto p3 = p_t(3.5);
+    auto p4 = p_t{3.5};
+
+    CHECK(p1(0) == 3.5);
+    CHECK(p2(0) == 3.5);
+    CHECK(p3(0) == 3.5);
+    CHECK(p4(0) == 3.5);
   }
+  {  // 2D
+    using p_t = point<2>;
+    p_t p1(3.5, 4.5);
+    p_t p2{3.5, 4.5};
+    auto p3 = p_t(3.5, 4.5);
+    auto p4 = p_t{3.5, 4.5};
 
-  return test::result();
+    CHECK(p1(0) == 3.5);
+    CHECK(p2(0) == 3.5);
+    CHECK(p3(0) == 3.5);
+    CHECK(p4(0) == 3.5);
+    CHECK(p1(1) == 4.5);
+    CHECK(p2(1) == 4.5);
+    CHECK(p3(1) == 4.5);
+    CHECK(p4(1) == 4.5);
+  }
+  {  // 2D
+    using p_t = point<3>;
+    p_t p1(3.5, 4.5, 5.5);
+    p_t p2{3.5, 4.5, 5.5};
+    auto p3 = p_t(3.5, 4.5, 5.5);
+    auto p4 = p_t{3.5, 4.5, 5.5};
+
+    CHECK(p1(0) == 3.5);
+    CHECK(p2(0) == 3.5);
+    CHECK(p3(0) == 3.5);
+    CHECK(p4(0) == 3.5);
+    CHECK(p1(1) == 4.5);
+    CHECK(p2(1) == 4.5);
+    CHECK(p3(1) == 4.5);
+    CHECK(p4(1) == 4.5);
+    CHECK(p1(2) == 5.5);
+    CHECK(p2(2) == 5.5);
+    CHECK(p3(2) == 5.5);
+    CHECK(p4(2) == 5.5);
+  }
+}
+return test::result();
 }

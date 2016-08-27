@@ -12,8 +12,7 @@ int main() {
   using namespace geometry;
   // linear interpolation tests
   {
-    auto l0
-     = segment<2>::through(point<2>::constant(0.), point<2>::constant(1.));
+    auto l0      = segment<2>(point<2>::constant(0.), point<2>::constant(1.));
     num_t l      = std::sqrt(2.);
     point<2> p_c = point<2>::constant(0.5);
     CHECK(dimension(l0) == 2_u);
@@ -23,7 +22,7 @@ int main() {
     vec<2> n;
     n(0) = -1. / l;
     n(1) = 1. / l;
-    CHECK(normal(l0) == n);
+    CHECK(geometry::approx(normal(l0), n));
 
     hm3::array<num_t, 2> vs{{0., 1.}};
     CHECK(interpolate(l / 2., l0, vs) == 0.5);

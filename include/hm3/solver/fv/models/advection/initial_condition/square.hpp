@@ -2,9 +2,9 @@
 /// \file
 ///
 ///
+#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/point.hpp>
-#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/solver/fv/models/advection/indices.hpp>
 #include <hm3/utility/math.hpp>
 

@@ -386,7 +386,7 @@ compact_optional<interleaved<Nd, Int>> shift(interleaved<Nd, Int> t,
   using morton_idx_t = typename loc_t::morton_idx_t;
   auto level         = t.level();
   auto ilevel        = static_cast<morton_idx_t>(*level);
-  auto xs            = t.morton_x();  // loc_t::decode(t.value, ilevel);
+  auto xs            = t.morton_x();  // TODO: loc_t::decode(t.value, ilevel); ?
   if (ranges::none_of(dimensions(Nd), [&](auto&& d) {
         return bit::overflows_on_add(xs[d], offset[d], ilevel);
       })) {
@@ -394,6 +394,7 @@ compact_optional<interleaved<Nd, Int>> shift(interleaved<Nd, Int> t,
       xs[d] = math::add_signed_to_unsigned(offset[d], xs[d]);
     }
     t = interleaved<Nd, Int>(xs, level);  //.value = loc_t::encode(xs, level);
+
     HM3_ASSERT(t.valid(), "logic error: invalid t with value {}", t.value);
     return compact_optional<loc_t>{t};
   }

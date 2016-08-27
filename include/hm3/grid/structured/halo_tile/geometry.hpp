@@ -60,7 +60,7 @@ struct tile_geometry
   constexpr tile_geometry& operator=(tile_geometry const&) = default;
   constexpr tile_geometry& operator=(tile_geometry&&) = default;
 
-  static constexpr box_t external_bbox(box_t internal_bbox) noexcept {
+  static constexpr box_t external_bounding_box(box_t internal_bbox) noexcept {
     using internal_tile_geometry = tile::tile_geometry<Nd, Nic>;
     auto cell_length = internal_tile_geometry::cell_length(internal_bbox);
     auto external_tile_length          = cell_length * bounds::length();
@@ -72,7 +72,7 @@ struct tile_geometry
   /// Construct a halo tile geometry from the bounding box of the internal cells
   static constexpr tile_geometry from(box_t internal_bbox) noexcept {
     return tile_geometry(
-     external_tile_geometry(external_bbox(std::move(internal_bbox))));
+     external_tile_geometry(external_bounding_box(std::move(internal_bbox))));
   }
 
   /// Constructs a halo tile geometry from the bounding box of the internal
@@ -85,13 +85,19 @@ struct tile_geometry
    : external_tile_geometry(std::move(g)) {}
 
   /// Updates the external bounding box (up to the halos)
-  constexpr void set_external_bbox(box_t bbox) noexcept {
-    this->set_bbox(std::move(bbox));
+  constexpr void set_external_bounding_box(box_t bbox) noexcept {
+    this->set_bounding_box(std::move(bbox));
+    HM3_ASSERT(geometry::approx(tile_external_bounding_box(), bbox),
+               "tile external bbox: {}, bbox: {}", tile_external_bounding_box(),
+               bbox);
   }
 
   // Updates the internal bounding box (without the halos)
-  constexpr void set_internal_bbox(box_t bbox) noexcept {
-    set_external_bbox(external_bbox(std::move(bbox)));
+  constexpr void set_internal_bounding_box(box_t bbox) noexcept {
+    set_external_bounding_box(external_bounding_box(std::move(bbox)));
+    HM3_ASSERT(geometry::approx(tile_internal_bounding_box(), bbox),
+               "tile internal bbox: {}, bbox: {}", tile_internal_bounding_box(),
+               bbox);
   }
 
   /// Internal cell containing the point \p x

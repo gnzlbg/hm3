@@ -5,6 +5,7 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/primitive/any.hpp>
 #include <hm3/utility/log.hpp>
+#include <hm3/utility/vector.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 #include <hm3/vis/vtk/vtk.hpp>
@@ -14,7 +15,7 @@ namespace hm3::geometry::io {
 template <dim_t Nd>
 struct vtk : dimensional<Nd> {
   using any_type     = any<Nd>;
-  using storage_t    = std::vector<any_type>;
+  using storage_t    = vector<any_type>;
   using vtk_cell_idx = uint_t;
 
   storage_t cells;  ///< Stores a copy of all the geometries to be serialized

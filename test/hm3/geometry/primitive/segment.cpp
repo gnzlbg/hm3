@@ -23,11 +23,11 @@ void basic_segment_test() {
   p_t mone = p_t::constant(-1.);
 
   // constructors:
-  auto l0 = l_t::through(zero, one);
-  auto l1 = l_t::at(zero, v_t{one});
+  auto l0 = l_t(zero, one);
+  auto l1 = l_t(zero, v_t{one});
 
-  auto l2 = l_t::through(one, zero);
-  auto l3 = l_t::at(one, v_t{mone});
+  auto l2 = l_t(one, zero);
+  auto l3 = l_t(one, v_t{mone});
 
   auto d0 = p_t::constant(1. / std::sqrt(nd));
   auto d1 = p_t::constant(-1. / std::sqrt(nd));
@@ -103,7 +103,7 @@ int main() {
 
     p_t zero = p_t::constant(0.);
     p_t one  = p_t::constant(1.);
-    auto l1  = l_t::through(one, zero);
+    auto l1  = l_t(one, zero);
     CHECK(volume(l1) == length(l1));
   }
 
@@ -119,8 +119,8 @@ int main() {
     p_t zero = p_t::constant(0.);
     p_t one  = p_t::constant(1.);
 
-    auto s0 = s_t::through(zero, one);
-    auto s1 = s_t::through(one, zero);
+    auto s0 = s_t(zero, one);
+    auto s1 = s_t(one, zero);
 
     auto d0 = v_t::constant(1. / std::sqrt(2));
     auto d1 = v_t::constant(-1. / std::sqrt(2));
@@ -133,11 +133,11 @@ int main() {
     CHECK(direction(s0) == d0);
     CHECK(direction(s1) == d1);
 
-    CHECK(normal(s0) == n0);
-    CHECK(normal(s1) == n1);
+    CHECK(geometry::approx(normal(s0), n0));
+    CHECK(geometry::approx(normal(s1), n1));
     CHECK(area(s1) == length(s1));
 
-    auto l2  = s_t::through(zero, p_t{{1.0, 0.5}});
+    auto l2  = s_t(zero, p_t{{1.0, 0.5}});
     auto abb = aabb<nd>(zero, p_t{{1.0, 0.5}});
     auto bb  = geometry::box<nd>(p_t{{0.5, 0.25}}, 1.0);
     CHECK(bounding_volume.aabb(l2) == abb);

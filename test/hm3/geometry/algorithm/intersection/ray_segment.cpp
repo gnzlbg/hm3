@@ -26,11 +26,11 @@ void test_ray_segment_intersection() {
   auto so4 = p_t::constant(3.);
 
   // colinear segments:
-  auto s0 = s_t::through(so0, so1);
-  auto s1 = s_t::through(so1, so2);
-  auto s2 = s_t::through(so1, so3);
-  auto s3 = s_t::through(so2, so3);
-  auto s4 = s_t::through(so3, so4);
+  auto s0 = s_t(so0, so1);
+  auto s1 = s_t(so1, so2);
+  auto s2 = s_t(so1, so3);
+  auto s3 = s_t(so2, so3);
+  auto s4 = s_t(so3, so4);
 
   CHECK(!intersection.test(r, s0));
   CHECK(intersection.test(r, s1));
@@ -79,7 +79,10 @@ void test_ray_segment_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
      if
-       constexpr(Same<T, s_t>{}) { CHECK(false); }
+       constexpr(Same<T, s_t>{}) {
+         fmt::print("result: {}\n", i);
+         CHECK(false);
+       }
      else if
        constexpr(Same<T, p_t>{}) { CHECK(i == so2); }
      else if
@@ -122,7 +125,7 @@ void test_ray_segment_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
      if
-       constexpr(Same<T, s_t>{}) { CHECK(i == s4); }
+       constexpr(Same<T, s_t>{}) { CHECK(geometry::approx(i, s4)); }
      else if
        constexpr(Same<T, p_t>{}) { CHECK(false); }
      else if

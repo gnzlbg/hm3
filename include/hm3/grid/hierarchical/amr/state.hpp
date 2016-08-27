@@ -253,10 +253,10 @@ struct state {
     auto result = apply();
 
     int_t no_nodes_before = nodes_.size();
-    int_t no_nodes_after
-     = no_nodes_before
-       + (result.no_nodes_refined - result.no_nodes_coarsened)
-          * t_.no_siblings();
+    int_t no_nodes_after  = no_nodes_before
+                           + (static_cast<int_t>(result.no_nodes_refined)
+                              - static_cast<int_t>(result.no_nodes_coarsened))
+                              * static_cast<int_t>(t_.no_siblings());
 
     t_.log("...AMR finished!");
     t_.log("\nAMR Summary:\n"

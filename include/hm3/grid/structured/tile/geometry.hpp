@@ -70,7 +70,9 @@ struct tile_geometry : geometry::dimensional<Nd> {
     point_t x_tile_centroid = x_first_cell();
     const auto tl           = tile_length;
     const auto l            = cell_length();
-    for (dim_t d = 0; d < Nd; ++d) { x_tile_centroid[d] += 0.5 * (tl - l); }
+
+    const auto distance_from_first_cell_to_centroid = 0.5 * (tl - l);
+    x_tile_centroid().array() += distance_from_first_cell_to_centroid;
     return x_tile_centroid;
   }
   /// Tile centroid
@@ -83,8 +85,7 @@ struct tile_geometry : geometry::dimensional<Nd> {
     HM3_ASSERT(x, "cannot compute centroid of invalid coordinate {}", x);
     point_t r    = x_first_cell();
     const auto l = cell_length();
-    for (dim_t d = 0; d < Nd; ++d) { r[d] += x[d] * l; }
-
+    for (dim_t d = 0; d < Nd; ++d) { r(d) += x[d] * l; }
     return r;
   }
 
@@ -121,9 +122,9 @@ struct tile_geometry : geometry::dimensional<Nd> {
   static constexpr point_t x_first_cell(box_t bbox) noexcept {
     HM3_ASSERT(geometry::bounding_length(bbox) > 0.,
                "bounding box length must be positive, bbox {}", bbox);
-    auto x_min  = geometry::x_min(geometry::bounding_volume.aabb(bbox));
-    auto cell_l = cell_length(geometry::bounding_length(bbox));
-    for (dim_t d = 0; d < Nd; ++d) { x_min(d) += cell_l / 2.; }
+    auto x_min   = geometry::x_min(bbox);
+    auto cell_l2 = 0.5 * cell_length(geometry::bounding_length(bbox));
+    x_min().array() += cell_l2;
     return x_min;
   }
 
@@ -149,9 +150,12 @@ struct tile_geometry : geometry::dimensional<Nd> {
   }
 
   /// Sets the bounding box of the tile to \p bounding_box
-  constexpr void set_bbox(box_t bounding_box) noexcept {
+  constexpr void set_bounding_box(box_t bounding_box) noexcept {
     cell_length_  = cell_length(bounding_box);
     x_first_cell_ = x_first_cell(bounding_box);
+    HM3_ASSERT(geometry::approx(tile_bounding_box(), bounding_box),
+               "tile bounding box: {}, bounding box: {}", tile_bounding_box(),
+               bounding_box);
   }
 
   constexpr tile_geometry()                     = default;

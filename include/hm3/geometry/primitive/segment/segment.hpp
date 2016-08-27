@@ -41,21 +41,8 @@ struct segment : ranked<Nd, 1> {
     return xs_[i];
   }
 
-  /// Line segment that goes through the 2 points \p b and \p e : [b, e]
-  static segment through(point_t b, point_t e) noexcept {
-    HM3_ASSERT(b != e, "line through two equal points: {} == {}!", b, e);
-    return segment{b, e};
-  }
-
-  /// Line segment at \p p in direction \p dir : [p, p+dir]
-  static segment at(point_t p, vector_t dir) noexcept {
-    HM3_ASSERT(dir != vector_t::constant(0.), "line with zero direction: {}!",
-               dir);
-    return segment{p, point_t{p() + dir()}};
-  }
-
   /// Obtains an unbounded line from the segment.
-  auto line() const noexcept { return geometry::line<Nd>::through(x(0), x(1)); }
+  auto line() const noexcept { return geometry::line<Nd>(x(0), x(1)); }
 
   /// Obtains an unbounded Eigen::ParametrizedLine from the segment.
   auto operator()() const noexcept {
@@ -75,15 +62,27 @@ struct segment : ranked<Nd, 1> {
     HM3_ASSERT(x(0) != x(1), "line through two equal points: {}!", x(0));
   }
 
+  /// Line segment that goes through the 2 points \p b and \p e : [b, e]
   constexpr segment(point_t from, point_t to) : xs_{{from, to}} {
     HM3_ASSERT(x(0) != x(1), "segment through two equal points: {} == {}!",
                x(0), x(1));
   }
+  /// Line segment at \p p in direction \p dir : [p, p+dir]
+  constexpr segment(point_t p, vector_t dir) noexcept
+   : xs_{{p, point_t{p() + dir()}}} {
+    HM3_ASSERT(dir != vector_t::constant(0.),
+               "cannot create segment from a point {} and zero direction {}!",
+               p, dir);
+  }
+
   constexpr segment()               = default;
   constexpr segment(segment const&) = default;
   constexpr segment(segment&&)      = default;
   constexpr segment& operator=(segment const&) = default;
   constexpr segment& operator=(segment&&) = default;
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <dim_t Nd>

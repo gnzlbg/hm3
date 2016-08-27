@@ -9,13 +9,6 @@ namespace hm3 {
 namespace geometry {
 namespace sd {
 
-// template <typename Vec>
-// num_t rectangle(Vec&& x, Vec&& l) {
-//   auto tmp = x.array().abs() - l().array();
-//   return tmp.array().max(Eigen::Zero().array()).norm()
-//          + d.array().min(Eigen::Zero().array()).maxCoeff();
-// }
-
 /// Signed-distance to hexaedron of lengths l=(lx,ly,lz)^T, centered at
 /// x_c = (x,y,z)^T
 ///

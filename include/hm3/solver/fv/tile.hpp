@@ -207,7 +207,7 @@ using tile_type = typename meta::
 //   tile_base() {}
 
 //   void reinitialize(level_idx level_, geometry::box<Nd> bbox) noexcept {
-//     this->geometry().set_internal_bbox(bbox);
+//     this->geometry().set_internal_bounding_box(bbox);
 //     length = this->geometry().tile_internal_length();
 //     level  = level;
 //     HM3_ASSERT(this->geometry().tile_internal_bounding_box() == bbox, "");

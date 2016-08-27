@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Line parameter from point in line
+#include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/primitive/line/distance.hpp>
 #include <hm3/geometry/primitive/line/line.hpp>
 #include <hm3/geometry/primitive/line/ostream.hpp>
@@ -26,7 +27,7 @@ constexpr num_t t(line<Nd> const& l, point<Nd> const& p, dim_t d) noexcept {
 template <dim_t Nd>
 constexpr optional<num_t> parameter(line<Nd> const& l,
                                     point<Nd> const& p) noexcept {
-  if (distance.approx(distance.minimum(l, p), 0.)) {
+  if (approx(distance.minimum(l, p), 0.)) {
     for (dim_t d = 0; d < Nd; ++d) {
       if (!math::approx(l.direction()(d), 0.)) {
         return parameter_detail::t(l, p, d);
@@ -37,23 +38,21 @@ constexpr optional<num_t> parameter(line<Nd> const& l,
   return {};
 }
 
-inline optional<std::pair<num_t, num_t>> parameter(point<1> const&,
-                                                   vec<1> const&,
-                                                   point<1> const&,
-                                                   vec<1> const&) noexcept {
+inline optional<pair<num_t, num_t>> parameter(point<1> const&, vec<1> const&,
+                                              point<1> const&,
+                                              vec<1> const&) noexcept {
   return {};
 }
 
-inline optional<std::pair<num_t, num_t>> parameter(line<1> const&,
-                                                   line<1> const&) {
+inline optional<pair<num_t, num_t>> parameter(line<1> const&, line<1> const&) {
   return {};
 }
 
 /// Intersection between two 2D lines \p l1 and \p l2.
-inline optional<std::pair<num_t, num_t>> parameter(point<2> const& p1,
-                                                   vec<2> const& v1,
-                                                   point<2> const& p2,
-                                                   vec<2> const& v2) noexcept {
+inline optional<pair<num_t, num_t>> parameter(point<2> const& p1,
+                                              vec<2> const& v1,
+                                              point<2> const& p2,
+                                              vec<2> const& v2) noexcept {
   auto w = vec<2>(p2() - p1());
   auto c = perp_product(v1, v2);
 
@@ -62,12 +61,12 @@ inline optional<std::pair<num_t, num_t>> parameter(point<2> const& p1,
   auto t = perp_product(w, v2) / c;
   auto s = perp_product(w, v1) / c;
 
-  return std::make_pair(t, s);
+  return make_pair(t, s);
 }
 
 /// Intersection between two 2D lines \p l1 and \p l2.
-inline optional<std::pair<num_t, num_t>> parameter(line<2> const& l1,
-                                                   line<2> const& l2) noexcept {
+inline optional<pair<num_t, num_t>> parameter(line<2> const& l1,
+                                              line<2> const& l2) noexcept {
   return parameter(l1.origin(), l1.direction(), l2.origin(), l2.direction());
 }
 
@@ -82,10 +81,10 @@ inline optional<std::pair<num_t, num_t>> parameter(line<2> const& l1,
 /// s = det{(P2 - P1), V1, V1 x V2} / |V1 x V2|^2
 ///
 /// If the lines are parallel, |V1 x V2| == 0.
-inline optional<std::pair<num_t, num_t>> parameter(point<3> const& p1,
-                                                   vec<3> const& v1,
-                                                   point<3> const& p2,
-                                                   vec<3> const& v2) noexcept {
+inline optional<pair<num_t, num_t>> parameter(point<3> const& p1,
+                                              vec<3> const& v1,
+                                              point<3> const& p2,
+                                              vec<3> const& v2) noexcept {
   auto w = vec<3>(p2() - p1());
   auto c = v1().cross(v2());
 
@@ -104,12 +103,12 @@ inline optional<std::pair<num_t, num_t>> parameter(point<3> const& p1,
 
   num_t s = m.determinant() / cn;
 
-  return std::make_pair(t, s);
+  return make_pair(t, s);
 }
 
 /// Intersection between two 3D lines \p l1 and \p l2.
-inline optional<std::pair<num_t, num_t>> parameter(line<3> const& l1,
-                                                   line<3> const& l2) noexcept {
+inline optional<pair<num_t, num_t>> parameter(line<3> const& l1,
+                                              line<3> const& l2) noexcept {
   return parameter(l1.origin(), l1.direction(), l2.origin(), l2.direction());
 }
 

@@ -104,11 +104,11 @@ int main() {
     // s0 - s2 don't intersect
     // s3 - s4 intersect over a volume (two-sided)
 
-    auto s0 = s_t::through(p0, p1);
-    auto s1 = s_t::through(p2, p3);
-    auto s2 = s_t::through(p3, p4);
-    auto s3 = s_t::through(p0, p3);
-    auto s4 = s_t::through(p2, p1);
+    auto s0 = s_t(p0, p1);
+    auto s1 = s_t(p2, p3);
+    auto s2 = s_t(p3, p4);
+    auto s3 = s_t(p0, p3);
+    auto s4 = s_t(p2, p1);
 
     using geometry::intersection;
     using r_t = decltype(intersection(s0, s1));
@@ -143,17 +143,17 @@ int main() {
     // s0 - s6 intersect over point (middle)
     // s7 - s8 intersect over point (side)
 
-    auto s0 = s_t::through(p0, p3);
-    auto s1 = s_t::through(p1, p2);
-    auto s2 = s_t::through(p0, p2);
+    auto s0 = s_t(p0, p3);
+    auto s1 = s_t(p1, p2);
+    auto s2 = s_t(p0, p2);
 
-    auto s3  = s_t::through(p1, p3);
-    auto s4  = s_t::through(p4, p5);
-    auto s4_ = s_t::through(p5, p4);
-    auto s5  = s_t::through(p6, p7);
-    auto s6  = s_t::through(p8, p9);
+    auto s3  = s_t(p1, p3);
+    auto s4  = s_t(p4, p5);
+    auto s4_ = s_t(p5, p4);
+    auto s5  = s_t(p6, p7);
+    auto s6  = s_t(p8, p9);
 
-    auto s7 = s_t::through(p0, p1);
+    auto s7 = s_t(p0, p1);
 
     using geometry::intersection;
     using r_t = decltype(intersection(s0, s1));
@@ -190,17 +190,17 @@ int main() {
     // s0 - s6 intersect over point (middle)
     // s7 - s8 intersect over point (side)
 
-    auto s0 = s_t::through(p0, p3);
-    auto s1 = s_t::through(p1, p2);
-    auto s2 = s_t::through(p0, p2);
+    auto s0 = s_t(p0, p3);
+    auto s1 = s_t(p1, p2);
+    auto s2 = s_t(p0, p2);
 
-    auto s3  = s_t::through(p1, p3);
-    auto s4  = s_t::through(p4, p5);
-    auto s4_ = s_t::through(p5, p4);
-    // auto s5  = s_t::through(p6, p7);
-    // auto s6  = s_t::through(p8, p9);
+    auto s3  = s_t(p1, p3);
+    auto s4  = s_t(p4, p5);
+    auto s4_ = s_t(p5, p4);
+    // auto s5  = s_t(p6, p7);
+    // auto s6  = s_t(p8, p9);
 
-    // auto s7 = s_t::through(p0, p1);
+    // auto s7 = s_t(p0, p1);
 
     using geometry::intersection;
     using r_t = decltype(intersection(s0, s1));

@@ -5,6 +5,7 @@
 #include <hm3/geometry/concepts.hpp>
 #include <hm3/geometry/relative_position.hpp>
 #include <hm3/geometry/sd/concepts.hpp>
+#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3::geometry {
@@ -16,18 +17,18 @@ namespace sd_intersection_test_detail {
 template <
  typename SDValueRng,
  CONCEPT_REQUIRES_(Range<SDValueRng>{}
-                   and Same<sint_t, uncvref_t<range_value_t<SDValueRng>>>{})>
+                   and !Same<num_t, uncvref_t<range_value_t<SDValueRng>>>{})>
 constexpr relative_position_t sd_intersection_test(SDValueRng&& rng) noexcept {
   auto it      = begin(rng);
   const auto e = end(rng);
   HM3_ASSERT(it != e, "rng cannot be empty");
 
-  const sint_t v = *it;
-  if (v == 0) { return intersected; }
+  const math::signum_t v = *it;
+  if (v == math::signum_t::zero()) { return intersected; }
   while (++it != e) {
     if (v != *it) { return intersected; }
   }
-  return v > 0 ? inside : outside;
+  return v == math::signum_t::positive() ? inside : outside;
 }
 
 /// Is the range of signed-distance values \p rng at the vertices of a

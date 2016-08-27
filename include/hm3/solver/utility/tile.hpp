@@ -39,10 +39,13 @@ struct tile : BoxGrid, Vars... {
   ///@}  // Data
 
   void reinitialize(tree::level_idx level_, bbox_t bbox) noexcept {
-    this->geometry().set_internal_bbox(bbox);
+    this->geometry().set_internal_bounding_box(bbox);
     length = this->geometry().tile_internal_length();
     level  = level;
-    HM3_ASSERT(this->geometry().tile_internal_bounding_box() == bbox, "");
+    HM3_ASSERT(
+     geometry::approx(this->geometry().tile_internal_bounding_box(), bbox),
+     "internal bounding box: {}, new bounding box: {}",
+     this->geometry().tile_internal_bounding_box(), bbox);
     HM3_ASSERT(*level_ >= 0, "negative tile level {}", level_);
     HM3_ASSERT(length > 0., "zero tile length in tile with bbox: {}", bbox);
 

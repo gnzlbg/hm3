@@ -93,6 +93,15 @@ struct matrix : bounds<NoRows, NoCols>,
     operator()(static_cast<RowIdx>(0)) = std::move(value);
   }
 
+  template <
+   typename... Args, typename UArgs = meta::transform<meta::list<Args...>,
+                                                      meta::quote<uncvref_t>>,
+   CONCEPT_REQUIRES_(
+    is_vector() and NoRows == sizeof...(Args) and !Same<T, uint_t>{}
+    and meta::all_of<UArgs, meta::bind_front<meta::quote<std::is_same>, T>>{})>
+  explicit constexpr matrix(Args&&... args) noexcept
+   : matrix{std::forward<Args>(args)...} {}
+
   CONCEPT_REQUIRES(is_vector())
   constexpr matrix(std::initializer_list<T> args)
    : bounds(args.size(), 1), storage(std::move(args)) {}
@@ -174,8 +183,9 @@ struct matrix : bounds<NoRows, NoCols>,
                           static_cast<int_t>(no_cols())};
   }
 
+  /// Returns an Eigen type for the matrix
   CONCEPT_REQUIRES(!is_bit())
-  constexpr auto operator()() && -> eigen_map_type = delete;
+  constexpr auto operator()() && -> eigen_type { return (*this)(); }
 
   /// Returns an Eigen view of the matrix
   CONCEPT_REQUIRES(!is_bit())

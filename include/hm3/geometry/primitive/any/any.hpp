@@ -4,8 +4,6 @@
 /// Any geometric primitive
 #include <hm3/geometry/primitive/any/types.hpp>
 #include <hm3/geometry/primitive/any/vertices.hpp>
-#include <hm3/geometry/primitive/polygon/bounded_polygon.hpp>
-#include <hm3/geometry/primitive/polygon/fixed_polygon.hpp>
 
 namespace hm3::geometry::any_primitive {
 
@@ -42,6 +40,9 @@ struct any : any_variant_t<Nd>, dimensional<Nd> {
   dim_t rank() const noexcept {
     return visit([](auto&& i) { return dim_t{i.rank()}; }, *this);
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <dim_t Nd>

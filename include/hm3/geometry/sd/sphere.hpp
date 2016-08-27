@@ -38,6 +38,9 @@ struct sphere_t : dimensional<Nd> {
   num_t operator()(point<Nd> const& x) const noexcept {
     return sphere(x, centroid, radius);
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 ///@}  Fixed sphere

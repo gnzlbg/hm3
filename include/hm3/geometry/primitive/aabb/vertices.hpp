@@ -40,11 +40,9 @@ constexpr dim_t face_size(aabb<Nd> const&, dim_t m) noexcept {
 template <dim_t Nd>
 constexpr point<Nd> vertex(aabb<Nd> const& s, dim_t v) noexcept {
   HM3_ASSERT(v < vertex_size(s), "");
-  const auto lengths_     = all_bounding_lengths(s);
-  const auto half_lengths = 0.5 * lengths_();
-  const auto x_c          = centroid(s);
-  const auto x_p          = relative_vertex_position<Nd>(v);
-  return point<Nd>{x_c().array() + half_lengths.array() * x_p().array()};
+  return point<Nd>{centroid(s)().array()
+                   + 0.5 * all_bounding_lengths(s)().array()
+                      * relative_vertex_position<Nd>(v)().array()};
 }
 
 /// Vertices of the AABB \p s.

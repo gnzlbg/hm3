@@ -44,7 +44,7 @@ void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
     auto create_face = [&](auto fidx) {
       auto v0 = vertex(p, fidx);
       auto v1 = vertex(p, (fidx == vertex_size(p) - 1) ? 0 : fidx + 1);
-      return segment<Nd>::through(v0, v1);
+      return segment<Nd>(v0, v1);
     };
     for (auto&& v : vertex_indices(p)) {
       auto f = create_face(v);
@@ -83,6 +83,24 @@ int main() {
   using q2d = quad<2>;
   using t2d = triangle<2>;
   using t3d = triangle<3>;
+
+  {
+    using pa  = array<p2d, 3>;
+    using iva = inline_vector<p2d, 3>;
+    using sva = small_vector<p2d, 3>;
+
+    static_assert(!PushBackable<pa, p2d>{}, "");
+    static_assert(PushBackable<iva, p2d>{}, "");
+    static_assert(PushBackable<sva, p2d>{}, "");
+
+    static_assert(!PopBackable<pa>{}, "");
+    static_assert(PopBackable<iva>{}, "");
+    static_assert(PopBackable<sva>{}, "");
+
+    static_assert(!Reservable<pa>{}, "");
+    static_assert(!Reservable<iva>{}, "");
+    static_assert(Reservable<sva>{}, "");
+  }
 
   {  // 2D unit ccw box (0):
     p2d vs[]    = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}};
@@ -325,6 +343,19 @@ int main() {
 
     bp3 b0(t);
     bp4 b1(t);
+  }
+
+  {  // test convex polygon
+    using bp5 = geometry::bounded_polygon<2, 5>;
+    p2d ps[]  = {p2d{0.0, 0.0}, p2d{0.5, 0.0}, p2d{1.0, 0.0}, p2d{1.0, 1.0},
+                p2d{0.0, 1.0}};
+    bp5 p0(ps);
+    CHECK(!convex(p0));
+
+    p2d ps1[] = {p2d{0.0, 0.0}, p2d{0.5, 0.5}, p2d{1.0, 0.0}, p2d{1.0, 1.0},
+                 p2d{0.0, 1.0}};
+    bp5 p1(ps1);
+    CHECK(convex(p1));
   }
 
   return test::result();

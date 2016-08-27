@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Box: AABB of constant length.
+#include <hm3/geometry/primitive/box/approx.hpp>
 #include <hm3/geometry/primitive/box/bounding_length.hpp>
 #include <hm3/geometry/primitive/box/bounding_volume.hpp>
 #include <hm3/geometry/primitive/box/box.hpp>

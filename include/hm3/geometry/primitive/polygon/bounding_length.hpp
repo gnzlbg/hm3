@@ -35,8 +35,7 @@ constexpr vec<Nd> all_bounding_lengths(P&& p) noexcept {
 template <typename P, typename UP = uncvref_t<P>, dim_t Nd = UP::dimension(),
           CONCEPT_REQUIRES_(Polygon<UP, Nd>{})>
 constexpr num_t max_bounding_length(P&& p) noexcept {
-  auto ls = all_bounding_lengths(p);
-  return ls().array().maxCoeff();
+  return all_bounding_lengths(p)().array().maxCoeff();
 }
 
 }  // namespace hm3::geometry::polygon_primitive

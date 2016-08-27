@@ -3,6 +3,9 @@
 ///
 /// Primitive forward declarations.
 #include <hm3/types.hpp>
+#include <hm3/utility/array.hpp>
+#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/small_vector.hpp>
 
 namespace hm3::geometry {
 
@@ -48,20 +51,71 @@ struct segment;
 using segment_primitive::segment;
 
 namespace polygon_primitive {
-template <dim_t Nd, dim_t Np>
-struct fixed_polygon;
-template <dim_t Nd, dim_t MaxNp>
-struct bounded_polygon;
+
+template <dim_t Nd, typename Storage>
+struct polygon;
+
+/// Small polygon.
+///
+/// \tparam Nd Number of spatial dimensions.
+/// \tparam EstNp Maximum expected number of vertices that the polygon
+/// can contain.
 template <dim_t Nd, dim_t EstNp>
-struct small_polygon;
+using small_polygon = polygon<Nd, small_vector<point<Nd>, EstNp>>;
+
+/// Fixed polygon.
+///
+/// \tparam Nd Number of spatial dimensions.
+/// \tparam Nv Number of vertices.
+template <dim_t Nd, dim_t Nv>
+using fixed_polygon = polygon<Nd, array<point<Nd>, Nv>>;
+
+/// Bounded polygon
+///
+/// \tparam Nd Number of spatial dimensions.
+/// \tparam MaxNv Maximum number of vertices that the polygon can contain.
+template <dim_t Nd, dim_t MaxNv>
+using bounded_polygon = polygon<Nd, inline_vector<point<Nd>, MaxNv>>;
+
 }  // namespace polygon_primitive
-using polygon_primitive::fixed_polygon;
 using polygon_primitive::bounded_polygon;
 using polygon_primitive::small_polygon;
+using polygon_primitive::fixed_polygon;
 template <dim_t Nd>
 using triangle = fixed_polygon<Nd, 3>;
 template <dim_t Nd>
 using quad = fixed_polygon<Nd, 4>;
+
+namespace polyline_primitive {
+template <dim_t Nd, typename Storage>
+struct polyline;
+
+/// Small polyline.
+///
+/// \tparam Nd Number of spatial dimensions.
+/// \tparam EstNp Maximum expected number of vertices that the polyline
+/// can contain.
+template <dim_t Nd, dim_t EstNp>
+using small_polyline = polyline<Nd, small_vector<point<Nd>, EstNp>>;
+
+/// Fixed polyline.
+///
+/// \tparam Nd Number of spatial dimensions.
+/// \tparam Nv Number of vertices.
+template <dim_t Nd, dim_t Nv>
+using fixed_polyline = polyline<Nd, array<point<Nd>, Nv>>;
+
+/// Bounded polyline
+///
+/// \tparam Nd Number of spatial dimensions.
+/// \tparam MaxNv Maximum number of vertices that the polyline can contain.
+template <dim_t Nd, dim_t MaxNv>
+using bounded_polyline = polyline<Nd, inline_vector<point<Nd>, MaxNv>>;
+
+}  // namespace polyline_primitive
+using polyline_primitive::bounded_polyline;
+using polyline_primitive::small_polyline;
+using polyline_primitive::fixed_polyline;
 
 namespace simplex_primitive {
 

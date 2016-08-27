@@ -30,7 +30,7 @@ void basic_ray_test() {
   auto r2 = r_t(o2, d1);
   auto r3 = r_t(o0, d1);
 
-  auto r0_ = r_t::through(o0, o1);
+  auto r0_ = r_t(o0, o1);
 
   {  // assignment
     r_t l = r0;

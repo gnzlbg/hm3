@@ -25,8 +25,11 @@ struct ray : line<Nd> {
   }
 
   segment<Nd> as_segment(num_t ray_length = 1e200) const noexcept {
-    return segment<Nd>::through(origin(), x(ray_length));
+    return segment<Nd>(origin(), x(ray_length));
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 /// Is the representation of the rays \p a and \p b equal?

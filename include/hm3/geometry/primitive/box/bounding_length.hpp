@@ -10,18 +10,21 @@ namespace hm3::geometry::box_primitive {
 /// Bounding length of the box \p b along the \p d spatial component.
 template <dim_t Nd>
 constexpr num_t bounding_length(box<Nd> const& b, dim_t) noexcept {
+  HM3_ASSERT(b.length_ >= 0., "");
   return b.length_;
 }
 
 /// Bounding lengths of the box \p b along all spatial components.
 template <dim_t Nd>
 constexpr vec<Nd> all_bounding_lengths(box<Nd> const& b) noexcept {
+  HM3_ASSERT(b.length_ >= 0., "");
   return vec<Nd>::constant(b.length_);
 }
 
 /// Max bounding length of the box \p b.
 template <dim_t Nd>
 constexpr num_t max_bounding_length(box<Nd> const& b) noexcept {
+  HM3_ASSERT(b.length_ >= 0., "");
   return b.length_;
 }
 

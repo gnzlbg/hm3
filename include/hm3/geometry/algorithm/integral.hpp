@@ -68,21 +68,21 @@ template <typename T>
 using path_integral = path_rank<dimension_v<T>, rank_v<T>>;
 
 struct integral_fn {
-  template <typename T, typename IntRank, CONCEPT_REQUIRES_(IntRank{} != 0)>
+  template <typename T, typename IntRank>
   static constexpr auto impl(T&& t, IntRank)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(integral(std::forward<T>(t),
                                                  IntRank{}));
 
-  template <typename T, typename IntRank, CONCEPT_REQUIRES_(IntRank{} == 0)>
-  static constexpr auto impl(T&&, IntRank) {
-    return 1.;
-  }
+  // template <typename T, typename IntRank, CONCEPT_REQUIRES_(IntRank{} == 0)>
+  // static constexpr auto impl(T&&, IntRank) {
+  //   return 1.;
+  // }
 
-  template <typename T, typename IntRank,
-            CONCEPT_REQUIRES_(IntRank{} == math::highest<dim_t>)>
-  static constexpr auto impl(T&&, IntRank) {
-    return 0.;
-  }
+  // template <typename T, typename IntRank,
+  //           CONCEPT_REQUIRES_(IntRank{} == math::highest<dim_t>)>
+  // static constexpr auto impl(T&&, IntRank) {
+  //   return 0.;
+  // }
 
   template <typename T>
   static constexpr auto path(T&& t)

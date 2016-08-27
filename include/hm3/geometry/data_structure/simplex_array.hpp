@@ -54,6 +54,21 @@ struct simplex_array {
 
     // Allocate vertices (all points are in the bounding box)
     auto bbox = bounding_volume.box(aabb);
+    fmt::print("aabb: {}, box: {}\n", aabb, bbox);
+    HM3_ASSERT(  // check that all vertices are inside the bounding box (O(N_s))
+     [&]() {
+       for (auto&& s : simplices) {
+         for (auto&& p : geometry::vertices(s)) {
+           HM3_ASSERT(
+            intersection.test(p, bbox),
+            "point {} of simplex {} is not inside the bounding box {}!", p, s,
+            bbox);
+         }
+       }
+       return true;
+     }(),
+     "not all points are inside the bounding box!");
+
     vertices_ = point_set(no_simplices * Nd, bbox);
 
     // insert simplices:

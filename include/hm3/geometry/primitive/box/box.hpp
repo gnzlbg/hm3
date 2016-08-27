@@ -37,6 +37,10 @@ struct box : ranked<Nd, Nd> {
   constexpr box(point_t x_centroid, num_t length)
    : centroid_(x_centroid), length_(length) {
     HM3_ASSERT(length > 0., "box length is {} !> 0.!", length);
+    HM3_ASSERT(x_min(*this) == point_t(x_centroid().array() - 0.5 * length),
+               "");
+    HM3_ASSERT(x_max(*this) == point_t(x_centroid().array() + 0.5 * length),
+               "");
   }
 
   /// Box from AABB \p b that is already a box (e.g. with all equal sides).
@@ -46,17 +50,31 @@ struct box : ranked<Nd, Nd> {
 
   /// Box from \p x_min and \p x_max.
   constexpr box(point_t const& x_min, point_t const& x_max)
-   : box(aabb_t(x_min, x_max)) {}
-
-  /// Box from centroid and lengths.
-  static constexpr box<Nd> at(point_t const& x_c, vec_t const& lengths) {
-    return box<Nd>(aabb_t::at(x_c, lengths));
+   : box(aabb_t(x_min, x_max)) {
+    HM3_ASSERT(is_box(*this),
+               "the points min: {} and max: {} do not span a box", x_min,
+               x_max);
   }
+
+ private:
+  /// Box from centroid \p x_c and \p lengths.
+  static constexpr box<Nd> from_centroid_and_lengths_(point_t const& x_c,
+                                                      vec_t const& lengths) {
+    return box<Nd>(aabb_t(x_c, lengths));
+  }
+
+ public:
+  /// Box from centroid \p x_c and \p lengths.
+  constexpr box(point_t const& x_c, vec_t const& lengths)
+   : box(from_centroid_and_lengths_(x_c, lengths)) {}
 
   /// Unit box.
   static constexpr box<Nd> unit() noexcept {
     return box<Nd>(point_t::constant(0.5), 1.);
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <dim_t Nd>

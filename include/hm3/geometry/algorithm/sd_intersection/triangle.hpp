@@ -29,7 +29,7 @@ struct triangle_intersection_result {
      : vertices(std::forward<Vs>(vs)), signum(std::forward<Sgs>(sgs)) {}
     // A linear split produces at most a quad:
     bounded_polygon<Nd, 4> vertices;
-    inline_vector<sint_t, 4> signum;
+    inline_vector<math::signum_t, 4> signum;
   };
 
   inline_vector<shape_t, 1> inside, outside;
@@ -80,6 +80,9 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
  triangle<Nd> const& tri, SDF&& sdf) {
   using vidx_t = access::vertex_index_t<triangle<Nd>>;
   using bp4    = bounded_polygon<Nd, 4>;
+  using math::signum;
+  using math::signum_t;
+
   triangle_intersection_result<Nd> result;
   auto const& vxs = vertices(tri);
 
@@ -88,11 +91,10 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
 
   // Compute signed-distance and signum at the triangle vertices:
   const array<num_t, 3> sd{{sdf(vxs[0]), sdf(vxs[1]), sdf(vxs[2])}};
-  const array<sint_t, 3> sg{
-   {math::signum(sd[0]), math::signum(sd[1]), math::signum(sd[2])}};
+  const array<signum_t, 3> sg{{signum(sd[0]), signum(sd[1]), signum(sd[2])}};
 
   // Count the number of vertices intersected by the zero-level:
-  const auto no_cut_vertices = ranges::count(sg, 0);
+  const auto no_cut_vertices = ranges::count(sg, signum_t::zero());
 
   // The case that happens 100% of the time is that no vertices are intersected
   // by the zero level of the signed-distance field:
@@ -133,28 +135,30 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
     // Compute the edge's centroid, evaluate the sdf there, and add those with
     // signum zero to the boundary:
     array<num_t, 3> centroid_sd;
-    array<sint_t, 3> centroid_sg;
+    array<signum_t, 3> centroid_sg;
     for (auto fidx : face_indices(tri)) {
       auto s            = face(tri, fidx);
       auto sc           = centroid(s);
       centroid_sd[fidx] = sdf(sc);
-      centroid_sg[fidx] = math::signum(centroid_sd[fidx]);
-      if (centroid_sg[fidx] == 0) { result.boundary.push_back(s); }
+      centroid_sg[fidx] = signum(centroid_sd[fidx]);
+      if (centroid_sg[fidx] == signum_t::zero()) {
+        result.boundary.push_back(s);
+      }
     }
     // If they are all zero try to handle the triangle-like sd-field by using
     // the value at the triangles centroid to detect whether the triangle is
     // inside or outside.
     if (ranges::all_of(centroid_sg, [](auto&& i) { return i == 0; })) {
       auto sdc = sdf(centroid(tri));
-      auto sgc = math::signum(sdc);
-      if (sgc == 0) {
+      auto sgc = signum(sdc);
+      if (sgc == signum_t::zero()) {
         HM3_FATAL_ERROR("Signed-distance function is not a signed-distance "
                         "field! It is zero at all vertices of the triangle as "
                         "well as in the triangle centroid!");
       }
 
-      if (sgc == 1) { result.inside.emplace_back(tri, sg); }
-      if (sgc == -1) {
+      if (sgc == signum_t::positive()) { result.inside.emplace_back(tri, sg); }
+      if (sgc == signum_t::negative()) {
         result.outside.emplace_back(tri, sg);
         // centroid is negative => boundary normals point in the wrong dir:
         for (auto&& b : result.boundary) { b = direction.invert(b); }
@@ -162,17 +166,21 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
       return result;
     }
     // If more than one edge's centroid is not zero nothing can be done:
-    if (ranges::count_if(centroid_sg, [](auto&& i) { return i != 0; }) > 1) {
+    if (ranges::count_if(centroid_sg,
+                         [](auto&& i) { return i != signum_t::zero(); })
+        > 1) {
       HM3_FATAL_ERROR("Probably broken signed-distance field: all vertices of "
                       "a trinagle are cut by the zero-level, but more than one "
                       "edge's centroid is not on the zero level =/");
     }
     // Otherwise detect inside/outside and add the triangle itself as shape:
-    if (ranges::any_of(centroid_sg, [](auto&& i) { return i == 1; })) {
+    if (ranges::any_of(centroid_sg,
+                       [](auto&& i) { return i == signum_t::positive(); })) {
       result.inside.emplace_back(tri, sg);
       return result;
     }
-    if (ranges::any_of(centroid_sg, [](auto&& i) { return i == -1; })) {
+    if (ranges::any_of(centroid_sg,
+                       [](auto&& i) { return i == signum_t::negative(); })) {
       result.outside.emplace_back(tri, sg);
       // tri is negative => boundary normals point in the wrong dir:
       for (auto&& b : result.boundary) { b = direction.invert(b); }
@@ -187,7 +195,7 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
   if (HM3_UNLIKELY(no_cut_vertices == 2)) {
     for (auto&& i : vertex_indices(tri)) {
       auto ni = next_vx(i);
-      if (sg[i] == 0 and sg[ni] == 0) {
+      if (sg[i] == signum_t::zero() and sg[ni] == signum_t::zero()) {
         result.boundary.emplace_back(segment<Nd>({vxs[i], vxs[ni]}));
         break;
       }
@@ -196,14 +204,14 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
 
   // If all vertices inside we are done, the boundary, if any, has already been
   // added:
-  if (ranges::all_of(sg, [](auto i) { return i >= 0; })) {
+  if (ranges::all_of(sg, [](auto i) { return i != signum_t::negative(); })) {
     result.inside.emplace_back(tri, sg);
     return result;
   }
   // If all vertices outside we are (almost) done. The boundary, if any, has
   // already been added, but it needs to be flipped such that its normal
   // points in the positive side of the signed-distance field:
-  if (ranges::all_of(sg, [](auto i) { return i <= 0; })) {
+  if (ranges::all_of(sg, [](auto i) { return i != signum_t::positive(); })) {
     result.outside.emplace_back(tri, sg);
     if (result.boundary.size() > 0) {
       result.boundary[0] = direction.invert(result.boundary[0]);
@@ -232,17 +240,17 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
     // If a vertex is cut by the zero level set it is part of both
     // polygons (inside and outside) and the cut surface, otherwise it is only
     // part of one polygon
-    if (vx_sg == 0) {
+    if (vx_sg == signum_t::zero()) {
       result.inside[0].vertices.push_back(vxs[vidx]);
       result.outside[0].vertices.push_back(vxs[vidx]);
       result.inside[0].signum.push_back(vx_sg);
       result.outside[0].signum.push_back(vx_sg);
       boundary_cut_points.push_back(vxs[vidx]);
       continue;  // we are then done since we found the cut points
-    } else if (vx_sg == 1) {
+    } else if (vx_sg == signum_t::positive()) {
       result.inside[0].vertices.push_back(vxs[vidx]);
       result.inside[0].signum.push_back(vx_sg);
-    } else if (vx_sg == -1) {
+    } else if (vx_sg == signum_t::negative()) {
       result.outside[0].vertices.push_back(vxs[vidx]);
       result.outside[0].signum.push_back(vx_sg);
     } else {
@@ -254,7 +262,7 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
     //   intersected, so we just move on to the next edge.
     // - the sign of the next vertex is zero, it will be handled in the next
     //   iteration.
-    if (vx_sg == next_vx_sg || next_vx_sg == 0) { continue; }
+    if (vx_sg == next_vx_sg || next_vx_sg == signum_t::zero()) { continue; }
 
     // Otherwise this edge is intersected by the zero level-set.
     // The point in the edge with value 0 is found by linear interpolation:
@@ -271,12 +279,12 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
     // and we move to the next edge.
   }
 
-  HM3_ASSERT(
-   !ranges::all_of(result.inside[0].signum, [](auto&& i) { return i == 0; }),
-   "");
-  HM3_ASSERT(
-   !ranges::all_of(result.outside[0].signum, [](auto&& i) { return i == 0; }),
-   "");
+  HM3_ASSERT(!ranges::all_of(result.inside[0].signum,
+                             [](auto&& i) { return i == signum_t::zero(); }),
+             "");
+  HM3_ASSERT(!ranges::all_of(result.outside[0].signum,
+                             [](auto&& i) { return i == signum_t::zero(); }),
+             "");
   HM3_ASSERT(boundary_cut_points.size() == 2, "");
 
   // Create the boundary (where the signed distance function is zero):
@@ -303,10 +311,10 @@ triangle_intersection_result<Nd> signed_distance_intersection_triangle(
     // The normal is correct if the vertex after the one with signum zero has
     // negative signum
     for (auto&& i : vertex_indices(tri)) {
-      if (sg[i] != 0) { continue; }
+      if (sg[i] != signum_t::zero()) { continue; }
       // i is the vertex with signum zero and j is the next vertex
       auto j = next_vx(i);
-      if (sg[j] == -1) {  // then the order is correct
+      if (sg[j] == signum_t::negative()) {  // then the order is correct
         result.boundary[0] = segment<Nd>(boundary_cut_points);
         break;
       }

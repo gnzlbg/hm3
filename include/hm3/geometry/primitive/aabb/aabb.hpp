@@ -36,13 +36,22 @@ struct aabb : ranked<Nd, Nd> {
     assert_valid();
   }
 
-  /// AABB from centroid and lengths.
-  static constexpr self at(point_t const& x_c, vector_t const& lengths) {
+ private:
+  /// AABB from centroid \p x_c and \p lengths.
+  static constexpr self from_centroid_and_length_(point_t const& x_c,
+                                                  vector_t const& lengths) {
     for (dim_t d = 0; d < Nd; ++d) {
       HM3_ASSERT(lengths(d) > 0., "aabb length is {} !> 0!", lengths(d));
     }
     return self(point_t{x_c() - .5 * lengths()},
                 point_t{x_c() + .5 * lengths()});
+  }
+
+ public:
+  /// AABB from centroid \p x_c and \p lengths.
+  constexpr aabb(point_t const& x_c, vector_t const& lengths)
+   : aabb(from_centroid_and_length_(x_c, lengths)) {
+    assert_valid();
   }
 
   /// Unit AABB
@@ -55,6 +64,9 @@ struct aabb : ranked<Nd, Nd> {
     HM3_ASSERT((x[0]().array() <= x[1]().array()).all(),
                "min !<= max | min {} | max {}", x[0], x[1]);
   }
+
+ public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
 template <dim_t Nd>

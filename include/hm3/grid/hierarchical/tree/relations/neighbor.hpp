@@ -32,9 +32,10 @@ namespace tree {
 ///
 /// Formula: \f$\ 2^{n_d - m} \begin{pmatrix} n_d // m \end{pmatrix} \f$
 ///
+/// Returns 0 if !(nd > m).
 static constexpr npidx_t no_neighbors(dim_t nd, dim_t m,
                                       same_level_tag) noexcept {
-  return no_faces(nd, m);
+  return nd >= m ? no_faces(nd, m) : 0;
 }
 
 /// Number of node neighors at the children level of a node (node level + 1)
@@ -44,8 +45,11 @@ static constexpr npidx_t no_neighbors(dim_t nd, dim_t m,
 ///
 /// Formula: number of nodes sharing a face * number of neighbors
 ///
+/// Returns 0 if !(nd > m).
 static constexpr npidx_t no_neighbors(dim_t nd, dim_t m, child_level_tag) {
-  return no_nodes_sharing_face(nd, m) * no_neighbors(nd, m, same_level_tag{});
+  return nd >= m
+          ? no_nodes_sharing_face(nd, m) * no_neighbors(nd, m, same_level_tag{})
+          : 0;
 }
 
 /// \name Stencils of neighbor children sharing a m dimensional face with a node
@@ -266,10 +270,12 @@ struct manifold_neighbors : geometry::dimensional<Nd> {
   /// Rank of the neighbor manifold
   static constexpr dim_t rank() noexcept { return M; }
   /// Spatial dimension of the faces between the neighbors
-  static constexpr dim_t face_dimension() noexcept { return Nd - M; }
+  static constexpr dim_t face_dimension() noexcept {
+    return Nd >= M ? Nd - M : math::highest<dim_t>;
+  }
   /// Number of neighbors at the same grid level
   static constexpr npidx_t size() noexcept {
-    return no_neighbors(Nd, face_dimension(), same_level_tag{});
+    return Nd >= M ? no_neighbors(Nd, face_dimension(), same_level_tag{}) : 0;
   }
   /// Index of the neighbors
   ///

@@ -36,7 +36,7 @@ void test_unit_aabb() {
   // constructors:
   aabb_t a;
   aabb_t b(pz, po);
-  aabb_t c = aabb_t::at(pm, vo);
+  aabb_t c = aabb_t(pm, vo);
   aabb_t e = aabb_t::unit();
   CHECK(b == c);
   CHECK(e == c);
@@ -84,7 +84,7 @@ void test_unit_aabb() {
   CHECK(volume(b) == 1.);
 
   // area
-  num_t area_should = nd == 1 ? math::eps : 2. * nd;
+  num_t area_should = 2. * nd;
   CHECK(surface_area(b) == area_should);
   CHECK(perimeter(b) == area_should);
 

@@ -82,7 +82,7 @@ int main() {
     auto l0 = l_t(p1, d0);
     auto bp = bp_t({p0, p1, p2});
     auto sp = sp_t({p0, p1, p2, p3});
-    auto fp = fp_t({p0, p1, p2, p3, p4});
+    auto fp = fp_t{{{p0, p1, p2, p3, p4}}};
 
     any a;
     check_any(a, p0, p0);
@@ -127,7 +127,7 @@ int main() {
     auto l0 = l_t(p1, d0);
     auto bp = bp_t({p0, p1, p2});
     auto sp = sp_t({p0, p1, p2, p3});
-    auto fp = fp_t({p0, p1, p2, p3, p4});
+    auto fp = fp_t{{{p0, p1, p2, p3, p4}}};
 
     any a;
     check_any(a, p0, p0);
