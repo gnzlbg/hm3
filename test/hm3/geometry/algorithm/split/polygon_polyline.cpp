@@ -1,7 +1,5 @@
 #include <hm3/geometry/algorithm/split/polygon_polyline.hpp>
 #include <hm3/geometry/io/vtk.hpp>
-
-#include <hm3/geometry/algorithm/split.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/geometry/primitive/polyline.hpp>
 #include <hm3/utility/test.hpp>
@@ -27,7 +25,7 @@ void test_polygon_polyline_binary_split() {
 
   auto pl0 = pl_t({pl_p0, pl_p1, pl_p2});
 
-  using geometry::split_detail::detail::binary_split;
+  using geometry::polygon_primitive::split_detail::binary_split;
 
   auto r0 = binary_split(pg, pl0);
 

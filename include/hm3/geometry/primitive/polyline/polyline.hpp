@@ -27,11 +27,14 @@ struct polyline : ranked<Nd, 1>, protected Storage {
   using vector_t::size;
 
   using vector_t::empty;
+  using vector_t::max_size;
+
+ private:
   using vector_t::operator[];
   using vector_t::begin;
   using vector_t::end;
-  using vector_t::max_size;
 
+ public:
   CONCEPT_REQUIRES(Reservable<Storage>{})
   auto reserve(suint_t n) { return static_cast<Storage*>(this)->reserve(n); }
 
@@ -101,7 +104,7 @@ struct polyline : ranked<Nd, 1>, protected Storage {
                "trying to construct a fixed-size polygon of size {} with a "
                "range of size {}",
                this->size(), ranges::distance(vs));
-    ranges::copy(vs, ranges::begin(*this));
+    ranges::copy(vs, this->begin());
   }
 
   template <typename Vertices,
@@ -113,7 +116,7 @@ struct polyline : ranked<Nd, 1>, protected Storage {
                "trying to construct a fixed-size polygon of size {} with a "
                "range of size {}",
                this->size(), ranges::distance(vs));
-    ranges::copy(vs, ranges::begin(*this));
+    ranges::copy(vs, this->begin());
     return (*this);
   }
 
@@ -136,19 +139,35 @@ struct polyline : ranked<Nd, 1>, protected Storage {
   vector_t& vertices() & { return static_cast<vector_t&>(*this); }
   vector_t vertices() && { return static_cast<vector_t&&>(*this); }
 
+  /// Polyline vertices.
+  friend constexpr decltype(auto) vertex(polyline<Nd, Storage> const& p,
+                                         dim_t v) noexcept {
+    return p[v];
+  }
+
+  /// Polyline vertices.
+  friend constexpr decltype(auto) vertex(polyline<Nd, Storage>& p,
+                                         dim_t v) noexcept {
+    return p[v];
+  }
+
+  /// Polyline vertices.
+  friend constexpr decltype(auto) vertex(polyline<Nd, Storage>&& p,
+                                         dim_t v) noexcept {
+    return p[v];
+  }
+
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-template <dim_t Nd, typename Storage>
-bool operator==(polyline<Nd, Storage> const& a,
-                polyline<Nd, Storage> const& b) noexcept {
-  return equal(a, b);
+template <dim_t Nd, typename S0, typename S1>
+bool operator==(polyline<Nd, S0> const& a, polyline<Nd, S1> const& b) noexcept {
+  return equal(a.vertices(), b.vertices());
 }
 
-template <dim_t Nd, typename Storage>
-bool operator!=(polyline<Nd, Storage> const& a,
-                polyline<Nd, Storage> const& b) noexcept {
+template <dim_t Nd, typename S0, typename S1>
+bool operator!=(polyline<Nd, S0> const& a, polyline<Nd, S1> const& b) noexcept {
   return !(a == b);
 }
 
@@ -173,25 +192,6 @@ constexpr decltype(auto) vertices(polyline<Nd, Storage>& p) noexcept {
 template <dim_t Nd, typename Storage>
 constexpr decltype(auto) vertices(polyline<Nd, Storage>&& p) noexcept {
   return p.vertices();
-}
-
-/// Polyline vertices.
-template <dim_t Nd, typename Storage>
-constexpr decltype(auto) vertex(polyline<Nd, Storage> const& p,
-                                dim_t v) noexcept {
-  return p[v];
-}
-
-/// Polyline vertices.
-template <dim_t Nd, typename Storage>
-constexpr decltype(auto) vertex(polyline<Nd, Storage>& p, dim_t v) noexcept {
-  return p[v];
-}
-
-/// Polyline vertices.
-template <dim_t Nd, typename Storage>
-constexpr decltype(auto) vertex(polyline<Nd, Storage>&& p, dim_t v) noexcept {
-  return p[v];
 }
 
 /// Vertex indices

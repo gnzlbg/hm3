@@ -350,12 +350,12 @@ int main() {
     p2d ps[]  = {p2d{0.0, 0.0}, p2d{0.5, 0.0}, p2d{1.0, 0.0}, p2d{1.0, 1.0},
                 p2d{0.0, 1.0}};
     bp5 p0(ps);
-    CHECK(!convex(p0));
+    CHECK(convex(p0));
 
     p2d ps1[] = {p2d{0.0, 0.0}, p2d{0.5, 0.5}, p2d{1.0, 0.0}, p2d{1.0, 1.0},
                  p2d{0.0, 1.0}};
     bp5 p1(ps1);
-    CHECK(convex(p1));
+    CHECK(!convex(p1));
   }
 
   return test::result();

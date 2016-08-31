@@ -115,7 +115,7 @@ num_t error_slab_analytical(
 
   num_t cfl       = 0.1;
   num_t time      = 0;
-  num_t time_end  = 0.4;
+  num_t time_end  = 0.1;
   num_t time_step = 0;
 
   auto ts = fv::heat::time_step;

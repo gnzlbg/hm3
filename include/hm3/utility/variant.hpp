@@ -53,9 +53,19 @@ OStream& operator<<(OStream& os, monostate const&) {
   return os;
 }
 
+template <typename OStream, typename T>
+auto print_val(OStream& os, T&& t, int) -> decltype(os << t) {
+  return os << t;
+}
+
+template <typename OStream, typename T>
+auto print_val(OStream& os, T&& t, long) -> decltype(os << ranges::view::all(t)) {
+  return os << ranges::view::all(t);
+}
+
 template <typename OStream, typename... Args>
 OStream& operator<<(OStream& os, variant<Args...> const& v) {
-  ::hm3::visit([&os](auto&& i) { os << i; }, v);
+  ::hm3::visit([&os](auto&& i) { print_val(os, i, 0); }, v);
   return os;
 }
 

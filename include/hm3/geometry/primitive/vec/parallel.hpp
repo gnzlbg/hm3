@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Are two vectors parallel?
-#include <hm3/geometry/primitive/vec/vec.hpp>
 #include <hm3/geometry/primitive/vec/cross.hpp>
+#include <hm3/geometry/primitive/vec/vec.hpp>
 
 namespace hm3::geometry::vec_primitive {
 

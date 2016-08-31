@@ -3,19 +3,14 @@
 ///
 /// Split polygon at a polyline.
 #include <hm3/geometry/algorithm/distance.hpp>
-#include <hm3/geometry/algorithm/intersection/polygon_point.hpp>
-#include <hm3/geometry/algorithm/intersection/segment_point.hpp>
-#include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
-#include <hm3/geometry/algorithm/split/polyline_points.hpp>
-#include <hm3/geometry/primitive/polygon/as_polyline.hpp>
-#include <hm3/geometry/primitive/polyline/as_polygon.hpp>
-#include <hm3/geometry/primitive/segment/segment.hpp>
+#include <hm3/geometry/algorithm/intersection/polygon_polyline.hpp>
+#include <hm3/geometry/primitive/polygon/order.hpp>
 #include <hm3/utility/variant.hpp>
 #include <hm3/utility/vector.hpp>
 
-namespace hm3::geometry::split_detail {
+namespace hm3::geometry::polygon_primitive {
 
-namespace detail {
+namespace split_detail {
 
 /// Splits the polygon \p pg with the polyline \p pl into one or two polygons.
 ///
@@ -36,14 +31,8 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
   small_vector<p_t, 8> intersection_points;
   small_vector<p_t, 8> intersection_points_segments;
 
-  auto push_back_ip = [&](auto&& p) {
-    if (ranges::end(intersection_points)
-        == ranges::find(intersection_points, p)) {
-      // HM3_ASSERT(intersection_points.size() < intersection_points.capacity(),
-      //            "ips: {}, np: {}", view::all(intersection_points), p);
-      intersection_points.push_back(p);
-    }
-  };
+  auto push_back_ip
+   = [&](auto&& p) { unique_push_back(intersection_points, p); };
 
   // Appends the intersection points of a polygon segment with a polyline
   // segment to the intersection_points vector:
@@ -80,13 +69,11 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
   }
 
   // Remove all intersection points that belong to an intersected segment
-  intersection_points.erase(
-   ranges::remove_if(intersection_points,
-                     [&](auto&& v) {
-                       return end(intersection_points_segments)
-                              != ranges::find(intersection_points_segments, v);
-                     }),
-   end(intersection_points));
+
+  ranges::action::remove_if(intersection_points, [&](auto&& v) {
+    return end(intersection_points_segments)
+           != ranges::find(intersection_points_segments, v);
+  });
 
   HM3_ASSERT(intersection_points.size() < 3, "max of 2 intersection points");
 
@@ -100,16 +87,28 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
   // From now on two intersection points:
   auto pg_pl = as_polyline<UPL>(pg);
 
-  // Split the polygon at the two intersection points into three polylines
-  // vx0 ----- ip0 ----- ip1 ------ vx0
+  // Split the polygon at the two unique intersection points, resulting in: -
+  // three polylines if none of the ips matches with vx0 vx0 ----- ip0 ----- ip1
+  // ------ vx0 - two polylines if one of the ips matches with vx0 vx0 /
+  // ip0---------- ip1 ------ vx0
   auto pg_pls = split(pg_pl, intersection_points);
-  HM3_ASSERT(pg_pls.size() == 3, "");
+  HM3_ASSERT(pg_pls.size() == 3 or pg_pls.size() == 2,
+             "pg: {},\npg_pl: {},\npg_pls: {},\n ips: {}", pg, pg_pl,
+             view::all(pg_pls), intersection_points);
 
-  // Merge the first and the last polylines of the split (they are part of the
-  // same polygon):
-  auto pg0_pl_ = set_union(pg_pls[2], pg_pls[0]);
-  HM3_ASSERT(pg0_pl_, "??");
-  auto pg0_pl = pg0_pl_.value();
+  // First part of the polygon
+  auto pg0_pl = [&]() {
+    if (pg_pls.size() == 3) {
+      // Merge the first and the last polylines of the split (vx0 -- ip0 and ip1
+      // -- vx0), since they are part of the same polygon:
+      auto pg0_pl_ = set_union(pg_pls[2], pg_pls[0]);
+      HM3_ASSERT(pg0_pl_, "??");
+      return pg0_pl_.value();
+    }
+    HM3_ASSERT(pg_pls.size() == 2, "");
+    return pg_pls[0];
+  }();
+
   // The second polyline of the split is part of the other polygon:
   auto pg1_pl = pg_pls[1];
 
@@ -143,7 +142,7 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
   return result;
 }
 
-}  // namespace detail
+}  // namespace split_detail
 
 /// Splits the polygon \p pg with the polyline \p pl.
 ///
@@ -157,69 +156,20 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
 /// - against the polyline pieces.
 template <typename PolyG, typename PolyL, typename UPG = uncvref_t<PolyG>,
           typename UPL = uncvref_t<PolyL>, dim_t Nd = UPG::dimension(),
-          typename Ret = vector<UPG> /* small_vector<UPG, 3> */,
+          typename Ret = vector<UPG> /* TODO: small_vector<UPG, 3> */,
           CONCEPT_REQUIRES_(Nd == UPL::dimension() and Polygon<UPG, Nd>()
                             and Polyline<UPL, Nd>{})>
-inline Ret split(PolyG&& pg, PolyL&& pl) {
-  using p_t = point<Nd>;
-  using s_t = segment<Nd>;
-  Ret result;
-  auto pg_pl = as_polyline<UPL>(pg);
+inline Ret split(PolyG&& pg, PolyL&& pl_) {
+  auto ir            = intersection(pg, pl_);
+  auto const& pl_pls = ir.second();
 
-  small_vector<p_t, 10> intersection_points;
-
-  auto push_back_ip = [&](auto&& p) {
-    if (ranges::end(intersection_points)
-        == ranges::find(intersection_points, p)) {
-      intersection_points.push_back(p);
-    }
-  };
-
-  // Compute intersection points between polygon and polyline O(N_pg x N_pl)
-  for (auto&& pg_s : faces(pg_pl)) {  // O(N_pg)
-    for (auto&& pl_s : faces(pl)) {   // O(N_pl)
-      auto i = intersection(pg_s, pl_s);
-      visit(
-       [&](auto&& v) {
-         using T = uncvref_t<decltype(v)>;
-         if
-           constexpr(Same<T, p_t>{}) { push_back_ip(v); }
-         else if
-           constexpr(Same<T, s_t>{}) {
-             push_back_ip(v.x(0));
-             push_back_ip(v.x(1));
-           }
-         else if
-           constexpr(Same<T, monostate>{}) {}
-         else {
-           static_assert(fail<T>{}, "non-exhaustive visitor");
-         }
-       },
-       i);
-    }
-  }
-
-  // Split polyline at the intersection points => range of polylines
-  auto pl_pls = split(pl, intersection_points);
-
-  // Remove polylines outside the polygon => range of polylines inside polygon
-  {
-    auto is_outside = [&pg](auto&& l) {
-      // A polyline is outside if any of its vertices is outside
-      // the polygon:
-      return ranges::any_of(
-       vertices(l), [&pg](auto&& vx) { return !intersection.test(pg, vx); });
-    };
-
-    pl_pls.erase(ranges::remove_if(pl_pls, is_outside), end(pl_pls));
-  }
+  Ret result{std::forward<PolyG>(pg)};
 
   // We split the polygon against each polyline
-  result.push_back(pg);
-  for (auto&& ls : pl_pls) {
+  for (auto&& pl : pl_pls) {
     for (auto &&it = begin(result), e = end(result); it != e; ++it) {
       // Split the current polygon with the first polyline that works
-      auto r = detail::binary_split(*it, ls);
+      auto r = split_detail::binary_split(*it, pl);
 
       // If the result of the split is zero or one polygon, the poly line does
       // not split the current polygon so go to the next one:
@@ -234,7 +184,8 @@ inline Ret split(PolyG&& pg, PolyL&& pl) {
       break;
     }
   }
+
   return result;
 }
 
-}  // namespace hm3::geometry::split_detail
+}  // namespace hm3::geometry::polygon_detail

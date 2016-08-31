@@ -2,8 +2,9 @@
 /// \file
 ///
 /// Vector whose elements are allocated within the vector object itself (inline)
-#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/range.hpp>
+
+#include <hm3/utility/config/assert.hpp>
 #include <type_traits>
 
 namespace hm3 {

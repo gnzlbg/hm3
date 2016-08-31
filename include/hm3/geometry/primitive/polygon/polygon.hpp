@@ -27,11 +27,14 @@ struct polygon : ranked<Nd, 2>, protected Storage {
   using vector_t::size;
 
   using vector_t::empty;
+  using vector_t::max_size;
+
+ private:
   using vector_t::operator[];
   using vector_t::begin;
   using vector_t::end;
-  using vector_t::max_size;
 
+ public:
   polygon()               = default;
   polygon(polygon const&) = default;
   polygon(polygon&&)      = default;
@@ -88,7 +91,7 @@ struct polygon : ranked<Nd, 2>, protected Storage {
                "trying to construct a fixed-size polygon of size {} with a "
                "range of size {}",
                this->size(), ranges::distance(vs));
-    ranges::copy(vs, ranges::begin(*this));
+    ranges::copy(vs, this->begin());
     HM3_ASSERT((*this)[0] != (*this)[size() - 1],
                "polygon's last vertex equals its first!");
   }
@@ -123,7 +126,7 @@ struct polygon : ranked<Nd, 2>, protected Storage {
                "trying to construct a fixed-size polygon of size {} with a "
                "range of size {}",
                this->size(), ranges::distance(vs));
-    ranges::copy(vs, ranges::begin(*this));
+    ranges::copy(vs, this->begin());
     HM3_ASSERT((*this)[0] != (*this)[size() - 1],
                "polygon's last vertex equals its first!");
     return (*this);
@@ -149,17 +152,33 @@ struct polygon : ranked<Nd, 2>, protected Storage {
   }
   vector_t& vertices() & { return static_cast<vector_t&>(*this); }
   vector_t vertices() && { return static_cast<vector_t&&>(*this); }
+
+  /// Vertex \p v of the polygon \p p.
+  friend constexpr decltype(auto) vertex(polygon<Nd, Storage> const& p,
+                                         dim_t v) noexcept {
+    return p[v];
+  }
+
+  /// Vertex \p v of the polygon \p p.
+  friend constexpr decltype(auto) vertex(polygon<Nd, Storage>& p,
+                                         dim_t v) noexcept {
+    return p[v];
+  }
+
+  /// Vertex \p v of the polygon \p p.
+  friend constexpr decltype(auto) vertex(polygon<Nd, Storage>&& p,
+                                         dim_t v) noexcept {
+    return p[v];
+  }
 };
 
-template <dim_t Nd, typename Storage>
-bool operator==(polygon<Nd, Storage> const& a,
-                polygon<Nd, Storage> const& b) noexcept {
-  return equal(a, b);
+template <dim_t Nd, typename S0, typename S1>
+bool operator==(polygon<Nd, S0> const& a, polygon<Nd, S1> const& b) noexcept {
+  return equal(vertices(a), vertices(b));
 }
 
-template <dim_t Nd, typename Storage>
-bool operator!=(polygon<Nd, Storage> const& a,
-                polygon<Nd, Storage> const& b) noexcept {
+template <dim_t Nd, typename S0, typename S1>
+bool operator!=(polygon<Nd, S0> const& a, polygon<Nd, S1> const& b) noexcept {
   return !(a == b);
 }
 
@@ -185,25 +204,6 @@ constexpr decltype(auto) vertices(polygon<Nd, Storage>& p) noexcept {
 template <dim_t Nd, typename Storage>
 constexpr decltype(auto) vertices(polygon<Nd, Storage>&& p) noexcept {
   return p.vertices();
-}
-
-/// Vertex \p v of the polygon \p p.
-template <dim_t Nd, typename Storage>
-constexpr decltype(auto) vertex(polygon<Nd, Storage> const& p,
-                                dim_t v) noexcept {
-  return p[v];
-}
-
-/// Vertex \p v of the polygon \p p.
-template <dim_t Nd, typename Storage>
-constexpr decltype(auto) vertex(polygon<Nd, Storage>& p, dim_t v) noexcept {
-  return p[v];
-}
-
-/// Vertex \p v of the polygon \p p.
-template <dim_t Nd, typename Storage>
-constexpr decltype(auto) vertex(polygon<Nd, Storage>&& p, dim_t v) noexcept {
-  return p[v];
 }
 
 /// Vertex indices.

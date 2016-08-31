@@ -3,6 +3,7 @@
 ///
 /// Range utitilties
 #include <hm3/utility/range-v3.hpp>
+#include <hm3/utility/vector.hpp>
 
 namespace ranges {
 inline namespace v3 {
@@ -158,6 +159,11 @@ namespace {
 constexpr auto&& tuple_for_each_indexed
  = static_const<tuple_for_each_indexed_fn>::value;
 }  // namespace
+
+template <typename Container, typename Value>
+void unique_push_back(Container&& c, Value&& v) {
+  if (ranges::end(c) == ranges::find(c, v)) { c.push_back(v); }
+}
 
 }  // namespace hm3
 

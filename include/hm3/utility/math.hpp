@@ -101,6 +101,21 @@ constexpr bool operator!=(sign_t const& a, sign_t const& b) noexcept {
   return !(a == b);
 }
 
+template <typename OStream>
+OStream& operator<<(OStream& os, sign_t const& v) {
+  switch (v.value) {
+    case sign_t::type::negative: {
+      os << "-";
+      break;
+    }
+    case sign_t::type::positive: {
+      os << "+";
+      break;
+    }
+  }
+  return os;
+}
+
 /// Signum type (negative, zero, or positive)
 struct signum_t {
   enum class type : sint_t {
@@ -129,6 +144,25 @@ constexpr bool operator==(signum_t const& a, signum_t const& b) noexcept {
 
 constexpr bool operator!=(signum_t const& a, signum_t const& b) noexcept {
   return !(a == b);
+}
+
+template <typename OStream>
+OStream& operator<<(OStream& os, signum_t const& v) {
+  switch (v.value) {
+    case signum_t::type::negative: {
+      os << "-";
+      break;
+    }
+    case signum_t::type::positive: {
+      os << "+";
+      break;
+    }
+    case signum_t::type::zero: {
+      os << "0";
+      break;
+    }
+  }
+  return os;
 }
 
 /// Returns the signum of \p x, i.e. -1 if x < 0, +1 if x > 0, and 0

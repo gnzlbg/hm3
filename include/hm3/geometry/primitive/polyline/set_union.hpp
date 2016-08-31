@@ -21,13 +21,14 @@ constexpr optional<UP> set_union(P l0, P l1) {
   auto last1  = vertex(l1, vertex_size(l1) - 1);
 
   if (last0 == first1) {  // insert l1 at the end of l0
-    l0.insert(end(l0), begin(l1) + 1, end(l1));
+    l0.insert(end(l0.vertices()), begin(l1.vertices()) + 1, end(l1.vertices()));
     return l0;
   }
   if (last1 == first0) {  // insert l0 at the end of l1
-    l1.insert(end(l1), begin(l0) + 1, end(l0));
+    l1.insert(end(l1.vertices()), begin(l0.vertices()) + 1, end(l0.vertices()));
     return l1;
   }
+
   return {};
 }
 
@@ -40,7 +41,7 @@ constexpr optional<UP> set_union(P l, segment<Nd> const& s) {
   auto last  = last_vertex(l);
 
   if (s.x(1) == first) {  // push front
-    l.insert(begin(l), s.x(0));
+    l.insert(begin(l.vertices()), s.x(0));
     return l;
   }
   if (s.x(0) == last) {  // push back

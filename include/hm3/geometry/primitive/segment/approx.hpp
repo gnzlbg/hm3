@@ -4,6 +4,7 @@
 /// Are two segments approximately equal?
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/primitive/point/approx.hpp>
+#include <hm3/geometry/primitive/segment/segment.hpp>
 
 namespace hm3::geometry::segment_primitive {
 

@@ -2,23 +2,191 @@
 /// \file
 ///
 /// Intersection of a polygon with a signed-distance field.
+#include <hm3/geometry/algorithm/intersection/polyline_point.hpp>
+#include <hm3/geometry/algorithm/sd_intersection/triangle.hpp>
+#include <hm3/geometry/primitive/polygon/as_polyline.hpp>
+#include <hm3/geometry/primitive/polygon/convex.hpp>
+
+namespace hm3::geometry::polygon_primitive {
+
+template <dim_t Nd>
+struct sd_intersection_result_t {
+  /* TODO: small_*/ vector<point<Nd>> points;
+  /*TODO: small_*/ vector<small_polyline<Nd, 4>> polylines;
+
+  template <typename OStream>
+  friend OStream& operator<<(OStream& os, sd_intersection_result_t const& r) {
+    os << "[points: " << r.points << ", polylines: " << r.polylines << "]";
+    return os;
+  }
+
+  bool operator==(sd_intersection_result_t const& o) const {
+    return points == o.points and polylines == o.polylines;
+  }
+  bool operator!=(sd_intersection_result_t const& o) const {
+    return !((*this) == o);
+  }
+};
+
+template <typename P, typename UP = uncvref_t<P>, dim_t Nd = UP::dimension(),
+          typename SDF,
+          CONCEPT_REQUIRES_(Polygon<P, Nd>{} and !Same<UP, triangle<Nd>>{}
+                            and SignedDistance<SDF, Nd>{})>
+variant<monostate, sd_intersection_result_t<Nd>> sd_intersection(P&& poly,
+                                                                 SDF&& sdf) {
+  HM3_ASSERT(convex(poly), "non-convex polygons not supported");
+
+  // If not intersected, return empty:
+  if (geometry::sd_intersection.test(poly, sdf)
+      != relative_position_t::intersected) {
+    return monostate{};
+  }
+
+  using pl_t = small_polyline<Nd, 4>;
+  using s_t  = segment<Nd>;
+  using p_t  = point<Nd>;
+
+  /*TODO: small_*/ vector<s_t> unique_segments;
+  auto unique_push_segment = [&](auto&& s) {
+    if (ranges::end(unique_segments)
+        == ranges::find_if(unique_segments, [&](auto&& i) {
+             return i == s or i == direction.invert(s);
+           })) {
+      unique_segments.push_back(s);
+    }
+  };
+
+  /*TODO: small_*/ vector<p_t> unique_points;
+  auto unique_push_point
+   = [&](auto&& pi) { unique_push_back(unique_points, pi); };
+
+  /// Compute the centroid of the convex polygon:
+  auto xc = centroid(poly);
+
+  auto make_triangle = [](segment<Nd> const& s, point<Nd> const& o) {
+    return triangle<Nd>({{{s.x(0), s.x(1), o}}});
+  };
+
+  /// Split the convex polygon in triangular faces using its centroid
+  for (auto&& s : faces(poly)) {
+    auto tri = make_triangle(s, xc);
+    // Compute the intersection of the sdf with the triangle
+    auto ir = sd_intersection(tri, sdf);
+    // Append the segments and points of the intersection to the lists of unique
+    // segments and points:
+    visit(
+     [&](auto&& v) {
+       using T = uncvref_t<decltype(v)>;
+
+       if
+         constexpr(Same<T, monostate>{}) { return; }
+       else if
+         constexpr(Same<T, point<Nd>>{}) {
+           unique_push_point(v);
+           return;
+         }
+       else if
+         constexpr(Same<T, segment<Nd>>{}) {
+           unique_push_segment(v);
+           return;
+         }
+       else if
+         constexpr(Same<T, fixed_polyline<Nd, 3>>{}) {
+           for (auto&& f : faces(v)) { unique_push_segment(f); }
+           return;
+         }
+       else if
+         constexpr(Same<T, triangle<Nd>>{}) {
+           for (auto&& f : faces(v)) { unique_push_segment(f); }
+           return;
+         }
+       else if
+         constexpr(Same<T, pair<point<Nd>, segment<Nd>>>{}) {
+           unique_push_point(v.first());
+           unique_push_segment(v.second());
+           return;
+         }
+       else {
+         static_assert(fail<T>{}, "non-exhaustive variant");
+       }
+       HM3_UNREACHABLE();
+     },
+     ir);
+  }
+
+  sd_intersection_result_t<Nd> result;
+
+  // Merge all the segments into polylines
+  while (not unique_segments.empty()) {
+    // Get the next segment, and remove it from the list:
+    auto s = unique_segments.back();
+    unique_segments.pop_back();
+
+    // Add it to a polyline
+    auto pl = pl_t({s.x(0), s.x(1)});
+
+    // Try to merge the polyline with the remaining segments
+    for (suint_t i = 0; i < unique_segments.size(); ++i) {
+      auto si = unique_segments[i];
+      auto r  = merge(pl, si);
+      if (!r) { continue; }
+
+      pl = r.value();
+      unique_segments.erase(begin(unique_segments) + i);  // O(N)
+    }
+    result.polylines.push_back(pl);
+  }
+
+  // Simplify the polylines in case they have colinear points
+  for (auto&& pl : result.polylines) { simplify(pl); }
+
+  // Merge the polylines among themselves
+  while (true) {
+  start:
+    for (suint_t i = 0; i < result.polylines.size(); ++i) {
+      for (suint_t j = 0; j < result.polylines.size(); ++j) {
+        if (i == j) { continue; }
+        auto r = merge(result.polylines[i], result.polylines[j]);
+        if (!r) { continue; }
+        result.polylines[i] = r.value();
+        result.polylines.erase(ranges::begin(result.polylines) + j);
+        goto start;
+      }
+    }
+    break;
+  }
+
+  // Add the unique points that are not part of any polyline
+  for (auto&& pi : unique_points) {
+    if (ranges::all_of(result.polylines, [&](auto pl) {
+          return !geometry::intersection.test(pi, pl);
+        })) {
+      result.points.push_back(pi);
+    }
+  }
+
+  return result;
+}
+
+}  // namespace hm3::geometry::polygon_primitive
+
 // #include <hm3/geometry/concepts.hpp>
 // #include <hm3/geometry/primitive/point.hpp>
-#include <hm3/geometry/algorithm/sd_intersection/triangle.hpp>
+
 // #include <hm3/geometry/sd/concepts.hpp>
 // #include <hm3/interpolation/linear.hpp>
 // #include <hm3/utility/inline_vector.hpp>
 
-namespace hm3 {
-namespace geometry {
+// namespace hm3 {
+// namespace geometry {
 
-namespace polygon_primitive {
+// namespace polygon_primitive {
 
 // todos: the faces of a segment are its corner points
 // the faces of a polygon are its segments
 // the faces of a polyhedra are its polygons
 
-namespace sd_detail {
+// namespace sd_detail {
 /*
 template <dim_t Nd>
 triangle<Nd> triangle_from_segment_and_point(segment<Nd> const& s,
@@ -159,12 +327,12 @@ void intersection_multi(poly, sdfs) {
 // sdf, -1 for part of the original shape)
 }
 */
-}  // namespace sd_detail
+// }  // namespace sd_detail
 
-}  // namespace polygon_primitive
+// }  // namespace polygon_primitive
 
-}  // namespace geometry
-}  // namespace hm3
+// }  // namespace geometry
+// }  // namespace hm3
 
 /*
 namespace hm3 {

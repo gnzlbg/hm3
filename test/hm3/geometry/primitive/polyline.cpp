@@ -75,6 +75,12 @@ void test_polyline() {
 
   CHECK(!u3);
   CHECK(!u4);
+
+  auto u5 = geometry::merge(geometry::direction.invert(pl), pl2);
+  auto u6 = geometry::merge(geometry::direction.invert(pl2), pl);
+
+  CHECK(u5);
+  CHECK(u6);
 }
 
 int main() {

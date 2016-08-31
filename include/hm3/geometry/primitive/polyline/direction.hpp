@@ -12,7 +12,7 @@ namespace hm3::geometry::polyline_primitive {
 template <typename P, typename UP = uncvref_t<P>, dim_t Nd = UP::dimension(),
           CONCEPT_REQUIRES_(Polyline<UP, Nd>{})>
 constexpr P invert_direction(P p) {
-  ranges::reverse(p);
+  ranges::reverse(p.vertices());
   return p;
 }
 

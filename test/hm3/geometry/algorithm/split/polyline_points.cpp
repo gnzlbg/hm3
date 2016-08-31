@@ -1,7 +1,4 @@
 #include <hm3/geometry/algorithm/split/polyline_points.hpp>
-
-#include <hm3/geometry/algorithm/split.hpp>
-
 #include <hm3/geometry/primitive/polyline.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -31,7 +28,7 @@ void test_polyline_point_split() {
 
   {  // split == original polyline
     // zero points
-    auto rZ = geometry::split(pl0, vp_t{});
+    auto rZ = geometry::split.split_impl(pl0, vp_t{}, 0);
     CHECK(rZ.size() == 1_u);
     CHECK(rZ[0] == pl0);
     // points outside polyline

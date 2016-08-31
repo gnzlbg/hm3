@@ -4,28 +4,29 @@
 /// Split polyline at a point.
 #include <hm3/geometry/algorithm/distance.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_point.hpp>
+#include <hm3/geometry/algorithm/split.hpp>
+#include <hm3/geometry/primitive/polyline/polyline.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 #include <hm3/utility/range.hpp>
 #include <hm3/utility/small_vector.hpp>
 #include <hm3/utility/variant.hpp>
 #include <hm3/utility/vector.hpp>
 
-namespace hm3::geometry::split_detail {
+namespace hm3::geometry::polyline_primitive {
 
 /// Splits the polyline \p pl at the points \p ps.
-template <typename P, typename Points, typename UP = uncvref_t<P>,
-          dim_t Nd       = UP::dimension(),
+template <dim_t Nd, typename S, typename Points,
+          typename Ret   = /*TODO: small_*/ vector<polyline<Nd, S>>,
           typename Point = uncvref_t<range_value_t<Points>>,
-          typename Ret   = vector<UP>, /* = small_vector<UP, 4>, */
-          CONCEPT_REQUIRES_(Polyline<P, Nd>{} and Range<Points>{}
-                            and Same<Point, point<Nd>>{})>
-inline auto split(P&& pl, Points&& ps) -> Ret {
+          CONCEPT_REQUIRES_(Range<Points>{} and Same<Point, point<Nd>>{})>
+inline auto split(polyline<Nd, S> const& pl, Points&& ps) -> Ret {
   HM3_ASSERT(face_size(pl) > 0,
              "polyline cannot be empty (must at least contain one segment)!");
-  using p_t = point<Nd>;
+  using p_t  = point<Nd>;
+  using pl_t = polyline<Nd, S>;
 
   Ret pls;
-  pls.push_back(UP{});
+  pls.push_back(pl_t{});
   const suint_t no_ips      = size(ps);
   const suint_t no_segments = face_size(pl);
   small_vector<suint_t, 4> points_in_segment;
@@ -72,7 +73,7 @@ inline auto split(P&& pl, Points&& ps) -> Ret {
           continue;
         }
         pls.back().push_back(p);
-        pls.push_back(UP{});
+        pls.push_back(pl_t{});
         if (p == s.x(1)) { continue; }
         pls.back().push_back(p);
       }
@@ -83,4 +84,4 @@ inline auto split(P&& pl, Points&& ps) -> Ret {
   return pls;
 }
 
-}  // namespace hm3::geometry::split_detail
+}  // namespace hm3::geometry::polyline_primitive

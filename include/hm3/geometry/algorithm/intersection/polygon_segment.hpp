@@ -25,9 +25,7 @@ variant<monostate, point<Nd>, segment<Nd>> intersection(segment<Nd> const& s,
   // If multiple consecutive segments of the polygon form a line,
   // multiple points can be part of the intersection.
   small_vector<point<Nd>, 4> points;
-  auto push_point = [&points](auto&& v) {
-    if (end(points) == ranges::find(points, v)) { points.push_back(v); };
-  };
+  auto push_point = [&points](auto&& v) { unique_push_back(points, v); };
   for (auto&& ps : faces(p)) {
     auto r = geometry::intersection(s, ps);
     visit(

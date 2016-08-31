@@ -4,8 +4,8 @@
 /// Formatting utilties
 #include <spdlog/spdlog.h>
 
-namespace hm3 {
+namespace hm3::fmt {
 
-namespace fmt = ::fmt;
+using ::fmt::print;
 
-}  // namespace hm3
+}  // namespace hm3::fmt
