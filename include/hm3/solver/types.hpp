@@ -43,11 +43,11 @@ constexpr surface_idx operator"" _sf(unsigned long long int i) {
   return surface_idx{static_cast<idx_t>(i)};
 }
 
-/// Index of a boundary condition
-using bc_idx = optional_idx<idx_t, struct bc_idx_tag>;
+/// Index of boundary
+using boundary_idx = optional_idx<sidx_t, struct boundary_idx_tag>;
 
-constexpr bc_idx operator"" _bc(unsigned long long int i) {
-  return bc_idx{static_cast<idx_t>(i)};
+constexpr boundary_idx operator"" _b(unsigned long long int i) {
+  return boundary_idx{static_cast<sidx_t>(i)};
 }
 
 }  // namespace solver

@@ -28,6 +28,12 @@ void test_polyline() {
   s_t s1(p1, p2);
   s_t s2(p2, p3);
 
+  {  // construct polyline from segment
+    auto pl2 = pl_t(s0);
+    CHECK(geometry::vertex(pl2, 0) == geometry::vertex(s0, 0));
+    CHECK(geometry::vertex(pl2, 1) == geometry::vertex(s0, 1));
+  }
+
   auto ss = {s0, s1, s2};
 
   CHECK(geometry::vertex_size(pl) == 4_u);

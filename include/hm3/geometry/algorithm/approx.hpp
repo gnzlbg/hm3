@@ -55,34 +55,40 @@ bool approx(num_t a, num_t b, num_t abs_tol, num_t rel_tol) noexcept {
 
 struct approx_fn {
   template <typename T, typename U>
-  static constexpr auto impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol, long)
+  static constexpr auto eq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                long)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(approx(std::forward<U>(u),
                                                std::forward<T>(t), abs_tol,
                                                rel_tol));
 
   template <typename T, typename U>
-  static constexpr auto impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol, int)
+  static constexpr auto eq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol, int)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(approx(std::forward<T>(t),
                                                std::forward<U>(u), abs_tol,
                                                rel_tol));
 
   template <typename T, typename U>
+  static constexpr auto eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq_impl(std::forward<T>(t),
+                                                std::forward<U>(u), abs_tol,
+                                                rel_tol, 0));
+
+  template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             std::forward<U>(u),
-                                             tolerance.absolute(),
-                                             tolerance.relative(), 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq(std::forward<T>(t),
+                                           std::forward<U>(u),
+                                           tolerance.absolute(),
+                                           tolerance.relative()));
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             std::forward<U>(u), abs_tol,
-                                             rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq(std::forward<T>(t),
+                                           std::forward<U>(u), abs_tol,
+                                           rel_tol));
 
   template <typename T, typename U>
   static constexpr auto leq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t < u
-                                        or impl(t, u, abs_tol, rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t < u or eq(t, u, abs_tol, rel_tol));
 
   template <typename T, typename U>
   static constexpr auto leq(T&& t, U&& u)
@@ -91,8 +97,7 @@ struct approx_fn {
 
   template <typename T, typename U>
   static constexpr auto geq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t < u
-                                        or impl(t, u, abs_tol, rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t > u or eq(t, u, abs_tol, rel_tol));
 
   template <typename T, typename U>
   static constexpr auto geq(T&& t, U&& u)

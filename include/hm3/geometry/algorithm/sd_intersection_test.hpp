@@ -43,7 +43,7 @@ constexpr relative_position_t sd_intersection_test(SDValueRng&& rng) noexcept {
 }
 
 /// Is the primitive \p p intersected by the signed-distance field \p sdf?
-  template <typename P, typename SD, dim_t Nd = uncvref_t<P>::dimension(),
+template <typename P, typename SD, dim_t Nd = uncvref_t<P>::dimension(),
           CONCEPT_REQUIRES_(Primitive<P>{} and SignedDistance<SD, Nd>{})>
 static constexpr relative_position_t sd_intersection_test(P&& p,
                                                           SD&& sdf) noexcept {

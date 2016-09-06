@@ -18,15 +18,15 @@ struct bcs {
   using boundary_cells = vector<cell_idx>;
   vector<boundary_cells> cells_in_bc_;
 
-  boundary_cells& cells_in_bc(bc_idx i) noexcept {
-    HM3_ASSERT(i < bc_idx(size()),
+  boundary_cells& cells_in_bc(boundary_idx i) noexcept {
+    HM3_ASSERT(i < boundary_idx(size()),
                "boundary condition index {} is out-of-bounds [0, {})", i,
                size());
     return cells_in_bc_[*i];
   }
 
-  boundary_cells const& cells_in_bc(bc_idx i) const noexcept {
-    HM3_ASSERT(i < bc_idx(size()),
+  boundary_cells const& cells_in_bc(boundary_idx i) const noexcept {
+    HM3_ASSERT(i < boundary_idx(size()),
                "boundary condition index {} is out-of-bounds [0, {})", i,
                size());
     return cells_in_bc_[*i];
@@ -36,8 +36,8 @@ struct bcs {
   /// #of boundary conditions
   std::size_t size() const noexcept { return cells_in_bc_.size(); }
   /// Add a new boundary condition and return its index:
-  bc_idx push() noexcept {
-    bc_idx i = size();
+  boundary_idx push() noexcept {
+    boundary_idx i = size();
     cells_in_bc_.push_back(boundary_cells{});
     return i;
   }
@@ -46,7 +46,7 @@ struct bcs {
     for (auto&& cells : cells_in_bc_) { cells.shrink_to_fit(); }
   }
   /// Clear all boundary cells for boundary condition \p i
-  void clear(bc_idx i) { cells_in_bc(i).clear(); }
+  void clear(boundary_idx i) { cells_in_bc(i).clear(); }
   /// Clear all boundary cells of all boundary conditions
   void clear() {
     for (auto&& cells : cells_in_bc_) { cells.clear(); }
@@ -55,24 +55,25 @@ struct bcs {
  private:
   template <typename F>
   void for_each_bc(F&& f) noexcept {
-    for (bc_idx i = 0; i != size(); ++i) { f(i); }
+    for (boundary_idx i = 0; i != size(); ++i) { f(i); }
   }
   template <typename F>
   void for_each_bc(F&& f) const noexcept {
-    for (bc_idx i = 0; i != size(); ++i) { f(i); }
+    for (boundary_idx i = 0; i != size(); ++i) { f(i); }
   }
 
  public:
   /// Does the boundary condition \p bcidx have the cell \p cidx?
-  bool has_cell(cell_idx cidx, bc_idx bcidx) const noexcept {
+  bool has_cell(cell_idx cidx, boundary_idx bcidx) const noexcept {
     return ranges::lower_bound(cells_in_bc(bcidx), cidx)
            != end(cells_in_bc(bcidx));
   }
 
   /// All boundary conditions that cell \p cidx is a part of:
-  inline_vector<bc_idx, max_bcs_per_cell> boundary_condition(cell_idx cidx) {
-    inline_vector<bc_idx, max_bcs_per_cell> bc_ids;
-    for_each_bc([&](bc_idx i) {
+  inline_vector<boundary_idx, max_bcs_per_cell> boundary_condition(
+   cell_idx cidx) {
+    inline_vector<boundary_idx, max_bcs_per_cell> bc_ids;
+    for_each_bc([&](boundary_idx i) {
       if (has_cell(cidx, i)) { bc_ids.push_back(i); }
     });
     return bc_ids;
@@ -82,7 +83,9 @@ struct bcs {
   /// Appends a boundary cell \p cidx to the boundary condition \p bcidx
   ///
   /// \warning unsafe, the boundary cells won't be sorted afterwards
-  void push(cell_idx cidx, bc_idx bcidx) { cells_in_bc(bcidx).push_back(cidx); }
+  void push(cell_idx cidx, boundary_idx bcidx) {
+    cells_in_bc(bcidx).push_back(cidx);
+  }
 
   /// Sort the cells in the boundary condition
   void sort() {
@@ -97,14 +100,14 @@ struct bcs {
   ///
   /// \warning the cells must be sorted for this to work
   void assert_unique() const noexcept {
-    for_each_bc([&](bc_idx i) {
+    for_each_bc([&](boundary_idx i) {
       HM3_ASSERT(end(cells_in_bc(i)) == ranges::adjacent_find(cells_in_bc(i)),
                  "boundary condition {} has non unique cells", i);
     });
   }
 
   template <typename UnaryPredicate>
-  void remove(bc_idx i, UnaryPredicate&& up) {
+  void remove(boundary_idx i, UnaryPredicate&& up) {
     HM3_ASSERT(i >= 0 and i < size(),
                "boundary condition index {} is out-of-bounds [0, {})", i,
                size());
@@ -114,7 +117,7 @@ struct bcs {
   template <typename BinaryPredicate>
   void remove(BinaryPredicate&& bp) {
     for_each_bc(
-     [&](bc_idx i) { remove(i, [&](cell_idx j) { return bp(j, i); }); });
+     [&](boundary_idx i) { remove(i, [&](cell_idx j) { return bp(j, i); }); });
   }
 
   struct modifier {
@@ -140,14 +143,14 @@ struct bcs {
     using modifier::modifier;
     using modifier::operator=;
 
-    void insert(cell_idx c, bc_idx b) { s_.push(c, b); }
+    void insert(cell_idx c, boundary_idx b) { s_.push(c, b); }
   };
 
   struct remover : modifier {
     using modifier::modifier;
     using modifier::operator=;
     template <typename UnaryPredicate>
-    void remove(bc_idx b, UnaryPredicate&& up) {
+    void remove(boundary_idx b, UnaryPredicate&& up) {
       s_.remove(b, std::forward<UnaryPredicate>(up));
     }
 

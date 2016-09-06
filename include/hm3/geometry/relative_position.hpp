@@ -3,6 +3,7 @@
 ///
 /// Relative position type.
 #include <hm3/types.hpp>
+#include <hm3/utility/range.hpp>
 
 namespace hm3::geometry {
 
@@ -32,6 +33,37 @@ relative_position_t invert(relative_position_t o) {
       return intersected;
     }
   }
+}
+
+struct is_inside_fn {
+  constexpr bool operator()(relative_position_t i) const noexcept {
+    return i == relative_position_t::inside;
+  }
+};
+
+struct is_outside_fn {
+  constexpr bool operator()(relative_position_t i) const noexcept {
+    return i == relative_position_t::outside;
+  }
+};
+
+struct is_intersected_fn {
+  constexpr bool operator()(relative_position_t i) const noexcept {
+    return i == relative_position_t::intersected;
+  }
+};
+
+namespace {
+static constexpr auto const& is_inside = static_const<is_inside_fn>::value;
+}
+
+namespace {
+static constexpr auto const& is_outside = static_const<is_outside_fn>::value;
+}
+
+namespace {
+static constexpr auto const& is_intersected
+ = static_const<is_intersected_fn>::value;
 }
 
 }  // namespace hm3::geometry

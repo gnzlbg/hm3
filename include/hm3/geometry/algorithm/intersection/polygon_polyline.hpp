@@ -27,8 +27,9 @@ inline auto intersection(PolyG&& pg, PolyL&& pl) {
   small_vector<p_t, 10> intersection_points;
   small_vector<pl_t, 4> intersection_poly_lines;
 
-  auto push_back_ip
-   = [&](auto&& p) { unique_push_back(intersection_points, p); };
+  auto push_back_ip = [&](auto&& p) {
+    unique_push_back(intersection_points, p, geometry::approx);
+  };
 
   // Compute intersection points between polygon and polyline O(N_pg x N_pl x
   // N_ip)
@@ -80,7 +81,7 @@ inline auto intersection(PolyG&& pg, PolyL&& pl) {
             return geometry::intersection.test(s, ip);
           });
         })) {
-      unique_push_back(points, ip);
+      unique_push_back(points, ip, geometry::approx);
     }
   }
 

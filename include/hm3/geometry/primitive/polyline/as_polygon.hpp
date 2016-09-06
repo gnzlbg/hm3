@@ -16,9 +16,9 @@ template <typename T, typename P, typename UP = uncvref_t<P>,
 constexpr T as_polygon(P&& p) {
   HM3_ASSERT(vertex_size(p) > 2,
              "polyline {} needs > 2 vertex to be a polygon");
-  HM3_ASSERT(approx(first_vertex(p), last_vertex(p)),
-             "first and last polyline vertices must be equal: {} != {}",
-             first_vertex(p), last_vertex(p));
+  HM3_ASSERT(geometry::approx(first_vertex(p), last_vertex(p)),
+             "first and last polyline vertices must be equal: {} != {}\npl: {}",
+             first_vertex(p), last_vertex(p), p);
   T result;
   result.reserve(vertex_size(p) - 1);
   for (auto&& v : vertices(p) | view::take(vertex_size(p) - 1)) {

@@ -1072,3 +1072,18 @@ template <typename T>
 using optional = std2::experimental::optional<T>;
 
 }  // namespace hm3
+
+// TODO: find a better way of offering debug output
+namespace std2::experimental {
+
+template <typename OStream, typename T>
+OStream& operator<<(OStream& os, optional<T> const& o) {
+  if (o) {
+    os << o.value();
+  } else {
+    os << "-";
+  }
+  return os;
+}
+
+}  // namespace std2::experimental

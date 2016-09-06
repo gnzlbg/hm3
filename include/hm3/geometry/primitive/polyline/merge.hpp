@@ -1,7 +1,8 @@
 #pragma once
 /// \file
 ///
-/// Merge polylines
+/// Merge polylines with polylines or segments.
+#include <hm3/geometry/algorithm/merge.hpp>
 #include <hm3/geometry/algorithm/set_union.hpp>
 #include <hm3/geometry/primitive/polyline/set_union.hpp>
 #include <hm3/utility/optional.hpp>
@@ -25,9 +26,3 @@ constexpr optional<UP> merge(P const& l0, segment<Nd> const& l1) {
 }
 
 }  // namespace hm3::geometry::polyline_primitive
-
-namespace hm3::geometry {
-
-using polyline_primitive::merge;
-
-}  // namespace hm3::geometry

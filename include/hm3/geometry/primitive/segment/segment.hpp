@@ -99,4 +99,11 @@ bool operator!=(segment<Nd> const& l, segment<Nd> const& r) noexcept {
 
 using segment_primitive::segment;
 
+namespace concepts {
+
+template <dim_t Nd>
+struct is_polyline<segment<Nd>> : std::false_type {};
+
+}  // namespace concepts
+
 }  // namespace hm3::geometry

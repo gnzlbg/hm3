@@ -116,7 +116,7 @@ variant<monostate, segment<1>, point<1>> intersection(
   auto r  = result.value();
   auto x0 = p_t{r.first()};
   auto x1 = p_t{r.second()};
-  if (x0 == x1) { return x0; }
+  if (geometry::approx(x0, x1)) { return x0; }
   return s_t(x0, x1);
 }
 
@@ -142,9 +142,12 @@ variant<monostate, segment<Nd>, point<Nd>> intersection(
     auto ps = segment_intersection_detail::intersection_1d(t0, t1, 0., 1.);
     if (!ps) { return monostate{}; }
 
-    auto p0 = p_t(a0() + ps.value().first() * a_d());
-    if (math::approx(ps.value().first(), ps.value().second())) { return p0; }
-    auto p1 = p_t(a0() + ps.value().second() * a_d());
+    num_t t = ps.value().first();
+    num_t u = ps.value().second();
+
+    auto p0 = p_t(a0() + t * a_d());
+    if (geometry::approx(t, u)) { return p0; }
+    auto p1 = p_t(a0() + u * a_d());
     return s_t(p0, p1);
   }
 

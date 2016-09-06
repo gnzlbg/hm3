@@ -3,6 +3,7 @@
 ///
 /// Analytical solution for the temperature on a 1D slab
 #include <hm3/geometry/primitive/point.hpp>
+#include <hm3/math/integral/integrate_1d.hpp>
 #include <hm3/solver/fv/models/heat/indices.hpp>
 
 namespace hm3 {
@@ -43,7 +44,7 @@ struct slab {
         return initial_condition(x)
                * std::sin(n * math::pi * x / domain_length);
       };
-      cns[n] = math::integrate(f, 0., domain_length);
+      cns[n] = math::integrate_1d(f, 0., domain_length);
     }
   }
 

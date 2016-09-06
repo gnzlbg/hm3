@@ -6,6 +6,7 @@
 
 #include <hm3/geometry/algorithm/bounding_length.hpp>
 #include <hm3/geometry/algorithm/bounding_volume.hpp>
+#include <hm3/geometry/algorithm/intersection/aabb_aabb.hpp>
 #include <hm3/geometry/data_structure/bvh/node.hpp>
 #include <hm3/geometry/data_structure/bvh/types.hpp>
 #include <hm3/geometry/primitive/aabb.hpp>
@@ -25,6 +26,8 @@ namespace hm3::geometry {
 namespace bvh {
 
 /// Bonding-Voulme Hierarchy.
+///
+/// Stores a vector of nodes.
 template <dim_t Nd>
 struct bvh : dimensional<Nd> {
   using self = bvh<Nd>;
@@ -46,8 +49,15 @@ struct bvh : dimensional<Nd> {
     return view::ints(uint_t{0}, uint_t{nodes_.size()});
   }
 
+  /// Node \p i
+  auto const& node(node_idx i) const noexcept { return nodes_[*i]; }
+  auto& node(node_idx i) noexcept { return nodes_[*i]; }
+
   /// Axis-Aligned Bounding Box of node \p i.
-  auto bounding_box(node_idx i) const noexcept { return nodes_[*i].bound; }
+  auto bounding_box(node_idx i) const noexcept { return node(i).bound; }
+
+  /// Simplex idx of node \p i
+  auto simplex(node_idx i) const noexcept { return node(i).simplex; }
 
   /// Estimates the number of nodes from the number of triangles in the grid
   uint_t capacity_estimate(uint_t mesh_size) {
@@ -66,9 +76,7 @@ struct bvh : dimensional<Nd> {
     return r;
   }
 
-  bool is_leaf(node_idx i) const noexcept {
-    return nodes_[*i].simplex ? true : false;
-  }
+  bool is_leaf(node_idx i) const noexcept { return simplex(i) ? true : false; }
 
   /// Creates nodes for the simplices. These are the leafs of the BVH.
   template <typename Simplices>
@@ -115,8 +123,6 @@ struct bvh : dimensional<Nd> {
   ///
   /// The nodes are sorted in increasing centroid component along the split
   /// dimension.
-  ///
-  ///
   node_idx split(node_t& p, node_idx b, node_idx e) {
     HM3_TIME("bvh", "rebuild", "create_tree_nodes", "split");
     // Find the longest direction of the AABB
@@ -252,6 +258,8 @@ struct bvh : dimensional<Nd> {
   }
 #endif
 
+  /// Move node \p current to its correct position \p should and updates the
+  /// simplex indices.
   node_idx update_correct_node_positions(vector<node_idx>& pos,
                                          node_idx current, node_idx should) {
     auto& n = nodes_[*current];
@@ -272,6 +280,8 @@ struct bvh : dimensional<Nd> {
     return should;
   }
 
+  /// Sorts the nodes in depth-first order starting ad the \p root node of the
+  /// bvh.
   void sort_nodes(node_idx root_node) {
     HM3_TIME("bvh", "rebuild", "sort_nodes");
     vector<node_idx> correct_positions(nodes_.size());
@@ -282,7 +292,7 @@ struct bvh : dimensional<Nd> {
 
     // correct all tree node positions
     for (auto i : node_ids()) {
-      auto&& n = nodes_[i];
+      auto&& n = node(i);
       n.left   = n.left ? correct_positions[*n.left] : n.left;
       n.right  = n.right ? correct_positions[*n.right] : n.right;
     }
@@ -309,6 +319,8 @@ struct bvh : dimensional<Nd> {
   }
 
   /// Rebuilds the BVH
+  ///
+  /// The root node is the first node in the tree.
   template <typename Simplices>
   void rebuild(Simplices const& mesh) {
     HM3_TIME("bvh", "rebuild");
@@ -337,6 +349,52 @@ struct bvh : dimensional<Nd> {
       set_level(node_idx{0}, 0);
     }
 #endif
+  }
+
+  /// Adds indices of the simplices whose bounding box is intersected by \p
+  /// target to the vector \p v for all the simplices overlapped by the bounding
+  /// box of the node \p n.
+  template <typename Vector>
+  void add_intersected_nodes(node_idx n, aabb<Nd> const& target,
+                             Vector& v) const {
+    // If the bounding box of \p n does not intersect \p target we are done (the
+    // bounding box of the children won't intersect target).
+    if (!intersection.test(bounding_box(n), target)) { return; }
+
+    // The bounding box of \p n intersects \p target and corresponds to that of
+    // a simplex, so we add the simplex idx to the vector and are done
+    if (is_leaf(n)) {
+      v.push_back(simplex(n));
+      return;
+    }
+
+    // The bounding box of \p n intersects \p target but it is not a leaf bbox,
+    // so we recurse down to its two children, if present:
+    if (auto l = node(n).left) { add_intersected_nodes(l, target, v); }
+    if (auto r = node(n).right) { add_intersected_nodes(r, target, v); }
+  }
+
+  /// Appends to the vector \p result the ids of the simplices whose bounding
+  /// boxes intersect with aabb \p a.
+  template <typename Vector>
+  void aabb_intersection(aabb<Nd> const& target, Vector& result) const {
+    auto root_node = node_idx{0};
+    add_intersected_nodes(root_node, target, result);
+  }
+
+  /// Returns a vector of simplex ids whose bounding boxes intersect with aabb
+  /// \p a.
+  small_vector<simplex_idx, 128> aabb_intersection(
+   aabb<Nd> const& target) const {
+    small_vector<simplex_idx, 128> result;
+    aabb_intersection(target, result);
+    return result;
+  }
+
+  /// An AABB \p target intersects the bounding box of at least one simplex if
+  /// it intersects the bounding box of the root node of the BVH.
+  bool aabb_intersection_test(aabb<Nd> const& target) const {
+    return intersection.test(target, bounding_box(node_idx{0}));
   }
 };
 

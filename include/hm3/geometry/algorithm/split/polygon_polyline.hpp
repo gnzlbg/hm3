@@ -4,7 +4,11 @@
 /// Split polygon at a polyline.
 #include <hm3/geometry/algorithm/distance.hpp>
 #include <hm3/geometry/algorithm/intersection/polygon_polyline.hpp>
+#include <hm3/geometry/algorithm/merge.hpp>
 #include <hm3/geometry/primitive/polygon/order.hpp>
+#include <hm3/geometry/primitive/polyline/direction.hpp>
+#include <hm3/geometry/primitive/polyline/merge.hpp>
+#include <hm3/geometry/primitive/polyline/set_union.hpp>
 #include <hm3/utility/variant.hpp>
 #include <hm3/utility/vector.hpp>
 
@@ -31,8 +35,9 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
   small_vector<p_t, 8> intersection_points;
   small_vector<p_t, 8> intersection_points_segments;
 
-  auto push_back_ip
-   = [&](auto&& p) { unique_push_back(intersection_points, p); };
+  auto push_back_ip = [&](auto&& p) {
+    unique_push_back(intersection_points, p, geometry::approx);
+  };
 
   // Appends the intersection points of a polygon segment with a polyline
   // segment to the intersection_points vector:
@@ -72,10 +77,14 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
 
   ranges::action::remove_if(intersection_points, [&](auto&& v) {
     return end(intersection_points_segments)
-           != ranges::find(intersection_points_segments, v);
+           != ranges::find_if(intersection_points_segments, [&v](auto&& i) {
+                return geometry::approx(i, v);
+              });
   });
 
-  HM3_ASSERT(intersection_points.size() < 3, "max of 2 intersection points");
+  HM3_ASSERT(intersection_points.size() < 3,
+             "max of 2 intersection points! ips: {}",
+             view::all(intersection_points));
 
   if (intersection_points.size() < 2) {
     // for zero or one intersection (e.g. at a corner point), the resulting
@@ -93,8 +102,9 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
   // ip0---------- ip1 ------ vx0
   auto pg_pls = split(pg_pl, intersection_points);
   HM3_ASSERT(pg_pls.size() == 3 or pg_pls.size() == 2,
-             "pg: {},\npg_pl: {},\npg_pls: {},\n ips: {}", pg, pg_pl,
-             view::all(pg_pls), intersection_points);
+             "wrong number of polylines after spliting polygon!\npg: "
+             "{},\npg_pl: {},\npg_pls: {},\n ips: {}\npl: {}",
+             pg, pg_pl, view::all(pg_pls), intersection_points, pl);
 
   // First part of the polygon
   auto pg0_pl = [&]() {
@@ -114,14 +124,8 @@ constexpr inline_vector<UPG, 2> binary_split(PolyG&& pg, PolyL&& pl) {
 
   // Merge the polylines of each polygon with the polyline used to perform the
   // split => two full polygons (as polylines):
-  auto r0 = set_union(pg0_pl, pl);
-  auto r1 = set_union(pg1_pl, pl);
-
-  // For one of the polygons the polyline of the split is going to have the
-  // wrong direction. Check here if creating the polygon succeeded and if not
-  // invert the direction of the polyline and try again
-  if (!r0) { r0 = set_union(pg0_pl, direction.invert(pl)); }
-  if (!r1) { r1 = set_union(pg1_pl, direction.invert(pl)); }
+  auto r0 = geometry::merge(pg0_pl, pl);
+  auto r1 = geometry::merge(pg1_pl, pl);
 
   // We must have two fully formed polygons by now:
   HM3_ASSERT(r0, "??");
@@ -162,7 +166,6 @@ template <typename PolyG, typename PolyL, typename UPG = uncvref_t<PolyG>,
 inline Ret split(PolyG&& pg, PolyL&& pl_) {
   auto ir            = intersection(pg, pl_);
   auto const& pl_pls = ir.second();
-
   Ret result{std::forward<PolyG>(pg)};
 
   // We split the polygon against each polyline

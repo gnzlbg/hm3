@@ -50,7 +50,8 @@ variant<monostate, sd_intersection_result_t<Nd>> sd_intersection(P&& poly,
   auto unique_push_segment = [&](auto&& s) {
     if (ranges::end(unique_segments)
         == ranges::find_if(unique_segments, [&](auto&& i) {
-             return i == s or i == direction.invert(s);
+             return geometry::approx(i, s)
+                    or geometry::approx(i, direction.invert(s));
            })) {
       unique_segments.push_back(s);
     }
@@ -58,7 +59,7 @@ variant<monostate, sd_intersection_result_t<Nd>> sd_intersection(P&& poly,
 
   /*TODO: small_*/ vector<p_t> unique_points;
   auto unique_push_point
-   = [&](auto&& pi) { unique_push_back(unique_points, pi); };
+   = [&](auto&& pi) { unique_push_back(unique_points, pi, geometry::approx); };
 
   /// Compute the centroid of the convex polygon:
   auto xc = centroid(poly);

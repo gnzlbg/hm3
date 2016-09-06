@@ -6,6 +6,6 @@
 
 namespace hm3::fmt {
 
-using ::fmt::print;
+using namespace ::fmt;
 
 }  // namespace hm3::fmt

@@ -14,7 +14,7 @@ namespace hm3::geometry::point_primitive {
 /// Square Bounding Box of point \p p.
 template <dim_t Nd>
 constexpr box<Nd> square_bounding_box(point<Nd> const& p) noexcept {
-  return box<Nd>{p, math::eps};
+  return box<Nd>{p, 2. * math::eps};
 }
 
 /// Axis-Aligned Bounding Box of point \p p (it is just a box).

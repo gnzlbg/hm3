@@ -59,7 +59,8 @@ auto print_val(OStream& os, T&& t, int) -> decltype(os << t) {
 }
 
 template <typename OStream, typename T>
-auto print_val(OStream& os, T&& t, long) -> decltype(os << ranges::view::all(t)) {
+auto print_val(OStream& os, T&& t, long)
+ -> decltype(os << ranges::view::all(t)) {
   return os << ranges::view::all(t);
 }
 

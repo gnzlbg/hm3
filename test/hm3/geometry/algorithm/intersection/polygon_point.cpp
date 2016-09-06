@@ -38,7 +38,7 @@ int main() {
 
   // points inside
   for (auto&& pi : pis) {
-    fmt::print("pi: {}\n", pi);
+    // fmt::print("pi: {}\n", pi);
     CHECK(geometry::intersection.test(tri, pi));
     auto r = geometry::intersection(tri, pi);
     visit(
@@ -54,7 +54,7 @@ int main() {
   }
 
   for (auto&& po : pos) {
-    fmt::print("po: {}\n", po);
+    // fmt::print("po: {}\n", po);
     CHECK(!geometry::intersection.test(tri, po));
     auto r = geometry::intersection(tri, po);
     visit(

@@ -1,6 +1,3 @@
-#ifdef ABC
-
-#include <hm3/geometry/box.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
 #include <hm3/solver/fv/fv.hpp>
 #include <hm3/solver/fv/models/heat.hpp>
@@ -9,60 +6,19 @@
 #include <hm3/solver/fv/time_integration/runge_kutta.hpp>
 #include <hm3/solver/fv/vtk.hpp>
 #include <hm3/solver/utility.hpp>
+#include <hm3/solver/utility/aligned_boundary.hpp>
 #include <hm3/utility/test.hpp>
 
-struct sphere_stl_bcs {
-  triangulation_t boundary;
-  num_t boundary_temperature = 20.;
+using namespace hm3;
 
-  template <typename State, typename To>
-  constexpr void apply(State& s, To&& to) {
-    using std::experimental::visit;
-    for (auto&& b : s.tiles()) {
-      b.cells().for_each([&](auto&& c) {
-        auto g_c = b.geometry()(c);
-
-        auto result = intersect(g_c, boundary);
-
-        switch (result.location) {
-          case inside: {
-            // mark as inside
-            break;
-          }
-          case outside: {
-            // mark as outside
-            break;
-          }
-          case intersected: {
-            // mark as intersected
-            // reshape
-            // mark inside neighbors as neighbors of intersected
-            break;
-          }
-        }
-
-        if (x_hc(0) < 0.) {
-          to(b, h_c)(0) = left;
-        } else if (x_hc(0) > 1.) {
-          to(b, h_c)(0) = right;
-        } else {  // neumann
-          auto i_c = b.cells().closest_internal_cell(h_c);
-          to(b, h_c)(0) = b.variables(i_c)(0);
-        }
-      });
-    }
-  }
-};
+constexpr dim_t nd = 2;
 
 int main(int argc, char* argv[]) {
-  using namespace hm3;
-  using namespace solver;
-
   /// Initialize MPI
   mpi::env env(argc, argv);
 
   auto comm                = env.world();
-  string solver_name       = string("fv_heat_") + std::to_string(Nd) + "d";
+  string solver_name       = string("fv_heat_") + std::to_string(nd) + "d";
   std::string session_name = solver_name + "_shpere_analytical_error";
 
   // Initialize I/O session
@@ -70,18 +26,43 @@ int main(int argc, char* argv[]) {
   io::session s(io::create, session_name, comm);
 
   // Grid parameters
-  constexpr uint_t nd       = 2;
   constexpr uint_t no_grids = 1;
 
   auto min_grid_level = 3;
   auto max_grid_level = min_grid_level + 1;
   auto node_capacity
    = tree::node_idx{tree::no_nodes_until_uniform_level(nd, max_grid_level)};
+
+  // Geometry
+  using p_t = geometry::point<nd>;
+  using v_t = geometry::vec<nd>;
+
+  // Create aligned boundary lines
+  using geometry::line;
+  line<nd> left_boundary_line(p_t{0., 0.5}, v_t{0.0, 1.0});
+  line<nd> right_boundary_line(p_t{1., 0.5}, v_t{0.0, -1.0});
+  line<nd> top_boundary_line(p_t{0., 0.75}, v_t{1.0, 0.0});
+  line<nd> bottom_boundary_line(p_t{0., 0.25}, v_t{-1.0, 0.0});
+
+  // Construct the aligned boundaries
+  using solver::aligned_boundary;
+  using solver::boundary_idx;
+  aligned_boundary<nd> left_boundary(left_boundary_line, boundary_idx{0});
+  aligned_boundary<nd> right_boundary(right_boundary_line, boundary_idx{1});
+  aligned_boundary<nd> top_boundary(top_boundary_line, boundary_idx{2});
+  aligned_boundary<nd> bottom_boundary(bottom_boundary_line, boundary_idx{3});
+
+  using solver::domain;
+  domain<nd> domain0;
+  domain0.aligned_boundaries.push_back(left_boundary);
+  domain0.aligned_boundaries.push_back(right_boundary);
+  domain0.aligned_boundaries.push_back(top_boundary);
+  domain0.aligned_boundaries.push_back(bottom_boundary);
+
   auto bounding_box = geometry::box<nd>::unit();
 
-  using namespace grid::hierarchical;
-
   // Create the grid
+  using namespace grid::hierarchical;
   cm<nd> g(s, node_capacity, no_grids, bounding_box);
 
   // Refine the grid up to the minimum leaf node level
@@ -90,23 +71,25 @@ int main(int argc, char* argv[]) {
   auto solver_block_capacity
    = grid_node_idx{tree::no_nodes_at_uniform_level(nd, max_grid_level)};
 
+  namespace fv = solver::fv;
+
   using tile_layout = fv::tile_layout<nd, 10, 2>;
   using p           = fv::heat::physics<nd>;
   using tint        = fv::euler_forward;
-  using num_flux    = fv::heat::flux::three_point;
+  using num_flux    = fv::heat::flux::three_point_fn;
   using method      = fv::default_method;
 
   using solver_t = fv::state<tile_layout, p, tint, num_flux, method>;
 
   num_t thermal_diffusivity = 1.0;
-  num_t initial_temperature;
-  auto initial_condition = [=](num_t) { return initial_temperature; };
+  num_t initial_temperature = 0.0;
+  auto initial_condition    = [&](num_t) { return initial_temperature; };
   p physics(thermal_diffusivity);
 
   auto as0 = solver_t{g, 0_g, solver_block_capacity, physics};
 
   /// Initial heat solver grid:
-  initialize_grid(g, as0, [&](auto&& n) { return g.is_leaf(n); });
+  solver::initialize_leaf_grid_domain(g, as0, domain0);
 
   // Initial condition by cell
   for (auto& b : as0.tiles()) {
@@ -116,6 +99,7 @@ int main(int argc, char* argv[]) {
     });
   }
 
+  /*
   num_t cfl       = 0.1;
   num_t time      = 0;
   num_t time_end  = 0.4;
@@ -151,9 +135,6 @@ int main(int argc, char* argv[]) {
   }
   fv::vtk::serialize(as0, "fv_heat_2d_slab_analytic_", min_grid_level,
                      physics.cv());
-
+  */
   return test::result();
 }
-#else
-int main() { return 0; }
-#endif

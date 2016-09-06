@@ -20,20 +20,14 @@ constexpr decltype(auto) axis_aligned_bounding_box(T&& b) noexcept {
 template <typename T, typename UT = uncvref_t<T>, dim_t Nd = UT::dimension(),
           CONCEPT_REQUIRES_(Same<UT, aabb<Nd>>{})>
 constexpr box<Nd> square_bounding_box(T&& b) noexcept {
-  auto bbox = box<Nd>(centroid(b), max_bounding_length(b));
+  auto max_length = max_bounding_length(b);
+  auto bbox       = box<Nd>(centroid(b), max_length + 4. * math::eps);
 
   HM3_ASSERT(centroid(bbox) == centroid(b), "");
 
-  for (dim_t d = 0; d < Nd; ++d) {
-    if (x_min(bbox)(d) > x_min(b)(d) or x_max(bbox)(d) < x_max(b)(d)) {
-      num_t diff = std::max(std::abs(x_min(bbox)(d) - x_min(b)(d)),
-                            std::abs(x_max(bbox)(d) - x_max(b)(d)));
-      bbox = box<Nd>(centroid(b), max_bounding_length(b) + 2. * diff);
-    }
-  }
-
   HM3_ASSERT(
-   x_min(bbox) <= x_min(b) and x_max(bbox) >= x_max(b),
+   geometry::approx.leq(x_min(bbox), x_min(b))
+    and geometry::approx.geq(x_max(bbox), x_max(b)),
    "the square bounding box {} of the aabb {} does not contain the aabb", bbox,
    b);
   return bbox;

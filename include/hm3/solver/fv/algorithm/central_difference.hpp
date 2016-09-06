@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Structured gradient
+#include <hm3/math/gradient.hpp>
 #include <hm3/solver/fv/algorithm/limit_gradient.hpp>
 #include <hm3/solver/fv/limiter/none.hpp>
 #include <hm3/types.hpp>

@@ -138,7 +138,7 @@ int main() {
   a_t d{p_t::constant(-.5), p_t::constant(.5)};
   a_t e{p_t{0., -1., -1.}, p_t{1., 0., 0.}};
   a_t f{p_t::constant(0.), p_t::constant(1.)};
-  a_t g{p_t{0., 0., -1}, p_t{1., 0., 0.}};
+  a_t g{p_t{0., 0., -1}, p_t{1., 1., 0.}};
 
   // Case A:
   CHECK(!intersection.test(a, b));

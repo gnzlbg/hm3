@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Are two vectors parallel?
+#include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/primitive/vec/cross.hpp>
 #include <hm3/geometry/primitive/vec/vec.hpp>
 
@@ -25,7 +26,7 @@ constexpr bool parallel(V const&, V const&, num_t = 0.) noexcept {
 template <typename V, typename UV = uncvref_t<V>, dim_t Nd = UV::dimension(),
           CONCEPT_REQUIRES_((Nd == 2 or Nd == 3) and Same<UV, vec<Nd>>{})>
 constexpr bool parallel(V const& v0, V const& v1, num_t tol = 0.) noexcept {
-  return math::approx(perp_product_norm(v0, v1), tol);
+  return geometry::approx(perp_product_norm(v0, v1), tol);
 }
 
 }  // namespace hm3::geometry::vec_primitive

@@ -4,12 +4,11 @@
 /// Linear interpolation in n spatial dimensions: two points
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
-#include <hm3/interpolation/concept.hpp>
+#include <hm3/math/interpolation/concept.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/config/assert.hpp>
 
-namespace hm3 {
-namespace ip {
+namespace hm3::math::ip {
 
 /// Linear interpolation utilities
 namespace linear {
@@ -82,5 +81,5 @@ auto interpolate(point<Nd> const& x, D const& d) {
 }
 
 }  // namespace linear
-}  // namespace ip
-}  // namespace hm3
+
+}  // namespace hm3::math::ip

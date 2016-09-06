@@ -87,7 +87,8 @@ struct ret {
     fmt::print("> ERROR: CHECK failed '{}'\n > \t {} ({})\n", expr_, filename_,
                lineno_);
     if (dismissed_) {
-      fmt::print("> \tEXPECTED: {}\n> \tACTUAL: {} \n", stream(u), stream(t_));
+      fmt::print("> \tEXPECTED: {}\n> \tACTUAL:   {} \n", stream(u),
+                 stream(t_));
     }
     ++failures();
   }

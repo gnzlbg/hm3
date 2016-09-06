@@ -5,7 +5,7 @@
 #include <hm3/geometry/algorithm/sd_intersection.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 #include <hm3/geometry/sd/concepts.hpp>
-#include <hm3/interpolation/linear.hpp>
+#include <hm3/math/interpolation/linear.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::segment_primitive {
@@ -24,7 +24,7 @@ constexpr variant<monostate, point<Nd>, segment<Nd>> sd_intersection(
         HM3_ASSERT(sgv[0] == math::signum_t::zero(), "");
         return s;
       }
-      return ip::linear::point_with_value(0., s, sdv);
+      return math::ip::linear::point_with_value(0., s, sdv);
     }
     case inside:
     case outside: {

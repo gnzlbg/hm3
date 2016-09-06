@@ -160,9 +160,12 @@ constexpr auto&& tuple_for_each_indexed
  = static_const<tuple_for_each_indexed_fn>::value;
 }  // namespace
 
-template <typename Container, typename Value>
-void unique_push_back(Container&& c, Value&& v) {
-  if (ranges::end(c) == ranges::find(c, v)) { c.push_back(v); }
+template <typename Container, typename Value, typename Comp = std::equal_to<>>
+void unique_push_back(Container&& c, Value&& v, Comp&& comp = Comp{}) {
+  if (ranges::end(c)
+      == ranges::find_if(c, [&comp, &v](auto&& i) { return comp(i, v); })) {
+    c.push_back(v);
+  }
 }
 
 }  // namespace hm3

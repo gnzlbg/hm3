@@ -13,5 +13,17 @@ void initialize_grid(TreeGrid& g, Solver& s, Prediacte&& p) {
   }
 }
 
+template <typename TreeGrid, typename Solver, typename Predicate>
+void initialize_leaf_grid(TreeGrid& g, Solver& s, Predicate&& p) {
+  initialize_grid(g, s, [&](auto&& n) { return g.is_leaf(n) and p(n); });
+}
+
+template <typename TreeGrid, typename Solver, typename Domain>
+void initialize_leaf_grid_domain(TreeGrid& g, Solver& s, Domain&& d) {
+  initialize_leaf_grid(g, s, [&](auto&& n) {
+    return not geometry::is_outside(d.relative_position(g.geometry(n)));
+  });
+}
+
 }  // namespace solver
 }  // namespace hm3

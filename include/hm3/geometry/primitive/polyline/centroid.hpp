@@ -17,7 +17,7 @@ constexpr auto centroid(P&& p) noexcept -> point<dimension_v<P>> {
 
   for (auto&& s : faces(p)) {
     auto segment_length   = integral(s, path_integral<segment<nd>>{});
-    auto segment_centroid = centroid(s);
+    auto segment_centroid = segment_primitive::centroid(s);
     x_c() += segment_length * segment_centroid();
     length_sum += segment_length;
   }

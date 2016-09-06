@@ -25,7 +25,8 @@ variant<monostate, point<Nd>, segment<Nd>> intersection(segment<Nd> const& s,
   // If multiple consecutive segments of the polygon form a line,
   // multiple points can be part of the intersection.
   small_vector<point<Nd>, 4> points;
-  auto push_point = [&points](auto&& v) { unique_push_back(points, v); };
+  auto push_point
+   = [&points](auto&& v) { unique_push_back(points, v, geometry::approx); };
   for (auto&& ps : faces(p)) {
     auto r = geometry::intersection(s, ps);
     visit(
@@ -54,7 +55,7 @@ variant<monostate, point<Nd>, segment<Nd>> intersection(segment<Nd> const& s,
     // returns a segment that preserves the direction of the input segment
     auto l      = s.line();
     num_t ts[2] = {parameter(l, p0).value(), parameter(l, p1).value()};
-    if (ts[0] <= ts[1]) { return segment<Nd>(p0, p1); }
+    if (geometry::approx.leq(ts[0], ts[1])) { return segment<Nd>(p0, p1); }
     return segment<Nd>(p1, p0);
   };
 
@@ -67,12 +68,12 @@ variant<monostate, point<Nd>, segment<Nd>> intersection(segment<Nd> const& s,
       if (!p0_inside and !p1_inside) { return points[0]; }
       point<Nd> lp = p0_inside ? s.x(0) : s.x(1);
       // the segment can be either outside, s.t. the result is the single point:
-      if (lp == points[0]) { return points[0]; }
+      if (geometry::approx(lp, points[0])) { return points[0]; }
       // or inside, s.t. the result is the segment up to the intersection point:
       return make_segment(lp, points[0]);
     }
     case 2: {  // segment intersects two points, can happen along a face:
-      HM3_ASSERT(points[0] != points[1], "cannot happen");
+      HM3_ASSERT(!geometry::approx(points[0], points[1]), "cannot happen");
       return make_segment(points[0], points[1]);
     }
     default: {  // segment intersects multipe points, can happen along a face

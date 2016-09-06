@@ -6,6 +6,7 @@
 #include <hm3/geometry/concepts.hpp>
 #include <hm3/geometry/primitive/aabb/aabb.hpp>
 #include <hm3/utility/range.hpp>
+#include <iostream>
 
 namespace hm3::geometry {
 

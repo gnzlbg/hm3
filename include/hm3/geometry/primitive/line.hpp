@@ -12,4 +12,5 @@
 #include <hm3/geometry/primitive/line/parallel.hpp>
 #include <hm3/geometry/primitive/line/parameter.hpp>
 #include <hm3/geometry/primitive/line/project.hpp>
+#include <hm3/geometry/primitive/line/relative_position.hpp>
 #include <hm3/geometry/primitive/line/side.hpp>

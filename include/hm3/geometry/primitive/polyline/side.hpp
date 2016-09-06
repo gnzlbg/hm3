@@ -12,21 +12,21 @@ namespace hm3::geometry::polyline_primitive {
 
 template <typename P, typename UP = uncvref_t<P>, dim_t Nd = UP::dimension(),
           CONCEPT_REQUIRES_(Nd == 2 and Polyline<P, Nd>{})>
-constexpr side_t side(P&& l, point<2> const& p) {
-  num_t d        = math::highest<num_t>;
-  suint_t sg_idx = 0;
+constexpr side_t side(P&& polyline, point<2> const& p) {
+  num_t dist               = math::highest<num_t>;
+  suint_t closest_face_idx = 0;
 
-  // find the segment with the smallest distance to the point
-  for (auto&& sidx : face_indices(l)) {
-    auto&& s = face(l, sidx);
-    auto sd  = distance.minimum(s, p);
-    if (sd < d) {
-      d      = sd;
-      sg_idx = sidx;
+  // Find the closest face segment to the point
+  for (auto&& face_idx : face_indices(polyline)) {
+    auto&& face_segment = face(polyline, face_idx);
+    auto face_dist      = distance.minimum(face_segment, p);
+    if (face_dist < dist) {
+      dist             = face_dist;
+      closest_face_idx = face_idx;
     }
   }
-  HM3_ASSERT(!math::approx(d, math::highest<num_t>), "no segment found?");
-  return side(face(l, sg_idx), p);
+  HM3_ASSERT(!math::approx(dist, math::highest<num_t>), "no segment found?");
+  return side(face(polyline, closest_face_idx), p);
 }
 
 }  // namespace hm3::geometry::polyline_primitive

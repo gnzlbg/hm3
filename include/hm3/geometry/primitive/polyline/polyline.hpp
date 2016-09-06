@@ -4,6 +4,7 @@
 /// Polyline.
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/polyline/ostream.hpp>
+#include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/geometry/rank.hpp>
 #include <hm3/utility/small_vector.hpp>
 

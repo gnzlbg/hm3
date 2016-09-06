@@ -3,4 +3,4 @@
 
 using namespace hm3;
 
-int main() { return test::result; }
+int main() { return test::result(); }

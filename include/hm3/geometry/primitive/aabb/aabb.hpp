@@ -61,8 +61,16 @@ struct aabb : ranked<Nd, Nd> {
 
   void assert_valid() const noexcept {
     HM3_ASSERT(x[0] != x[1], "aabb min/max bounds are equal: {}", x[0]);
-    HM3_ASSERT((x[0]().array() <= x[1]().array()).all(),
-               "min !<= max | min {} | max {}", x[0], x[1]);
+
+    HM3_ASSERT(((x[0]().array() - x[1]().array()).abs() > 0.).all(),
+               "abs(min(i) - max(i)) !>0. => aabb has length zero across one "
+               "dimension! | min {} | max {}",
+               x[0], x[1]);
+
+    HM3_ASSERT(
+     (x[0]().array() < x[1]().array()).all(),
+     "min !<= max => aabb corners not properly ordered! | min {} | max {}",
+     x[0], x[1]);
   }
 
  public:

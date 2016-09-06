@@ -13,8 +13,12 @@ namespace hm3::geometry::segment_primitive {
 template <dim_t Nd>
 constexpr aabb<Nd> axis_aligned_bounding_box(segment<Nd> const& s) {
   using p_t = point<Nd>;
-  return aabb<Nd>(p_t(s.x(0)().array().min(s.x(1)().array())),
-                  p_t(s.x(0)().array().max(s.x(1)().array())));
+  auto xmin = s.x(0)().array().min(s.x(1)().array());
+  auto xmax = s.x(0)().array().max(s.x(1)().array());
+  if (((xmin.abs() == xmax.abs())).any()) {
+    return aabb<Nd>(p_t(xmin - 2. * math::eps), p_t(xmax + 2. * math::eps));
+  }
+  return aabb<Nd>(p_t(xmin), p_t(xmax));
 }
 
 /// Square Bounding Box of the segment \p s.

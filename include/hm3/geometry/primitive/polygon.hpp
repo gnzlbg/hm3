@@ -13,6 +13,7 @@
 #include <hm3/geometry/primitive/polygon/convex.hpp>
 #include <hm3/geometry/primitive/polygon/faces.hpp>
 #include <hm3/geometry/primitive/polygon/integral.hpp>
+#include <hm3/geometry/primitive/polygon/make_aa_quad.hpp>
 #include <hm3/geometry/primitive/polygon/normal.hpp>
 #include <hm3/geometry/primitive/polygon/order.hpp>
 #include <hm3/geometry/primitive/polygon/ostream.hpp>

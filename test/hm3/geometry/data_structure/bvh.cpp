@@ -90,6 +90,12 @@ int main() {
     bounding_volume_hierarchy<3> b;
     b.rebuild(m);
 
+    // bounding box around 4
+    aabb<3> target(point_t{0.25, 0.25, 0.75}, point_t{0.75, 0.75, 1.25});
+    auto r = b.aabb_intersection(target);
+    test::check_equal(r | view::transform([](auto&& v) { return *v; }),
+                      {5_u, 2_u, 4_u, 3_u});
+
 #ifdef HM3_ENABLE_VTK
     bvh::vtk::serialize(b, "bvh_output0");
 #endif

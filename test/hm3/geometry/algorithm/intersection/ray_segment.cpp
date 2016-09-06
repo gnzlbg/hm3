@@ -80,7 +80,7 @@ void test_ray_segment_intersection() {
      using T = uncvref_t<decltype(i)>;
      if
        constexpr(Same<T, s_t>{}) {
-         fmt::print("result: {}\n", i);
+         // fmt::print("result: {}\n", i);
          CHECK(false);
        }
      else if

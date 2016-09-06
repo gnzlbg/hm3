@@ -10,7 +10,8 @@
 /// "StructuredInterpolable" concept?
 #include <hm3/geometry/dimension.hpp>
 
-namespace hm3 {
+namespace hm3::math {
+
 namespace ip {
 namespace concepts {
 
@@ -39,4 +40,4 @@ using InterpolableV = meta::
            ranges::uncvref_t<T>>>;
 
 }  // namespace ip
-}  // namespace hm3
+}  // namespace hm3::math

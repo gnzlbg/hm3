@@ -8,7 +8,7 @@
 #include <hm3/geometry/primitive/polyline.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/geometry/sd/concepts.hpp>
-#include <hm3/interpolation/linear.hpp>
+#include <hm3/math/interpolation/linear.hpp>
 #include <hm3/utility/inline_vector.hpp>
 #include <hm3/utility/variant.hpp>
 
@@ -155,8 +155,8 @@ triangle_sd_intersection_result<Nd> sd_intersection(triangle<Nd> const& tri,
 
     // Otherwise this edge is intersected by the zero level-set.
     // The point in the edge with value 0 is found by linear interpolation:
-    auto x_cp = ip::linear::point_with_value(0., vxs[vidx], vxs[n_vidx], vx_sd,
-                                             next_vx_sd);
+    auto x_cp = math::ip::linear::point_with_value(0., vxs[vidx], vxs[n_vidx],
+                                                   vx_sd, next_vx_sd);
     cut_points.push_back(x_cp);
     // and we move to the next edge.
   }

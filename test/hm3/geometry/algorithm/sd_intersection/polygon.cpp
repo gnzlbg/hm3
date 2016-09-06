@@ -4,14 +4,12 @@
 #include <hm3/geometry/sd/edge.hpp>
 #include <hm3/utility/test.hpp>
 
-
 /// NOTE: Deprecated! This is now tested in sd_split polygon, should find a way
 /// to reuse these tests.
 
 using namespace hm3;
 
 int main() {
-  
   static constexpr dim_t nd = 2;
   using plg_t               = geometry::small_polygon<nd, 10>;
   using pll_t               = geometry::small_polyline<nd, 4>;

@@ -173,7 +173,26 @@ void test_polygon_polyline_split() {
   }
 #endif  // HM3_ENABLE_VTK
 
-  fmt::print("{}\n", view::all(r2));
+  auto pl3 = pl_t({p_t{0.0, 0.0}, p_t{1.0, 0.}, p_t{1., 1.}, p_t{0., 1.}});
+
+  auto r3 = geometry::split(pg, pl3);
+  CHECK(r3.size() == 1_u);
+  CHECK(r3[0] == pg);
+
+  {
+    auto pg2 = pg_t({p_t{0., 0.2083333333333334}, p_t{0., 0.}, p_t{1., 0.},
+                     p_t{1., 0.2083333333333333}, p_t{0.5, 0.25}});
+
+    auto tpl = pl_t({p_t{-.1, .2}, p_t{.5, .25}, p_t{1.1, .2}});
+    auto tr  = geometry::split(pg2, tpl);
+    CHECK(tr.size() == 1_u);
+    CHECK(tr[0] == pg2);
+  }
+  // ipg: [v0: (0, 0.2083333333333334), v1: (0, 0), v2: (1, 0), v3: (1,
+  // 0.2083333333333333), v4: (0.5, 0.25)], ipl: [v0: (-0.1, 0.2), v1: (0.5,
+  // 0.25), v2: (1.1, 0.2)]
+
+  // fmt::print("{}\n", view::all(r2));
 }
 
 int main() {

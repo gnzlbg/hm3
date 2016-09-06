@@ -1,7 +1,7 @@
 #pragma once
 /// \file
 ///
-/// Set union between polylines and segments
+/// Set union between non-overlapping polylines and segments
 #include <hm3/geometry/algorithm/set_union.hpp>
 #include <hm3/geometry/primitive/segment/segment.hpp>
 #include <hm3/utility/optional.hpp>
