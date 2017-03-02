@@ -1,12 +1,15 @@
-#include <hm3/geometry/algorithm/intersection/polygon_point.hpp>
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/io/vtk.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
+#include <hm3/geometry/primitive/ray.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
+using namespace geometry;
 
-using p_t    = geometry::point<2>;
-using poly_t = geometry::bounded_polygon<2, 10>;
+using p_t    = point<2>;
+using poly_t = polygon<2>;
+using s_t    = segment<2>;
 
 int main() {
   // tri:
@@ -33,14 +36,15 @@ int main() {
 
   auto pis = {p3, p4, p5};
   auto pos = {p6, p7, p8, p9, p10, p11};
+  auto vxs = {p0, p1, p2};
 
-  poly_t tri({p0, p1, p2});
+  poly_t tri(make_segment_range(vxs));
 
   // points inside
   for (auto&& pi : pis) {
     // fmt::print("pi: {}\n", pi);
-    CHECK(geometry::intersection.test(tri, pi));
-    auto r = geometry::intersection(tri, pi);
+    CHECK(intersection.test(tri, pi));
+    auto r = intersection(tri, pi);
     visit(
      [&](auto&& v) {
        using T = uncvref_t<decltype(v)>;
@@ -55,8 +59,8 @@ int main() {
 
   for (auto&& po : pos) {
     // fmt::print("po: {}\n", po);
-    CHECK(!geometry::intersection.test(tri, po));
-    auto r = geometry::intersection(tri, po);
+    CHECK(!intersection.test(tri, po));
+    auto r = intersection(tri, po);
     visit(
      [](auto&& v) {
        using T = uncvref_t<decltype(v)>;

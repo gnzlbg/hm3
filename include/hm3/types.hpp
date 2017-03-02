@@ -72,6 +72,16 @@ constexpr dim_t operator"" _d(unsigned long long int i) {
   return static_cast<dim_t>(i);
 }
 
+template <dim_t Ad>
+struct dim_vt : std::integral_constant<dim_t, Ad> {};
+
+template <dim_t Ad>
+static constexpr dim_vt<Ad> dim_v{};
+
 ///@}  // Primitive type aliases
+
+struct fallback {};
+
+struct preferred : fallback {};
 
 }  // namespace hm3

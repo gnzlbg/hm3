@@ -6,7 +6,8 @@
 
 #include <hm3/geometry/algorithm/bounding_length.hpp>
 #include <hm3/geometry/algorithm/bounding_volume.hpp>
-#include <hm3/geometry/algorithm/intersection/aabb_aabb.hpp>
+#include <hm3/geometry/algorithm/integral.hpp>
+#include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/data_structure/bvh/node.hpp>
 #include <hm3/geometry/data_structure/bvh/types.hpp>
 #include <hm3/geometry/primitive/aabb.hpp>
@@ -15,7 +16,7 @@
 
 //#define HM3_DBG_BVH  // enable for debugging output
 #ifdef HM3_DBG_BVH
-#define HM3_BVH_DBG_PRINT(...) fmt::print(__VA_ARGS__)
+#define HM3_BVH_DBG_PRINT(...) ascii_fmt::out(__VA_ARGS__)
 #else
 #define HM3_BVH_DBG_PRINT(...)
 #endif
@@ -25,14 +26,15 @@ namespace hm3::geometry {
 /// Bounding-Volume Hierarchy.
 namespace bvh {
 
-/// Bonding-Voulme Hierarchy.
+/// Bonding-Volume Hierarchy.
 ///
-/// Stores a vector of nodes.
-template <dim_t Nd>
-struct bvh : dimensional<Nd> {
-  using self = bvh<Nd>;
+/// Stores a hierarchy of axis-aligned bounding boxes. The leafs of the
+/// hierarchy contain the index of a simplex inside some mesh.
+template <dim_t Ad>
+struct bvh : with_ambient_dimension<Ad> {
+  using self = bvh<Ad>;
 
-  using node_t         = node<Nd>;
+  using node_t         = node<Ad>;
   using node_storage_t = vector<node_t>;
 
   node_storage_t nodes_;
@@ -76,6 +78,11 @@ struct bvh : dimensional<Nd> {
     return r;
   }
 
+  /// Is a node a leaf node of the BVH?
+  ///
+  /// That is, does it contain a simplex?
+  /// Nodes can either contain a simplex, or contain either a left or right
+  /// node.
   bool is_leaf(node_idx i) const noexcept { return simplex(i) ? true : false; }
 
   /// Creates nodes for the simplices. These are the leafs of the BVH.
@@ -104,17 +111,22 @@ struct bvh : dimensional<Nd> {
   }
 
   /// Bounding box of all the nodes in range [\p b, \p e).
-  aabb<Nd> bounding_box(node_idx b, node_idx e) const {
+  aabb<Ad> bounding_box(node_idx b, node_idx e) const {
+    HM3_TIME("bvh", "rebuild", "bounding_box");
     return bounding_volume.aabb(
      ranges::make_iterator_range(begin(nodes_) + (*b), begin(nodes_) + (*e))
      | view::transform([](auto&& n) { return n.bound; }));
   }
 
+  template <typename T>
+  static num_t surface_area(T&& t) {
+    HM3_TIME("bvh", "rebuild", "surface_area");
+    return integral.boundary(std::forward<T>(t));
+  }
+
   /// Returns the surface area of the bounding box that encloses all nodes in
   /// range [\p b, \p e).
   num_t surface_area_range(node_idx b, node_idx e) const {
-    HM3_TIME("bvh", "rebuild", "create_tree_nodes", "split",
-             "surface_area_range");
     return surface_area(bounding_box(b, e));
   };
 
@@ -130,7 +142,7 @@ struct bvh : dimensional<Nd> {
     dim_t split_d = [&]() {
       auto max_l = bounding_length.max(p.bound);
       auto ls    = bounding_length.all(p.bound);
-      for (dim_t d = 0; d < Nd; ++d) {
+      for (dim_t d = 0; d < Ad; ++d) {
         if (!(ls(d) < max_l)) { return d; }
       }
       HM3_FATAL_ERROR("!");
@@ -138,43 +150,48 @@ struct bvh : dimensional<Nd> {
 
     sort_nodes_across_centroid(b, e, split_d);
 
-    // Surface Area Heuristic (SAH): perform the split such that S_C / S_P * N_C
-    // is similar for both sides of the split. Here:
-    // - S_C is the surface of the bounding box of the child node (which we need
-    //   to compute for each possible split),
-    // - S_P is the surface of the bounding box of the parent, and
-    // - N_C is the number of triangles of the child node.
-    num_t sp   = surface_area(p.bound);
-    num_t cost = math::highest<num_t>;
-    node_idx result{};
-    auto start = b + 1;
-    auto end   = e;
-    HM3_ASSERT(start < end, "");
-    // Use binning across 8 planes: since the cost function will be in general
-    // monotonic (because the triangles are sorted), the stride here is used to
-    // compute the SAH on at most 8 planes:
-    auto no_planes  = end - start;
-    node_idx stride = no_planes <= 8 ? 1 : no_planes / 8;
-    for (auto split_idx = start; split_idx < end; split_idx += stride) {
-      num_t nl    = *split_idx - *b;
-      num_t nr    = *e - *split_idx;
-      num_t sl    = surface_area_range(b, split_idx);
-      num_t sr    = surface_area_range(split_idx, e);
-      num_t cost_ = sl / sp * nl + sr / sp * nr;
+    {
+      HM3_TIME("bvh", "rebuild", "create_tree_nodes", "split",
+               "surface_area_heuristic");
+      // Surface Area Heuristic (SAH): perform the split such that S_C / S_P *
+      // N_C is similar for both sides of the split. Here: - S_C is the surface
+      // of the bounding box of the child node (which we need
+      //   to compute for each possible split),
 
-      if (cost_ < cost) {
-        cost   = cost_;
-        result = split_idx;
+      // - S_P is the surface of the bounding box of the parent, and
+      // - N_C is the number of triangles of the child node.
+      num_t sp   = surface_area(p.bound);
+      num_t cost = math::highest<num_t>;
+      node_idx result{};
+      auto start = b + 1;
+      auto end   = e;
+      HM3_ASSERT(start < end, "");
+      // Use binning across 8 planes: since the cost function will be in general
+      // monotonic (because the triangles are sorted), the stride here is used
+      // to compute the SAH on at most 8 planes:
+      auto no_planes  = end - start;
+      node_idx stride = no_planes <= 8 ? 1 : no_planes / 8;
+      for (auto split_idx = start; split_idx < end; split_idx += stride) {
+        num_t nl    = *split_idx - *b;
+        num_t nr    = *e - *split_idx;
+        num_t sl    = surface_area_range(b, split_idx);
+        num_t sr    = surface_area_range(split_idx, e);
+        num_t cost_ = sl / sp * nl + sr / sp * nr;
+
+        if (cost_ < cost) {
+          cost   = cost_;
+          result = split_idx;
+        }
+
+        // range is sorted => break if the cost starts increasing (chances are
+        // we found a good enough minimum):
+        if (cost_ > cost and result) { break; }
       }
-
-      // range is sorted => break if the cost starts increasing (chances are we
-      // found a good enough minimum):
-      if (cost_ > cost and result) { break; }
+      HM3_ASSERT(result, "did not found a viable split?!!");
+      HM3_ASSERT(result - b > 0, "");
+      HM3_ASSERT(e - result > 0, "");
+      return result;
     }
-    HM3_ASSERT(result, "did not found a viable split?!!");
-    HM3_ASSERT(result - b > 0, "");
-    HM3_ASSERT(e - result > 0, "");
-    return result;
   };
 
   /// Insert child nodes of node \p n containing nondes in range [\p b, \p e).
@@ -318,6 +335,20 @@ struct bvh : dimensional<Nd> {
      "not sorted!");
   }
 
+  /// Bounding box of the BVH
+  auto bounding_box() const noexcept { return bounding_box(node_idx{0}); }
+
+  /// Are all nodes valid?
+  bool valid_nodes() const noexcept {
+    for (auto&& i : node_ids()) {
+      if (not node(i).valid()) {
+        HM3_ASSERT(false, "node with id {} is not valid!", i);
+        return false;
+      }
+    }
+    return true;
+  }
+
   /// Rebuilds the BVH
   ///
   /// The root node is the first node in the tree.
@@ -328,8 +359,8 @@ struct bvh : dimensional<Nd> {
     nodes_.clear();
     uint_t size_ = mesh.size();
 
-    fmt::print("mesh size: {} => reserved capacity: {}\n", size_,
-               capacity_estimate(size_));
+    ascii_fmt::out("mesh size: {} => reserved capacity: {}\n", size_,
+                   capacity_estimate(size_));
 
     nodes_.reserve(capacity_estimate(size_));
 
@@ -339,9 +370,11 @@ struct bvh : dimensional<Nd> {
 
     sort_nodes(root_node);
 
-    fmt::print("Mesh size: {}, BVH #nodes: {}, #capacity: {}\n", size_,
-               nodes_.size(), nodes_.capacity());
+    ascii_fmt::out("Mesh size: {}, BVH #nodes: {}, #capacity: {}\n", size_,
+                   nodes_.size(), nodes_.capacity());
     nodes_.shrink_to_fit();
+
+    HM3_ASSERT(valid_nodes(), "invalid nodes present");
 
 #ifdef HM3_DBG_BVH_VTK
     {
@@ -351,50 +384,239 @@ struct bvh : dimensional<Nd> {
 #endif
   }
 
-  /// Adds indices of the simplices whose bounding box is intersected by \p
-  /// target to the vector \p v for all the simplices overlapped by the bounding
-  /// box of the node \p n.
-  template <typename Vector>
-  void add_intersected_nodes(node_idx n, aabb<Nd> const& target,
-                             Vector& v) const {
-    // If the bounding box of \p n does not intersect \p target we are done (the
-    // bounding box of the children won't intersect target).
-    if (!intersection.test(bounding_box(n), target)) { return; }
+  enum class visitor_action { visit_both, visit_left, visit_right, done };
 
-    // The bounding box of \p n intersects \p target and corresponds to that of
-    // a simplex, so we add the simplex idx to the vector and are done
-    if (is_leaf(n)) {
-      v.push_back(simplex(n));
-      return;
+  /// Visit each valid node of the BVH calling `f(node_idx) -> visitor_action`,
+  /// where the visitor action controls what to do after calling f.
+  template <typename F>
+  void for_each(F&& f, node_idx current = node_idx{0}) const noexcept {
+    // If there is no node we are done:
+    if (not current) { return; }
+
+    visitor_action action = f(current);
+    switch (action) {
+      case visitor_action::done: {
+        break;
+      }
+      case visitor_action::visit_left: {
+        for_each(f, node(current).left);
+        break;
+      }
+      case visitor_action::visit_right: {
+        for_each(f, node(current).right);
+        break;
+      }
+      case visitor_action::visit_both: {
+        for_each(f, node(current).left);
+        for_each(f, node(current).right);
+        break;
+      }
+      default: { HM3_FATAL_ERROR("unknown visitor action"); }
     }
+  }
 
-    // The bounding box of \p n intersects \p target but it is not a leaf bbox,
-    // so we recurse down to its two children, if present:
-    if (auto l = node(n).left) { add_intersected_nodes(l, target, v); }
-    if (auto r = node(n).right) { add_intersected_nodes(r, target, v); }
+  struct node_dist {
+    node_idx n{};
+    num_t d = math::highest<num_t>;
+
+    bool valid() const noexcept {
+      return n != node_idx{} and d != math::highest<num_t>;
+    }
+  };
+
+  /// Gets the node of the simplex closest to \p p.
+  template <typename P, typename M, CONCEPT_REQUIRES_(Point<uncvref_t<P>>{})>
+  node_dist closest_simplex(M const& mesh, P p) const noexcept {
+    node_dist smallest = node_dist{};
+
+    auto f = [&](auto&& n) {
+      // If the aabb of the current node does not contain the point and the
+      // distance to the aabb is larger than the currently computed distance,
+      // the distance to any simplex inside the aabb cannot be smaller than the
+      // current distance, so we are done:
+      if (not hg::intersection.test(p, bounding_box(n))) {
+        num_t d_aabb = distance(p, bounding_box(n));
+        if (d_aabb > smallest.d) { return visitor_action::done; }
+        // If the distance to the aabb is smaller, that does not mean that the
+        // distance to a simplex contained in it will be smaller too.
+      }
+
+      // Otherwise, if the aabb is a leaf, compute the distance to its simplex
+      // and update the minimum distance.
+      if (is_leaf(n)) {
+        num_t d = distance(p, mesh.simplex(node(n).simplex));
+        if (d < smallest.d) { smallest = node_dist{n, d}; }
+        return visitor_action::done;
+      }
+
+      // Otherwise, the aabb is not a leaf, that does contain the point. Need to
+      // traverse to both children:
+      return visitor_action::visit_both;
+    };
+
+    for_each(f, node_idx{0});
+    return smallest;
   }
 
   /// Appends to the vector \p result the ids of the simplices whose bounding
-  /// boxes intersect with aabb \p a.
-  template <typename Vector>
-  void aabb_intersection(aabb<Nd> const& target, Vector& result) const {
-    auto root_node = node_idx{0};
-    add_intersected_nodes(root_node, target, result);
+  /// boxes intersect with \p target.
+  template <typename T, typename Vector>
+  void aabb_intersection(T const& target, Vector& result,
+                         node_idx start = node_idx{0}) const {
+    auto f = [&](auto&& n) {
+      // If the bounding box of \p n does not intersect \p target we are done
+      // (the bounding box of the children won't intersect target).
+      if (not hg::intersection.test(bounding_box(n), target)) {
+        return visitor_action::done;
+      }
+
+      // Intersect the bounding box but the node is not a leaf node, visit its
+      // children:
+      if (not is_leaf(n)) { return visitor_action::visit_both; }
+
+      // The bounding box of \p n intersects \p target and n is a leaf node
+      // containing a simplex, so we add the node to the vector and are done:
+      result.push_back(n);
+      return visitor_action::done;
+    };
+
+    for_each(f, start);
   }
 
-  /// Returns a vector of simplex ids whose bounding boxes intersect with aabb
-  /// \p a.
-  small_vector<simplex_idx, 128> aabb_intersection(
-   aabb<Nd> const& target) const {
+  /// Appends to the vector \p result the ids of the simplices that intersect
+  /// with \p target.
+  template <typename M, typename T, typename Vector>
+  void intersection(M const& mesh, T const& target, Vector& result,
+                    node_idx start = node_idx{0}) const {
+    auto f = [&](auto&& n) {
+      // If the bounding box of \p n does not intersect \p target we are done
+      // (the bounding box of the children won't intersect target).
+      if (not hg::intersection.test(bounding_box(n), target)) {
+        return visitor_action::done;
+      }
+
+      // Intersect the bounding box but the node is not a leaf node, visit its
+      // children:
+      if (not is_leaf(n)) { return visitor_action::visit_both; }
+
+      // The bounding box of \p n intersects \p target and corresponds to that
+      // of a simplex. If the simplex intersects the target, we add it.
+      if (hg::intersection.test(mesh.simplex(n), target)) {
+        result.push_back(n);
+      }
+
+      return visitor_action::done;
+    };
+
+    for_each(f, start);
+  }
+
+  /// How many simplices does the primitive \p p intersect?
+  template <typename M, typename P>
+  uint_t intersection_count(M const& mesh, P&& p) const noexcept {
+    uint_t count = 0;
+
+    auto f = [&](auto&& n) {
+      if (not hg::intersection.test(p, bounding_box(n))) {
+        return visitor_action::done;
+      }
+
+      if (is_leaf(n)) {
+        if (hg::intersection.test(p, mesh.simplex(node(n).simplex))) {
+          count += 1;
+        }
+        return visitor_action::done;
+      }
+
+      return visitor_action::visit_both;
+    };
+
+    for_each(f, node_idx{0});
+
+    return count;
+  }
+
+  /// Returns a vector of simplex ids whose bounding boxes intersect with the
+  /// \p target.
+  template <typename T>
+  small_vector<simplex_idx, 128> aabb_intersection(T const& target) const {
     small_vector<simplex_idx, 128> result;
     aabb_intersection(target, result);
     return result;
   }
 
-  /// An AABB \p target intersects the bounding box of at least one simplex if
-  /// it intersects the bounding box of the root node of the BVH.
-  bool aabb_intersection_test(aabb<Nd> const& target) const {
-    return intersection.test(target, bounding_box(node_idx{0}));
+  /// Returns a vector of simplex ids that intersect the \p target.
+  template <typename Mesh, typename T>
+  small_vector<simplex_idx, 128> intersection(Mesh const& m,
+                                              T const& target) const {
+    small_vector<simplex_idx, 128> result;
+    intersection(m, target, result);
+    return result;
+  }
+
+  /// Does the primitive \p p intersect a simplex of the BVH?
+  template <typename M, typename P>
+  bool intersection_test(M const& mesh, P&& p) const noexcept {
+    bool result = false;
+
+    auto f = [&](auto&& n) {
+      if (not hg::intersection.test(p, bounding_box(n))) {
+        return visitor_action::done;
+      }
+
+      if (is_leaf(n)) {
+        if (hg::intersection.test(p, mesh.simplex(node(n).simplex))) {
+          result = true;
+          return visitor_action::done;
+        };
+      }
+      return visitor_action::visit_both;
+    };
+
+    for_each(f, node_idx{0});
+    return result;
+  }
+
+  using count_t = optional_idx<uint_t, struct count_t>;
+
+  /// Counts the number of non-degenerate intersections between the primitive
+  /// \p p and the mesh simplices.
+  template <typename M, typename P>
+  count_t non_degenerate_intersection_count(M const& mesh, P&& p) const
+   noexcept {
+    count_t count{0};
+
+    auto f = [&](auto&& n) {
+      if (not count or not hg::intersection.test(p, bounding_box(n))) {
+        return visitor_action::done;
+      }
+
+      if (is_leaf(n)) {
+        non_degenerate_intersection_test_result r
+         = hg::intersection.test_non_degenerate(p,
+                                                mesh.simplex(node(n).simplex));
+        switch (r) {
+          case non_degenerate_intersection_test_result::intersection: {
+            count += count_t{1};
+            return visitor_action::done;
+          }
+          case non_degenerate_intersection_test_result::no_intersection: {
+            return visitor_action::done;
+          }
+          case non_degenerate_intersection_test_result::
+           degenerate_intersection: {
+            count = count_t{};
+            return visitor_action::done;
+          }
+        }
+      }
+
+      return visitor_action::visit_both;
+    };
+
+    for_each(f, node_idx{0});
+
+    return count;
   }
 };
 

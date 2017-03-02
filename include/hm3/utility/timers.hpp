@@ -66,8 +66,9 @@ struct state {
   std::map<string, state> sub_timers;
 
   state(string n) : name{std::move(n)} {
-    HM3_ASSERT(name == "main", "only the 'main' timer can be constructed "
-                               "without a parent (error at timer: {})",
+    HM3_ASSERT(name == "main",
+               "only the 'main' timer can be constructed "
+               "without a parent (error at timer: {})",
                name);
   }
 
@@ -127,12 +128,27 @@ io::json gather(state const& t) {
     return s.substr(last_semicolon + 1, first_parent - (last_semicolon + 1));
   };
 
-  data["name"] = clear_function_name(t.name);
-  data["total_running_time"]
-   = std::chrono::duration_cast<std::chrono::seconds>(t.time).count();
-  data["no_iterations"] = t.iterations;
+  auto as_seconds = [](auto&& tp) {
+    return static_cast<num_t>(
+            std::chrono::duration_cast<std::chrono::milliseconds>(tp).count())
+           / 1000.;
+  };
+
+  auto as_miliseconds = [](auto&& tp) {
+    return static_cast<num_t>(
+            std::chrono::duration_cast<std::chrono::nanoseconds>(tp).count())
+           / 1000.;
+  };
+
+  auto percent = [](auto&& time, auto&& total_time) {
+    return (num_t)(time.count()) / (num_t)(total_time.count()) * 100.;
+  };
+
+  data["name"]               = clear_function_name(t.name);
+  data["total_running_time"] = as_seconds(t.time);
+  data["no_iterations"]      = t.iterations;
   if (t.iterations > 0) {
-    data["time_per_iteration"] = t.time.count() / t.iterations;
+    data["time_per_iteration"] = as_miliseconds(t.time) / (num_t)t.iterations;
   }
   if (t.parent) { data["parent"] = clear_function_name(t.parent->name); }
   data["is_running"]             = t.running;
@@ -144,16 +160,14 @@ io::json gather(state const& t) {
     while (p->parent != nullptr) { p = p->parent; }
     // p points to main:
     data["total_percent"]
-     = p->time.count() != 0 ? (num_t)(t.time.count()) / (num_t)(p->time.count())
-                            : math::inf;
+     = p->time.count() != 0 ? percent(t.time, p->time) : math::inf;
   }
   if (t.parent == nullptr) {
     data["parent_percent"] = 100.00;
   } else {
-    data["parent_percent"]
-     = t.parent->time.count() != 0
-        ? (num_t)(t.time.count()) / (num_t)(t.parent->time.count())
-        : math::inf;
+    data["parent_percent"] = t.parent->time.count() != 0
+                              ? percent(t.time, t.parent->time)
+                              : math::inf;
   }
 
   auto level = 0;
@@ -226,7 +240,7 @@ std::string format(io::json const& data) {
           name_l, time_max_l, time_it_max_l);
   o.write("| {0:^{1}} | {2:^9} | {3:^10} | {4:^{5}} | {6:^{7}} |\n", "name",
           name_l, "total [%]", "parent [%]", "total [s]", time_max_l,
-          "t/it [ns]", time_it_max_l);
+          "t/it [ms]", time_it_max_l);
   o.write("|_{0:_^{1}}_|_{0:_^9}_|_{0:_^10}_|_{0:_^{2}}_|_{0:_^{3}}_|\n", "_",
           name_l, time_max_l, time_it_max_l);
 
@@ -262,7 +276,7 @@ struct registry {
 
     // outputing the results (to stop the main timer)
     auto fd = to_json::format(data());
-    fmt::print("{}\n", fd);
+    ascii_fmt::out("{}\n", fd);
   }
 
   template <typename S, typename... Ss,

@@ -209,17 +209,6 @@ class compact_optional : public detail::compact_optional_base<N> {
     return self{(*a) * (*b)};
   }
 
-  /// TODO: constrain on <<
-  template <typename OStream>
-  friend constexpr OStream& operator<<(OStream& os, self const& a) {
-    if (a) {
-      os << *a;
-    } else {
-      os << '_';
-    }
-    return os;
-  };
-
   /// TODO: constrain on to_string
   friend std::string to_string(self const& a) {
     using std::to_string;

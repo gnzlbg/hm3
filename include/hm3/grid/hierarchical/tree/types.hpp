@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Tree types
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
@@ -10,6 +11,8 @@
 
 namespace hm3 {
 namespace tree {
+
+using geometry::ambient_dimension;
 
 /// Node index (weakly-typed)
 using nidx_t = uint_t;

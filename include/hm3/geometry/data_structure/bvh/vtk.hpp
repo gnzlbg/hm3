@@ -12,7 +12,7 @@ namespace hm3::geometry::bvh {
 namespace vtk {
 
 template <typename State>
-struct serializable : geometry::dimensional<State::dimension()> {
+struct serializable : with_ambient_dimension<ad_v<State>> {
   State const& s;
 
   using vtk_cell_idx = node_idx;

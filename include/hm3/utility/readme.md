@@ -21,17 +21,17 @@
    - `optional_idx<T, Tag>` makes is a wrapper around `compact_optional` for
    indices with a sentinel value.
 - `fmt`: a wrapper around the `<cppformat>` library:
-  `hm3::fmt::print("hell{d} {}", 0, "world");` is way faster than `<iostream>`.
+  `hm3::ascii_fmt::out("hell{d} {}", 0, "world");` is way faster than `<iostream>`.
 - `heap_buffer`: `view<T, Storage>` an already existing container of type
   `Storage` (typically a `vector<char>`) as a consecutive sequence of `T`s.
 - `log`: a wrapper around the `<spdlog>` logging library.
 - `math`: mathematical constants and functions.
 - `optional<T>`: can contain an object of type `T` or be empty.
 - `range`: wrapper over the `range-v3` library.
-- `inline_vector<T, Capacity>`: a resizable container with fixed `Capacity` that
-   stores its elements within the container object itself (without memory
-   allocations, so that the content can be put on the stack or in static
-   storage).
+- `fixed_capacity_vector<T, Capacity>`: a resizable container with fixed
+   `Capacity` that stores its elements within the container object itself
+   (without memory allocations, so that the content can be put on the stack or
+   in static storage).
 - `test`: very small unit testing framework.
 - `units`: wrapper over the `Boost.Units` library (compile time checking of unit
    dimensions).

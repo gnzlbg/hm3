@@ -1,6 +1,6 @@
 #pragma once
 /// Small Vector: a vector with the Small Vector Optimizaiton (SVO).
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 #include <hm3/utility/variant.hpp>
 #include <hm3/utility/vector.hpp>
 
@@ -22,10 +22,10 @@ struct small_vector {
   using const_reverse_iterator = typename std::reverse_iterator<const_iterator>;
 
   using underlying_t = std::remove_const_t<T>;
-  using embedded_t   = inline_vector<underlying_t, N>;
-  using fallback_t
-   = std::vector<underlying_t, typename std::allocator_traits<A>::
-                                template rebind_alloc<underlying_t>>;
+  using embedded_t   = fixed_capacity_vector<underlying_t, N>;
+  using fallback_t   = std_vector<
+   underlying_t,
+   typename std::allocator_traits<A>::template rebind_alloc<underlying_t>>;
   using non_const_data_t = variant<embedded_t, fallback_t>;
   using data_t
    = meta::if_c<std::is_const<T>{}, std::add_const_t<non_const_data_t>,
@@ -146,7 +146,7 @@ struct small_vector {
 
   /// Is the small_vector using embedded_storage?
   constexpr bool embedded_storage() const noexcept {
-    return std::experimental::get_if<embedded_t>(&container_) != nullptr;
+    return get_if<embedded_t>(&container_) != nullptr;
   }
 
   /// Is the small_vector using fallback_storage?
@@ -167,7 +167,7 @@ struct small_vector {
   /// \warning Might invalidate _all_ iterators.
   void grow_by(size_type n) {
     // If using embedded storage
-    if (embedded_t* ep = std::experimental::get_if<embedded_t>(&container_)) {
+    if (embedded_t* ep = get_if<embedded_t>(&container_)) {
       // If the elements fit on embedded storage => nothing to do.
       if (ep->size() + n <= ep->capacity()) { return; }
       // The elements don't fit in the embedded storage:
@@ -178,10 +178,8 @@ struct small_vector {
       // Switch to fallback storage
       container_ = std::move(f);
 
-      HM3_ASSERT(std::experimental::get_if<embedded_t>(&container_) == nullptr,
-                 "");
-      HM3_ASSERT(std::experimental::get_if<fallback_t>(&container_) != nullptr,
-                 "");
+      HM3_ASSERT(get_if<embedded_t>(&container_) == nullptr, "");
+      HM3_ASSERT(get_if<fallback_t>(&container_) != nullptr, "");
     }
   }
 
@@ -250,16 +248,17 @@ struct small_vector {
   constexpr iterator emplace(const_iterator position, Args&&... args) noexcept {
     assert_position(position, HM3_AT_);
     position = valid_grow_by(1, position);
-    return match_nc([
-      a_ = std::forward_as_tuple(std::forward<Args>(args)...), &position
-    ](auto&& c)->iterator {
-      return std::apply(
-       [&c, &position](auto&&... args) -> iterator {
-         return as_ptr(
-          c, c.emplace(as_it(c, position), std::forward<Args>(args)...));
-       },
-       std::move(a_));
-    });
+    return match_nc(
+     [ a_ = std::forward_as_tuple(std::forward<Args>(args)...),
+       &position ](auto&& c)
+      ->iterator {
+        return std::apply(
+         [&c, &position](auto&&... args) -> iterator {
+           return as_ptr(
+            c, c.emplace(as_it(c, position), std::forward<Args>(args)...));
+         },
+         std::move(a_));
+      });
   }
 
   template <typename... Args>
@@ -423,7 +422,7 @@ struct small_vector {
       grow_by(n);
       return;
     }
-    if (fallback_t* fp = std::experimental::get_if<fallback_t>(&container_)) {
+    if (fallback_t* fp = get_if<fallback_t>(&container_)) {
       fp->reserve(sz);
     } else {
       HM3_ASSERT(false, "");
@@ -453,8 +452,9 @@ struct small_vector {
   /// Initializes vector with \p n default-constructed elements.
   CONCEPT_REQUIRES(CopyConstructible<T>{} or MoveConstructible<T>{})
   constexpr small_vector(size_type n) noexcept(noexcept(resize(n))) {
-    HM3_ASSERT(n <= capacity(), "tried to initialize small vector of capacity "
-                                "{} with {} elements",
+    HM3_ASSERT(n <= capacity(),
+               "tried to initialize small vector of capacity "
+               "{} with {} elements",
                capacity(), n);
     resize(n);
   }
@@ -464,8 +464,9 @@ struct small_vector {
   constexpr small_vector(size_type n,
                          T const& value) noexcept(noexcept(insert(begin(), n,
                                                                   value))) {
-    HM3_ASSERT(n <= capacity(), "tried to initialize small vector of capacity "
-                                "{} with {} elements",
+    HM3_ASSERT(n <= capacity(),
+               "tried to initialize small vector of capacity "
+               "{} with {} elements",
                capacity(), n);
     insert(begin(), n, value);
   }
@@ -514,8 +515,9 @@ struct small_vector {
 
   CONCEPT_REQUIRES(CopyConstructible<T>{})
   constexpr void assign(size_type n, const T& u) {
-    HM3_ASSERT(n <= capacity(), "tried to initialize small vector of capacity "
-                                "{} with {} elements",
+    HM3_ASSERT(n <= capacity(),
+               "tried to initialize small vector of capacity "
+               "{} with {} elements",
                capacity(), n);
     clear();
     insert(begin(), n, u);
@@ -552,12 +554,6 @@ template <typename T, std::size_t N, typename A>
 constexpr bool operator!=(small_vector<T, N, A> const& a,
                           small_vector<T, N, A> const& b) noexcept {
   return !(a == b);
-}
-
-template <typename OStream, typename T, std::size_t N, typename A>
-OStream& operator<<(OStream& os, small_vector<T, N, A> const& v) {
-  os << view::all(v);
-  return os;
 }
 
 }  // namespace hm3

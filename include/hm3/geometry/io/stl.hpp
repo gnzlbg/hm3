@@ -10,10 +10,19 @@
 ///
 #define BOOST_RESULT_OF_USE_DECLTYPE
 #define BOOST_SPIRIT_USE_PHOENIX_V3
+#define BOOST_NO_AUTO_PTR
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation"
+#pragma clang diagnostic ignored "-Wdeprecated"
+#pragma clang diagnostic ignored "-Wunused-parameter"
+#pragma clang diagnostic ignored "-Wshadow"
 #include <boost/spirit/include/karma.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/support_multi_pass.hpp>
+#pragma clang diagnostic pop
+
 #include <hm3/utility/range.hpp>
 #include <string>
 #include <type_traits>

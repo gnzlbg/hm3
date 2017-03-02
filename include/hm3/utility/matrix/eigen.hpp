@@ -3,6 +3,7 @@
 ///
 /// Includes the eigen library
 #include <hm3/types.hpp>
+#include <hm3/utility/vector_type.hpp>
 /// Select the default dense index type:
 #define EIGEN_DEFAULT_DENSE_INDEX_TYPE ::hm3::int_t
 
@@ -26,7 +27,7 @@ using aligned_eigen_type
  = Eigen::Matrix<T, NoRows, NoCols, Order | Eigen::AutoAlign, MaxRows, MaxCols>;
 
 template <typename T>
-using vector = std::vector<T, Eigen::aligned_allocator<T>>;
+using vector = std_vector<T, Eigen::aligned_allocator<T>>;
 
 }  // namespace hm3
 

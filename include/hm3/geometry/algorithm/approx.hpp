@@ -2,84 +2,117 @@
 /// \file
 ///
 /// Are geometric primitives approximately equal?
-#include <hm3/types.hpp>
-#include <hm3/utility/range.hpp>
-
-// Relative tolerance of the point segment intersection
-#ifndef HM3_GEOMETRY_DISTANCE_RELATIVE_TOLERANCE
-#define HM3_GEOMETRY_DISTANCE_RELATIVE_TOLERANCE 1e-16
-#endif
-
-// Absolute tolerance of the point segment intersection
-#ifndef HM3_GEOMETRY_DISTANCE_ABSOLUTE_TOLERANCE
-#define HM3_GEOMETRY_DISTANCE_ABSOLUTE_TOLERANCE 1e-14
-#endif
+#include <hm3/geometry/algorithm/approx/aabb.hpp>
+#include <hm3/geometry/algorithm/approx/box.hpp>
+#include <hm3/geometry/algorithm/approx/line.hpp>
+#include <hm3/geometry/algorithm/approx/number.hpp>
+#include <hm3/geometry/algorithm/approx/point.hpp>
+#include <hm3/geometry/algorithm/approx/polyline_polygon.hpp>
+#include <hm3/geometry/algorithm/approx/segment.hpp>
+#include <hm3/geometry/concept/ray.hpp>
+#include <hm3/geometry/tolerance.hpp>
 
 namespace hm3::geometry {
 
 namespace approx_detail {
 
-struct tolerance_fn {
-  /// Default relative tolerance of distance computations in geometric queries.
-  ///
-  /// \note Can be globally controlled with the macro
-  /// `HM3_GEOMETRY_DISTANCE_RELATIVE_TOLERANCE`.
-  static constexpr num_t relative() noexcept {
-    return HM3_GEOMETRY_DISTANCE_RELATIVE_TOLERANCE;
-  }
-
-  /// Default absolute tolerance of distance computations in geometric queries.
-  ///
-  /// \note Can be globally controlled with the macro
-  /// `HM3_GEOMETRY_DISTANCE_ABSOLUTE_TOLERANCE`.
-  static constexpr num_t absolute() noexcept {
-    return HM3_GEOMETRY_DISTANCE_ABSOLUTE_TOLERANCE;
-  }
-};
-
-}  // namespace approx_detail
-
-namespace {
-static constexpr auto const& tolerance
- = static_const<approx_detail::tolerance_fn>::value;
-}
-
-namespace approx_detail {
-
-/// Computes if \p a and \p b are approximately equal using the absolute and
-/// relative tolerances \p `abs_tol` and \p `rel_tol`, respectively.
-bool approx(num_t a, num_t b, num_t abs_tol, num_t rel_tol) noexcept {
-  return std::abs(a - b)
-         <= std::max(abs_tol, rel_tol * std::max(std::abs(a), std::abs(b)));
-}
-
 struct approx_fn {
-  template <typename T, typename U>
-  static constexpr auto eq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
-                                long)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(approx(std::forward<U>(u),
-                                               std::forward<T>(t), abs_tol,
-                                               rel_tol));
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::point<Ad>) {
+    static_assert(Point<uncvref_t<T>>{});
+    static_assert(Point<uncvref_t<U>>{});
+    return approx_point(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                        rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::vector<Ad>) {
+    static_assert(Vector<uncvref_t<T>>{});
+    static_assert(Vector<uncvref_t<U>>{});
+    return approx_vector(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                         rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::line<Ad>) {
+    static_assert(Line<uncvref_t<T>>{});
+    static_assert(Line<uncvref_t<U>>{});
+    return approx_line(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                       rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::ray<Ad>) {
+    static_assert(Ray<uncvref_t<T>>{});
+    static_assert(Ray<uncvref_t<U>>{});
+    return approx_point(t.origin(), u.origin(), abs_tol, rel_tol)
+           and approx_line(t.line(), u.line(), abs_tol, rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::segment<Ad>) {
+    static_assert(Segment<uncvref_t<T>>{});
+    static_assert(Segment<uncvref_t<U>>{});
+    return approx_segment(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                          rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::polyline<Ad>) {
+    static_assert(Polyline<uncvref_t<T>>{});
+    static_assert(Polyline<uncvref_t<U>>{});
+    return approx_polyline(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                           rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::polygon<Ad>) {
+    static_assert(Polygon<uncvref_t<T>>{});
+    static_assert(Polygon<uncvref_t<U>>{});
+    return approx_polygon(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                          rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::aabb<Ad>) {
+    return approx_aabb(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                       rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   trait::box<Ad>) {
+    return approx_box(std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol);
+  }
 
   template <typename T, typename U>
-  static constexpr auto eq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol, int)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(approx(std::forward<T>(t),
-                                               std::forward<U>(u), abs_tol,
-                                               rel_tol));
+  static constexpr auto eq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol) {
+    if
+      constexpr(std::is_floating_point<uncvref_t<T>>{}
+                and std::is_floating_point<uncvref_t<U>>{}) {
+        return approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                             rel_tol);
+      }
+    else {
+      static_assert(UCVSame<T, U>, "T and U must be equal");
+      return default_eq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                        rel_tol, associated::v_<T>);
+    }
+  }
 
   template <typename T, typename U>
   static constexpr auto eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq_impl(std::forward<T>(t),
                                                 std::forward<U>(u), abs_tol,
-                                                rel_tol, 0));
-
-  template <typename T, typename U>
-  constexpr auto operator()(T&& t, U&& u) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq(std::forward<T>(t),
-                                           std::forward<U>(u),
-                                           tolerance.absolute(),
-                                           tolerance.relative()));
-
+                                                rel_tol));
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq(std::forward<T>(t),
@@ -88,28 +121,32 @@ struct approx_fn {
 
   template <typename T, typename U>
   static constexpr auto leq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t < u or eq(t, u, abs_tol, rel_tol));
-
-  template <typename T, typename U>
-  static constexpr auto leq(T&& t, U&& u)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(leq(t, u, tolerance.absolute(),
-                                            tolerance.relative()));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t <= u or eq(t, u, abs_tol, rel_tol));
 
   template <typename T, typename U>
   static constexpr auto geq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t > u or eq(t, u, abs_tol, rel_tol));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t >= u or eq(t, u, abs_tol, rel_tol));
+
+  template <typename T, typename U>
+  static constexpr auto leq(T&& t, U&& u)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(leq(std::forward<T>(t),
+                                            std::forward<U>(u),
+                                            default_tolerance.absolute(),
+                                            default_tolerance.relative()));
 
   template <typename T, typename U>
   static constexpr auto geq(T&& t, U&& u)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(geq(t, u, tolerance.absolute(),
-                                            tolerance.relative()));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(geq(std::forward<T>(t),
+                                            std::forward<U>(u),
+                                            default_tolerance.absolute(),
+                                            default_tolerance.relative()));
 };
 
 }  // namespace approx_detail
 
 namespace {
 static constexpr auto const& approx
- = static_const<approx_detail::approx_fn>::value;
+ = static_const<with_default_tolerance<approx_detail::approx_fn>>::value;
 }
 
 }  // namespace hm3::geometry

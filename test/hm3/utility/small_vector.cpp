@@ -85,16 +85,16 @@ class A {
   double getd() const { return d_; }
 };
 
-template <typename T, int N> struct vec {
+template <typename T, int N>
+struct vec {
   vec() {}
   vec(std::initializer_list<T>) {}
 };
 
 void libcxx_tests() {
-
   auto test_contiguous = [](auto&& c) {
     for (size_t i = 0; i < c.size(); ++i) {
-      if(*(c.begin() + i) != *(std::addressof(*c.begin()) + i)) {
+      if (*(c.begin() + i) != *(std::addressof(*c.begin()) + i)) {
         CHECK(false);
       }
     }
@@ -628,7 +628,8 @@ CHECK(d[13] == 1);
  {small_vector<int, 120> v(100);
 int a[]             = {1, 2, 3, 4, 5};
 const std::size_t N = sizeof(a) / sizeof(a[0]);
-small_vector<int, 120>::iterator i = v.insert(v.cbegin() + 10, (a + 0), (a + N));
+small_vector<int, 120>::iterator i
+ = v.insert(v.cbegin() + 10, (a + 0), (a + N));
 CHECK(v.size() == 100 + N);
 CHECK(i == v.begin() + 10);
 std::size_t j;
@@ -641,7 +642,8 @@ for (; j < 105; ++j) CHECK(v[j] == 0);
   size_t sz        = v.size();
   int a[]          = {1, 2, 3, 4, 5};
   const unsigned N = sizeof(a) / sizeof(a[0]);
-  small_vector<int, 120>::iterator i = v.insert(v.cbegin() + 10, (a + 0), (a + N));
+  small_vector<int, 120>::iterator i
+   = v.insert(v.cbegin() + 10, (a + 0), (a + N));
   CHECK(v.size() == sz + N);
   CHECK(i == v.begin() + 10);
   std::size_t j;
@@ -657,9 +659,11 @@ small_vector<moint, 103>::iterator i = v.insert(v.cbegin() + 10, moint(3));
 CHECK(v.size() == 101);
 CHECK(i == v.begin() + 10);
 std::size_t j;
- for (j = 0; j < 10; ++j) if(v[j] != moint()) { CHECK(false); };
- if(v[j] != moint(3)) { CHECK(false); };
- for (++j; j < 101; ++j) if(v[j] != moint()) { CHECK(false); };
+for (j = 0; j < 10; ++j)
+  if (v[j] != moint()) { CHECK(false); };
+if (v[j] != moint(3)) { CHECK(false); };
+for (++j; j < 101; ++j)
+  if (v[j] != moint()) { CHECK(false); };
 }
 }
 
@@ -738,24 +742,27 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
     small_vector<moint, 6> c;
     c.push_back(moint(0));
     CHECK(c.size() == 1);
-    for (std::size_t j = 0; j < c.size(); ++j) if(c[j] != moint(j)) { CHECK(false); }
+    for (std::size_t j = 0; j < c.size(); ++j)
+      if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(1));
     CHECK(c.size() == 2);
-    for (std::size_t j = 0; j < c.size(); ++j) if(c[j] != moint(j)) { CHECK(false); }
+    for (std::size_t j = 0; j < c.size(); ++j)
+      if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(2));
     CHECK(c.size() == 3);
-    for (std::size_t j = 0; j < c.size(); ++j) if(c[j] != moint(j)) { CHECK(false); }
+    for (std::size_t j = 0; j < c.size(); ++j)
+      if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(3));
     CHECK(c.size() == 4);
-    for (std::size_t j = 0; j < c.size(); ++j) if(c[j] != moint(j)) { CHECK(false); }
+    for (std::size_t j = 0; j < c.size(); ++j)
+      if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(4));
     CHECK(c.size() == 5);
-    for (std::size_t j = 0; j < c.size(); ++j) if(c[j] != moint(j)) { CHECK(false); }
+    for (std::size_t j = 0; j < c.size(); ++j)
+      if (c[j] != moint(j)) { CHECK(false); }
   }
 }
-
 }
-
 
 int main() {
   {  // const
@@ -1048,7 +1055,7 @@ int main() {
   }
   {
     using stack_vec = small_vector<int, 0>;
-    auto a = stack_vec{};
+    auto a          = stack_vec{};
     CHECK(a.size() == std::size_t{0});
   }
 
@@ -1056,4 +1063,3 @@ int main() {
 
   return test::result();
 }
-

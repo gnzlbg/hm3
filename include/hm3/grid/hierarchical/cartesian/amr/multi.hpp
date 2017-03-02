@@ -1,7 +1,7 @@
 #pragma once
 /// \file
 ///
-/// Adaptive Mesh Refinement target for hierarchical::cartesian::multi<Nd>
+/// Adaptive Mesh Refinement target for hierarchical::cartesian::multi<Ad>
 #include <hm3/grid/hierarchical/amr/target.hpp>
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
@@ -11,13 +11,14 @@ namespace grid {
 namespace hierarchical {
 namespace cartesian {
 
-template <dim_t Nd>
-struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
+template <dim_t Ad>
+struct multi_amr_target : amr::non_loggable,
+                          geometry::with_ambient_dimension<Ad> {
   using amr_node_idx = tree_node_idx;
 
-  multi<Nd>* g_;
+  multi<Ad>* g_;
 
-  multi_amr_target(multi<Nd>& g) : g_(&g) {}
+  multi_amr_target(multi<Ad>& g) : g_(&g) {}
 
   /// Siblings of node \p within the grid
   auto siblings(amr_node_idx n) const noexcept {
@@ -39,13 +40,13 @@ struct multi_amr_target : amr::non_loggable, geometry::dimensional<Nd> {
 
   /// Required to model the SerializableToVTK concept (optional)
   /// (allows writing the AMR state to vtk for debugging purposes):
-  geometry::box<Nd> geometry(amr_node_idx n) const { return g_->node(n); }
-  geometry::box<Nd> bounding_box() const { return g_->bounding_box(); }
+  geometry::box<Ad> geometry(amr_node_idx n) const { return g_->node(n); }
+  geometry::box<Ad> bounding_box() const { return g_->bounding_box(); }
 };
 
-template <dim_t Nd>
-multi_amr_target<Nd> make_amr_target(multi<Nd>& g) noexcept {
-  return multi_amr_target<Nd>(g);
+template <dim_t Ad>
+multi_amr_target<Ad> make_amr_target(multi<Ad>& g) noexcept {
+  return multi_amr_target<Ad>(g);
 };
 
 }  // namespace cartesian

@@ -8,21 +8,25 @@
 namespace hm3::geometry::bvh {
 
 /// BVH Node
-template <dim_t Nd>
+template <dim_t Ad>
 struct node {
   node_idx left       = node_idx{};
   node_idx right      = node_idx{};
   simplex_idx simplex = simplex_idx{};
-  aabb<Nd> bound;
+  aabb<Ad> bound;
 
 #ifdef HM3_DBG_BVH_VTK
   unsigned level = 0;
 #endif
 
   node() = default;
-  node(simplex_idx idx, aabb<Nd> box) : simplex(idx), bound(box) {}
-  node(node_idx l, node_idx r, aabb<Nd> box) : left(l), right(r), bound(box) {}
-  node(aabb<Nd> box) : bound(box) {}
+  node(simplex_idx idx, aabb<Ad> box) : simplex(idx), bound(box) {}
+  node(node_idx l, node_idx r, aabb<Ad> box) : left(l), right(r), bound(box) {}
+  node(aabb<Ad> box) : bound(box) {}
+
+  bool valid() const noexcept {
+    return (simplex and !left and !right) or (!simplex and (left or right));
+  }
 };
 
 }  // namespace hm3::geometry::bvh

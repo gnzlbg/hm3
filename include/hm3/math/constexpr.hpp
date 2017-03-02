@@ -13,7 +13,7 @@ namespace hm3::math {
 ///
 /// \note Workaround until std::isnan becomes constexpr
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr bool is_nan(Float x) {
+constexpr bool is_nan(Float x) noexcept {
   return __builtin_isnan(x);
 }
 
@@ -21,7 +21,7 @@ constexpr bool is_nan(Float x) {
 ///
 /// \note Workaround until std::isfinite becomes constexpr
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr bool is_finite(Float x) {
+constexpr bool is_finite(Float x) noexcept {
   return __builtin_isfinite(x);
 }
 
@@ -29,13 +29,13 @@ constexpr bool is_finite(Float x) {
 ///
 /// \note Workaround until std::isinf becomes constexpr
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr bool is_infinite(Float x) {
+constexpr bool is_infinite(Float x) noexcept {
   return __builtin_isinf(x);
 }
 
 /// Integer floor
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr int64_t ifloor(Float x) {
+constexpr int64_t ifloor(Float x) noexcept {
   HM3_ASSERT(is_finite(x), "floor of not finite number {}", x);
   int64_t i = x;
   return i - (x < i);
@@ -43,7 +43,7 @@ constexpr int64_t ifloor(Float x) {
 
 /// Integer ceil
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr int64_t iceil(Float x) {
+constexpr int64_t iceil(Float x) noexcept {
   HM3_ASSERT(is_finite(x), "ceil of not finite number {}", x);
   int64_t i = x;
   return i + (x > i);
@@ -51,14 +51,38 @@ constexpr int64_t iceil(Float x) {
 
 /// Constexpr version of cmath std::floor
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr Float floor(Float x) {
+constexpr Float floor(Float x) noexcept {
   return ifloor(x);
 }
 
 /// Constexpr version of cmath std::ceil
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
-constexpr Float ceil(Float x) {
+constexpr Float ceil(Float x) noexcept {
   return iceil(x);
+}
+
+template <typename T, CONCEPT_REQUIRES_(std::is_lvalue_reference<T&&>{})>
+constexpr T const& max(T&& a, T&& b) noexcept {
+  return a > b ? a : b;
+}
+
+template <typename T, CONCEPT_REQUIRES_(std::is_rvalue_reference<T&&>{})>
+constexpr T max(T&& a, T&& b) noexcept {
+  return a > b ? std::move(a) : std::move(b);
+}
+
+template <typename T, typename U, typename UT = uncvref_t<T>,
+          typename UU = uncvref_t<U>,
+          CONCEPT_REQUIRES_(Same<UT, UU>{}
+                            and (std::is_rvalue_reference<T&&>{}
+                                 or std::is_rvalue_reference<U&&>{}))>
+constexpr T max(T&& a, U&& b) noexcept {
+  return a > b ? T(std::forward<T>(a)) : T(std::forward<U>(b));
+}
+
+template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
+constexpr Float abs(Float f) noexcept {
+  return f < Float{0.} ? -f : f;
 }
 
 }  // namespace hm3::math

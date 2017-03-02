@@ -1,15 +1,34 @@
+#include <hm3/geometry/algorithms.hpp>
+#include <hm3/geometry/primitive/aabb.hpp>
+#include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
-#include <hm3/geometry/primitive/vec.hpp>
 #include <hm3/utility/test.hpp>
 #include <iomanip>
 
 using namespace hm3;
 using namespace geometry;
 
-template <dim_t Nd, typename Poly, typename Vertices>
+static_assert(!Resizable<array<int, 2>>{});
+static_assert(Resizable<small_vector<int, 2>>{});
+
+template <dim_t Ad, typename Poly, typename Vertices>
 void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
-               point<Nd> centroid_, num_t area_, num_t boundary_,
-               aabb<Nd> aabb_, vec<3> normal_, bool random_poly_test = false) {
+               point<Ad> centroid_, num_t area_, num_t boundary_,
+               aabb<Ad> aabb_, vec<3> normal_, bool random_poly_test = false) {
+  static_assert(AmbientDimension<Poly>{}, "");
+  static_assert(AmbientDimension<Poly, Ad>{}, "");
+
+  static_assert(ElementDimension<Poly>{}, "");
+  static_assert(ElementDimension<Poly, Ad>{}, "");
+  static_assert(ElementDimension<Poly, Ad, 2>{}, "");
+
+  static_assert(GeometryObject<Poly>{}, "");
+  static_assert(GeometryObject<Poly, Ad>{}, "");
+  static_assert(GeometryObject<Poly, Ad, 2>{}, "");
+
+  static_assert(Polygon<Poly>{}, "");
+  static_assert(Polygon<Poly, Ad>{}, "");
+
   // relational ops
   CHECK(p == p);
   CHECK(!(p != p));
@@ -20,7 +39,7 @@ void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
     CHECK(vertex_size(p) == (dim_t)ranges::distance(vertices_));
     CHECK(vertex_size(p) == (dim_t)ranges::distance(vertices(p)));
     uint_t count_ = 0;
-    for (auto idx : vertex_indices(p)) {
+    for (auto idx : vertex.indices(p)) {
       CHECK(vertex(p, idx) == vertices_[idx]);
       ++count_;
     }
@@ -39,69 +58,63 @@ void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
 
   // check edges
   {
-    CHECK(face_size(p) == vertex_size(p));
-    test::check_equal(face_indices(p), vertex_indices(p));
+    CHECK(edge_size(p) == vertex_size(p));
+    test::check_equal(edge.indices(p), vertex.indices(p));
     auto create_face = [&](auto fidx) {
       auto v0 = vertex(p, fidx);
       auto v1 = vertex(p, (fidx == vertex_size(p) - 1) ? 0 : fidx + 1);
-      return segment<Nd>(v0, v1);
+      return segment<Ad>(v0, v1);
     };
-    for (auto&& v : vertex_indices(p)) {
+    for (auto&& v : vertex.indices(p)) {
       auto f = create_face(v);
-      CHECK(face(p, v) == f);
+      CHECK(edge(p, v) == f);
     }
 
-    test::check_equal(faces(p), face_indices(p) | view::transform(create_face));
+    test::check_equal(edges(p), edge.indices(p) | view::transform(create_face));
   }
 
   // check vertex order
-  CHECK(vertex_order.counter_clockwise(p) != counter_clockwise);
-  if (!random_poly_test) {
-    CHECK(vertex_order.counter_clockwise(p) == counter_clockwise);
-    CHECK(vertex_order.clockwise(p) == (!counter_clockwise));
-  }
+  if
+    constexpr(Ad == 2) {
+      auto order_should
+       = counter_clockwise ? vertex_order_t::ccw : vertex_order_t::cw;
+      CHECK(vertex_order(p) == order_should);
+      if (!random_poly_test) { CHECK(vertex_order(p) == order_should); }
+    }
 
   // check boundary
-  CHECK(surface_area(p) == boundary_);
+  CHECK(integral.boundary(p) == boundary_);
 
-  if (Nd == 2 and !counter_clockwise) { return; }
+  if (Ad == 2 and !counter_clockwise) { return; }
   // the following operations require counter clockwise vertices in 2D
   // in 3D cw/ccw make little to no sense as a check, one order or the other
   // just means that the normal points in the opposite direction.
 
   // check area
-  using area_rank = integral_rank<2>;
-  CHECK(integral(p, area_rank{}) == area_);
+  if
+    constexpr(Ad == 2) { CHECK(integral.volume(p) == area_); }
+  if
+    constexpr(Ad == 3) { CHECK(integral.surface(p) == area_); }
 
   // check centroid
-  TOL_CHECK(1e-15, centroid(p) == centroid_);
+  CHECK(centroid(p) == centroid_);
 }
 
-int main() {
+template <typename Vertices>
+auto make_edges(Vertices& vxs) {
+  using p_t = ranges::range_value_t<Vertices>;
+  using s_t = associated::edge_t<p_t>;
+  return view::ints(std::size_t{0}, ranges::size(vxs))
+         | view::transform([&](auto idx) {
+             return s_t(vxs[idx],
+                        vxs[idx == ranges::size(vxs) - 1 ? 0 : idx + 1]);
+           });
+}
+
+template <typename Poly>
+void test_2d_quad() {
   using p2d = point<2>;
-  using p3d = point<3>;
-  using q2d = quad<2>;
-  using t2d = triangle<2>;
-  using t3d = triangle<3>;
-
-  {
-    using pa  = array<p2d, 3>;
-    using iva = inline_vector<p2d, 3>;
-    using sva = small_vector<p2d, 3>;
-
-    static_assert(!PushBackable<pa, p2d>{}, "");
-    static_assert(PushBackable<iva, p2d>{}, "");
-    static_assert(PushBackable<sva, p2d>{}, "");
-
-    static_assert(!PopBackable<pa>{}, "");
-    static_assert(PopBackable<iva>{}, "");
-    static_assert(PopBackable<sva>{}, "");
-
-    static_assert(!Reservable<pa>{}, "");
-    static_assert(!Reservable<iva>{}, "");
-    static_assert(Reservable<sva>{}, "");
-  }
-
+  using q2d = Poly;
   {  // 2D unit ccw box (0):
     p2d vs[]    = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}, {0.0, 1.0}};
     p2d xc      = {0.5, 0.5};
@@ -110,7 +123,7 @@ int main() {
     auto aabbox = aabb<2>::unit();
     auto n      = vec<3>::unit(2);
 
-    q2d q(vs);
+    q2d q(make_edges(vs));
     test_poly<2>(q, vs, true, xc, a, b, aabbox, n);
   }
 
@@ -121,7 +134,7 @@ int main() {
     num_t b     = 4.0;
     auto aabbox = aabb<2>(p2d::constant(-0.5), p2d::constant(0.5));
     auto n      = vec<3>::unit(2);
-    q2d q(vs);
+    q2d q(make_edges(vs));
     test_poly<2>(q, vs, true, xc, a, b, aabbox, n);
   }
 
@@ -132,64 +145,8 @@ int main() {
     num_t b     = 4.0;
     auto aabbox = aabb<2>(p2d::constant(-1.0), p2d::constant(0.0));
     auto n      = vec<3>::unit(2);
-    q2d q(vs);
+    q2d q(make_edges(vs));
     test_poly<2>(q, vs, true, xc, a, b, aabbox, n);
-  }
-
-  {  // 2D ccw triangle (0):
-    p2d vs[]    = {{1.0, 0.0}, {0.0, 1.0}, {0.0, 0.0}};
-    p2d xc      = {1. / 3., 1. / 3.};
-    num_t a     = 0.5 * 1.0 * 1.0;
-    num_t b     = std::sqrt(2.) + 2.0;
-    auto aabbox = aabb<2>::unit();
-    auto n      = vec<3>::unit(2);
-    t2d t(vs);
-    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
-  }
-
-  {  // 2D ccw triangle (1):
-    p2d vs[]    = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}};
-    p2d xc      = {2. / 3., 1. / 3.};
-    num_t a     = 0.5 * 1.0 * 1.0;
-    num_t b     = std::sqrt(2.) + 2.0;
-    auto aabbox = aabb<2>::unit();
-    auto n      = vec<3>::unit(2);
-    t2d t(vs);
-    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
-  }
-
-  {  // 2D ccw triangle (2):
-    p2d vs[]    = {{1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}};
-    p2d xc      = {1. / 3., 2. / 3.};
-    num_t a     = 0.5 * 1.0 * 1.0;
-    num_t b     = std::sqrt(2.) + 2.0;
-    auto aabbox = aabb<2>::unit();
-    auto n      = vec<3>::unit(2);
-    t2d t(vs);
-    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
-  }
-
-  {  // 2D ccw triangle (3):
-    p2d vs[]    = {{0.0, 0.0}, {0.5, 0.0}, {0.5, 1.0}};
-    p2d xc      = {1. / 3., 1. / 3.};
-    num_t a     = 0.5 * 0.5 * 1.0;
-    num_t b     = std::sqrt(1.25) + 1.5;
-    auto aabbox = aabb<2>(p2d{0.0, 0.0}, p2d{0.5, 1.0});
-    auto n      = vec<3>::unit(2);
-    t2d t(vs);
-    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
-  }
-
-  {  // 2D cw triangle (0):
-    p2d vs[]    = {{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}};
-    p2d xc      = {1. / 3., 1. / 3.};
-    num_t a     = 0.5 * 1.0 * 1.0;
-    num_t b     = std::sqrt(2.) + 2.0;
-    auto aabbox = aabb<2>::unit();
-    vec<3> n{0.0, 0.0, -1.0};
-
-    t2d t(vs);
-    test_poly<2>(t, vs, false, xc, a, b, aabbox, n);
   }
 
   {  // 2D ccw quad 0:
@@ -201,9 +158,77 @@ int main() {
     num_t b     = std::sqrt(2) + 4.;
     auto aabbox = aabb<2>(p2d::constant(0.0), p2d{2.0, 1.0});
     auto n      = vec<3>::unit(2);
-    q2d q(vs);
+    q2d q(make_edges(vs));
     test_poly<2>(q, vs, true, xc, a, b, aabbox, n);
   }
+}
+
+template <typename Poly>
+void test_2d_tri() {
+  using p2d = point<2>;
+  using t2d = Poly;
+
+  {  // 2D ccw triangle (0):
+    p2d vs[]    = {{1.0, 0.0}, {0.0, 1.0}, {0.0, 0.0}};
+    p2d xc      = {1. / 3., 1. / 3.};
+    num_t a     = 0.5 * 1.0 * 1.0;
+    num_t b     = std::sqrt(2.) + 2.0;
+    auto aabbox = aabb<2>::unit();
+    auto n      = vec<3>::unit(2);
+    t2d t(make_edges(vs));
+    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
+  }
+
+  {  // 2D ccw triangle (1):
+    p2d vs[]    = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 1.0}};
+    p2d xc      = {2. / 3., 1. / 3.};
+    num_t a     = 0.5 * 1.0 * 1.0;
+    num_t b     = std::sqrt(2.) + 2.0;
+    auto aabbox = aabb<2>::unit();
+    auto n      = vec<3>::unit(2);
+    t2d t(make_edges(vs));
+    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
+  }
+
+  {  // 2D ccw triangle (2):
+    p2d vs[]    = {{1.0, 1.0}, {0.0, 1.0}, {0.0, 0.0}};
+    p2d xc      = {1. / 3., 2. / 3.};
+    num_t a     = 0.5 * 1.0 * 1.0;
+    num_t b     = std::sqrt(2.) + 2.0;
+    auto aabbox = aabb<2>::unit();
+    auto n      = vec<3>::unit(2);
+    t2d t(make_edges(vs));
+    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
+  }
+
+  {  // 2D ccw triangle (3):
+    p2d vs[]    = {{0.0, 0.0}, {0.5, 0.0}, {0.5, 1.0}};
+    p2d xc      = {1. / 3., 1. / 3.};
+    num_t a     = 0.5 * 0.5 * 1.0;
+    num_t b     = std::sqrt(1.25) + 1.5;
+    auto aabbox = aabb<2>(p2d{0.0, 0.0}, p2d{0.5, 1.0});
+    auto n      = vec<3>::unit(2);
+    t2d t(make_edges(vs));
+    test_poly<2>(t, vs, true, xc, a, b, aabbox, n);
+  }
+
+  {  // 2D cw triangle (0):
+    p2d vs[]    = {{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}};
+    p2d xc      = {1. / 3., 1. / 3.};
+    num_t a     = 0.5 * 1.0 * 1.0;
+    num_t b     = std::sqrt(2.) + 2.0;
+    auto aabbox = aabb<2>::unit();
+    vec<3> n{0.0, 0.0, -1.0};
+
+    t2d t(make_edges(vs));
+    test_poly<2>(t, vs, false, xc, a, b, aabbox, n);
+  }
+}
+
+template <typename Poly>
+void test_3d_tri() {
+  using p3d = point<3>;
+  using t3d = Poly;
 
   {  // 3D ccw triangle (0)
     p3d vs[]    = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 1.0, 0.0}};
@@ -212,7 +237,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{0., 0., -math::eps}, p3d{1., 1., +math::eps});
     auto n      = vec<3>::unit(2);
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
   {  // 3D ccw triangle (1)
@@ -222,7 +247,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{0., 0., -math::eps}, p3d{1., 1., +math::eps});
     auto n      = vec<3>::unit(2);
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
   {  // 3D ccw triangle (2)
@@ -233,7 +258,7 @@ int main() {
     auto aabbox = aabb<3>(p3d{0., 0., -1.0}, p3d{1., 1., 1.});
     auto n      = vec<3>{1. / std::sqrt(6.), -std::sqrt(2.) / std::sqrt(3.),
                     1. / std::sqrt(6.)};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
   // test triangles that lie on the cartesian planes (important because their
@@ -245,7 +270,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{-math::eps, 0., 0.}, p3d{+math::eps, 1., 1.});
     auto n      = vec<3>{1., 0., 0.};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
 
@@ -256,7 +281,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{-math::eps, 0., 0.}, p3d{+math::eps, 1., 1.});
     auto n      = vec<3>{-1., 0., 0.};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
 
@@ -267,7 +292,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{0., 0., -math::eps}, p3d{1., 1., +math::eps});
     auto n      = vec<3>{0., 0., -1.};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
 
@@ -278,7 +303,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{0., 0., -math::eps}, p3d{1., 1., +math::eps});
     auto n      = vec<3>{0., 0., 1.};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
 
@@ -289,7 +314,7 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{0., -math::eps, 0.}, p3d{1., +math::eps, 1.});
     auto n      = vec<3>{0., -1., 0.};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
 
@@ -300,13 +325,31 @@ int main() {
     num_t b     = std::sqrt(2.) + 2.0;
     auto aabbox = aabb<3>(p3d{0., -math::eps, 0.}, p3d{1., +math::eps, 1.});
     auto n      = vec<3>{0., 1., 0.};
-    t3d t(vs);
+    t3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
   }
+}
+
+int main() {
+  {  // 2D quad tests
+    test_2d_quad<polygon<2>>();
+    test_2d_quad<quad<2>>();
+  }
+  {  // 2D tri tests
+    test_2d_tri<polygon<2>>();
+    test_2d_tri<triangle<2>>();
+  }
+  {  // 3D tri tests
+    test_3d_tri<polygon<3>>();
+    test_3d_tri<triangle<3>>();
+  }
+
+  using p2d = point<2>;
+  using p3d = point<3>;
 
   {  // 3D hexahedron
     // put it in the xy-plane
-    using hexaedron3d = geometry::fixed_polygon<3, 6>;
+    using hexaedron3d = fixed_polygon<3, 6>;
 
     p3d vs[] = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {0.0, 1.0, 0.0},
                 {1.0, 2.0, 0.0}, {0.0, 2.0, 0.0}, {-1.0, 1.0, 0.0}};
@@ -316,7 +359,7 @@ int main() {
     num_t b     = 4. * std::sqrt(2.) + 2.;
     auto aabbox = aabb<3>(p3d{-1., 0., -math::eps}, p3d{1., 2., +math::eps});
     auto n      = vec<3>{0., 0., 1.};
-    hexaedron3d t(vs);
+    hexaedron3d t(make_edges(vs));
     test_poly<3>(t, vs, false, xc, a, b, aabbox, n);
 
     // auto tran
@@ -330,33 +373,22 @@ int main() {
         // apply rotation around centroid
         for (int i = 0; i < 6; ++i) { vs2[i] = rot * (vs[i]() - xc()) + xc(); }
         vec<3> n2(rot * n());
-        hexaedron3d t2(vs2);
+        hexaedron3d t2(make_edges(vs2));
         test_poly<3>(t2, vs2, true, xc, a, b, aabbox, n2, true);
       }
     }
   }
-  {
-    using bp3 = geometry::bounded_polygon<2, 3>;
-    using bp4 = geometry::bounded_polygon<2, 3>;
-    p2d vs[]  = {{0.0, 0.0}, {1.0, 0.0}, {1.0, 0.0}};
-    t2d t(vs);
-
-    bp3 b0(t);
-    bp4 b1(t);
-  }
-
   {  // test convex polygon
-    using bp5 = geometry::bounded_polygon<2, 5>;
+    using bp5 = polygon<2>;
     p2d ps[]  = {p2d{0.0, 0.0}, p2d{0.5, 0.0}, p2d{1.0, 0.0}, p2d{1.0, 1.0},
                 p2d{0.0, 1.0}};
-    bp5 p0(ps);
-    CHECK(convex(p0));
+    bp5 p0(make_edges(ps));
+    CHECK(is_convex(p0));
 
     p2d ps1[] = {p2d{0.0, 0.0}, p2d{0.5, 0.5}, p2d{1.0, 0.0}, p2d{1.0, 1.0},
                  p2d{0.0, 1.0}};
-    bp5 p1(ps1);
-    CHECK(!convex(p1));
+    bp5 p1(make_edges(ps1));
+    CHECK(!is_convex(p1));
   }
-
   return test::result();
 }

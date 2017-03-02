@@ -12,23 +12,23 @@
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 
 /// Produces a fatal error
-#define HM3_FATAL_ERROR_AT(at, message, ...)                                  \
-  [[ cold, noinline ]] do {                                                   \
-    ::hm3::fmt::print(stderr, "\nFATAL ERROR:\n\n  message: " message "\n\n", \
-                      ##__VA_ARGS__);                                         \
-    HM3_PRINT_AT((at));                                                       \
-    std::terminate();                                                         \
-  }                                                                           \
+#define HM3_FATAL_ERROR_AT(at, message, ...)                                 \
+  [[ cold, noinline ]] do {                                                  \
+    ::hm3::ascii_fmt::err(                                                   \
+     stderr, "\nFATAL ERROR:\n\n  message: " message "\n\n", ##__VA_ARGS__); \
+    HM3_PRINT_AT((at));                                                      \
+    std::terminate();                                                        \
+  }                                                                          \
   while (false)
 
 /// Produces a fatal error
-#define HM3_FATAL_ERROR(message, ...)                                         \
-  [[ cold, noinline ]] do {                                                   \
-    ::hm3::fmt::print(stderr, "\nFATAL ERROR:\n\n  message: " message "\n\n", \
-                      ##__VA_ARGS__);                                         \
-    HM3_PRINT_AT(HM3_AT_);                                                    \
-    std::terminate();                                                         \
-  }                                                                           \
+#define HM3_FATAL_ERROR(message, ...)                                     \
+  [[ cold, noinline ]] do {                                               \
+    ::hm3::ascii_fmt::err("\nFATAL ERROR:\n\n  message: " message "\n\n", \
+                          ##__VA_ARGS__);                                 \
+    HM3_PRINT_AT(HM3_AT_);                                                \
+    std::terminate();                                                     \
+  }                                                                       \
   while (false)
 
 #pragma clang diagnostic pop

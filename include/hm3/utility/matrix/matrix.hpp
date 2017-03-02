@@ -94,8 +94,9 @@ struct matrix : bounds<NoRows, NoCols>,
   }
 
   template <
-   typename... Args, typename UArgs = meta::transform<meta::list<Args...>,
-                                                      meta::quote<uncvref_t>>,
+   typename... Args,
+   typename UArgs
+   = meta::transform<meta::list<Args...>, meta::quote<uncvref_t>>,
    CONCEPT_REQUIRES_(
     is_vector() and NoRows == sizeof...(Args) and !Same<T, uint_t>{}
     and meta::all_of<UArgs, meta::bind_front<meta::quote<std::is_same>, T>>{})>

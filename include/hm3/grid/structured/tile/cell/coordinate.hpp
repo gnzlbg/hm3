@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square tile coordinate
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/index.hpp>
 #include <hm3/grid/structured/tile/index_type.hpp>
@@ -21,7 +21,7 @@ namespace cell {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per length
 template <dim_t Nd, tidx_t Nc>
-struct coordinate : geometry::dimensional<Nd> {
+struct coordinate : geometry::with_ambient_dimension<Nd> {
   using self           = coordinate;
   using value_t        = tidx_t;
   using signed_value_t = std::make_signed_t<value_t>;
@@ -348,3 +348,16 @@ constexpr auto distance(coordinate<Nd, Nc> const& a,
 }  // namespace structured
 }  // namespace grid
 }  // namespace hm3
+
+namespace std {
+
+template <hm3::dim_t Nd, hm3::grid::structured::tile::tidx_t Nc>
+struct hash<hm3::grid::structured::tile::cell::coordinate<Nd, Nc>> {
+  constexpr std::size_t operator()(
+   hm3::grid::structured::tile::cell::coordinate<Nd, Nc> const& c) const
+   noexcept {
+    return static_cast<std::size_t>(c.idx());
+  }
+};
+
+}  // namespace std

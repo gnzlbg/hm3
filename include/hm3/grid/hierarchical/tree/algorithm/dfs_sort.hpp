@@ -22,7 +22,7 @@ struct dfs_sort_fn {
             CONCEPT_REQUIRES_(Function<DataSwap, node_idx, node_idx>{})>
   static void swap_data(Tree& t, siblings_idx a, siblings_idx b,
                         DataSwap&& data_swap) noexcept {
-    RANGES_FOR (auto&& s, ranges::view::zip(t.nodes(a), t.nodes(b))) {
+    for (auto&& s : ranges::view::zip(t.nodes(a), t.nodes(b))) {
       data_swap(get<0>(s), get<1>(s));
     }
   }

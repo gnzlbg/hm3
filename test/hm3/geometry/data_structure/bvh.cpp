@@ -1,14 +1,20 @@
 #include <fstream>
-#include <hm3/geometry/primitive/polygon.hpp>
-
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/data_structure/bvh.hpp>
 #include <hm3/geometry/data_structure/bvh/vtk.hpp>
 #include <hm3/geometry/io/stl.hpp>
+#include <hm3/geometry/primitives.hpp>
 
 #include <hm3/utility/test.hpp>
 
+template struct hm3::geometry::bvh::bvh<1>;
+template struct hm3::geometry::bvh::bvh<2>;
+template struct hm3::geometry::bvh::bvh<3>;
+
 namespace hm3 {
 namespace geometry {
+
+namespace polygon_primitive {
 
 inline bool set_normal(triangle<3>&, int, double) { return true; }
 
@@ -17,17 +23,10 @@ inline float get_normal(triangle<3> const& t, int i) {
   throw "error";
 }
 
-inline bool set_vertex(triangle<3>& t, int vx, int d, double v) {
-  if (vx >= 0 and vx < 3 and d >= 0 and d < 3) {
-    vertex(t, vx)(d) = v;
-    return true;
-  }
-  return false;
-}
-
 inline float get_vertex(triangle<3> const& t, int vx, int d) {
   if (vx >= 0 and vx < 3 and d >= 0 and d < 3) { return vertex(t, vx)(d); }
   throw "error";
+}
 }
 }
 }
@@ -83,7 +82,9 @@ int main() {
                          {p1, p3, p4}, {p3, p2, p4}, {p0, p4, p2}};
 
     mesh<tri_t> m;
-    for (auto&& vs : tris) { m.elements.push_back(tri_t(vs)); }
+    for (auto&& vs : tris) {
+      m.elements.push_back(tri_t(make_segment_range(vs)));
+    }
 
     CHECK(m.size() > 0_u);
 

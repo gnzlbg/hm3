@@ -19,19 +19,19 @@ namespace cartesian {
 /// Serialization to VTK
 namespace vtk {
 
-/// Adapts a tree<Nd> to be Serializable to a vtkUnstructuredGrid
+/// Adapts a tree<Ad> to be Serializable to a vtkUnstructuredGrid
 ///  - a cell_geometry(node_idx) method
 ///  - a bounding_box() method
 ///  - a dimensions() method
 ///  - a for_each_cell(F&&) method
-template <dim_t Nd>
-struct serializable_multi : geometry::dimensional<Nd> {
-  multi<Nd> const& t_;
+template <dim_t Ad>
+struct serializable_multi : geometry::with_ambient_dimension<Ad> {
+  multi<Ad> const& t_;
   sint_t level_ = -1;
 
   using vtk_cell_idx = tree_node_idx;
 
-  serializable_multi(multi<Nd> const& s, sint_t level = -1) noexcept
+  serializable_multi(multi<Ad> const& s, sint_t level = -1) noexcept
    : t_{s}, level_{level} {}
 
   auto geometry(tree_node_idx n) const noexcept { return t_.geometry(n); }
@@ -75,10 +75,10 @@ struct serializable_multi : geometry::dimensional<Nd> {
   }
 };
 
-template <dim_t Nd>
-void serialize(multi<Nd> const& t, string const& fname_, sint_t level = -1) {
-  using serializable = serializable_multi<Nd>;
-  hm3::log::serial log("multi-tree<Nd>-vtk-dump");
+template <dim_t Ad>
+void serialize(multi<Ad> const& t, string const& fname_, sint_t level = -1) {
+  using serializable = serializable_multi<Ad>;
+  hm3::log::serial log("multi-tree<Ad>-vtk-dump");
 
   serializable state(t, level);
   ::hm3::vis::vtk::serialize(state, fname_, log);

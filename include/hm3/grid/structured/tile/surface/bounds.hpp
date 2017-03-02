@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square tile surface bounds
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/structured/tile/index_type.hpp>
 #include <hm3/types.hpp>
@@ -43,7 +43,7 @@ constexpr tidx_t size_per_cell(dim_t nd, tidx_t /*nc*/) noexcept {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc number of cells per tile length (the tile is square)
 template <dim_t Nd, tidx_t Nc>
-struct bounds : geometry::dimensional<Nd> {
+struct bounds : geometry::with_ambient_dimension<Nd> {
   /// Nubmer of sides per direction
   static constexpr tidx_t sides_per_dir() noexcept {
     return surface::sides_per_dir(Nd, Nc);

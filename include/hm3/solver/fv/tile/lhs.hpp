@@ -18,6 +18,17 @@ struct left_hand_side {
    = dense::matrix<num_t, grid_t::cells().size(), Nv, tidx_t, vidx_t, Order>;
   storage_t lhs_;
 
+  struct cell_storage {
+    using storage_t = dense::vector<num_t, Nv, vidx_t>;
+    storage_t lhs_;
+
+    auto& lhs() noexcept { return lhs_; }
+    auto const& lhs() const noexcept { return lhs_; }
+    auto& variables() noexcept { return lhs(); }
+    auto const& variables() const noexcept { return lhs(); }
+    void clear() { lhs_ = storage_t::zero(); }
+  };
+
   auto& lhs() noexcept { return lhs_; }
   auto const& lhs() const noexcept { return lhs_; }
   auto lhs(cell_idx c) noexcept { return lhs_.row(*c.idx()); }
@@ -40,6 +51,14 @@ struct new_left_hand_side {
   using storage_t
    = dense::matrix<num_t, grid_t::cells().size(), Nv, tidx_t, vidx_t, Order>;
   storage_t new_lhs_;
+
+  struct cell_storage {
+    using storage_t = dense::vector<num_t, Nv, vidx_t>;
+    storage_t new_lhs_;
+    auto& new_lhs() noexcept { return new_lhs_; }
+    auto const& new_lhs() const noexcept { return new_lhs_; }
+    void clear() { new_lhs_ = storage_t::zero(); }
+  };
 
   auto& new_lhs() noexcept { return new_lhs_; }
   auto const& new_lhs() const noexcept { return new_lhs_; }

@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Logging utilities
-#include <spdlog/spdlog.h>
 #include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/fmt.hpp>
 #define HM3_LOG_TO_STDOUT
 #define HM3_LOG_DEBUG
 

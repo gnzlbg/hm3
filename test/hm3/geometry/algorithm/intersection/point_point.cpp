@@ -1,4 +1,4 @@
-#include <hm3/geometry/algorithm/intersection/point_point.hpp>
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -23,10 +23,10 @@ void test_point_point_intersection() {
      else if
        constexpr(Same<T, monostate>{}) { CHECK(false); }
      else {
-       static_assert(fail<T>{}, "forgot to handle a case");
+       static_assert(always_false<T>{}, "forgot to handle a case");
      }
    },
-   geometry::point_primitive::intersection(a, b));
+   geometry::intersection(a, b));
 
   visit(
    [&](auto&& i) {
@@ -37,10 +37,10 @@ void test_point_point_intersection() {
        constexpr(Same<T, monostate>{}) { CHECK(true); }
 
      else {
-       static_assert(fail<T>{}, "forgot to handle a case");
+       static_assert(always_false<T>{}, "forgot to handle a case");
      }
    },
-   geometry::point_primitive::intersection(a, c));
+   geometry::intersection(a, c));
 }
 
 int main() {

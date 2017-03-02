@@ -6,7 +6,7 @@
 /// Note: to use the serialize functionality one needs to link against VTK
 ///
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/amr/state.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
@@ -20,7 +20,7 @@ namespace vtk {
 
 /// Adapts an amr::state<Target> to be serializable to a vtkUnstructuredGrid
 template <typename Target>
-struct serializable : geometry::dimensional<Target::dimension()> {
+struct serializable : geometry::with_ambient_dimension_t<Target> {
   state<Target> const& s_;
 
   using vtk_cell_idx = amr_node_idx_t<Target>;

@@ -12,16 +12,16 @@ namespace hm3::geometry {
 
 /// Stores a collection of simplices with unique vertices
 ///
-/// \tparam Nd number of spatial dimensions.
-template <dim_t Nd>
+/// \tparam Ad number of spatial dimensions.
+template <dim_t Ad>
 struct simplex_array {
-  using point_t   = point<Nd>;
-  using simplex_t = simplex<Nd>;
-  using point_set = point_set<Nd>;
-  using box_t     = box<Nd>;
-  using aabb_t    = aabb<Nd>;
+  using point_t   = point<Ad>;
+  using simplex_t = simplex<Ad>;
+  using point_set = point_set<point_t>;
+  using box_t     = box<Ad>;
+  using aabb_t    = aabb<Ad>;
 
-  static constexpr dim_t no_face_vertices() noexcept { return Nd; }
+  static constexpr dim_t no_face_vertices() noexcept { return Ad; }
 
   /// Vertex index:
   using vidx_t = typename point_set::pidx_t;
@@ -54,7 +54,6 @@ struct simplex_array {
 
     // Allocate vertices (all points are in the bounding box)
     auto bbox = bounding_volume.box(aabb);
-    fmt::print("aabb: {}, box: {}\n", aabb, bbox);
     HM3_ASSERT(  // check that all vertices are inside the bounding box (O(N_s))
      [&]() {
        for (auto&& s : simplices) {
@@ -69,7 +68,7 @@ struct simplex_array {
      }(),
      "not all points are inside the bounding box!");
 
-    vertices_ = point_set(no_simplices * Nd, bbox);
+    vertices_ = point_set(no_simplices * Ad, bbox);
 
     // insert simplices:
     for (auto const& s : simplices) {  // ~O(N logN)

@@ -31,12 +31,12 @@ OStream& operator<<(OStream&& os, tree<Nd> const& t) {
 
   // write sibling groups:
   const auto last = t.no_children();
-  RANGES_FOR (auto s, t.sibling_groups()) {
+  for (auto s : t.sibling_groups()) {
     os << sibling_group_label(s);
     os << "[label=\"";
     os << "<gg" << *s << "> " << to_string(*s) << "* |";
     auto c = 1;
-    RANGES_FOR (auto&& n, t.nodes(s)) {
+    for (auto&& n : t.nodes(s)) {
       os << "<" << sibling_label(n) << "> " << to_string(*n);
       if (n != 0_n and c != last) { os << "|"; }
       c++;
@@ -45,8 +45,8 @@ OStream& operator<<(OStream&& os, tree<Nd> const& t) {
   };
 
   // write links from parent->children
-  RANGES_FOR (auto&& s, t.sibling_groups()) {
-    RANGES_FOR (auto&& n, t.nodes(s)) {
+  for (auto&& s : t.sibling_groups()) {
+    for (auto&& n : t.nodes(s)) {
       for (auto&& c : t.children(n)) {
         if (c) {
           os << node_label(s, n) << " -> " << node_label(t.sibling_group(c), c)

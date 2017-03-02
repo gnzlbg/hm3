@@ -51,7 +51,7 @@ inline bool operator==(field const& a, const char* name) noexcept {
 /// Has the container \p c a field \p name
 template <typename C, typename UC = ranges::uncvref_t<C>,
           CONCEPT_REQUIRES_(Container<UC>{}  //&&
-                            // Same<value_type<UC>, field>{}
+                                             // Same<value_type<UC>, field>{}
                             )>
 bool has_field(C&& c, string const& name) noexcept {
   const auto count = ranges::distance(
@@ -62,7 +62,7 @@ bool has_field(C&& c, string const& name) noexcept {
 
 template <typename C, typename UC = ranges::uncvref_t<C>,
           CONCEPT_REQUIRES_(Container<UC>{}  //&&
-                            // Same<value_type<UC>, field>{}
+                                             // Same<value_type<UC>, field>{}
                             )>
 auto find_field(C&& c, string const& name) noexcept {
   return ranges::find_if(c, [&](auto&& i) { return i.name == name; });
@@ -70,7 +70,7 @@ auto find_field(C&& c, string const& name) noexcept {
 
 template <typename C, typename UC = ranges::uncvref_t<C>,
           CONCEPT_REQUIRES_(Container<UC>{}  //&&
-                            // Same<value_type<UC>, field>{}
+                                             // Same<value_type<UC>, field>{}
                             )>
 decltype(auto) get_field(C&& c, string const& name) noexcept {
   HM3_ASSERT(has_field(c, name), "fieldhas to exist! check with has_field!");

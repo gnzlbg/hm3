@@ -15,10 +15,11 @@
 namespace hm3 {
 namespace dense {
 
-#define HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR                            \
-  HM3_ASSERT(no_elements <= max_size(), "#of elements: '{}' should be <= "   \
-                                        "max size '{}' (max_no_rows: '{}', " \
-                                        "max_no_cols: '{}')",                \
+#define HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR \
+  HM3_ASSERT(no_elements <= max_size(),           \
+             "#of elements: '{}' should be <= "   \
+             "max size '{}' (max_no_rows: '{}', " \
+             "max_no_cols: '{}')",                \
              no_elements, max_size(), max_no_rows(), max_no_cols())
 
 #define HM3_MATRIX_ASSERT_NO_ROWS_AND_COLS_CONSTRUCTOR                 \

@@ -4,14 +4,9 @@
 /// Unstructured VTK grid
 #ifdef HM3_ENABLE_VTK
 #include <hm3/utility/log.hpp>
-#include <hm3/utility/variant.hpp>
-
-#include <hm3/geometry/primitive/any.hpp>
 #include <hm3/vis/vtk/vtk.hpp>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
+namespace hm3::vis::vtk {
 
 struct unstructured_grid {
   smart_ptr<vtkUnstructuredGrid> vtk_grid;
@@ -28,9 +23,11 @@ struct unstructured_grid {
             CONCEPT_REQUIRES_(InputRange<NodeRange>{})>
   void append_internal_cells(NodeRange&& nodes, Grid&& grid) noexcept {
     using grid_t             = uncvref_t<Grid>;
-    static constexpr auto nd = grid_t::dimension();
+    static constexpr auto nd = geometry::ambient_dimension_v<grid_t>;
+    using geometry::ambient_dimension;
+    using geometry::vertices;
     auto geometry
-     = [&](auto&& n) -> geometry::any<nd> { return grid.geometry(n); };
+     = [&](auto&& n) -> geometry_t<nd> { return grid.geometry(n); };
 
     using grid_cell_t   = decltype(geometry(*begin(nodes)));
     const auto no_cells = ranges::distance(use_copy_if_single_pass(nodes));
@@ -51,7 +48,7 @@ struct unstructured_grid {
     auto unique_inserter = make_ptr<vtkMergePoints>();
     auto bounds          = geometry::bounding_volume.aabb(grid.bounding_box());
     num_t bounds_vtk[6]  = {0.0};  // vtk works only in 3D...
-    for (auto d : grid.dimensions()) {
+    for (auto d : ambient_dimension[grid]) {
       bounds_vtk[d]     = geometry::x_min(bounds)(d);
       bounds_vtk[d + 3] = geometry::x_max(bounds)(d);
     }
@@ -63,46 +60,30 @@ struct unstructured_grid {
     vector<int> cell_types;
     cell_types.reserve(no_cells);
     int_t c_c = 0;
-    RANGES_FOR (auto&& n, use_copy_if_single_pass(nodes)) {
+    for (auto&& n : use_copy_if_single_pass(nodes)) {
+      /// TODO: if constexpr(cell_geometry is variant (e.g. geometry::some))
+      ///  - execute visit, and tuple of cells, ...
+      ///  - otherwise: fast path, single geometry type will be outputed.
       auto cell_geometry = geometry(n);
       visit(
        [&](auto&& g) {
-         using geometry_t   = uncvref_t<decltype(g)>;
-         auto cell_vertices = vertices(g);
-         auto&& tmp_cell = std::get<to_vtk_cell_ptr_t<geometry_t>>(tmp_cells);
-         HM3_ASSERT(size(cell_vertices) > 0_u,
-                    "cells of zero points not supported (see comment below)");
-         // TL;DR: Cells that don't have any points break too much stuff in too
-         // many different places. Improving this is not worth it.
-         //
-         // ex1: the cell "exists" so we will try to compute and store cell
-         //      variables for it but the cell has no center, possibly breaking
-         //      computation, and they cannot be displayed anyways.
-         //
-         // ex2: the cell offsets will be an empty range [firstPointId,
-         //      firstPointId), but they are stored in an offset array within
-         //      ParaView which requires it to be monotonically increasing (e.g.
-         //      the next value has to be greater than the previous one). Even
-         //      if it is possible to work around this somehow, that's going to
-         //      be painful.
-         tmp_cell->GetPointIds()->Reset();
-         // Append vertices to the point set, and store the corner ids:
-         RANGES_FOR (auto&& cIdx, geometry::vertex_indices(g)) {
-           vtkIdType id;
-           auto corner_vtk = to_vtk_point(cell_vertices[cIdx]);
-           unique_inserter->InsertUniquePoint(corner_vtk.data(), id);
-           // TODO: this is faster, tmp_cell->GetPointIds()->SetId(cIdx, id);
-           // so instead of just doing Reset above, we should get
-           // size(vertices())
-           // and initialize the cell points, so that we can use SetId
-           //
-           // The InsertId function does bound checks, so we might want to use
-           // that in Debug mode anyways:
-           tmp_cell->GetPointIds()->InsertId(cIdx, id);
+         using g_t             = decltype(g);
+         using cell_write_type = cell_write_type_t<g_t>;
+         if
+           constexpr(Same<cell_write_type, vertex_based_cell>{}) {
+             write_vertex_based_cell(g, tmp_cells, unique_inserter, cells,
+                                     cell_types);
+           }
+         else if
+           constexpr(Same<cell_write_type, face_based_cell>{}) {
+             write_face_based_cell(g, tmp_cells, unique_inserter, cells,
+                                   cell_types);
+           }
+         else {
+           static_assert(
+            always_false<g_t>{},
+            "unknown vtk cell write type (vertex-based or face-based)");
          }
-         // Insert the cell:
-         cells->InsertNextCell(tmp_cell->GetPointIds());
-         cell_types.push_back(cell_t<geometry_t>::value());
          ++c_c;
        },
        cell_geometry);
@@ -137,7 +118,5 @@ struct unstructured_grid {
   }
 };
 
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk
 #endif  // HM3_ENABLE_VTK

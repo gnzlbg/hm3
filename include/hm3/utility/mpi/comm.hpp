@@ -57,7 +57,7 @@ struct comm {
        MPI_Init_thread(nullptr, nullptr, MPI_THREAD_MULTIPLE, &thread_support));
 
       if (thread_support != MPI_THREAD_MULTIPLE) {
-        fmt::print(
+        ascii_fmt::out(
          "[WARNING] MPI implementation does not support multi-thread\n");
       }
     }

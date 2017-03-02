@@ -9,7 +9,7 @@
 #include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/geometry/sd/concepts.hpp>
 #include <hm3/math/interpolation/linear.hpp>
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 #include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry::polygon_primitive {
@@ -82,7 +82,7 @@ triangle_sd_intersection_result<Nd> sd_intersection(triangle<Nd> const& tri,
       }
       case 2: {
         // Two edges are zero, the boundary is a polyline:
-        inline_vector<small_polyline<Nd, 3>, 2> segments;
+        fixed_capacity_vector<small_polyline<Nd, 3>, 2> segments;
         for (auto fidx : face_indices(tri)) {
           if (centroid_sg[fidx] == signum_t::zero()) {
             segments.push_back(vertices(face(tri, fidx)));
@@ -134,7 +134,7 @@ triangle_sd_intersection_result<Nd> sd_intersection(triangle<Nd> const& tri,
   // segment.
   //
   // Find the segment cut points:
-  inline_vector<point<Nd>, 2> cut_points;
+  fixed_capacity_vector<point<Nd>, 2> cut_points;
   for (auto vidx : vertex_indices(tri)) {
     const auto n_vidx     = next_vx(vidx);
     const auto vx_sd      = sd[vidx];

@@ -122,9 +122,7 @@ struct state : geometry::dimensional<Nd> {
 
   template <typename SD>
   void set_node_values(SD&& sd) noexcept {
-    RANGES_FOR (auto&& n, g.in_use()) {
-      signed_distance(n) = sd(g.coordinates(n));
-    }
+    for (auto&& n : g.in_use()) { signed_distance(n) = sd(g.coordinates(n)); }
   }
 
   void write() {

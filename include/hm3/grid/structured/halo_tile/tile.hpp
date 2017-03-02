@@ -20,7 +20,7 @@ namespace halo_tile {
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
 template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
-struct tile : geometry::dimensional<Nd> {
+struct tile : geometry::with_ambient_dimension<Nd> {
   using cell_indices_t       = cell::indices<Nd, Nic, Nhl>;
   using cell_coordinate_t    = typename cell_indices_t::coordinate;
   using surface_indices_t    = surface::indices<Nd, Nic, Nhl>;

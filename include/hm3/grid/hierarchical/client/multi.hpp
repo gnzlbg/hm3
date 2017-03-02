@@ -12,7 +12,7 @@ namespace client {
 
 /// Client to a single grid stored within a hierarchical Cartesian multi-tree.
 ///
-/// \tparam Nd number of spatial dimensions of the grid
+/// \tparam Ad number of spatial dimensions of the grid
 ///
 /// For each grid node, it stores its corresponding tree node (if any), and it
 /// also stores the grid node within the tree.
@@ -21,10 +21,10 @@ namespace client {
 ///
 /// \note Grid nodes do not necessarily need to be part of the grid tree. For
 /// example ghost nodes might not exist within the tree.
-template <dim_t Nd>
-struct multi : geometry::dimensional<Nd> {
-  using self   = multi<Nd>;
-  using tree_t = cartesian::multi<Nd>;
+template <dim_t Ad>
+struct multi : geometry::with_ambient_dimension<Ad> {
+  using self   = multi<Ad>;
+  using tree_t = cartesian::multi<Ad>;
 
  private:
   using tree_node_ids
@@ -95,9 +95,10 @@ struct multi : geometry::dimensional<Nd> {
     auto& tn = tree_node_ids_(n);
 // In the paraview plugin the grid doesn't need to load the grid ids
 #ifndef HM3_PARAVIEW_PLUGIN
-    HM3_ASSERT((tn and in_tree(tn) == n) || !tn, "grid node {} has tree node "
-                                                 "{} but tree node {} has grid "
-                                                 "node {} on grid {}",
+    HM3_ASSERT((tn and in_tree(tn) == n) || !tn,
+               "grid node {} has tree node "
+               "{} but tree node {} has grid "
+               "node {} on grid {}",
                n, tn, tn, in_tree(tn), idx());
 #endif
     return tn;
@@ -108,9 +109,10 @@ struct multi : geometry::dimensional<Nd> {
     const auto tn = tree_node_ids_(n);
 // In the paraview plugin the grid doesn't need to load the grid ids
 #ifndef HM3_PARAVIEW_PLUGIN
-    HM3_ASSERT((tn and in_tree(tn) == n) || !tn, "grid node {} has tree node "
-                                                 "{} but tree node {} has grid "
-                                                 "node {} on grid {}",
+    HM3_ASSERT((tn and in_tree(tn) == n) || !tn,
+               "grid node {} has tree node "
+               "{} but tree node {} has grid "
+               "node {} on grid {}",
                n, tn, tn, in_tree(tn), idx());
 #endif
     return tn;
@@ -150,8 +152,8 @@ struct multi : geometry::dimensional<Nd> {
   /// Neighbors of grid node \p n in grid
   auto grid_node_neighbors_in_tree(grid_node_idx n) const noexcept {
     auto ns = tree_node_neighbors_in_tree(n);
-    inline_vector<grid_node_idx, ns.capacity()> gs(ns.size());
-    RANGES_FOR (auto&& p, view::zip(ns, gs)) {
+    fixed_capacity_vector<grid_node_idx, ns.capacity()> gs(ns.size());
+    for (auto&& p : view::zip(ns, gs)) {
       std::get<1>(p) = in_tree(std::get<0>(p));
     }
     return gs;
@@ -167,11 +169,11 @@ struct multi : geometry::dimensional<Nd> {
   /// Asserts that the grid node \p n is within the capacity of the storage
   template <typename At>
   void assert_within_capacity(grid_node_idx n, At&& at_) const noexcept {
-    HM3_ASSERT_AT(n, "invalid grid node", at_);
+    HM3_ASSERT_AT(n, "invalid grid node", std::forward<At>(at_));
     HM3_ASSERT_AT(
      n < capacity(),
-     "solver node '{}' of grid {} is out-of-capacity-bounds [0, {})", at_, n,
-     idx(), capacity());
+     "solver node '{}' of grid {} is out-of-capacity-bounds [0, {})",
+     std::forward<At>(at_), n, idx(), capacity());
   }
 
  private:
@@ -186,8 +188,8 @@ struct multi : geometry::dimensional<Nd> {
   template <typename At>
   void assert_in_use(grid_node_idx n, At&& at_) const noexcept {
     assert_within_capacity(n, at_);
-    HM3_ASSERT_AT(!is_free_(n), "cell {} of grid {} is not in use", at_, n,
-                  idx());
+    HM3_ASSERT_AT(!is_free_(n), "cell {} of grid {} is not in use",
+                  std::forward<At>(at_), n, idx());
   }
 
  private:
@@ -317,8 +319,9 @@ struct multi : geometry::dimensional<Nd> {
     tree_node(sn) = tree_node_idx{};
     is_free_(sn)  = true;
     if (gn) {
-      HM3_ASSERT(in_tree(gn) == sn, "link from tree to grid is broken: gn = {} "
-                                    "=> in_tree({}) = {} != sn = {}",
+      HM3_ASSERT(in_tree(gn) == sn,
+                 "link from tree to grid is broken: gn = {} "
+                 "=> in_tree({}) = {} != sn = {}",
                  gn, gn, in_tree(gn), sn);
       tree().remove(gn, idx());
     }
@@ -476,7 +479,7 @@ struct multi : geometry::dimensional<Nd> {
   }
 
   void update_tree() {
-    RANGES_FOR (auto n, in_use()) {
+    for (auto n : in_use()) {
       auto tn = tree_node(n);
       if (tn) { in_tree(tn) = n; }
     }
@@ -502,41 +505,41 @@ struct multi : geometry::dimensional<Nd> {
   }
 };
 
-template <dim_t Nd>
-bool operator!=(multi<Nd> const& a, multi<Nd> const& b) {
+template <dim_t Ad>
+bool operator!=(multi<Ad> const& a, multi<Ad> const& b) {
   return !(a == b);
 }
 
 /// \name Solver-grid I/O
 ///@{
-template <dim_t Nd>
-void map_arrays(io::file& f, multi<Nd> const& g) {
+template <dim_t Ad>
+void map_arrays(io::file& f, multi<Ad> const& g) {
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
   HM3_ASSERT(no_nodes == g.size(), "mismatching number of grid nodes");
   f.field("tree_nodes", reinterpret_cast<const idx_t*>(g.data()), *no_nodes);
 }
 
-template <dim_t Nd, typename Tree = typename multi<Nd>::tree_t>
-multi<Nd> from_file_unread(multi<Nd> const&, io::file& f, Tree& t,
+template <dim_t Ad, typename Tree = typename multi<Ad>::tree_t>
+multi<Ad> from_file_unread(multi<Ad> const&, io::file& f, Tree& t,
                            grid_node_idx node_capacity) {
   auto idx      = grid_idx{f.constant("grid_idx", hierarchical::gidx_t{})};
   auto nd       = dim_t{f.constant("spatial_dimension", dim_t{})};
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
-  if (Nd != nd) {
-    HM3_FATAL_ERROR("spatial_dimension mismatch, type {} vs file {}", Nd, nd);
+  if (Ad != nd) {
+    HM3_FATAL_ERROR("spatial_dimension mismatch, type {} vs file {}", Ad, nd);
   }
   if (!node_capacity) { node_capacity = no_nodes; }
-  multi<Nd> g{t, idx, node_capacity};
+  multi<Ad> g{t, idx, node_capacity};
   g.resize(no_nodes);
   map_arrays(f, g);
   return g;
 }
 
-template <dim_t Nd>
-void to_file_unwritten(io::file& f, multi<Nd> const& g) {
+template <dim_t Ad>
+void to_file_unwritten(io::file& f, multi<Ad> const& g) {
   HM3_ASSERT(g.is_compact(), "cannot write non-compact solver grid");
   f.field("grid_idx", *g.idx())
-   .field("spatial_dimension", Nd)
+   .field("spatial_dimension", Ad)
    .field("no_grid_nodes", *g.size());
   map_arrays(f, g);
 }

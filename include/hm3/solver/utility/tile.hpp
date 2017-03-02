@@ -10,9 +10,8 @@ namespace solver {
 
 template <typename B, typename T, typename F>
 void call_as(T&& t, F&& f) {
-  using base_type_ref
-   = std::add_lvalue_reference_t<std::conditional_t<std::is_const<T>{},
-                                                    std::add_const<B>, B>>;
+  using base_type_ref = std::add_lvalue_reference_t<
+   std::conditional_t<std::is_const<T>{}, std::add_const<B>, B>>;
   f(static_cast<base_type_ref>(t));
 }
 

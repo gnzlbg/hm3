@@ -262,7 +262,7 @@ struct data_structure {
       if (xi != 0) { return; }
       auto yi = y(c);
       if (!obst(0, yi)  // accelerate flow only on non-occupied nodes
-          // check to avoid negative densities:
+                        // check to avoid negative densities:
           && nodes(3, 0, yi) - t_1 > 0. && nodes(6, 0, yi) - t_2 > 0.
           && nodes(7, 0, yi) - t_2 > 0.) {
         nodes(1, 0, yi) += t_1;  // increase east

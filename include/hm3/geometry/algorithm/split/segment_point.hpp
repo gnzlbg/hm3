@@ -2,37 +2,56 @@
 /// \file
 ///
 /// Split line segment at a point.
-#include <hm3/geometry/algorithm/approx.hpp>
+#include <hm3/geometry/algorithm/approx/point.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_point.hpp>
-#include <hm3/geometry/algorithm/split.hpp>
-#include <hm3/geometry/primitive/segment/segment.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 
-namespace hm3::geometry::segment_primitive {
+namespace hm3::geometry {
 
-/// Splits the segment \p s at the point \p p.
-template <dim_t Nd, typename s_t = segment<Nd>>
-constexpr variant<monostate, s_t, pair<s_t, s_t>> split(segment<Nd> const& s,
-                                                        point<Nd> const& p) {
-  using p_t = point<Nd>;
-  using r_t = variant<monostate, s_t, pair<s_t, s_t>>;
-  auto ir   = intersection(s, p);
+namespace split_segment_point_detail {
 
-  return visit(
-   [&](auto&& v) {
-     using T = uncvref_t<decltype(v)>;
-     if
-       constexpr(Same<T, p_t>{}) {
-         if (approx(s.x(0), p) or approx(s.x(1), p)) { return r_t{s}; }
-         return r_t{make_pair(s_t(s.x(0), p), s_t(p, s.x(1)))};
+struct split_segment_point_fn {
+  /// Splits the segment \p s at the point \p p.
+  template <typename S, typename P>
+  constexpr fixed_capacity_vector<S, 2> operator()(S const& s, P const& p) const
+   noexcept {
+    static_assert(Segment<S>{});
+    static_assert(Point<P>{});
+    static_assert(ad_v<S> == ad_v<P>);
+    static_assert(Same<associated::point_t<S>, P>{});
+
+    auto ir = intersection_segment_point(s, p);
+
+    fixed_capacity_vector<S, 2> result;
+
+    visit(
+     [&](auto&& v) {
+       using T = uncvref_t<decltype(v)>;
+       if
+         constexpr(Same<T, P>{}) {
+           if (approx_point(s.x(0), p) or approx_point(s.x(1), p)) {
+             result.push_back(s);
+             return;
+           }
+           result.push_back(S(s.x(0), p));
+           result.push_back(S(p, s.x(1)));
+         }
+       else if
+         constexpr(Same<T, monostate>{}) { return; }
+       else {
+         static_assert(always_false<T>{}, "non-exhaustive visitor");
        }
-     else if
-       constexpr(Same<T, monostate>{}) { return r_t{monostate{}}; }
-     else {
-       static_assert(fail<T>{}, "non-exhaustive visitor");
-     }
-   },
-   ir);
+     },
+     ir);
+    return result;
+  }
+};
+
+}  // namespace split_segment_point_detail
+
+namespace {
+static constexpr auto const& split_segment_point
+ = static_const<split_segment_point_detail::split_segment_point_fn>::value;
 }
 
-}  // namespace hm3::geometry::segment_primitive
+}  // namespace hm3::geometry

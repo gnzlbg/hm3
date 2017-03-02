@@ -1,17 +1,32 @@
 #pragma once
 /// \file
 ///
-/// Discrete geometry algorithms.
+/// Geometry algorithms.
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/bounding_length.hpp>
 #include <hm3/geometry/algorithm/bounding_volume.hpp>
 #include <hm3/geometry/algorithm/centroid.hpp>
+#include <hm3/geometry/algorithm/collinear.hpp>
+#include <hm3/geometry/algorithm/concatenate.hpp>
+#include <hm3/geometry/algorithm/cross.hpp>
 #include <hm3/geometry/algorithm/direction.hpp>
 #include <hm3/geometry/algorithm/distance.hpp>
+#include <hm3/geometry/algorithm/edge.hpp>
+#include <hm3/geometry/algorithm/element_dimension.hpp>
+#include <hm3/geometry/algorithm/face.hpp>
 #include <hm3/geometry/algorithm/integral.hpp>
 #include <hm3/geometry/algorithm/intersection.hpp>
+#include <hm3/geometry/algorithm/is_box.hpp>
+#include <hm3/geometry/algorithm/is_convex.hpp>
+#include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
 #include <hm3/geometry/algorithm/normal.hpp>
+#include <hm3/geometry/algorithm/parallel.hpp>
+#include <hm3/geometry/algorithm/planar_projection.hpp>
 #include <hm3/geometry/algorithm/relative_position.hpp>
-#include <hm3/geometry/algorithm/side.hpp>
+#include <hm3/geometry/algorithm/simplify.hpp>
 #include <hm3/geometry/algorithm/split.hpp>
+#include <hm3/geometry/algorithm/surface.hpp>
+#include <hm3/geometry/algorithm/vertex.hpp>
+#include <hm3/geometry/algorithm/vertex_order.hpp>
 #include <hm3/geometry/algorithm/x_min_max.hpp>

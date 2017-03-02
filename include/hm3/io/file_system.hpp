@@ -7,8 +7,8 @@
 #include <hm3/utility/config/fatal_error.hpp>
 #include <hm3/utility/config/system.hpp>
 #include <hm3/utility/mpi.hpp>
+#include <hm3/utility/tuple.hpp>
 #include <streambuf>
-#include <tuple>
 // Filesystem headers:
 #if defined(_POSIX_VERSION) || defined(__APPLE__)
 #include <sys/stat.h>
@@ -71,7 +71,7 @@ inline std::pair<string, string> split_dir(string const& file_path) {
 }
 
 /// Splits file path -> (directory, file_base_name, extension)
-inline std::tuple<string, string, string> split_path(string const& file_path) {
+inline tuple<string, string, string> split_path(string const& file_path) {
   string dir, base_name, ext;
   std::tie(dir, base_name) = split_dir(file_path);
   std::tie(base_name, ext) = split_extension(base_name);

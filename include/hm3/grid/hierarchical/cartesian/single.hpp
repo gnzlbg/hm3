@@ -18,16 +18,16 @@ namespace hierarchical {
 namespace cartesian {
 
 /// Hierarchical Cartesian grid
-template <dim_t Nd>
-struct single : tree::tree<Nd> {
-  using tree_t                  = tree::tree<Nd>;
-  using node_geometry_t         = geometry::box<Nd>;
-  using point_t                 = geometry::point<Nd>;
-  using node_t                  = node<Nd>;
-  node_geometry_t bounding_box_ = {point_t::constant(0.5), 1.};
+template <dim_t Ad>
+struct single : tree::tree<Ad> {
+  using tree_t          = tree::tree<Ad>;
+  using node_geometry_t = geometry::box<Ad>;
+  using point_t         = geometry::point<Ad>;
+  using node_t          = node<Ad>;
+  node_geometry_t bounding_box_{};
 
-  using tree_t::dimension;
-  using tree_t::dimensions;
+  using tree_t::ambient_dimension;
+  using tree_t::ambient_dimensions;
 
   single()              = default;
   single(single const&) = default;
@@ -43,21 +43,30 @@ struct single : tree::tree<Nd> {
   single(single const& other, tree_node_idx new_node_capacity)
    : tree_t(other, new_node_capacity), bounding_box_(other.bounding_box()) {}
 
+  /// Has valid bounding box?
+  bool valid_bounding_box() const noexcept {
+    return bounding_box_ != node_geometry_t{};
+  }
+
   /// Bounding box of the grid (root node geometry)
-  auto bounding_box() const noexcept { return bounding_box_; }
+  auto bounding_box() const noexcept {
+    HM3_ASSERT(valid_bounding_box(), "the grid has an invalid bounding box");
+    return bounding_box_;
+  }
 
  protected:
   template <typename At>
   void assert_node_in_bounds(tree_node_idx n, At&& at) const noexcept {
     HM3_ASSERT_AT(n && n < tree_t::capacity(),
-                  "node {} out-of-capacity-bounds [0, {})", at, n,
-                  tree_t::capacity());
+                  "node {} out-of-capacity-bounds [0, {})",
+                  std::forward<At>(at), n, tree_t::capacity());
   }
 
   template <typename At>
   void assert_node_in_use(tree_node_idx n, At&& at) const noexcept {
     assert_node_in_bounds(n, at);
-    HM3_ASSERT_AT(!tree_t::is_free(n), "node {} is not in use", at, n);
+    HM3_ASSERT_AT(!tree_t::is_free(n), "node {} is not in use",
+                  std::forward<At>(at), n);
   }
 
  public:
@@ -87,7 +96,7 @@ struct single : tree::tree<Nd> {
   }
 
   /// Geometry of node \p n
-  geometry::box<Nd> geometry(tree_node_idx n) const noexcept { return node(n); }
+  geometry::box<Ad> geometry(tree_node_idx n) const noexcept { return node(n); }
 
   /// Level of node \p n
   level_idx level(tree_node_idx n) const noexcept {
@@ -120,7 +129,7 @@ struct single : tree::tree<Nd> {
     auto x_n          = coordinates(n);
     const auto delta  = length(n);
     const auto offset = Manifold()[p];
-    for (auto&& d : dimensions()) { x_n += delta * offset[d]; }
+    for (auto&& d : ambient_dimensions()) { x_n += delta * offset[d]; }
     return x_n;
   }
 
@@ -132,30 +141,33 @@ struct single : tree::tree<Nd> {
     auto r = tree::leaf_node_location(*this, bounding_box(), p).idx;
     HM3_ASSERT(r, "point {} in grid bbox: {} but not in tree?", p,
                bounding_box());
+    HM3_ASSERT(geometry::intersection.test(geometry(r), p),
+               "point {} not in the box {} of its containing node {}", p,
+               geometry(r), r);
     return r;
   }
 };
 
-template <dim_t Nd>
-bool operator==(single<Nd> const& a, single<Nd> const& b) noexcept {
-  using tree_t = tree::tree<Nd> const&;
+template <dim_t Ad>
+bool operator==(single<Ad> const& a, single<Ad> const& b) noexcept {
+  using tree_t = tree::tree<Ad> const&;
   return a.bounding_box() == b.bounding_box()
          && static_cast<tree_t>(a) == static_cast<tree_t>(b);
 }
 
-template <dim_t Nd>
-bool operator!=(single<Nd> const& a, single<Nd> const& b) noexcept {
+template <dim_t Ad>
+bool operator!=(single<Ad> const& a, single<Ad> const& b) noexcept {
   return !(a == b);
 }
 
-template <dim_t Nd>
-string type(single<Nd> const&) {
+template <dim_t Ad>
+string type(single<Ad> const&) {
   return "hierarchical_cartesian_grid";
 }
 
-template <dim_t Nd>
-string name(single<Nd> const&) {
-  return type(single<Nd>{}) + "_" + std::to_string(Nd) + "D";
+template <dim_t Ad>
+string name(single<Ad> const&) {
+  return type(single<Ad>{}) + "_" + std::to_string(Ad) + "D";
 }
 
 }  // namespace cartesian

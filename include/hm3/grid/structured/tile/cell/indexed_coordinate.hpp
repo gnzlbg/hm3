@@ -17,12 +17,14 @@ namespace cell {
 /// \tparam Nc number of cells per tile length
 template <dim_t Nd, tidx_t Nc>
 struct indexed_coordinate : public coordinate<Nd, Nc> {
-  using self           = indexed_coordinate;
-  using index          = index<Nd, Nc>;
-  using coordinate     = coordinate<Nd, Nc>;
-  using offset_t       = typename coordinate::offset_t;
-  using value_t        = typename coordinate::value_t;
-  using signed_value_t = typename coordinate::signed_value_t;
+  using self            = indexed_coordinate;
+  using index           = index<Nd, Nc>;
+  using coordinate      = coordinate<Nd, Nc>;
+  using offset_t        = typename coordinate::offset_t;
+  using value_t         = typename coordinate::value_t;
+  using signed_value_t  = typename coordinate::signed_value_t;
+  using difference_type = std::ptrdiff_t;
+
   //  using idx_           = index;
   using x_ = coordinate;
   index idx_;
@@ -112,6 +114,17 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
     return coordinate::constant(i);
   }
 
+  constexpr self& operator++() noexcept {
+    ++idx_;
+    return (*this);
+  }
+
+  constexpr self operator++(int)noexcept {
+    self tmp(*this);
+    ++(*this);
+    return tmp;
+  }
+
   /// Prints a coordinate to an output stream (for debugging)
   template <typename OStream>
   friend OStream& operator<<(OStream& os, self const& ic) {
@@ -131,3 +144,16 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
 }  // namespace structured
 }  // namespace grid
 }  // namespace hm3
+
+namespace std {
+
+template <hm3::dim_t Nd, hm3::grid::structured::tile::tidx_t Nc>
+struct hash<hm3::grid::structured::tile::cell::indexed_coordinate<Nd, Nc>> {
+  constexpr std::size_t operator()(
+   hm3::grid::structured::tile::cell::indexed_coordinate<Nd, Nc> const& c) const
+   noexcept {
+    return static_cast<std::size_t>(*(c.idx_));
+  }
+};
+
+}  // namespace std

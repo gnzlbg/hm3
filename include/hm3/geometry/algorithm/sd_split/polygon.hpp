@@ -60,7 +60,7 @@ vector<small_polygon<Nd, 4>> sd_split(P&& poly, SDF&& sdf) {
          }
        }
      else {
-       static_assert(fail<T>{}, "non-exhaustive visitor");
+       static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },
    ir);

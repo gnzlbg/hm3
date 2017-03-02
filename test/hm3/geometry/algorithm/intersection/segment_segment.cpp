@@ -1,13 +1,13 @@
-#include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
-template <typename S, typename R, dim_t Nd = uncvref_t<S>::dimension()>
+template <typename S, typename R, dim_t Ad = geometry::ambient_dimension_v<S>>
 void test_intersection(S const& s0, S const& s1, R&& r) {
-  using p_t = geometry::point<Nd>;
-  using s_t = geometry::segment<Nd>;
+  using p_t = geometry::point<Ad>;
+  using s_t = geometry::segment<Ad>;
   using geometry::intersection;
   using geometry::direction;
   auto s0i = direction.invert(s0);
@@ -25,7 +25,7 @@ void test_intersection(S const& s0, S const& s1, R&& r) {
      else if
        constexpr(Same<T, monostate>{}) { ir = i; }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
    r);
@@ -40,7 +40,7 @@ void test_intersection(S const& s0, S const& s1, R&& r) {
      else if
        constexpr(Same<T, p_t>{} or Same<T, s_t>{}) { expected = true; }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
 
      CHECK(intersection.test(s0, s1) == expected);
@@ -57,10 +57,17 @@ void test_intersection(S const& s0, S const& s1, R&& r) {
 
   // intersection invariants: result independent of the order of the arguments
   // if we need this we can try to work it out later, probably not worth it
-  // CHECK(intersection(s0, s1) == intersection(s1, s0));
-  // CHECK(intersection(s0i, s1) == intersection(s1, s0i));
-  // CHECK(intersection(s0, s1i) == intersection(s1i, s0));
-  // CHECK(intersection(s0i, s1i) == intersection(s1i, s0i));
+  //
+  // note: in 2D and 3D the direction of the resulting segments depends on the
+  // argument order
+  //
+  if
+    constexpr(Ad == 1) {
+      CHECK(intersection(s0, s1) == intersection(s1, s0));
+      CHECK(intersection(s0i, s1) == intersection(s1, s0i));
+      CHECK(intersection(s0, s1i) == intersection(s1i, s0));
+      CHECK(intersection(s0i, s1i) == intersection(s1i, s0i));
+    }
 
   CHECK(intersection(s0, s1) == r);
   if (intersection(s0i, s1) == r) {
@@ -177,12 +184,6 @@ int main() {
     auto p4 = p_t{4., 4., 4.};
     auto p5 = p_t{5., 5., 5.};
 
-    // auto p6 = p_t{3., 2.};
-    // auto p7 = p_t{4., 3.};
-
-    // auto p8 = p_t{0., 2.};
-    // auto p9 = p_t{2., 0.};
-
     // s0 - s1 intersect over volume (two-sided)
     // s2 - s3 intersect over volume (one-sided)
     // s0 - s4 don't intersect (but in same line)
@@ -197,10 +198,6 @@ int main() {
     auto s3  = s_t(p1, p3);
     auto s4  = s_t(p4, p5);
     auto s4_ = s_t(p5, p4);
-    // auto s5  = s_t(p6, p7);
-    // auto s6  = s_t(p8, p9);
-
-    // auto s7 = s_t(p0, p1);
 
     using geometry::intersection;
     using r_t = decltype(intersection(s0, s1));
@@ -209,12 +206,8 @@ int main() {
     test_intersection(s2, s3, r_t{s1});
     test_intersection(s0, s4, r_t{});
     test_intersection(s0, s4_, r_t{});
-    // test_intersection(s0, s4_, r_t{});
     CHECK(intersection.test(s0, s1));
     CHECK(intersection.test(s2, s3));
-    // CHECK(!intersection.test(s0, s5));
-    // CHECK(intersection.test(s0, s6));
-    // CHECK(intersection.test(s7, s6));
   }
 
   return test::result();

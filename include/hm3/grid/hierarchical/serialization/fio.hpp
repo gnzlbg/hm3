@@ -17,7 +17,7 @@ Grid from_file(Grid const&, string const& file_name) {
   io::session s(io::restart, file_name, mpi::comm::world());
   io::client c(s, name(Grid{}) + "_" + file_name, type(Grid{}));
   auto f = c.get_file();
-  auto t = from_file<Grid::dimension()>(Grid{}, f);
+  auto t = from_file<ad_v<Grid>>(Grid{}, f);
   if (!t.is_compact() or !tree::dfs_sort.is(t)) {
     HM3_FATAL_ERROR("fio error: cannot read non-compact or non-sorted tree");
   }

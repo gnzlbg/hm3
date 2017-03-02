@@ -18,7 +18,7 @@ struct normalized_coordinates_fn {
   ///
   /// \note normalized coordinates means normalized by the length of the root
   /// node, that is, the coordinates are in range (0., 1.).
-  template <typename Loc, dim_t Nd = Loc::dimension(),
+  template <typename Loc, dim_t Nd = Loc::ambient_dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Loc loc) const noexcept -> geometry::point<Nd> {
     auto result = geometry::point<Nd>::constant(0.5);
@@ -27,7 +27,7 @@ struct normalized_coordinates_fn {
     for (auto&& p : loc()) {
       const auto length = node_length_at_level(l) * num_t{0.25};
       const auto&& rcp  = relative_child_position<Nd>(p);
-      RANGES_FOR (auto&& d, dimensions(Nd)) { result[d] += rcp[d] * length; }
+      for (auto&& d : ambient_dimension[loc]) { result[d] += rcp[d] * length; }
       ++l;
     }
     return result;
@@ -38,7 +38,7 @@ struct normalized_coordinates_fn {
   ///
   /// \note normalized coordinates means normalized by the length of the root
   /// node, that is, the coordinates are in range (0., 1.).
-  template <typename Tree, typename Loc = loc_t<Tree::dimension()>,
+  template <typename Tree, typename Loc = loc_t<Tree::ambient_dimension()>,
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, node_idx n, Loc l = Loc()) const noexcept {
     return (*this)(node_location(t, n, l));

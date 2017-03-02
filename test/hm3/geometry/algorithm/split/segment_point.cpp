@@ -1,12 +1,14 @@
-#include <hm3/geometry/algorithm/split/segment_point.hpp>
+#include <hm3/geometry/algorithm/split.hpp>
+#include <hm3/geometry/primitives.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
+using namespace geometry;
 
 template <dim_t Nd>  //
 void test_segment_point_split() {
-  using p_t = geometry::point<Nd>;
-  using s_t = geometry::segment<Nd>;
+  using p_t = point<Nd>;
+  using s_t = segment<Nd>;
 
   auto p0 = p_t::constant(0.);
   auto p1 = p_t::constant(1.);
@@ -18,19 +20,23 @@ void test_segment_point_split() {
   auto r1 = s_t(p1, p4);
   auto r2 = s_t(p4, p2);
 
-  auto s0 = geometry::split(s, p0);
-  auto s1 = geometry::split(s, p1);
-  auto s2 = geometry::split(s, p2);
-  auto s3 = geometry::split(s, p3);
-  auto s4 = geometry::split(s, p4);
+  auto s0 = split(s, p0);
+  auto s1 = split(s, p1);
+  auto s2 = split(s, p2);
+  auto s3 = split(s, p3);
+  auto s4 = split(s, p4);
 
-  using r_t = decltype(geometry::split(s, p0));
+  using r_t = decltype(split(s, p0));
 
-  CHECK(s0 == r_t{monostate{}});
-  CHECK(s1 == r_t{s});
-  CHECK(s2 == r_t{s});
-  CHECK(s3 == r_t{monostate{}});
-  CHECK(s4 == r_t{make_pair(r1, r2)});
+  CHECK(s0.empty());
+  CHECK(s1.size() == 1);
+  CHECK(s1[0] == s);
+  CHECK(s2.size() == 1);
+  CHECK(s2[0] == s);
+  CHECK(s3.empty());
+  CHECK(s4.size() == 2);
+  CHECK(s4[0] == r1);
+  CHECK(s4[1] == r2);
 }
 
 int main() {

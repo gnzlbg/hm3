@@ -3,20 +3,20 @@
 ///
 /// Any Geometry to VTK writer.
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/primitive/any.hpp>
+#include <hm3/geometry/primitive/some.hpp>
 #include <hm3/utility/log.hpp>
 #include <hm3/utility/vector.hpp>
-#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 #include <hm3/vis/vtk/vtk.hpp>
 
 namespace hm3::geometry::io {
 
-template <dim_t Nd>
-struct vtk : dimensional<Nd> {
-  using any_type     = any<Nd>;
-  using storage_t    = vector<any_type>;
-  using vtk_cell_idx = uint_t;
+template <dim_t Ad>
+struct vtk {
+  using geometry_type = trait::ambient_dimension<Ad>;
+  using some_type     = some<Ad>;
+  using storage_t     = vector<some_type>;
+  using vtk_cell_idx  = uint_t;
 
   storage_t cells;  ///< Stores a copy of all the geometries to be serialized
   // TODO: it might be "easily" possible to do this by reference?
@@ -61,7 +61,7 @@ struct vtk : dimensional<Nd> {
     ::hm3::vis::vtk::serialize(*this, file_name, log);
   }
 
-  box<Nd> bounding_box() const noexcept {
+  box<Ad> bounding_box() const noexcept {
     return bounding_volume.box(bounding_volume.aabb(cells));
   }
 };

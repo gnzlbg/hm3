@@ -5,7 +5,7 @@
 ///
 /// TODO: move some of this to e.g. grid/relations since these are also used by
 /// structured grids
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
@@ -13,7 +13,7 @@
 #include <hm3/utility/bounded.hpp>
 #include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/config/fatal_error.hpp>
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 #include <hm3/utility/math.hpp>
 /// Use look-up table for the same level neighbors instead of
 /// arithmetic operations
@@ -56,9 +56,11 @@ static constexpr npidx_t no_neighbors(dim_t nd, dim_t m, child_level_tag) {
 /// of dimension nd
 ///@{
 
-template <dim_t Nd, dim_t M>
+template <dim_t Ad, dim_t M>
 struct neighbor_children_sharing_face_ {
-  static constexpr inline_vector<inline_vector<child_pos<Nd>, 0>, 0> stencil() {
+  static constexpr fixed_capacity_vector<
+   fixed_capacity_vector<child_pos<Ad>, 0>, 0>
+   stencil() {
     return {};
   }
 };
@@ -118,27 +120,27 @@ struct neighbor_children_sharing_face_<3, 0> {
 };
 
 namespace {
-template <dim_t Nd, dim_t M>
+template <dim_t Ad, dim_t M>
 static constexpr auto neighbor_children_sharing_face
- = neighbor_children_sharing_face_<Nd, M>::stencil;
+ = neighbor_children_sharing_face_<Ad, M>::stencil;
 }  // namespace
 
 ///@}  // Neighbor children sharing face stencils
 
 /// Normalized displacement from node center to node neighbor. The unit length
 /// is the length of the node.
-template <dim_t Nd>
-using neighbor_offset = offset_t<Nd>;
+template <dim_t Ad>
+using neighbor_offset = offset_t<Ad>;
 
 /// \name Neighbor lookup tables
 ///
 /// Neighbor positions at same level:
 ///
-/// In 1D:        across Nd-1: 2 faces
+/// In 1D:        across Ad-1: 2 faces
 ///
 ///         |--- 0 ---|--- * ---|--- 1 ---|   ----> d_0
 ///
-/// In 2D:   across Nd-1: 4 faces   across Nd-2: 4 corners
+/// In 2D:   across Ad-1: 4 faces   across Ad-2: 4 corners
 ///                ______           ______      ______
 ///               |     |          |     |     |     |
 ///               |  3  |          |  2  |     |  3  |    d_1 ^
@@ -150,7 +152,7 @@ using neighbor_offset = offset_t<Nd>;
 ///               |  2  |          |  0  |     |  1  |
 ///               |_____|          |_____|     |_____|
 ///
-/// In 3D: across Nd-1: 6 faces  across Nd-2: 12 edges  across Nd-3: 8
+/// In 3D: across Ad-1: 6 faces  across Ad-2: 12 edges  across Ad-3: 8
 /// corners
 ///
 ///         3    5          ___11___         6______7   d_1 ^   ^ d_3
@@ -169,9 +171,9 @@ using neighbor_offset = offset_t<Nd>;
 ///
 ///@{
 
-template <dim_t Nd, dim_t M>
+template <dim_t Ad, dim_t M>
 struct neighbor_lookup_table_ {
-  static constexpr inline_vector<neighbor_offset<Nd>, 0> stencil{};
+  static constexpr fixed_capacity_vector<neighbor_offset<Ad>, 0> stencil{};
 };
 
 /// 1D: across faces
@@ -247,35 +249,37 @@ struct neighbor_lookup_table_<3, 0> {
 };
 
 namespace {
-template <dim_t Nd, dim_t M>
-constexpr auto neighbor_lookup_table = neighbor_lookup_table_<Nd, M>::stencil;
+template <dim_t Ad, dim_t M>
+constexpr auto neighbor_lookup_table = neighbor_lookup_table_<Ad, M>::stencil;
 }  // namespace
 
 ///@}  // Neighbor lookup tables
 
-template <dim_t Nd, dim_t M>
+template <dim_t Ad, dim_t M>
 struct manifold_neighbors;
 
-/// Neighbor of an Nd-dimensional node across a (Nd - M)-dimensional face
+/// Neighbor of an Ad-dimensional node across a (Ad - M)-dimensional face
 ///
 /// TODO: simplify this and provide a way of constructing custom neighbor search
 /// tables
-template <dim_t Nd, dim_t M>
-struct manifold_neighbors : geometry::dimensional<Nd> {
-  static_assert(Nd >= 0 and Nd <= 3, "");
+template <dim_t Ad, dim_t M>
+struct manifold_neighbors : geometry::with_ambient_dimension<Ad> {
+  static_assert(Ad >= 0 and Ad <= 3, "");
 
-  using geometry::dimensional<Nd>::dimension;
-  using geometry::dimensional<Nd>::dimensions;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimension;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimensions;
+
+  using offset_t = neighbor_offset<Ad>;
 
   /// Rank of the neighbor manifold
   static constexpr dim_t rank() noexcept { return M; }
   /// Spatial dimension of the faces between the neighbors
   static constexpr dim_t face_dimension() noexcept {
-    return Nd >= M ? Nd - M : math::highest<dim_t>;
+    return Ad >= M ? Ad - M : math::highest<dim_t>;
   }
   /// Number of neighbors at the same grid level
   static constexpr npidx_t size() noexcept {
-    return Nd >= M ? no_neighbors(Nd, face_dimension(), same_level_tag{}) : 0;
+    return Ad >= M ? no_neighbors(Ad, face_dimension(), same_level_tag{}) : 0;
   }
   /// Index of the neighbors
   ///
@@ -283,7 +287,7 @@ struct manifold_neighbors : geometry::dimensional<Nd> {
   /// The manifold is the tag type of the index, so from a given index one can
   /// obtain the manifold and e.g. the offset coordinates.
   using neighbor_idx
-   = bounded<npidx_t, npidx_t{0}, size(), manifold_neighbors<Nd, M>>;
+   = bounded<npidx_t, npidx_t{0}, size(), manifold_neighbors<Ad, M>>;
 
   /// Index of neighbor at position \p i
   static neighbor_idx idx(npidx_t i) noexcept { return neighbor_idx(i); }
@@ -292,30 +296,30 @@ struct manifold_neighbors : geometry::dimensional<Nd> {
   auto operator()() const noexcept { return neighbor_idx::rng(); }
 
   // static constexpr auto child_level_stencil() noexcept {
-  //   return neighbor_children_sharing_face<Nd, face_dimension()>;
+  //   return neighbor_children_sharing_face<Ad, face_dimension()>;
   // }
 
   /// Returns the offset for the neighbor at position \p i
-  constexpr neighbor_offset<Nd> operator[](neighbor_idx i) const noexcept {
+  constexpr offset_t operator[](neighbor_idx i) const noexcept {
     HM3_ASSERT(i, "");
     const auto n = *i;
 #ifdef HM3_USE_NEIGHBOR_LOOKUP_TABLE
-    return neighbor_lookup_table<Nd, face_dimension()>[n];
+    return neighbor_lookup_table<Ad, face_dimension()>[n];
 #else
-    neighbor_offset<Nd> o;
+    offset_t o;
     switch (m) {
-      case 1: {  // Nd - 1
-        for (auto&& d : dimensions()) {
-          o[d] = (n / 2) == d % Nd ? (n % 2 ? 1 : -1) : 0;
+      case 1: {  // Ad - 1
+        for (auto&& d : ambient_dimensions()) {
+          o[d] = (n / 2) == d % Ad ? (n % 2 ? 1 : -1) : 0;
         }
         return o;
       }
-      case 2: {  // Nd - 2
+      case 2: {  // Ad - 2
         if (n < 4) {
-          for (auto&& d : dimensions()) {
+          for (auto&& d : ambient_dimensions()) {
             o[d] = (n / math::ipow(2_u, d)) % 2 ? 1 : -1;
           }
-          if (Nd == 3) { o[2] = 0; }
+          if (Ad == 3) { o[2] = 0; }
         } else {
           const npidx_t c = (n / 2) % 2;
           const sint_t v  = n % 2 == 0 ? -1 : 1;
@@ -325,8 +329,8 @@ struct manifold_neighbors : geometry::dimensional<Nd> {
         }
         return o;
       }
-      case 3: {  // Nd - 3
-        for (auto&& d : dimensions()) {
+      case 3: {  // Ad - 3
+        for (auto&& d : ambient_dimensions()) {
           o[d] = (n / math::ipow(npidx_t{2}, npidx_t{d})) % 2 ? 1 : -1;
         }
         return o;
@@ -345,47 +349,46 @@ struct manifold_neighbors : geometry::dimensional<Nd> {
   /// Range of children sharing a face with neighbor at position \p i
   static constexpr auto children_sharing_face(neighbor_idx i) noexcept {
     HM3_ASSERT(
-     ranges::size(neighbor_children_sharing_face<Nd, face_dimension()>) != 0_u,
-     "error: neighbor_idx {} | Nd {} | M {}", *i, Nd, M);
-    return neighbor_children_sharing_face<Nd, face_dimension()>[*i];
+     ranges::size(neighbor_children_sharing_face<Ad, face_dimension()>) != 0_u,
+     "error: neighbor_idx {} | Ad {} | M {}", *i, Ad, M);
+    return neighbor_children_sharing_face<Ad, face_dimension()>[*i];
   }
 
   /// Number of same level neighbors
   static constexpr auto no_same_level_neighbors() noexcept {
-    return no_neighbors(Nd, M, same_level_tag{});
+    return no_neighbors(Ad, M, same_level_tag{});
   }
   /// Number of neighbors at the children level
   static constexpr auto no_child_level_neighbors() noexcept {
-    return no_neighbors(Nd, M, child_level_tag{});
+    return no_neighbors(Ad, M, child_level_tag{});
   }
 };
 
 template <typename T>
 using neighbor_idx_t = typename T::neighbor_idx;
 
-template <dim_t Nd>
-using face_neighbors = manifold_neighbors<Nd, 1>;
-template <dim_t Nd>
-using edge_neighbors = manifold_neighbors<Nd, 2>;
-template <dim_t Nd>
-using corner_neighbors = manifold_neighbors<Nd, 3>;
+template <dim_t Ad>
+using face_neighbors = manifold_neighbors<Ad, 1>;
+template <dim_t Ad>
+using edge_neighbors = manifold_neighbors<Ad, 2>;
+template <dim_t Ad>
+using corner_neighbors = manifold_neighbors<Ad, 3>;
 
 /// neighbor of a nd-dimensional node across an m dimensional surface
-template <dim_t Nd, dim_t M>
+template <dim_t Ad, dim_t M>
 using surface_neighbors =
  // points:
- meta::
-  if_c<M == 1, meta::if_c<Nd == 1, face_neighbors<1>,
-                          meta::if_c<Nd == 2, edge_neighbors<2>,
-                                     meta::if_c<Nd == 3, corner_neighbors<3>,
-                                                meta::nil_>>>,
-       // lines:
-       meta::
-        if_c<M == 2,
-             meta::if_c<Nd == 2, face_neighbors<2>,
-                        meta::if_c<Nd == 3, edge_neighbors<3>, meta::nil_>>,
+ meta::if_c<
+  M == 1,
+  meta::if_c<Ad == 1, face_neighbors<1>,
+             meta::if_c<Ad == 2, edge_neighbors<2>,
+                        meta::if_c<Ad == 3, corner_neighbors<3>, meta::nil_>>>,
+  // lines:
+  meta::if_c<M == 2,
+             meta::if_c<Ad == 2, face_neighbors<2>,
+                        meta::if_c<Ad == 3, edge_neighbors<3>, meta::nil_>>,
              // planes:
-             meta::if_c<M == 3 and Nd == 3, face_neighbors<3>, meta::nil_>>>;
+             meta::if_c<M == 3 and Ad == 3, face_neighbors<3>, meta::nil_>>>;
 
 /// Max number of neighbors at children level across all manifolds
 constexpr auto max_no_neighbors(dim_t nd) {
@@ -417,18 +420,18 @@ constexpr auto opposite(NeighborIdx p) -> NeighborIdx {
       return stencil[*p];
     }
     case 3: {
-      return no_children(manifold::dimension()) - 1 - (*p);
+      return no_children(manifold::ambient_dimension()) - 1 - (*p);
     }
     default: { HM3_FATAL_ERROR("unimplemented"); }
   }
 }
 
 /// Calls the unary function F with each neighbor manifold
-template <dim_t Nd, typename F>
+template <dim_t Ad, typename F>
 void for_each_neighbor_manifold(F&& f) {
-  using manifold_rng = meta::as_list<meta::integer_range<dim_t, 1, Nd + 1>>;
+  using manifold_rng = meta::as_list<meta::integer_range<dim_t, 1, Ad + 1>>;
   meta::for_each(manifold_rng{}, [&](auto m) {
-    using manifold = manifold_neighbors<Nd, decltype(m){}>;
+    using manifold = manifold_neighbors<Ad, decltype(m){}>;
     f(manifold{});
   });
 }

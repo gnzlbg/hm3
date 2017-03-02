@@ -103,12 +103,12 @@ variant<monostate, sd_intersection_result_t<Nd>> sd_intersection(P&& poly,
          }
        else if
          constexpr(Same<T, pair<point<Nd>, segment<Nd>>>{}) {
-           unique_push_point(v.first());
-           unique_push_segment(v.second());
+           unique_push_point(first(v));
+           unique_push_segment(second(v));
            return;
          }
        else {
-         static_assert(fail<T>{}, "non-exhaustive variant");
+         static_assert(always_false<T>{}, "non-exhaustive variant");
        }
        HM3_UNREACHABLE();
      },
@@ -176,7 +176,7 @@ variant<monostate, sd_intersection_result_t<Nd>> sd_intersection(P&& poly,
 
 // #include <hm3/geometry/sd/concepts.hpp>
 // #include <hm3/interpolation/linear.hpp>
-// #include <hm3/utility/inline_vector.hpp>
+// #include <hm3/utility/fixed_capacity_vector.hpp>
 
 // namespace hm3 {
 // namespace geometry {
@@ -185,7 +185,7 @@ variant<monostate, sd_intersection_result_t<Nd>> sd_intersection(P&& poly,
 
 // todos: the faces of a segment are its corner points
 // the faces of a polygon are its segments
-// the faces of a polyhedra are its polygons
+// the faces of a polyhedron are its polygons
 
 // namespace sd_detail {
 /*
@@ -408,10 +408,11 @@ struct result {
    = max_no_shape_vertices(original_shape_vertex_capacity);
 
   using shape_t    = bounded_polygon<nd, shape_vertex_capacity>;
-  using shapes_t   = inline_vector<shape_t, shapes_per_side_capacity>;
-  using boundary_t = inline_vector<segment<nd>, boundary_surface_capacity>;
-  using signum_t   = inline_vector<sint_t, shape_vertex_capacity>;
-  using signums_t  = inline_vector<signum_t, shapes_per_side_capacity>;
+  using shapes_t   = fixed_capacity_vector<shape_t, shapes_per_side_capacity>;
+  using boundary_t = fixed_capacity_vector<segment<nd>,
+boundary_surface_capacity>; using signum_t   = fixed_capacity_vector<sint_t,
+shape_vertex_capacity>; using signums_t  = fixed_capacity_vector<signum_t,
+shapes_per_side_capacity>;
 
   shapes_t inside, outside;
   boundary_t boundary;
@@ -422,14 +423,14 @@ template <dim_t Nd>
 struct tri_result {
   struct shape_t {
     bounded_polygon<Nd, 4> vertices;
-    inline_vector<sint_t, 4> signum;
+    fixed_capacity_vector<sint_t, 4> signum;
   };
   struct boundary_t {
     segment<Nd> segments;
   };
 
-  inline_vector<shape_t, 1> inside, outside;
-  inline_vector<boundary_t, 3> boundary;
+  fixed_capacity_vector<shape_t, 1> inside, outside;
+  fixed_capacity_vector<boundary_t, 3> boundary;
 };
 
 /// Intersects a signed-distance function \p sdf with the triangle \p tri and
@@ -567,7 +568,7 @@ tri_result<Nd> signed_distance_intersection_tri(triangle<Nd> const& tri,
   result.boundary.push_back();
 
   vidx_t no_cutpoints_found = 0;
-  inline_vector<point<Nd>, 2> boundary_cut_points;
+  fixed_capacity_vector<point<Nd>, 2> boundary_cut_points;
   /// Adds vertices and cut points to each polygon
   for (auto vidx : vertex_indices(tri)) {
     const auto n_vidx     = next_vx(vidx);
@@ -669,8 +670,8 @@ const suint_t no_vertices = size(vxs);
 auto vertex_ids           = view::iota(0_su, no_vertices);
 
 // Compute signed distance values and signum of the vertices once:
-inline_vector<num_t, MaxNp> sd_at_vertices;
-inline_vector<num_t, MaxNp> sg_at_vertices;
+fixed_capacity_vector<num_t, MaxNp> sd_at_vertices;
+fixed_capacity_vector<num_t, MaxNp> sg_at_vertices;
 for (auto c : vxs) {
   num_t sd_ = sd(c);
   sd_at_vertices.push_back(sd_);
@@ -826,7 +827,8 @@ struct intersection_result {
 
   Shape inside, outside, surface;
 
-  inline_vector<sint_t, Shape::capacity()> signum_inside, signum_outside;
+  fixed_capacity_vector<sint_t, Shape::capacity()> signum_inside,
+signum_outside;
 };
 
 template <typename Shape, typename SDFunction, dim_t Nd = Shape::dimension(),
@@ -844,7 +846,7 @@ intersection_result<Shape> signed_distance_intersection(
   auto corner_ids           = view::iota(0_su, no_vertices);
 
   // Compute signed distance values at the vertices once:
-  inline_vector<num_t, MaxNp> sd_at_vertices;
+  fixed_capacity_vector<num_t, MaxNp> sd_at_vertices;
   for (auto c : shape_vertices) { sd_at_vertices.push_back(sd(c)); }
 
   // Index of the next corner, wraps around for the last corner:

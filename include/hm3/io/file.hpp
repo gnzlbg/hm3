@@ -180,22 +180,26 @@ struct file {
                                     T* end) const {
     bool valid = true;
     if (!has_field(field_name)) {
-      fmt::print("File \"{}\" doesn't have field \"{}\"\n", name(), field_name);
+      ascii_fmt::out("File \"{}\" doesn't have field \"{}\"\n", name(),
+                     field_name);
       return false;
     }
     if (!has_subfield(field_name, "in_file")) {
-      fmt::print("File \"{}\"'s field \"{}\" doesn't have sub-field \"{}\"\n",
-                 name(), field_name, "in_file");
+      ascii_fmt::out(
+       "File \"{}\"'s field \"{}\" doesn't have sub-field \"{}\"\n", name(),
+       field_name, "in_file");
       valid = false;
     }
     if (!has_subfield(field_name, "size")) {
-      fmt::print("File \"{}\"'s field \"{}\" doesn't have sub-field \"{}\"\n",
-                 name(), field_name, "size");
+      ascii_fmt::out(
+       "File \"{}\"'s field \"{}\" doesn't have sub-field \"{}\"\n", name(),
+       field_name, "size");
       valid = false;
     }
     if (!has_subfield(field_name, "type")) {
-      fmt::print("File \"{}\"'s field \"{}\" doesn't have sub-field \"{}\"\n",
-                 name(), field_name, "type");
+      ascii_fmt::out(
+       "File \"{}\"'s field \"{}\" doesn't have sub-field \"{}\"\n", name(),
+       field_name, "type");
       valid = false;
     }
     if (!valid) { return false; }
@@ -204,9 +208,10 @@ struct file {
     int_t mem_size = end - begin;
 
     if (file_size != mem_size) {
-      fmt::print("Field's \"{}\" file size \"{}\" is different from its memory "
-                 "size \"{}\"\n",
-                 field_name, file_size, mem_size);
+      ascii_fmt::out(
+       "Field's \"{}\" file size \"{}\" is different from its memory "
+       "size \"{}\"\n",
+       field_name, file_size, mem_size);
       valid = false;
     }
 
@@ -215,18 +220,20 @@ struct file {
     int_t mem_bytes = mem_size * sizeof(T);
 
     if (file_bytes != mem_bytes) {
-      fmt::print("field \"{}\" #of bytes in file \"{}\" does not match the #of "
-                 "bytes in memory \"{}\"\n",
-                 field_name, file_bytes, mem_bytes);
+      ascii_fmt::out(
+       "field \"{}\" #of bytes in file \"{}\" does not match the #of "
+       "bytes in memory \"{}\"\n",
+       field_name, file_bytes, mem_bytes);
       valid = false;
     }
 
     auto field_type = fields_[field_name]["type"].get<string>();
     auto mem_type   = data_type(T{});
     if (field_type != mem_type) {
-      fmt::print("field \"{}\"'s type \"{}\" does not match the type of memory "
-                 "\"{}\"\n",
-                 field_name, field_type, mem_type);
+      ascii_fmt::out(
+       "field \"{}\"'s type \"{}\" does not match the type of memory "
+       "\"{}\"\n",
+       field_name, field_type, mem_type);
       valid = false;
     }
 
@@ -315,7 +322,8 @@ struct file {
     bool valid_header = true;
     auto verify       = [&](auto&& it, auto&& name) {
       if (it == end(header)) {
-        fmt::print("Invalid file header, subfield \"{}\" not found!\n", name);
+        ascii_fmt::out("Invalid file header, subfield \"{}\" not found!\n",
+                       name);
         valid_header = false;
       }
     };

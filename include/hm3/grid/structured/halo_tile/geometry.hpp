@@ -137,6 +137,8 @@ struct tile_geometry
   }
 
   /// Bounding box of the tile without halo cells
+  ///
+  /// TODO rename: remove tile_ ?
   constexpr box_t tile_internal_bounding_box() const noexcept {
     auto internal_bbox    = tile_external_bounding_box();
     internal_bbox.length_ = tile_internal_length();
@@ -144,6 +146,8 @@ struct tile_geometry
   }
 
   /// Bounding box of the tile with halo cells
+  ///
+  /// TODO rename: remove tile_ ?
   constexpr box_t tile_external_bounding_box() const noexcept {
     return this->tile_bounding_box();
   }

@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Interleaved location
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/bit.hpp>
@@ -10,13 +10,11 @@
 #include <hm3/utility/config/assert.hpp>
 #include <type_traits>
 
-namespace hm3 {
-namespace tree {
-namespace location {
+namespace hm3::tree::location {
 
 /// Interleaved location code for a tree node
 ///
-/// \tparam Nd          number of spatial dimensions of the tree
+/// \tparam Ad          number of spatial dimensions of the tree
 /// \tparam MortonIdxT  internal storage of the location code, stored as a
 ///                     an interleaved Morton index in an unsigned integral.
 ///
@@ -26,9 +24,9 @@ namespace location {
 /// This location code uses a single integer type in which it stores interleaved
 /// Morton coordinates (xyzxyzxyz... that is, the Morton index).
 ///
-template <dim_t Nd, typename MortonIdxT = uint_t>
-struct interleaved : geometry::dimensional<Nd> {
-  using self = interleaved<Nd, MortonIdxT>;
+template <dim_t Ad, typename MortonIdxT = uint_t>
+struct interleaved : geometry::with_ambient_dimension<Ad> {
+  using self = interleaved<Ad, MortonIdxT>;
 
   /// Underlying storage type for the Morton index
   using morton_idx_t = MortonIdxT;
@@ -47,7 +45,7 @@ struct interleaved : geometry::dimensional<Nd> {
   /// "l" from the root node encoded in the location has a positive (true) or
   /// negative (false) relative position to its parent along the coordinate "i".
   ///
-  using morton_x_t = array<morton_idx_t, Nd>;
+  using morton_x_t = array<morton_idx_t, Ad>;
 
   /// Required to model the CompactOptional concept
   using value_type     = self;
@@ -62,9 +60,8 @@ struct interleaved : geometry::dimensional<Nd> {
   /// node of the tree.
   morton_idx_t value = 1;
 
-  /// A location models the Dimensional concept
-  using geometry::dimensional<Nd>::dimension;
-  using geometry::dimensional<Nd>::dimensions;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimension;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimensions;
 
   /// \name Node level
   ///@{
@@ -72,7 +69,7 @@ struct interleaved : geometry::dimensional<Nd> {
   /// Maximum number of levels that can be stored in the location code
   static constexpr lidx_t max_no_levels() noexcept {
     constexpr auto no_bits  = bit::width<morton_idx_t>;
-    constexpr auto loc_size = Nd;
+    constexpr auto loc_size = Ad;
     return math::floor((static_cast<num_t>(no_bits - loc_size))
                        / static_cast<num_t>(loc_size));
   }
@@ -100,7 +97,7 @@ struct interleaved : geometry::dimensional<Nd> {
     //   return key;
     // }
     // is equivalent to:
-    return (bit::width<morton_idx_t> - 1 - bit::clz(value)) / Nd;
+    return (bit::width<morton_idx_t> - 1 - bit::clz(value)) / Ad;
   }
 
   /// Range of node levels: [1, `level()`]
@@ -118,7 +115,7 @@ struct interleaved : geometry::dimensional<Nd> {
   /// Change location to the current node's children located at position \p
   /// position_in_parent.
   ///
-  /// \pre \p position_in_parent must be in bounds: [0, no_children(Nd)).
+  /// \pre \p position_in_parent must be in bounds: [0, no_children(Ad)).
   ///
   /// \pre The node level cannot be the `max_level()` (since children of nodes
   /// at the max_level() cannot be stored within this location).
@@ -126,12 +123,12 @@ struct interleaved : geometry::dimensional<Nd> {
   /// \pre The location must point to a valid node.
   constexpr void push(cpidx_t position_in_parent) noexcept {
     HM3_ASSERT(valid(), "trying to push a children to an invalid node");
-    HM3_ASSERT(position_in_parent < no_children(Nd),
-               "position in parent {} out-of-bounds [0, {}) (Nd: {})",
-               position_in_parent, no_children(Nd), Nd);
+    HM3_ASSERT(position_in_parent < no_children(Ad),
+               "position in parent {} out-of-bounds [0, {}) (Ad: {})",
+               position_in_parent, no_children(Ad), Ad);
     HM3_ASSERT(level() != max_level(),
                "location \"full\": level equals max_level {}", max_level());
-    value = (value << Nd) + position_in_parent;
+    value = (value << Ad) + position_in_parent;
   }
 
   /// Change location to the current node's children located at position \p
@@ -143,7 +140,7 @@ struct interleaved : geometry::dimensional<Nd> {
   /// at the max_level() cannot be stored within this location).
   ///
   /// \pre The location must point to a valid node
-  constexpr void push(child_pos<Nd> position_in_parent) {
+  constexpr void push(child_pos<Ad> position_in_parent) {
     push(*position_in_parent);
   }
 
@@ -163,7 +160,7 @@ struct interleaved : geometry::dimensional<Nd> {
     HM3_ASSERT(level() > level_idx{0_u},
                "cannot pop root-node from location code");
     cpidx_t tmp = (*this)[level()];
-    value >>= Nd;
+    value >>= Ad;
     return tmp;
   }
 
@@ -193,8 +190,8 @@ struct interleaved : geometry::dimensional<Nd> {
   constexpr cpidx_t operator[](const level_idx level_) const noexcept {
     HM3_ASSERT(level_ > 0_l and level_ <= level(),
                "level {} out-of-bounds [1, {})", level_, level());
-    morton_idx_t mask             = no_children(Nd) - 1;
-    const morton_idx_t mask_shift = (*(level() - level_)) * Nd;
+    morton_idx_t mask             = no_children(Ad) - 1;
+    const morton_idx_t mask_shift = (*(level() - level_)) * Ad;
     mask <<= mask_shift;
     mask &= value;
     mask >>= mask_shift;
@@ -302,20 +299,21 @@ struct interleaved : geometry::dimensional<Nd> {
   /// stored up to the maximum level that can be stored within the location
   /// code.
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>
-  interleaved(array<U, Nd> x_, level_idx l = max_level()) {
+  interleaved(array<U, Ad> x_, level_idx l = max_level()) {
     HM3_ASSERT(l <= max_level(), "level {} out-of-bounds [1, {}]", l,
                max_level());
 
-    for (auto&& d : dimensions()) {
-      HM3_ASSERT(x_[d] > 0. and x_[d] < 1., "location from non-normalized "
-                                            "float (d: {}, x[d]: {}) "
-                                            "out-of-range (0., 1.)",
+    for (auto&& d : ambient_dimensions()) {
+      HM3_ASSERT(x_[d] > 0. and x_[d] < 1.,
+                 "location from non-normalized "
+                 "float (d: {}, x[d]: {}) "
+                 "out-of-range (0., 1.)",
                  d, x_[d]);
     }
 
     num_t scale = math::ipow(lidx_t{2}, *l);
-    array<morton_idx_t, Nd> tmp;
-    for (auto&& d : dimensions()) { tmp[d] = x_[d] * scale; }
+    array<morton_idx_t, Ad> tmp;
+    for (auto&& d : ambient_dimensions()) { tmp[d] = x_[d] * scale; }
     value = encode(tmp, l);
 
     while (level() > l) { pop(); }
@@ -345,27 +343,6 @@ struct interleaved : geometry::dimensional<Nd> {
   ///@} // CompactOptional invalid state
 };
 
-/// Serializes the location \p lc into an OStream \p os (for debugging)
-template <typename OStream, dim_t Nd, typename Int>
-OStream& operator<<(OStream& os, interleaved<Nd, Int> const& lc) {
-  os << "[id: " << static_cast<Int>(lc) << ", lvl: " << lc.level() << ", xs: {";
-  using morton_x_t = typename interleaved<Nd, Int>::morton_x_t;
-  morton_x_t xs(lc);
-  for (auto&& d : dimensions(Nd)) {
-    os << xs[d];
-    if (d != Nd - 1) { os << ", "; }
-  }
-  os << "}, pip: {";
-  lidx_t level_counter = 0;
-  for (auto&& pip : lc()) {
-    level_counter++;
-    os << pip;
-    if (level_counter != *lc.level()) { os << ","; }
-  }
-  os << "}]";
-  return os;
-}
-
 /// Shifst the location \p t by an spatial \p offset.
 ///
 /// The coordinates of the offset are in "nodes at `t.level()`"-units.
@@ -379,21 +356,21 @@ OStream& operator<<(OStream& os, interleaved<Nd, Int> const& lc) {
 /// None, otherwise it returns Some(Location).
 ///
 /// \note This is how e.g. neighbors are found within the tree.
-template <dim_t Nd, typename Int>
-compact_optional<interleaved<Nd, Int>> shift(interleaved<Nd, Int> t,
-                                             offset_t<Nd> offset) noexcept {
-  using loc_t        = interleaved<Nd, Int>;
+template <dim_t Ad, typename Int>
+compact_optional<interleaved<Ad, Int>> shift(interleaved<Ad, Int> t,
+                                             offset_t<Ad> offset) noexcept {
+  using loc_t        = interleaved<Ad, Int>;
   using morton_idx_t = typename loc_t::morton_idx_t;
   auto level         = t.level();
   auto ilevel        = static_cast<morton_idx_t>(*level);
   auto xs            = t.morton_x();  // TODO: loc_t::decode(t.value, ilevel); ?
-  if (ranges::none_of(dimensions(Nd), [&](auto&& d) {
+  if (ranges::none_of(ambient_dimension[t], [&](auto&& d) {
         return bit::overflows_on_add(xs[d], offset[d], ilevel);
       })) {
-    for (auto&& d : dimensions(Nd)) {
+    for (auto&& d : ambient_dimension[t]) {
       xs[d] = math::add_signed_to_unsigned(offset[d], xs[d]);
     }
-    t = interleaved<Nd, Int>(xs, level);  //.value = loc_t::encode(xs, level);
+    t = interleaved<Ad, Int>(xs, level);  //.value = loc_t::encode(xs, level);
 
     HM3_ASSERT(t.valid(), "logic error: invalid t with value {}", t.value);
     return compact_optional<loc_t>{t};
@@ -401,39 +378,39 @@ compact_optional<interleaved<Nd, Int>> shift(interleaved<Nd, Int> t,
   return compact_optional<loc_t>{};
 }
 
-template <dim_t Nd, typename T>
-constexpr bool operator==(interleaved<Nd, T> const& a,
-                          interleaved<Nd, T> const& b) noexcept {
+template <dim_t Ad, typename T>
+constexpr bool operator==(interleaved<Ad, T> const& a,
+                          interleaved<Ad, T> const& b) noexcept {
   return a.value == b.value;
 }
 
-template <dim_t Nd, typename T>
-constexpr bool operator!=(interleaved<Nd, T> const& a,
-                          interleaved<Nd, T> const& b) noexcept {
+template <dim_t Ad, typename T>
+constexpr bool operator!=(interleaved<Ad, T> const& a,
+                          interleaved<Ad, T> const& b) noexcept {
   return !(a == b);
 }
 
-template <dim_t Nd, typename T>
-constexpr bool operator<(interleaved<Nd, T> const& a,
-                         interleaved<Nd, T> const& b) noexcept {
+template <dim_t Ad, typename T>
+constexpr bool operator<(interleaved<Ad, T> const& a,
+                         interleaved<Ad, T> const& b) noexcept {
   return a.value < b.value;
 }
 
-template <dim_t Nd, typename T>
-constexpr bool operator<=(interleaved<Nd, T> const& a,
-                          interleaved<Nd, T> const& b) noexcept {
+template <dim_t Ad, typename T>
+constexpr bool operator<=(interleaved<Ad, T> const& a,
+                          interleaved<Ad, T> const& b) noexcept {
   return (a == b) or (a < b);
 }
 
-template <dim_t Nd, typename T>
-constexpr bool operator>(interleaved<Nd, T> const& a,
-                         interleaved<Nd, T> const& b) noexcept {
+template <dim_t Ad, typename T>
+constexpr bool operator>(interleaved<Ad, T> const& a,
+                         interleaved<Ad, T> const& b) noexcept {
   return !(a.value <= b.value);
 }
 
-template <dim_t Nd, typename T>
-constexpr bool operator>=(interleaved<Nd, T> const& a,
-                          interleaved<Nd, T> const& b) noexcept {
+template <dim_t Ad, typename T>
+constexpr bool operator>=(interleaved<Ad, T> const& a,
+                          interleaved<Ad, T> const& b) noexcept {
   return !(a < b);
 }
 
@@ -458,6 +435,4 @@ static_assert(std::is_nothrow_move_assignable<interleaved<1_u>>{}, "");
 static_assert(std::is_nothrow_destructible<interleaved<1_u>>{}, "");
 static_assert(std::is_trivially_destructible<interleaved<1_u>>{}, "");
 
-}  // namespace location
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree::location

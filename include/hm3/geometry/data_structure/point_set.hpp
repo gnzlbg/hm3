@@ -2,9 +2,8 @@
 /// \file
 ///
 /// Unique set of points
-#include <hm3/geometry/algorithm/intersection/box_point.hpp>
-#include <hm3/geometry/primitive/box.hpp>
-#include <hm3/geometry/primitive/point.hpp>
+#include <hm3/geometry/algorithms.hpp>
+#include <hm3/geometry/primitives.hpp>
 #include <hm3/grid/hierarchical/cartesian/single.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/balanced_refine.hpp>
 #include <hm3/utility/optional_idx.hpp>
@@ -17,17 +16,19 @@ namespace hm3::geometry {
 ///
 /// TODO: support deletion.
 /// TODO: support mutating point coordinates.
-template <dim_t Nd, suint_t MaxPointsPerNode = 9>
+template <typename P, suint_t MaxPointsPerNode = 9>
 struct point_set {
-  using point_t         = point<Nd>;
-  using bbox_t          = box<Nd>;
-  using tree_t          = grid::hierarchical::cartesian::single<Nd>;
-  using point_storage   = vector<point_t>;
-  using point_ids_t     = inline_vector<suint_t, MaxPointsPerNode>;
-  using node_idx        = grid::hierarchical::tree_node_idx;
-  using node_storage    = std::unordered_map<node_idx, point_ids_t>;
-  using pidx_t          = suint_t;
-  using optional_pidx_t = optional_idx<pidx_t, struct point_set_idx_t>;
+  static constexpr dim_t Ad = ad_v<P>;
+  using point_t             = P;
+  using aabb_t              = associated::aabb_t<point_t>;
+  using bbox_t              = associated::box_t<point_t>;
+  using tree_t              = grid::hierarchical::cartesian::single<Ad>;
+  using point_storage       = vector<point_t>;
+  using point_ids_t         = fixed_capacity_vector<suint_t, MaxPointsPerNode>;
+  using node_idx            = grid::hierarchical::tree_node_idx;
+  using node_storage        = std::unordered_map<node_idx, point_ids_t>;
+  using pidx_t              = suint_t;
+  using optional_pidx_t     = optional_idx<pidx_t, struct point_set_idx_t>;
 
   static constexpr suint_t max_points_per_node = MaxPointsPerNode;
 
@@ -43,14 +44,30 @@ struct point_set {
   /// Constructs a point set that can hold \p point_capacity points that must be
   /// located within the bounding box \p bbox.
   point_set(suint_t point_capacity, bbox_t bbox)
-   : tree_(node_idx(point_capacity), bbox) {}
+   : tree_(node_idx(point_capacity), bbox) {
+    points_.reserve(point_capacity);
+    nodes_.reserve(point_capacity);
+  }
 
   /// Number of points in the point set.
   auto size() const noexcept { return points_.size(); }
 
+  /// Is the point set empty?
+  bool empty() const noexcept { return size() == 0_u; }
+
  private:
+  /// Does the point set has a bounding box?
+  bool has_bounding_box() const noexcept { return tree_.valid_bounding_box(); }
+
+  /// Is the point \p p inside the bounding box of the set?
+  bool is_point_in_bounding_box(point_t p) const noexcept {
+    if (not has_bounding_box()) { return false; }
+    return geometry::intersection.test(bounding_box(), p);
+  }
+
   /// Asserts that the point \p p is inside the point-set's bounding box.
   void assert_point_in_bounding_box(point_t p) const noexcept {
+    HM3_ASSERT(has_bounding_box(), "bounding-box is not set");
     HM3_ASSERT(geometry::intersection.test(bounding_box(), p),
                "point {} is not inside the bounding box {}", p, bounding_box());
   }
@@ -91,7 +108,7 @@ struct point_set {
   /// Provides the strong exception safety guarantee. If growing the tree fails,
   /// no observable side-effects.
   void grow_tree() {
-    static constexpr suint_t growth_factor = math::ipow(dim_t{2}, Nd);
+    static constexpr suint_t growth_factor = math::ipow(dim_t{2}, Ad);
 
     auto current_capacity = tree_.capacity();
     auto new_capacity     = growth_factor * current_capacity;
@@ -106,7 +123,10 @@ struct point_set {
  public:
   /// Bounding box of of the point set, all points must be located inside the
   /// bounding box.
-  bbox_t bounding_box() const noexcept { return tree_.bounding_box(); }
+  bbox_t bounding_box() const noexcept {
+    if (not has_bounding_box()) { return bbox_t{}; }
+    return tree_.bounding_box();
+  }
 
   /// Returns the point with index \p idx.
   point_t& point(pidx_t idx) noexcept {
@@ -120,6 +140,46 @@ struct point_set {
     return points_[idx];
   }
 
+  /// Capacity of the new tree in case of growth:
+  uint_t next_tree_capacity() const noexcept {
+    return (uint_t)math::ceil(1.2 * (num_t(*tree_.capacity()) + 10.));
+  }
+
+  void re_bound_tree(point_t p) {
+    // If there is no bounding box, use bounding-box of the point:
+    if (not has_bounding_box()) {
+      HM3_ASSERT(empty(), "point set has no bounding-box but is not empty");
+      point_set ps(next_tree_capacity(), bounding_volume.box(p));
+
+      points_ = std::move(ps.points_);
+      nodes_  = std::move(ps.nodes_);
+      tree_   = std::move(ps.tree_);
+      return;
+    }
+
+    /// Otherwise compute the new bounding box
+    auto bbox    = bounding_box();
+    point_t xmin = x_min(bbox), xmax = x_max(bbox);
+    for (dim_t d = 0; d < Ad; ++d) {
+      xmin(d) = std::min(xmin(d), p(d));
+      xmax(d) = std::max(xmax(d), p(d));
+    }
+    auto new_bbox = bounding_volume.box(aabb_t{xmin, xmax});
+
+    /// Create a new point set:
+    point_set ps(next_tree_capacity(), new_bbox);
+
+    /// Insert old points there
+    for (auto& op : points()) { ps.push_back(op); }
+
+    /// And replace this with that one
+    points_ = std::move(ps.points_);
+    nodes_  = std::move(ps.nodes_);
+    tree_   = std::move(ps.tree_);
+    // ranges::swap(*this, ps);
+    return;
+  }
+
   /// Adds point \p p to the point-set and returns its index within the set.
   ///
   /// If the point is already within the set, it returns the index of the
@@ -128,8 +188,10 @@ struct point_set {
   /// If the point is not within the set, it inserts the point and returns its
   /// index, such that `size()_after == size()_before + 1`.
   ///
-  /// \pre The point \p p must be located inside the point-set's bounding box.
   pidx_t push_back(point_t p) {
+    /// If the point is not inside the bounding box:
+    if (not is_point_in_bounding_box(p)) { re_bound_tree(p); }
+
     assert_point_in_bounding_box(p);
     node_idx n = tree_.leaf_node_containing(p);
     HM3_ASSERT(n, "point {} in point-set's bbox {} but not in tree's bbox {}?",
@@ -203,6 +265,10 @@ struct point_set {
 
   /// Is the point \p in the set?
   optional_pidx_t contains(point_t p) const noexcept {
+    // Empty point sets contains no points
+    if (empty()) { return optional_pidx_t{}; }
+    HM3_ASSERT(has_bounding_box(), "non-empty point set has no bounding box");
+
     // if not in the bounding box, return nothing:
     if (!geometry::intersection.test(p, tree_.bounding_box())) {
       return optional_pidx_t{};
@@ -223,6 +289,41 @@ struct point_set {
   point_storage const& points() const noexcept { return points_; }
   /// Range of all points within the set.
   point_storage& points() noexcept { return points_; }
+
+  template <typename OStream>
+  friend OStream& to_ascii(OStream& os, point_set const& ps,
+                           ascii_fmt::geometry const&) {
+    if (ps.empty()) {
+      os << "{ point_set | empty }";
+      return os;
+    }
+
+    os << "{ point_set | \n  bounding_box: ";
+    ascii_fmt::to_ascii(os, ps.bounding_box());
+    os << "\n  points:\n";
+
+    suint_t idx = 0;
+    for (auto&& p : ps.points()) {
+      os << "    idx, " << idx << ", x: ";
+      ascii_fmt::to_ascii(os, p);
+      os << "\n";
+      ++idx;
+    }
+
+    os << "  points at nodes:\n";
+    for (auto& p : ps.nodes_) {
+      os << "    nidx: ";
+      ascii_fmt::to_ascii(os, p.first);
+      os << ", ";
+      ascii_fmt::to_ascii(os, p.second);
+      os << ", b: ";
+      ascii_fmt::to_ascii(os, ps.tree_.geometry(p.first));
+      os << "\n";
+    }
+
+    os << "}";
+    return os;
+  }
 };
 
 }  // namespace hm3::geometry

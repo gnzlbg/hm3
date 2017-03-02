@@ -177,7 +177,7 @@ for (auto&& bidx : s.grid()) {
         // if (!bn.in_grid(x_hc)) { return; }
         auto nc = bn.geometry().internal_cell_containing(x_hc);
         if (!nc) { return; }  // TODO: use halo sub-tiles
-        RANGES_FOR (auto&& v, s.variables()) { b_lhs(hc)(v) = 0.; }
+        for (auto&& v : s.variables()) { b_lhs(hc)(v) = 0.; }
       });
       // zero the variables
       b.cells().for_each_halo([&](auto hc) {
@@ -207,7 +207,7 @@ for (auto&& bidx : s.grid()) {
         auto x_nc = bn.geometry().cell_centroid(nc);
         auto dx   = x_hc() - x_nc();
 
-        RANGES_FOR (auto&& d, s.dimensions()) {
+        for (auto&& d : s.dimensions()) {
           auto gradients = compute_structured_gradient(s, bn, nc, d, lim);
           gradients *= dx(d);
           gradients += b_lhs(hc);

@@ -1,15 +1,31 @@
+#include <hm3/geometry/algorithms.hpp>
+#include <hm3/geometry/primitive/aabb.hpp>
+#include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/simplex.hpp>
 #include <hm3/utility/test.hpp>
 
-int main() {
-  using namespace hm3;
-  using namespace geometry;
+using namespace hm3;
+using namespace geometry;
 
+template <typename Vertices>
+auto make_edges(Vertices& vxs) {
+  using p_t = ranges::range_value_t<Vertices>;
+  using s_t = associated::edge_t<p_t>;
+  return view::ints(std::size_t{0}, ranges::size(vxs))
+         | view::transform([&](auto idx) {
+             return s_t(vxs[idx],
+                        vxs[idx == ranges::size(vxs) - 1 ? 0 : idx + 1]);
+           });
+}
+
+int main() {
   {  // 1D (points)
     using point_t = point<1>;
     using vec_t   = vec<1>;
     point_t p[]   = {{.5}};
     simplex<1> s(p);
+
+    static_assert(Simplex<simplex<1>>{});
 
     // Vertices:
     CHECK(vertex(s, 0) == p[0]);
@@ -36,6 +52,8 @@ int main() {
     using aabb_t  = aabb<2>;
     point_t p[]   = {{0.0, 0.0}, {1.0, 1.0}};
     simplex<2> s(p);
+
+    static_assert(Simplex<simplex<2>>{});
 
     // Vertices:
     CHECK(vertex(s, 0) == p[0]);
@@ -74,7 +92,8 @@ int main() {
   {  // 3D (triangles)
     using point_t = point<3>;
     point_t p[]   = {{0.0, 0.0, 0.0}, {1.0, 0.0, 0.0}, {1.0, 1.0, 0.0}};
-    simplex<3> s(p);
+    simplex<3> s(make_edges(p));
+    static_assert(Simplex<simplex<3>>{});
 
     // Bounding box
     // Vertices:

@@ -1,21 +1,17 @@
 #pragma once
 /// \file
 ///
-///
-#include <hm3/utility/inline_vector.hpp>
+/// FV cell types.
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
-/// Types of cell
-enum class cell_type : char {
-  internal          = 0,
-  boundary          = 1,
-  boundary_neighbor = 2,
-  unknown           = 3
+/// Types of tile cells.
+enum class tile_cell_type : char {
+  internal                        = 0,
+  boundary                        = 1,
+  internal_boundary_cell_neighbor = 2,
+  external                        = 3,
+  unknown                         = 4
 };
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

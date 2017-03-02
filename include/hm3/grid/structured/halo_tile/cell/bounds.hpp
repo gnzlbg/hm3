@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Square structured halo tile bounds
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/structured/halo_tile/index_type.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
@@ -316,7 +316,7 @@ template <typename Neighbor, typename Bounds>
 constexpr auto halos(Neighbor pos, Bounds) noexcept {
   using manifold     = get_tag_t<Neighbor>;
   constexpr auto r   = manifold::rank();
-  constexpr auto nd  = manifold::dimension();
+  constexpr auto nd  = manifold::ambient_dimension();
   constexpr auto nic = Bounds::internal_cell_length();
   constexpr auto nhl = Bounds::halo_layers();
   return detail::halo_tiles_lookup_table<nd, r, nic, nhl>[*pos];

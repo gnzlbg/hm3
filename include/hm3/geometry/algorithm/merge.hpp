@@ -2,7 +2,6 @@
 /// \file
 ///
 /// Merge two primitives
-#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/optional.hpp>
 #include <hm3/utility/range.hpp>
 

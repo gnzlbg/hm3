@@ -1,5 +1,7 @@
+/// \file
+///
+/// Geometry AABB tests
 #include "aabb.hpp"
-#include <hm3/geometry/algorithm/intersection/aabb.hpp>
 #include <hm3/geometry/primitive/aabb.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -182,6 +184,5 @@ int main() {
   CHECK(x_min(b) <= x_min(a));
   CHECK(x_max(b) >= x_max(a));
 }
-
 return test::result();
 }

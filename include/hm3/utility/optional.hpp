@@ -15,6 +15,7 @@
 
 #include <cassert>
 #include <functional>
+#include <hm3/utility/config/assert.hpp>
 #include <initializer_list>
 #include <stdexcept>
 #include <string>
@@ -574,19 +575,25 @@ class optional : private OptionalBase<T> {
   }
 
   constexpr T const& value() const & {
-    return initialized() ? contained_val()
-                         : (throw bad_optional_access("bad optional access"),
-                            contained_val());
+    HM3_ASSERT(initialized(), "bad optional access");
+    // return initialized() ? contained_val()
+    //                      : (throw bad_optional_access("bad optional access"),
+    //                         contained_val());
+    return contained_val();
   }
 
   OPTIONAL_MUTABLE_CONSTEXPR T& value() & {
-    return initialized() ? contained_val()
-                         : (throw bad_optional_access("bad optional access"),
-                            contained_val());
+    HM3_ASSERT(initialized(), "bad optional access");
+    // return initialized() ? contained_val()
+    //                      : (throw bad_optional_access("bad optional access"),
+    //                         contained_val());
+    return contained_val();
   }
 
   OPTIONAL_MUTABLE_CONSTEXPR T&& value() && {
-    if (!initialized()) { throw bad_optional_access("bad optional access"); }
+    HM3_ASSERT(initialized(), "bad optional access");
+    //    if (!initialized()) { throw bad_optional_access("bad optional
+    //    access"); }
     return std::move(contained_val());
   }
 
@@ -607,15 +614,19 @@ class optional : private OptionalBase<T> {
   }
 
   constexpr T const& value() const {
-    return initialized() ? contained_val()
-                         : (throw bad_optional_access("bad optional access"),
-                            contained_val());
+    HM3_ASSERT(initialized(), "bad optional access");
+    // return initialized() ? contained_val()
+    //                      : (throw bad_optional_access("bad optional access"),
+    //                         contained_val());
+    return contained_val();
   }
 
   T& value() {
-    return initialized() ? contained_val()
-                         : (throw bad_optional_access("bad optional access"),
-                            contained_val());
+    HM3_ASSERT(initialized(), "bad optional access");
+    // return initialized() ? contained_val()
+    //                      : (throw bad_optional_access("bad optional access"),
+    //                         contained_val());
+    return contained_val();
   }
 
 #endif
@@ -728,8 +739,10 @@ class optional<T&> {
   }
 
   constexpr T& value() const {
-    return ref_ ? *ref_
-                : (throw bad_optional_access("bad optional access"), *ref_);
+    HM3_ASSERT(ref_ == true, "bad optional access");
+    // return ref_ ? *ref_
+    //             : (throw bad_optional_access("bad optional access"), *ref_);
+    return *ref_;
   }
 
   explicit constexpr operator bool() const noexcept { return ref_ != nullptr; }
@@ -1072,18 +1085,3 @@ template <typename T>
 using optional = std2::experimental::optional<T>;
 
 }  // namespace hm3
-
-// TODO: find a better way of offering debug output
-namespace std2::experimental {
-
-template <typename OStream, typename T>
-OStream& operator<<(OStream& os, optional<T> const& o) {
-  if (o) {
-    os << o.value();
-  } else {
-    os << "-";
-  }
-  return os;
-}
-
-}  // namespace std2::experimental

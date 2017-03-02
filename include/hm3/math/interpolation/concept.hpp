@@ -34,10 +34,10 @@ using Interpolable
  = concepts::rc::models<concepts::Interpolable, ranges::uncvref_t<T>>;
 
 template <typename T, typename V>
-using InterpolableV = meta::
- and_<concepts::rc::models<concepts::Interpolable, ranges::uncvref_t<T>>,
-      Same<ranges::uncvref_t<decltype(*begin(std::declval<T>().values()))>,
-           ranges::uncvref_t<T>>>;
+using InterpolableV = meta::and_<
+ concepts::rc::models<concepts::Interpolable, ranges::uncvref_t<T>>,
+ Same<ranges::uncvref_t<decltype(*begin(std::declval<T>().values()))>,
+      ranges::uncvref_t<T>>>;
 
 }  // namespace ip
 }  // namespace hm3::math

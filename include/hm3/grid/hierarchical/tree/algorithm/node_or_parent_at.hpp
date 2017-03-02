@@ -25,7 +25,9 @@ struct node_or_parent_at_fn {
   ///
   template <typename Tree, typename Loc, CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc) const noexcept -> node {
-    static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
+    static_assert(Tree::ambient_dimension()
+                   == ranges::uncvref_t<Loc>::ambient_dimension(),
+                  "");
     node result{0_n, lidx_t{0}};
     for (auto&& p : loc()) {
       auto m = t.child(result.idx, child_pos_t<Tree>(p));

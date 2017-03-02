@@ -1,14 +1,14 @@
-#include <hm3/geometry/algorithm/intersection/segment_point.hpp>
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
-template <dim_t Nd>  //
+template <dim_t Ad>  //
 void test_segment_point_intersection() {
-  using p_t = geometry::point<Nd>;
-  using s_t = geometry::segment<Nd>;
+  using p_t = geometry::point<Ad>;
+  using s_t = geometry::segment<Ad>;
 
   auto x0 = p_t::constant(0.);
   auto x1 = p_t::constant(2.);
@@ -30,32 +30,32 @@ void test_segment_point_intersection() {
   CHECK(!geometry::intersection.test(s, o1));
   CHECK(!geometry::intersection.test(s, o2));
 
-  // visit(
-  //  [&](auto&& i) {
-  //    using T = uncvref_t<decltype(i)>;
-  //    if
-  //      constexpr(Same<T, p_t>{}) { CHECK(i == a); }
-  //    else if
-  //      constexpr(Same<T, monostate>{}) { CHECK(false); }
-  //    else {
-  //      static_assert(fail<T>{}, "forgot to handle a case");
-  //    }
-  //  },
-  //  geometry::point_primitive::intersection(a, b));
+  visit(
+   [&](auto&& i) {
+     using T = uncvref_t<decltype(i)>;
+     if
+       constexpr(Same<T, p_t>{}) { CHECK(i == x0); }
+     else if
+       constexpr(Same<T, monostate>{}) { CHECK(false); }
+     else {
+       static_assert(always_false<T>{}, "forgot to handle a case");
+     }
+   },
+   geometry::intersection(s, x0));
 
-  // visit(
-  //  [&](auto&& i) {
-  //    using T = uncvref_t<decltype(i)>;
-  //    if
-  //      constexpr(Same<T, p_t>{}) { CHECK(false); }
-  //    else if
-  //      constexpr(Same<T, monostate>{}) { CHECK(true); }
+  visit(
+   [&](auto&& i) {
+     using T = uncvref_t<decltype(i)>;
+     if
+       constexpr(Same<T, p_t>{}) { CHECK(false); }
+     else if
+       constexpr(Same<T, monostate>{}) { CHECK(true); }
 
-  //    else {
-  //      static_assert(fail<T>{}, "forgot to handle a case");
-  //    }
-  //  },
-  //  geometry::point_primitive::intersection(a, c));
+     else {
+       static_assert(always_false<T>{}, "forgot to handle a case");
+     }
+   },
+   geometry::intersection(s, o0));
 }
 
 int main() {

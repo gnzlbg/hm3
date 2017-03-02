@@ -32,7 +32,7 @@ int main() {
 
   auto plls = {pl0, pl1};
   geometry::split.range(pgs, plls);
-  CHECK(pgs.size() == 3);
+  CHECK(pgs.size() == 3_u);
 
   auto r0 = plg_t{p6, p_t{0., 0.}, p_t{1., 0.}, p7, p1};
   auto r1 = plg_t{p8, p6, p1, p7, p9, p4};

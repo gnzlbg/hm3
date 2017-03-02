@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -77,3 +78,4 @@ struct mesh : simplex_array<Nd>, bounding_volume_hierarchy<Nd> {
 };
 
 }  // namespace hm3::geometry
+#endif

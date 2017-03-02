@@ -16,13 +16,13 @@ struct is_trivially_copyable : integral_constant<bool, __has_trivial_copy(T)> {
 }  // namespace std
 #endif  // GLIBCXX macro
 
-#include <experimental/monostate.hpp>
-#include <experimental/variant.hpp>
+#include <mpark/variant.hpp>
 
 namespace hm3 {
 
-using std::experimental::variant;
-using std::experimental::monostate;
+using mpark::variant;
+using mpark::monostate;
+using mpark::get_if;
 
 namespace variant_detail {
 
@@ -30,7 +30,7 @@ struct visit_fn {
   template <typename... Args>
   constexpr auto operator()(Args&&... args) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-    std::experimental::visit(std::forward<Args>(args)...));
+    mpark::visit(std::forward<Args>(args)...));
 };
 
 }  // namespace variant_detail
@@ -40,34 +40,8 @@ static constexpr auto const& visit
  = static_const<variant_detail::visit_fn>::value;
 }
 
-/// Instantiating this type fails
+/// This type is always false.
 template <typename T>
-struct fail;
+struct always_false : std::false_type {};
 
 }  // namespace hm3
-
-namespace std::experimental {
-template <typename OStream>
-OStream& operator<<(OStream& os, monostate const&) {
-  os << "-";
-  return os;
-}
-
-template <typename OStream, typename T>
-auto print_val(OStream& os, T&& t, int) -> decltype(os << t) {
-  return os << t;
-}
-
-template <typename OStream, typename T>
-auto print_val(OStream& os, T&& t, long)
- -> decltype(os << ranges::view::all(t)) {
-  return os << ranges::view::all(t);
-}
-
-template <typename OStream, typename... Args>
-OStream& operator<<(OStream& os, variant<Args...> const& v) {
-  ::hm3::visit([&os](auto&& i) { print_val(os, i, 0); }, v);
-  return os;
-}
-
-}  // namespace std::experimental

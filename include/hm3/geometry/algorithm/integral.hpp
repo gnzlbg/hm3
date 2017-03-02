@@ -2,120 +2,82 @@
 /// \file
 ///
 /// Integral over discrete primitives.
-#include <hm3/geometry/rank.hpp>
-#include <hm3/utility/range.hpp>
+#include <hm3/geometry/algorithm/integral/aabb.hpp>
+#include <hm3/geometry/algorithm/integral/box.hpp>
+#include <hm3/geometry/algorithm/integral/point.hpp>
+#include <hm3/geometry/algorithm/integral/polygon.hpp>
+#include <hm3/geometry/algorithm/integral/polyline.hpp>
+#include <hm3/geometry/algorithm/integral/segment.hpp>
+#include <hm3/geometry/algorithm/integral/vector.hpp>
 
 namespace hm3::geometry {
 
 namespace integral_detail {
 
-/// Rank of the integral to be computed.
-template <dim_t IR>
-using integral_rank = std::integral_constant<dim_t, IR>;
-
-/// Volume integral.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam R  Geometry rank == Nd.
-///
-/// The integral rank equals the number of spatial dimensions.
-///
-template <dim_t Nd, dim_t R, CONCEPT_REQUIRES_(Nd == R)>
-using volume_rank = integral_rank<R>;
-
-template <typename T>
-using volume_integral = volume_rank<dimension_v<T>, rank_v<T>>;
-
-/// Area integral.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam R  Geometry rank == Nd - 1 (only Nd-"surfaces" have area).
-///
-/// Integral rank: equal the number of spatial dimensions / geometry rank.
-///
-template <dim_t Nd, dim_t R, CONCEPT_REQUIRES_(Nd - 1 == R)>
-using surface_rank = integral_rank<R>;
-
-template <typename T>
-using surface_integral = surface_rank<dimension_v<T>, rank_v<T>>;
-
-/// Boundary integral.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam R  Geometry rank.
-///
-/// Integral rank: equal R - 1.
-///
-/// \note If Geometry rank == 0 (i.e., for points), the boundary is zero.
-///
-template <dim_t Nd, dim_t R>
-using boundary_rank = integral_rank<R == 0 ? math::highest<dim_t> : R - 1>;
-
-template <typename T>
-using boundary_integral = boundary_rank<dimension_v<T>, rank_v<T>>;
-
-/// Path integral.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam R  Geometry rank == 1 (only paths have a length).
-///
-/// Integral rank: equal R.
-///
-template <dim_t Nd, dim_t R, CONCEPT_REQUIRES_(R == 1)>
-using path_rank = integral_rank<R>;
-
-template <typename T>
-using path_integral = path_rank<dimension_v<T>, rank_v<T>>;
-
 struct integral_fn {
-  template <typename T, typename IntRank>
-  static constexpr auto impl(T&& t, IntRank)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(integral(std::forward<T>(t),
-                                                 IntRank{}));
+  template <typename T, typename K>
+  static constexpr auto impl(T const& t, K, trait::point<1>) noexcept {
+    static_assert(Point<T, 1>{});
+    return integral_point(t, K{});
+  }
 
-  // template <typename T, typename IntRank, CONCEPT_REQUIRES_(IntRank{} == 0)>
-  // static constexpr auto impl(T&&, IntRank) {
-  //   return 1.;
-  // }
+  template <typename T, typename K, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T const& t, K, trait::vector<Ad>) noexcept {
+    static_assert(Vector<T, Ad>{});
+    return integral_vector(t, K{});
+  }
 
-  // template <typename T, typename IntRank,
-  //           CONCEPT_REQUIRES_(IntRank{} == math::highest<dim_t>)>
-  // static constexpr auto impl(T&&, IntRank) {
-  //   return 0.;
-  // }
+  template <typename T, typename K, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T const& t, K, trait::segment<Ad>) noexcept {
+    static_assert(Segment<T, Ad>{});
+    return integral_segment(t, K{});
+  }
+
+  template <typename T, typename K, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T const& t, K, trait::polyline<Ad>) noexcept {
+    static_assert(Polyline<T>{});
+    return integral_polyline(t, K{});
+  }
+
+  template <typename T, typename K, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T const& t, K, trait::polygon<Ad>) noexcept {
+    static_assert(Polygon<T>{});
+    return integral_polygon(t, K{});
+  }
+
+  template <typename T, typename K, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T const& t, K, trait::aabb<Ad>) noexcept {
+    return integral_aabb(t, K{});
+  }
+
+  template <typename T, typename K, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T const& t, K, trait::box<Ad>) noexcept {
+    return integral_box(t, K{});
+  }
 
   template <typename T>
-  static constexpr auto path(T&& t)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             path_integral<T>{}));
+  static constexpr auto path(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+   impl(std::forward<T>(t), trait::path_integral<T>{}, associated::v_<T>));
 
   template <typename T>
-  static constexpr auto boundary(T&& t)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             boundary_integral<T>{}));
+  static constexpr auto boundary(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+   impl(std::forward<T>(t), trait::boundary_integral<T>{}, associated::v_<T>));
 
   template <typename T>
-  static constexpr auto area(T&& t)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             surface_integral<T>{}));
+  static constexpr auto surface(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+   impl(std::forward<T>(t), trait::surface_integral<T>{}, associated::v_<T>));
 
   template <typename T>
-  static constexpr auto volume(T&& t)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
-                                             volume_integral<T>{}));
+  static constexpr auto volume(T&& t) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+   impl(std::forward<T>(t), trait::volume_integral<T>{}, associated::v_<T>));
 
   template <typename T, typename IntRank>
   constexpr auto operator()(T&& t, IntRank) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t), IntRank{}));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t), IntRank{},
+                                             associated::v_<T>));
 };
 
 }  // namespace integral_detail
-
-using integral_detail::integral_rank;
-using integral_detail::volume_integral;
-using integral_detail::surface_integral;
-using integral_detail::path_integral;
-using integral_detail::boundary_integral;
 
 namespace {
 static constexpr auto const& integral
@@ -127,7 +89,7 @@ namespace integral_detail {
 struct area_fn {
   template <typename T>
   constexpr auto operator()(T&& t) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(integral.area(std::forward<T>(t)));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(integral.surface(std::forward<T>(t)));
 };
 
 }  // namespace integral_detail
@@ -137,35 +99,7 @@ static constexpr auto const& area
  = static_const<integral_detail::area_fn>::value;
 }  // namespace
 
-namespace integral_detail {
-
-struct perimeter_fn {
-  template <typename T>
-  constexpr auto operator()(T&& t) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(integral.boundary(std::forward<T>(t)));
-};
-
-}  // namespace integral_detail
-
-namespace {
-static constexpr auto const& perimeter
- = static_const<integral_detail::perimeter_fn>::value;
-}  // namespace
-
-namespace integral_detail {
-
-struct surface_area_fn {
-  template <typename T>
-  constexpr auto operator()(T&& t) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(integral.boundary(std::forward<T>(t)));
-};
-
-}  // namespace integral_detail
-
-namespace {
-static constexpr auto const& surface_area
- = static_const<integral_detail::surface_area_fn>::value;
-}  // namespace
+// namespace integral_detail {
 
 namespace integral_detail {
 

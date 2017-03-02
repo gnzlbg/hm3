@@ -65,7 +65,8 @@ decltype(auto) to_string(T&& t) {
 /// omega= 0.5; t= 0.2; cos(omega*t)= 0.9950041652780258;
 /// myvec= [1, 2, 3]; mymap= {'1':1, '2':2, '3':3}; mypair= (1,2);
 /// @endcode
-#define OUTPUT(...)                                                           \
-  ::hm3::fmt::print("{}", (::hm3::fmt::MemoryWriter{}                         \
-                           << _OUTPUT_RUN(OUTPUT_, __VA_ARGS__)(__VA_ARGS__)) \
-                           .str())
+#define OUTPUT(...)                                                         \
+  ::hm3::ascii_fmt::out("{}",                                               \
+                        (::hm3::ascii_fmt::detail::MemoryWriter{}           \
+                         << _OUTPUT_RUN(OUTPUT_, __VA_ARGS__)(__VA_ARGS__)) \
+                         .str())

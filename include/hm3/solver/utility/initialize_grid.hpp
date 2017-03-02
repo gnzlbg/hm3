@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Initializes a solver grid from tree with nodes that match a predicate
+#include <hm3/geometry/algorithm/relative_position.hpp>
 
 namespace hm3 {
 namespace solver {

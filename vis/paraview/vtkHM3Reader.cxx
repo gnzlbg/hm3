@@ -11,7 +11,7 @@
 ///   their origin (if this happens it is a bug)
 //
 #include "vtkHM3Reader.h"
-#include <hm3/utility/exception.hpp>
+#include <hm3/utility/config/exception.hpp>
 #include <hm3/vis/vtk/readers/factory.hpp>
 #include <iostream>
 

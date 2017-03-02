@@ -99,8 +99,9 @@ struct ls_serializable : serializable<State, Solid> {
   auto nodes() const noexcept {
     return s.all_cells() | view::filter([&](cell_idx c) {
              if (!idx) {
-               return s.is_internal(c) and (ls.is_inside(s.geometry(c))
-                                            or ls.is_cut(s.geometry(c)));
+               return s.is_internal(c)
+                      and (ls.is_inside(s.geometry(c))
+                           or ls.is_cut(s.geometry(c)));
              } else {
                return s.is_in_block(c, idx);
              }

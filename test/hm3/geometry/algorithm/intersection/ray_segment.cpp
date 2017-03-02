@@ -1,18 +1,17 @@
-#include <hm3/geometry/algorithm/intersection/ray_segment.hpp>
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/primitive/ray.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
+using namespace geometry;
 
-template <dim_t Nd>  //
+template <dim_t Ad>  //
 void test_ray_segment_intersection() {
-  using p_t = geometry::point<Nd>;
-  using s_t = geometry::segment<Nd>;
-  using v_t = geometry::vec<Nd>;
-  using r_t = geometry::ray<Nd>;
-  using geometry::intersection;
-  using geometry::direction;
+  using p_t = point<Ad>;
+  using s_t = segment<Ad>;
+  using v_t = vec<Ad>;
+  using r_t = ray<Ad>;
 
   auto o0 = p_t::constant(1.);
   auto d0 = v_t(v_t::constant(1.).normalized());
@@ -70,7 +69,7 @@ void test_ray_segment_intersection() {
      else if
        constexpr(Same<T, monostate>{}) { CHECK(true); }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
    intersection(r, s0));
@@ -88,7 +87,7 @@ void test_ray_segment_intersection() {
      else if
        constexpr(Same<T, monostate>{}) { CHECK(false); }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
    intersection(r, s1));
@@ -103,7 +102,7 @@ void test_ray_segment_intersection() {
      else if
        constexpr(Same<T, monostate>{}) { CHECK(false); }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
    intersection(r, s2));
@@ -117,7 +116,7 @@ void test_ray_segment_intersection() {
      else if
        constexpr(Same<T, monostate>{}) { CHECK(false); }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
    intersection(r, s3));
@@ -125,13 +124,13 @@ void test_ray_segment_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
      if
-       constexpr(Same<T, s_t>{}) { CHECK(geometry::approx(i, s4)); }
+       constexpr(Same<T, s_t>{}) { CHECK(approx(i, s4)); }
      else if
        constexpr(Same<T, p_t>{}) { CHECK(false); }
      else if
        constexpr(Same<T, monostate>{}) { CHECK(false); }
      else {
-       static_assert(fail<T>{}, "non-exhaustive variant");
+       static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
    intersection(r, s4));

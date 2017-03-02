@@ -4,7 +4,7 @@
 /// Square tile geometry
 #include <hm3/geometry/algorithm/intersection.hpp>
 #include <hm3/geometry/algorithm/intersection/box_point.hpp>
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/structured/tile/cell.hpp>
@@ -33,7 +33,7 @@ struct cell_geometry : geometry::box<Nd>, cell::indices<Nd, Nc>::coordinate {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
 template <dim_t Nd, tidx_t Nc>
-struct tile_geometry : geometry::dimensional<Nd> {
+struct tile_geometry : geometry::with_ambient_dimension<Nd> {
   using bounds          = cell::bounds<Nd, Nc>;
   using point_t         = geometry::point<Nd>;
   using box_t           = geometry::box<Nd>;

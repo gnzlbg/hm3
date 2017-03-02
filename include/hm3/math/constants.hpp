@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Mathematical constants.
+#include <hm3/types.hpp>
 #include <limits>
 
 namespace hm3::math {

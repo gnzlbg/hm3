@@ -2,7 +2,7 @@
 /// \file
 ///
 /// n-dimensional octree data structure
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/bounded.hpp>
@@ -15,9 +15,9 @@
 namespace hm3 {
 namespace tree {
 
-/// Nd-octree data-structure
-template <dim_t Nd>
-struct tree : geometry::dimensional<Nd> {
+/// Ad-octree data-structure
+template <dim_t Ad>
+struct tree : geometry::with_ambient_dimension<Ad> {
   /// \name Data (all member variables of the tree)
   ///
   /// Memory layout: siblings (node with the same parent) are stored
@@ -54,12 +54,12 @@ struct tree : geometry::dimensional<Nd> {
   /// \name Spatial constants
   ///@{
 
-  using geometry::dimensional<Nd>::dimension;
-  using geometry::dimensional<Nd>::dimensions;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimension;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimensions;
 
   /// Number of children per node
   static constexpr cpidx_t no_children() noexcept {
-    return hm3::tree::no_children(Nd);
+    return hm3::tree::no_children(Ad);
   }
 
   /// Position of node \p n within its parent
@@ -115,7 +115,7 @@ struct tree : geometry::dimensional<Nd> {
   }
 
   /// Child position type. Bounded: [0, `no_children()`).
-  using child_pos = ::hm3::tree::child_pos<Nd>;
+  using child_pos = ::hm3::tree::child_pos<Ad>;
 
  private:
   /// Index of the first children of node \p n
@@ -231,8 +231,8 @@ struct tree : geometry::dimensional<Nd> {
   /// \note The tree does not need to be compact
   auto nodes() const noexcept {
     return sibling_groups()  // range of all non-free sibling groups
-           // map each sibling group into a range of its nodes
-           // (which produces a range of ranges of nodes):
+                             // map each sibling group into a range of its nodes
+                             // (which produces a range of ranges of nodes):
            | view::transform([](siblings_idx s) { return nodes(s); })
            // flatten the range into a range of nodes:
            | view::join;
@@ -547,11 +547,11 @@ struct tree : geometry::dimensional<Nd> {
 ///
 /// Two trees are equal if their parent-child graph is the same.
 ///
-template <dim_t Nd>
-bool operator==(tree<Nd> const& a, tree<Nd> const& b) noexcept {
+template <dim_t Ad>
+bool operator==(tree<Ad> const& a, tree<Ad> const& b) noexcept {
   if (a.size() != b.size()) { return false; }
 
-  RANGES_FOR (auto&& np, view::zip(a.nodes(), b.nodes())) {
+  for (auto&& np : view::zip(a.nodes(), b.nodes())) {
     auto&& an = get<0>(np);
     auto&& bn = get<1>(np);
     if (a.parent(an) != b.parent(bn)) { return false; }
@@ -560,8 +560,8 @@ bool operator==(tree<Nd> const& a, tree<Nd> const& b) noexcept {
   return true;
 }
 
-template <dim_t Nd>
-bool operator!=(tree<Nd> const& a, tree<Nd> const& b) noexcept {
+template <dim_t Ad>
+bool operator!=(tree<Ad> const& a, tree<Ad> const& b) noexcept {
   return !(a == b);
 }
 
@@ -574,14 +574,14 @@ using quad_tree = tree<2>;
 /// Oct-tree
 using oct_tree = tree<3>;
 
-template <dim_t Nd>
-string type(tree<Nd> const&) {
+template <dim_t Ad>
+string type(tree<Ad> const&) {
   return "tree";
 }
 
-template <dim_t Nd>
-string name(tree<Nd> const&) {
-  return type(tree<Nd>{}) + "_" + std::to_string(Nd) + "D";
+template <dim_t Ad>
+string name(tree<Ad> const&) {
+  return type(tree<Ad>{}) + "_" + std::to_string(Ad) + "D";
 }
 
 }  // namespace tree

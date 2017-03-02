@@ -373,9 +373,10 @@ struct indices : bounds<Nd, Nc> {
           }
         }
       });
-      HM3_ASSERT(count_min_distance == 0, "UB! Multiple closest cells to cell "
-                                          "{} that satisfy the predicate (one "
-                                          "of them is {}).",
+      HM3_ASSERT(count_min_distance == 0,
+                 "UB! Multiple closest cells to cell "
+                 "{} that satisfy the predicate (one "
+                 "of them is {}).",
                  x, x_closest);
       min = min.offset_if_valid(-1);
       max = max.offset_if_valid(1);
@@ -389,7 +390,8 @@ struct indices : bounds<Nd, Nc> {
 
   [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto
    all() noexcept {
-    return view::iota(tidx_t{0}, self::size());
+    return view::iota(indexed_coordinate(index(tidx_t{0})),
+                      indexed_coordinate(index(self::size())));
   }
 
   /// Sub-tile view

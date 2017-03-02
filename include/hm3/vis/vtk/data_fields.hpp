@@ -103,8 +103,10 @@ struct data_fields {
   auto push(string const& name, ComputeComponent&& g,
             const sint_t no_components, ComponentName&& cn,
             const int default_value = 0) noexcept {
-    auto f = field(name, [&, name, g, no_components,
-                          cn]() { base()->load(name, g, no_components, cn); },
+    auto f = field(name,
+                   [&, name, g, no_components, cn]() {
+                     base()->load(name, g, no_components, cn);
+                   },
                    default_value);
     auto i = find_field(current_, name);
     HM3_ASSERT(i == ::hm3::end(current_), "field \"{}\" is already registered!",

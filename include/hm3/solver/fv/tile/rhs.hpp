@@ -18,6 +18,14 @@ struct right_hand_side {
    = dense::matrix<num_t, grid_t::cells().size(), Nv, tidx_t, vidx_t, Order>;
   storage_t rhs_;
 
+  struct cell_storage {
+    using storage_t = dense::vector<num_t, Nv, vidx_t>;
+    storage_t rhs_;
+    auto& rhs() noexcept { return rhs_; }
+    auto const& rhs() const noexcept { return rhs_; }
+    void clear() { rhs_ = storage_t::zero(); }
+  };
+
   auto& rhs() noexcept { return rhs_; }
   auto const& rhs() const noexcept { return rhs_; }
   auto rhs(cell_idx c) noexcept { return rhs_.row(*c.idx()); }

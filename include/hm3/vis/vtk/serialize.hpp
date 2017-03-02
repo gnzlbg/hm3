@@ -31,7 +31,7 @@ struct serializable_to_vtk {
             typename Idx = vtk_cell_idx_t<U>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(  //
    (t.bounding_box()),                               //
-   (t.dimensions()),                                 //
+   (geometry::ambient_dimension(t)),                 //
    (t.geometry(Idx{})),                              //
    //(t.load(CD())),                                 //
    (t.for_each_cell(unary_fn{}))  //

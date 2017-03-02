@@ -1,7 +1,9 @@
 /// \file
 ///
-/// Geometry point tests
+/// Geometry vector tests.
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/concepts.hpp>
+#include <hm3/geometry/io/ascii.hpp>
 #include <hm3/geometry/primitive/vec.hpp>
 #include <hm3/utility/test.hpp>
 
@@ -12,49 +14,38 @@ template struct hm3::geometry::vec_primitive::vec<1>;
 template struct hm3::geometry::vec_primitive::vec<2>;
 template struct hm3::geometry::vec_primitive::vec<3>;
 
-static_assert(Dimensional<vec<1>>{}, "");
-static_assert(Dimensional<vec<2>>{}, "");
-static_assert(Dimensional<vec<3>>{}, "");
+template <typename T, dim_t Ad>
+void check_vector_concepts() {
+  static_assert(AmbientDimension<T>{}, "");
+  static_assert(AmbientDimension<T, Ad>{}, "");
 
-static_assert(Dimensional<vec<1>, 1>{}, "");
-static_assert(Dimensional<vec<2>, 2>{}, "");
-static_assert(Dimensional<vec<3>, 3>{}, "");
+  static_assert(ElementDimension<T>{}, "");
+  static_assert(ElementDimension<T, Ad>{}, "");
+  static_assert(ElementDimension<T, Ad, 1>{}, "");
 
-static_assert(SemiRegular<vec<1>>{}, "");
-static_assert(SemiRegular<vec<2>>{}, "");
-static_assert(SemiRegular<vec<3>>{}, "");
+  static_assert(GeometryObject<T>{}, "");
+  static_assert(GeometryObject<T, Ad>{}, "");
+  static_assert(GeometryObject<T, Ad, 1>{}, "");
 
-static_assert(Regular<vec<1>>{}, "");
-static_assert(Regular<vec<2>>{}, "");
-static_assert(Regular<vec<3>>{}, "");
-
-static_assert(!Primitive<vec<1>>{}, "");
-static_assert(!Primitive<vec<2>>{}, "");
-static_assert(!Primitive<vec<3>>{}, "");
-
-static_assert(!Surface<vec<1>>{}, "");
-static_assert(!Surface<vec<2>>{}, "");
-static_assert(!Surface<vec<3>>{}, "");
-
-static_assert(!Segment<vec<1>>{}, "");
-static_assert(!Segment<vec<2>>{}, "");
-static_assert(!Segment<vec<3>>{}, "");
-
-static_assert(!Volume<vec<1>>{}, "");
-static_assert(!Volume<vec<2>>{}, "");
-static_assert(!Volume<vec<3>>{}, "");
+  static_assert(Vector<T>{}, "");
+  static_assert(Vector<T, Ad>{}, "");
+}
 
 int main() {
   using namespace geometry;
+
+  check_vector_concepts<vec<1>, 1>();
+  check_vector_concepts<vec<2>, 2>();
+  check_vector_concepts<vec<3>, 3>();
 
   {  // check constructors and dimension:
     constexpr auto p1 = vec<1>{0.};
     constexpr auto p2 = vec<2>{0., 0.};
     constexpr auto p3 = vec<3>{0., 0., 0.};
 
-    STATIC_CHECK(dimension(p1) == 1_su);
-    STATIC_CHECK(dimension(p2) == 2_su);
-    STATIC_CHECK(dimension(p3) == 3_su);
+    STATIC_CHECK(ambient_dimension(p1) == 1_su);
+    STATIC_CHECK(ambient_dimension(p2) == 2_su);
+    STATIC_CHECK(ambient_dimension(p3) == 3_su);
   }
 
   {  // check values:
@@ -77,6 +68,7 @@ int main() {
     constexpr auto p1c = vec<1>{2.};
     const vec<1> p1d   = vec<1>::constant(1.);
 
+    CHECK(integral.path(p1a) == 0.);
     CHECK(length(p1a) == 0.);
     CHECK(length(p1b) == 1.);
     CHECK(length(p1c) == 2.);
@@ -101,10 +93,10 @@ int main() {
     constexpr auto p3a = vec<3>{0., 1., 2.};
     constexpr auto p3b = vec<3>{2., 0., 1.};
 
-    CHECK((p1a == p1a));
-    CHECK((p1a != p1b));
-    CHECK((p3a == p3a));
-    CHECK((p3a != p3b));
+    CHECK(p1a == p1a);
+    CHECK(p1a != p1b);
+    CHECK(p3a == p3a);
+    CHECK(p3a != p3b);
   }
 
   {  // check constexpr:
@@ -112,18 +104,9 @@ int main() {
     constexpr auto p2 = vec<2>{0., 1.};
     constexpr auto p3 = vec<3>{0., 1., 2.};
 
-    CHECK(dimension(p1) == 1_su);
-    CHECK(dimension(p2) == 2_su);
-    CHECK(dimension(p3) == 3_su);
-
-    STATIC_CHECK(dimension(p1) == 1_su);
-    STATIC_CHECK(dimension(p2) == 2_su);
-    STATIC_CHECK(dimension(p3) == 3_su);
-
-    CHECK(p1(0) == 0.);
-    CHECK(p3(0) == 0.);
-    CHECK(p3(1) == 1.);
-    CHECK(p3(2) == 2.);
+    STATIC_CHECK(ambient_dimension(p1) == 1_su);
+    STATIC_CHECK(ambient_dimension(p2) == 2_su);
+    STATIC_CHECK(ambient_dimension(p3) == 3_su);
 
     STATIC_CHECK(p1(0) == 0.);
     STATIC_CHECK(p3(0) == 0.);
@@ -135,7 +118,7 @@ int main() {
     constexpr auto p1 = vec<2>{0., 1.};
     constexpr auto p2 = p1;
 
-    STATIC_CHECK(dimension(p1) == dimension(p2));
+    STATIC_CHECK(ambient_dimension(p1) == ambient_dimension(p2));
 
     STATIC_CHECK(p1(0) == 0.);
     STATIC_CHECK(p1(1) == 1.);
@@ -145,7 +128,7 @@ int main() {
     constexpr auto p3 = vec<1>{1.5};
     constexpr auto p4 = p3;
 
-    STATIC_CHECK(dimension(p3) == dimension(p4));
+    STATIC_CHECK(ambient_dimension(p3) == ambient_dimension(p4));
 
     STATIC_CHECK(p3(0) == 1.5);
     STATIC_CHECK(p4(0) == 1.5);
@@ -171,6 +154,47 @@ int main() {
 
     CHECK(cross(p1, p2) == c0);
     CHECK(cross(p2, p1) == c1);
+  }
+
+  {  // check parallel and direction
+    constexpr auto v0 = vec<1>{1.};
+    constexpr auto v1 = vec<1>{2.};
+    CHECK(parallel(v0, v1));
+
+    constexpr auto v2 = vec<2>{0., 1.};
+    constexpr auto v3 = vec<2>{0., 2.};
+    constexpr auto v4 = vec<2>{1., 1.};
+    constexpr auto v5 = vec<2>{1., 0.};
+    constexpr auto v6 = vec<2>{2., 2.};
+
+    CHECK(parallel(v2, v3));
+    CHECK(not parallel(v2, v4));
+    CHECK(not parallel(v2, v5));
+    CHECK(not parallel(v4, v5));
+    CHECK(parallel(v4, v4));
+    CHECK(parallel(v4, v6));
+
+    constexpr auto v7  = vec<3>{0., 1., 0.};
+    constexpr auto v8  = vec<3>{0., 2., 0.};
+    constexpr auto v9  = vec<3>{1., 1., 1.};
+    constexpr auto v10 = vec<3>{1., 0., 0.};
+    constexpr auto v11 = vec<3>{2., 2., 2.};
+
+    CHECK(parallel(v7, v8));
+    CHECK(not parallel(v7, v9));
+    CHECK(not parallel(v7, v10));
+    CHECK(not parallel(v9, v10));
+    CHECK(parallel(v9, v9));
+    CHECK(parallel(v9, v11));
+
+    // check direction:
+    CHECK(direction(v0) == v0);
+    CHECK(direction(v2) == v2);
+    CHECK(direction(v7) == v7);
+
+    CHECK(direction.invert(v0) == vec<1>{-1. * v0()});
+    CHECK(direction.invert(v2) == vec<2>{-1. * v2()});
+    CHECK(direction.invert(v7) == vec<3>{-1. * v7()});
   }
 
   return test::result();

@@ -17,7 +17,7 @@ void initialize_variables_to_equilibrium(State&& s, InitialCondition&& ic) {
     b.for_each_internal([&](auto&& c) {
       auto x    = b.centroid(c);
       auto f_eq = s.physics.equilibrium_distribution(ic(x));
-      RANGES_FOR (auto&& d, s.physics.all()) {
+      for (auto&& d : s.physics.all()) {
         b.nodes0(c, d) = f_eq[d];
         b.nodes1(c, d) = f_eq[d];
       }
@@ -42,7 +42,7 @@ template <typename Distributions, typename Physics>
 static constexpr void collide(Distributions&& from, Distributions&& to,
                               Physics&& physics, num_t omega) noexcept {
   auto f_eq = physics.equilibrium_distribution(from);
-  RANGES_FOR (auto&& d, physics.all()) {
+  for (auto&& d : physics.all()) {
     to[d] = from[d] + omega * (f_eq[d] - from[d]);
   }
 }
@@ -52,7 +52,7 @@ void collide(State&& s, Solid&& solid, num_t omega) noexcept {
   // num_t omega
   //  = physics.omega(static_cast<num_t>(max_level), static_cast<num_t>(level));
   // num_t omega = 0.1;
-  fmt::print("omega: {}", omega);
+  ascii_fmt::out("omega: {}", omega);
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
       if (solid(s, b, c)) { return; }
@@ -65,7 +65,7 @@ template <typename State>
 void propagate(State&& s) noexcept {
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
-      RANGES_FOR (auto&& d, s.physics.all()) {
+      for (auto&& d : s.physics.all()) {
         auto nghbr = b.at(c, s.physics.dir(d));
         b.nodes1(nghbr, d) = b.nodes0(c, d);
       }
@@ -77,7 +77,7 @@ void propagate_periodic_x(State&& s, Solid&& solid) noexcept {
   for (auto&& b : s.blocks()) {
     b.for_each_halo([&](auto&& c) {
       if (solid(s, b, c)) { return; }
-      RANGES_FOR (auto&& d, s.physics.all()) {
+      for (auto&& d : s.physics.all()) {
         auto nghbr = b.at(c, s.physics.periodic_neighbor_dir_x(d));
         b.nodes1(nghbr, d) = b.nodes0(c, d);
       }
@@ -90,7 +90,7 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
   for (auto&& b : s.blocks()) {
     b.for_each_halo([&](auto&& c) {
       if (solid(s, b, c)) { return; }
-      RANGES_FOR (auto&& d, s.physics.all()) {
+      for (auto&& d : s.physics.all()) {
         auto nghbr = b.at(c, s.physics.dir(d));
         if (solid(s, b, nghbr)) { continue; }
         b.nodes1(nghbr, d) = b.nodes0(c, d);
@@ -104,7 +104,7 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
 //   using l = typename uncvref_t<State>::lattice_t;
 //   for (auto&& b : s.blocks()) {
 //     b.for_each_internal([&](auto&& c) {
-//       RANGES_FOR (auto&& d, l::node_ids_without_center()) {
+//       for (auto&& d : l::node_ids_without_center()) {
 //         auto nghbr = b.at(c, l::neighbor_offset(d));
 //         if (b.is_halo(nghbr)) { continue; }
 //         // if (nghbr.x[1] == 2 or nghbr.x[1] == 101 or b.is_halo(nghbr)

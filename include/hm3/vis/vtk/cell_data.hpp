@@ -143,7 +143,7 @@ struct cell_data : data_fields<cell_data<Reader, VTKGrid>> {
     int_t c_c = 0;
     reader->for_each_cell([&](auto&& nodes) {
       std::size_t v_c = 0;
-      RANGES_FOR (auto&& n, nodes) {
+      for (auto&& n : nodes) {
         for (auto&& c : components) {
           data->SetComponent(v_c, c, field_component(n, c));
           ++c_c;

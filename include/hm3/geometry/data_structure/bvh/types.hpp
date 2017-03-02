@@ -19,4 +19,9 @@ using node_idx = optional_idx<idx_t, struct node_idx_tag>;
 /// Index of a simplex within a BVH
 using simplex_idx = optional_idx<sidx_t, struct simplex_idx_tag>;
 
+/// Wrapper around the hm3::geometry namespace
+namespace hg {
+using namespace ::hm3::geometry;
+}  // namespace hg
+
 }  // namespace hm3::geometry::bvh

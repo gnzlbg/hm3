@@ -50,7 +50,8 @@ struct env {
      MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &thread_support));
 
     if (thread_support != MPI_THREAD_MULTIPLE) {
-      fmt::print("[ERROR] MPI implementation does not support multi-thread\n");
+      ascii_fmt::out(
+       "[ERROR] MPI implementation does not support multi-thread\n");
     }
     // HM3_ASSERT(thread_support == MPI_THREAD_MULTIPLE,
     //             "multi-threaded MPI unavailable!");

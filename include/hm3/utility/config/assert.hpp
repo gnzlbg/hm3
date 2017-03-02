@@ -36,8 +36,7 @@
 #define HM3_ASSERT_AT(condition, message, AT, ...)                         \
   do {                                                                     \
     if (HM3_UNLIKELY(!(condition))) {                                      \
-      ::hm3::fmt::print(                                                   \
-       stderr,                                                             \
+      ::hm3::ascii_fmt::err(                                               \
        "\nASSERTION FAILED:\n\n  condition: \"{}\"\n  message: \"" message \
        "\"\n\n",                                                           \
        #condition, ##__VA_ARGS__);                                         \
@@ -51,9 +50,7 @@
   do {                                                                     \
     if (false && HM3_UNLIKELY(!(condition))) {                             \
       HM3_UNREACHABLE();                                                   \
-      /* still type check everything: */                                   \
-      ::hm3::fmt::print(                                                   \
-       stderr,                                                             \
+      ::hm3::ascii_fmt::err(                                               \
        "\nASSERTION FAILED:\n\n  condition: \"{}\"\n  message: \"" message \
        "\"\n",                                                             \
        #condition, ##__VA_ARGS__);                                         \

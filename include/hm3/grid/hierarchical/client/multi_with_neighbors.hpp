@@ -20,17 +20,17 @@ namespace client {
 /// internally caches grid neighbors (which allows having nodes that are not
 /// part of the tree grid)
 ///
-/// \tparam Nd number of spatial dimensions of the grid
+/// \tparam Ad number of spatial dimensions of the grid
 ///
 /// This store a grid client and a internal copy of neighbors across all
 /// manifolds.
-template <dim_t Nd>
-struct multi_wn : multi<Nd> {
-  using self   = multi_wn<Nd>;
-  using base   = multi<Nd>;
+template <dim_t Ad>
+struct multi_wn : multi<Ad> {
+  using self   = multi_wn<Ad>;
+  using base   = multi<Ad>;
   using tree_t = typename base::tree_t;
 
-  using neighbor_storage = neighbor_storage<tree::max_no_neighbors(Nd) + 1>;
+  using neighbor_storage = neighbor_storage<tree::max_no_neighbors(Ad) + 1>;
   neighbor_storage cached_neighbors;
 
   multi_wn()                = default;

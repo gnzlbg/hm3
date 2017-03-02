@@ -3,6 +3,7 @@
 ///
 /// Finite Volume Tile utilities
 #include <hm3/grid/structured/grid.hpp>
+#include <hm3/solver/fv/tile/boundary_cells.hpp>
 #include <hm3/solver/utility/tile.hpp>
 #include <hm3/solver/utility/tiled_hierarchical_grid.hpp>
 
@@ -44,16 +45,15 @@ struct unwrap_variables_into_tile {
 
 template <typename Grid, typename... Args>
 struct unwrap_variables_into_tile<Grid, meta::list<Args...>> {
-  using type = tile<Grid, Args...>;
+  using type = tile<Grid, boundary_cells<Grid, Args...>, Args...>;
 };
 
 /// Type of the tile
 template <typename Grid, typename Physics, typename TimeIntegration,
           typename NumFlux, typename Method>
-using tile_type = typename meta::
- _t<unwrap_variables_into_tile<Grid, tile_variables<Grid, Physics,
-                                                    TimeIntegration, NumFlux,
-                                                    Method>>>;  //
+using tile_type = typename meta::_t<unwrap_variables_into_tile<
+ Grid, tile_variables<Grid, Physics, TimeIntegration, NumFlux,
+                      Method>>>;  //
 
 }  // namespace fv
 }  // namespace solver

@@ -9,7 +9,7 @@
 #include <hm3/grid/hierarchical/tree/location/default.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 
 namespace hm3 {
 namespace tree {
@@ -29,7 +29,8 @@ struct node_neighbors_fn {
                   PushBackableContainer& s,
                   UnaryPredicate&& pred = UnaryPredicate{}) const noexcept
    -> void {
-    static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
+    static_assert(
+     Tree::ambient_dimension() == uncvref_t<Loc>::ambient_dimension(), "");
     const level_idx lvl = loc.level();
     // The root node has no neighbors
     if (HM3_UNLIKELY(lvl == 0_l)) { return; }
@@ -80,9 +81,10 @@ struct node_neighbors_fn {
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Manifold, Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
-   -> inline_vector<node_idx, MaxNoNeighbors> {
-    static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
-    inline_vector<node_idx, MaxNoNeighbors> neighbors;
+   -> fixed_capacity_vector<node_idx, MaxNoNeighbors> {
+    static_assert(
+     Tree::ambient_dimension() == uncvref_t<Loc>::ambient_dimension(), "");
+    fixed_capacity_vector<node_idx, MaxNoNeighbors> neighbors;
     (*this)(Manifold{}, t, loc, neighbors, std::forward<UnaryPredicate>(pred));
     return neighbors;
   }
@@ -91,12 +93,13 @@ struct node_neighbors_fn {
   ///
   /// \returns stack allocated vector containing the neighbors
   template <typename Manifold, typename Tree,
-            typename Loc           = loc_t<Tree::dimension()>,
+            typename Loc           = loc_t<Tree::ambient_dimension()>,
             npidx_t MaxNoNeighbors = Manifold::no_child_level_neighbors(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Manifold, Tree const& t, node_idx n, Loc l = Loc{}) const
-   noexcept -> inline_vector<node_idx, MaxNoNeighbors> {
-    static_assert(Tree::dimension() == ranges::uncvref_t<Loc>::dimension(), "");
+   noexcept -> fixed_capacity_vector<node_idx, MaxNoNeighbors> {
+    static_assert(
+     Tree::ambient_dimension() == uncvref_t<Loc>::ambient_dimension(), "");
     return (*this)(Manifold{}, t, node_location(t, n, l));
   }
 
@@ -107,13 +110,13 @@ struct node_neighbors_fn {
   /// \param loc [in] location (location of the node).
   /// \returns stack allocated vector containing the unique set of neighbors
   ///
-  template <typename Tree, typename Loc,
-            typename UnaryPredicate = always_true_pred,
-            dim_t Nd = Tree::dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
+  template <
+   typename Tree, typename Loc, typename UnaryPredicate = always_true_pred,
+   dim_t Nd = Tree::ambient_dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
-   -> inline_vector<node_idx, max_no_neighbors(Nd)> {
-    inline_vector<node_idx, max_no_neighbors(Nd)> neighbors;
+   -> fixed_capacity_vector<node_idx, max_no_neighbors(Nd)> {
+    fixed_capacity_vector<node_idx, max_no_neighbors(Nd)> neighbors;
 
     for_each_neighbor_manifold<Nd>(
      [&](auto m) { (*this)(m, t, loc, neighbors, pred); });
@@ -130,7 +133,7 @@ struct node_neighbors_fn {
   /// \param n [in] node index.
   /// \returns stack allocated vector containing the unique set of neighbors
   ///
-  template <typename Tree, typename Loc = loc_t<Tree::dimension()>,
+  template <typename Tree, typename Loc = loc_t<Tree::ambient_dimension()>,
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, node_idx n, Loc l = Loc()) const noexcept {
     return (*this)(t, node_location(t, n, l));

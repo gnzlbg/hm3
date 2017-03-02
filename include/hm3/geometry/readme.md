@@ -3,7 +3,7 @@
 This module implements:
 
 - `algorithms/`: bounding boxes, intersect, split, ...
-- `primitives/`: points, vectors, polygons, polyhedra, ...
+- `primitives/`: points, vectors, polygons, polyhedron, ...
 - `data_structures`: point sets, bounding volume hierarchies, meshes, ...
 - `sd/`: signed-distance fields (implicit geometry).
 - `io/`: input-output of geometries.
@@ -45,12 +45,12 @@ The following primitives are available:
     - Rectangle
       - Square
 
-- Polyhedra:
+- Polyhedron:
   - Axis-Aligned Bounding Box (AABB)
     - Box
   - (TODO) Sphere
   - (TODO) Cylinder
-  - (TODO) Generic polyhedra
+  - (TODO) Generic polyhedron
 
 ## Algorithms
 

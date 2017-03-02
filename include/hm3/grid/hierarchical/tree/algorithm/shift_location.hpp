@@ -17,13 +17,16 @@ struct shift_location_fn {
   /// Shifts the location \p loc by normalized \p offset at \p level
   ///
   /// If offset is out of bounds returns an empty location.
-  template <typename Loc, typename Array, dim_t Nd = Loc::dimension(),
+  template <typename Loc, typename Array, dim_t Nd = Loc::ambient_dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Loc loc, Array offset) const noexcept
    -> compact_optional<Loc> {
-    const num_t scale = math::ipow(lidx_t{2}, *loc.level());
+    const num_t scale = math::ipow(uint_t{2}, uint_t{*loc.level()});
+    HM3_ASSERT(scale > 0., "scale !> 0!");
     offset_t<Nd> o;
+
     for (dim_t d = 0; d < Nd; ++d) { o[d] = offset[d] * scale; }
+
     return shift(loc, o);
   }
 
@@ -31,7 +34,7 @@ struct shift_location_fn {
   ///
   /// If the resulting location is out-of-bounds the optional_location won't
   /// contain a valid value.
-  template <typename Loc, dim_t Nd = Loc::dimension(),
+  template <typename Loc, dim_t Nd = Loc::ambient_dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Loc loc, offset_t<Nd> offset) const noexcept
    -> compact_optional<Loc> {

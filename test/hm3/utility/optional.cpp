@@ -775,7 +775,7 @@ TEST(bad_relops_) {
   assert(oa < b);
   assert(oa > b);
 
-  optional<bad_relops &> ra = a, rb = b;
+  optional<bad_relops&> ra = a, rb = b;
   assert(ra < rb);
   assert(!(ra > rb));
 
@@ -871,7 +871,7 @@ TEST(safe_value) {
 
     {  // ref variant
       int i1 = 1;
-      optional<int &> or_n{}, or1{i1};
+      optional<int&> or_n{}, or1{i1};
 
       int& r2 = or1.value();
       assert(r2 == 1);

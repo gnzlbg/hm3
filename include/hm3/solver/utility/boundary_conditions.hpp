@@ -3,7 +3,8 @@
 ///
 /// Stores which boundary cells belong to which boundary condition
 #include <hm3/solver/types.hpp>
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
+#include <hm3/utility/tuple.hpp>
 #include <hm3/utility/vector.hpp>
 
 namespace hm3 {
@@ -70,9 +71,9 @@ struct bcs {
   }
 
   /// All boundary conditions that cell \p cidx is a part of:
-  inline_vector<boundary_idx, max_bcs_per_cell> boundary_condition(
+  fixed_capacity_vector<boundary_idx, max_bcs_per_cell> boundary_condition(
    cell_idx cidx) {
-    inline_vector<boundary_idx, max_bcs_per_cell> bc_ids;
+    fixed_capacity_vector<boundary_idx, max_bcs_per_cell> bc_ids;
     for_each_bc([&](boundary_idx i) {
       if (has_cell(cidx, i)) { bc_ids.push_back(i); }
     });
@@ -175,9 +176,10 @@ struct bcs {
   /// tuple, and the boundary cells will be called in ascending order, but don't
   /// rely on this.
   template <typename... BCs, typename... Args>
-  void apply(std::tuple<BCs...>& bcs, Args&&... args) {
-    HM3_ASSERT(bcs.size() == size(), "size mismatch: bc tuple has size {} and "
-                                     "bc state has {} boundary conditions",
+  void apply(tuple<BCs...>& bcs, Args&&... args) {
+    HM3_ASSERT(bcs.size() == size(),
+               "size mismatch: bc tuple has size {} and "
+               "bc state has {} boundary conditions",
                bcs.size(), size());
     tuple_for_each_indexed(bcs, [&](auto idx, auto&& bc) {
       for (auto&& c : cells_in_bc(idx)) { bc.apply(c, args...); }

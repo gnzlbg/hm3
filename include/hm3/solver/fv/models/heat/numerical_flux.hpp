@@ -58,8 +58,9 @@ struct five_point_fn {
     static constexpr vidx_t nvars() { return 1; }
     template <typename VT, typename CV, typename Tile, typename XS, typename D>
     surface(VT&& vt, CV&& cv_l, CV&& cv_r, Tile&& t, XS x_s, D&& data) {
-      auto r = (0.5 * (t.gradient(x_s.adjacent_neg(), x_s.d)
-                       + t.gradient(x_s.adjacent_pos(), x_s.d)))
+      auto r = (0.5
+                * (t.gradient(x_s.adjacent_neg(), x_s.d)
+                   + t.gradient(x_s.adjacent_pos(), x_s.d)))
                 .eval();
       normal_temperature_gradient = r(0);
     }

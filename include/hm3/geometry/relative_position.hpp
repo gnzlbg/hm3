@@ -20,6 +20,25 @@ static constexpr relative_position_t outside = relative_position_t::outside;
 static constexpr relative_position_t intersected
  = relative_position_t::intersected;
 
+template <typename OStream>
+OStream& to_ascii(OStream& os, relative_position_t p) {
+  switch (p) {
+    case inside: {
+      os << "inside";
+      break;
+    }
+    case outside: {
+      os << "outside";
+      break;
+    }
+    case intersected: {
+      os << "intersected";
+      break;
+    }
+  }
+  return os;
+}
+
 /// Invert the relative position \p o.
 relative_position_t invert(relative_position_t o) {
   switch (o) {

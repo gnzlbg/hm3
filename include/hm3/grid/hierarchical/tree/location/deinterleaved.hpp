@@ -40,13 +40,13 @@ namespace location {
 /// TODO: Because this is less used it is less documented than the
 /// `interleaved` location implementation but the API "should" be the same.
 ///
-template <dim_t Nd, typename MortonIdxT = uint_t>
-struct deinterleaved : geometry::dimensional<Nd> {
-  using self     = deinterleaved<Nd, MortonIdxT>;
+template <dim_t Ad, typename MortonIdxT = uint_t>
+struct deinterleaved : geometry::with_ambient_dimension<Ad> {
+  using self     = deinterleaved<Ad, MortonIdxT>;
   using opt_self = compact_optional<self>;
 
   using morton_idx_t = MortonIdxT;
-  using morton_x_t   = array<morton_idx_t, Nd>;
+  using morton_x_t   = array<morton_idx_t, Ad>;
 
   /// Required to model the CompactOptional concept
   using value_type     = self;
@@ -58,9 +58,8 @@ struct deinterleaved : geometry::dimensional<Nd> {
   /// Node level
   level_idx level_ = 0;
 
-  /// A location models the Dimensional concept
-  using geometry::dimensional<Nd>::dimension;
-  using geometry::dimensional<Nd>::dimensions;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimension;
+  using geometry::with_ambient_dimension<Ad>::ambient_dimensions;
 
   /// \name Node level
   ///@{
@@ -71,8 +70,8 @@ struct deinterleaved : geometry::dimensional<Nd> {
   /// coordinates, the level of the location code is _currently_ limited by the
   /// type used to store a Morton index.
   static constexpr level_idx max_level() noexcept {
-    constexpr auto max = 8 * sizeof(morton_idx_t) - Nd;
-    return max / Nd;
+    constexpr auto max = 8 * sizeof(morton_idx_t) - Ad;
+    return max / Ad;
   }
 
   /// Maximum number of levels that can be stored in the location code
@@ -98,14 +97,14 @@ struct deinterleaved : geometry::dimensional<Nd> {
   constexpr void push(cpidx_t pos_in_parent) {
     ++level_;
     HM3_ASSERT(level() <= max_level(), "");
-    for (auto&& d : dimensions()) {
+    for (auto&& d : ambient_dimensions()) {
       bit::set(x_[d], *level(), bit::get(pos_in_parent, d));
     }
   }
 
   /// Change location to the current node's children located at position \p
   /// position_in_parent.
-  constexpr void push(child_pos<Nd> position_in_parent) {
+  constexpr void push(child_pos<Ad> position_in_parent) {
     push(*position_in_parent);
   }
 
@@ -119,7 +118,9 @@ struct deinterleaved : geometry::dimensional<Nd> {
  private:
   /// Resets the morton index
   constexpr void reset_bits() noexcept {
-    for (auto&& d : dimensions()) { x_[d] = static_cast<morton_idx_t>(0); }
+    for (auto&& d : ambient_dimensions()) {
+      x_[d] = static_cast<morton_idx_t>(0);
+    }
   }
 
  public:
@@ -132,7 +133,7 @@ struct deinterleaved : geometry::dimensional<Nd> {
     int_t last     = *level();
     int swap_count = 0;
     while (last - first > 0) {
-      for (auto&& d : dimensions()) { bit::swap(x_[d], first, last); }
+      for (auto&& d : ambient_dimensions()) { bit::swap(x_[d], first, last); }
       ++first;
       --last;
       swap_count++;
@@ -167,7 +168,9 @@ struct deinterleaved : geometry::dimensional<Nd> {
   constexpr cpidx_t operator[](level_idx l) const noexcept {
     HM3_ASSERT(l > 0_l and l <= level(), "");
     cpidx_t value = 0;
-    for (auto&& d : dimensions()) { bit::set(value, d, bit::get(x_[d], *l)); }
+    for (auto&& d : ambient_dimensions()) {
+      bit::set(value, d, bit::get(x_[d], *l));
+    }
     return value;
   }
 
@@ -190,7 +193,7 @@ struct deinterleaved : geometry::dimensional<Nd> {
     morton_idx_t result = 0;
     std::size_t i       = 0;
     for (auto l : view::iota(0_u, *level() + 1_u)) {
-      for (auto d : dimensions()) {
+      for (auto d : ambient_dimensions()) {
         bit::set(result, i, bit::get(tmp[d], l));
         ++i;
       }
@@ -201,7 +204,7 @@ struct deinterleaved : geometry::dimensional<Nd> {
   /// Explicit conversion operator to the deinterleaved Morton coordinates
   constexpr explicit operator morton_x_t() const noexcept {
     morton_x_t result;
-    for (auto&& d : dimensions()) { result[d] = to_int(d); }
+    for (auto&& d : ambient_dimensions()) { result[d] = to_int(d); }
     return result;
   }
 
@@ -222,18 +225,19 @@ struct deinterleaved : geometry::dimensional<Nd> {
   /// Constructs a location from deinterleaved Morton coordinates \p x_ up to
   /// a level \p l.
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>
-  deinterleaved(array<U, Nd> x, level_idx l = max_level()) : level_(l) {
+  deinterleaved(array<U, Ad> x, level_idx l = max_level()) : level_(l) {
     HM3_ASSERT(l <= max_level(), "");
 
-    for (auto&& d : dimensions()) {
-      HM3_ASSERT(x[d] > 0. and x[d] < 1., "location from non-normalized "
-                                          "float (d: {}, x[d]: {}) "
-                                          "out-of-range (0., 1.)",
+    for (auto&& d : ambient_dimensions()) {
+      HM3_ASSERT(x[d] > 0. and x[d] < 1.,
+                 "location from non-normalized "
+                 "float (d: {}, x[d]: {}) "
+                 "out-of-range (0., 1.)",
                  d, x[d]);
     }
 
     num_t scale = math::ipow(2_su, *l);
-    for (auto&& d : dimensions()) { from_int_r(d, x[d] * scale); }
+    for (auto&& d : ambient_dimensions()) { from_int_r(d, x[d] * scale); }
   }
 
   /// Constructs a location code from a \p list of children positions in
@@ -253,14 +257,14 @@ struct deinterleaved : geometry::dimensional<Nd> {
 
  public:
   /// Shifst the location \p t by an spatial \p offset.
-  friend opt_self shift(self l, offset_t<Nd> offset) noexcept {
-    for (auto&& d : dimensions()) {
+  friend opt_self shift(self l, offset_t<Ad> offset) noexcept {
+    for (auto&& d : ambient_dimensions()) {
       if (bit::overflows_on_add(l.to_int(d), offset[d],
                                 static_cast<morton_idx_t>(*l.level()))) {
         return opt_self{};
       }
     }
-    for (auto&& d : dimensions()) {
+    for (auto&& d : ambient_dimensions()) {
       l.x_[d] = bit::to_int_r(
        static_cast<morton_idx_t>(static_cast<int_t>(l.to_int(d)) + offset[d]),
        static_cast<morton_idx_t>(0), static_cast<morton_idx_t>(*l.level() + 1));
@@ -290,16 +294,16 @@ struct deinterleaved : geometry::dimensional<Nd> {
   ///@} // CompactOptional invalid state
 };
 
-template <typename OStream, dim_t Nd, typename MortonIdxT>
-OStream& operator<<(OStream& os, deinterleaved<Nd, MortonIdxT> const& lc) {
-  using f_int_t = morton_idx_t<deinterleaved<Nd, MortonIdxT>>;
+template <typename OStream, dim_t Ad, typename MortonIdxT>
+OStream& operator<<(OStream& os, deinterleaved<Ad, MortonIdxT> const& lc) {
+  using f_int_t = morton_idx_t<deinterleaved<Ad, MortonIdxT>>;
   os << "[id: " << static_cast<f_int_t>(lc) << ", lvl: " << lc.level()
      << ", xs: {";
-  using morton_x_t = typename deinterleaved<Nd, MortonIdxT>::morton_x_t;
+  using morton_x_t = typename deinterleaved<Ad, MortonIdxT>::morton_x_t;
   morton_x_t xs(lc);
-  for (auto&& d : dimensions(Nd)) {
+  for (auto&& d : ambient_dimensions(Ad)) {
     os << xs[d];
-    if (d != Nd - 1) { os << ", "; }
+    if (d != Ad - 1) { os << ", "; }
   }
   os << "}, pip: {";
   lidx_t counter = 0;
@@ -312,41 +316,41 @@ OStream& operator<<(OStream& os, deinterleaved<Nd, MortonIdxT> const& lc) {
   return os;
 }
 
-template <dim_t Nd, typename MortonIdxT>
-constexpr bool operator==(deinterleaved<Nd, MortonIdxT> const& a,
-                          deinterleaved<Nd, MortonIdxT> const& b) {
+template <dim_t Ad, typename MortonIdxT>
+constexpr bool operator==(deinterleaved<Ad, MortonIdxT> const& a,
+                          deinterleaved<Ad, MortonIdxT> const& b) {
   return a.level() == 0_l ? a.level() == b.level()
                           : a.level() == b.level() and equal(a(), b());
 }
 
-template <dim_t Nd, typename MortonIdxT>
-constexpr bool operator!=(deinterleaved<Nd, MortonIdxT> const& a,
-                          deinterleaved<Nd, MortonIdxT> const& b) {
+template <dim_t Ad, typename MortonIdxT>
+constexpr bool operator!=(deinterleaved<Ad, MortonIdxT> const& a,
+                          deinterleaved<Ad, MortonIdxT> const& b) {
   return !(a == b);
 }
 
-template <dim_t Nd, typename MortonIdxT>
-constexpr bool operator<(deinterleaved<Nd, MortonIdxT> const& a,
-                         deinterleaved<Nd, MortonIdxT> const& b) {
-  using f_int_t = morton_idx_t<deinterleaved<Nd, MortonIdxT>>;
+template <dim_t Ad, typename MortonIdxT>
+constexpr bool operator<(deinterleaved<Ad, MortonIdxT> const& a,
+                         deinterleaved<Ad, MortonIdxT> const& b) {
+  using f_int_t = morton_idx_t<deinterleaved<Ad, MortonIdxT>>;
   return static_cast<f_int_t>(a) < static_cast<f_int_t>(b);
 }
 
-template <dim_t Nd, typename MortonIdxT>
-constexpr bool operator<=(deinterleaved<Nd, MortonIdxT> const& a,
-                          deinterleaved<Nd, MortonIdxT> const& b) {
+template <dim_t Ad, typename MortonIdxT>
+constexpr bool operator<=(deinterleaved<Ad, MortonIdxT> const& a,
+                          deinterleaved<Ad, MortonIdxT> const& b) {
   return (a == b) or (a < b);
 }
 
-template <dim_t Nd, typename MortonIdxT>
-constexpr bool operator>(deinterleaved<Nd, MortonIdxT> const& a,
-                         deinterleaved<Nd, MortonIdxT> const& b) {
+template <dim_t Ad, typename MortonIdxT>
+constexpr bool operator>(deinterleaved<Ad, MortonIdxT> const& a,
+                         deinterleaved<Ad, MortonIdxT> const& b) {
   return !(a <= b);
 }
 
-template <dim_t Nd, typename MortonIdxT>
-constexpr bool operator>=(deinterleaved<Nd, MortonIdxT> const& a,
-                          deinterleaved<Nd, MortonIdxT> const& b) {
+template <dim_t Ad, typename MortonIdxT>
+constexpr bool operator>=(deinterleaved<Ad, MortonIdxT> const& a,
+                          deinterleaved<Ad, MortonIdxT> const& b) {
   return !(a < b);
 }
 

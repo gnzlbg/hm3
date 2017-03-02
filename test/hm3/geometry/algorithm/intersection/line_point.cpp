@@ -1,14 +1,15 @@
-#include <hm3/geometry/algorithm/intersection/line_point.hpp>
+#include <hm3/geometry/algorithms.hpp>
 #include <hm3/geometry/primitive/line.hpp>
+#include <hm3/geometry/primitive/point.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
 
-template <dim_t Nd>
+template <dim_t Ad>
 void test_line_point_intersection() {
-  using p_t = geometry::point<Nd>;
-  using v_t = geometry::vec<Nd>;
-  using l_t = geometry::line<Nd>;
+  using p_t = geometry::point<Ad>;
+  using v_t = geometry::vec<Ad>;
+  using l_t = geometry::line<Ad>;
 
   auto o0 = p_t::constant(0.);
   auto d0 = v_t(v_t::constant(1.).normalized());
@@ -28,26 +29,26 @@ void test_line_point_intersection() {
        else if
          constexpr(Same<T, p_t>{}) { CHECK(v == p); }
        else {
-         static_assert(fail<T>{}, "non-exhaustive variant");
+         static_assert(always_false<T>{}, "non-exhaustive variant");
        }
      },
      geometry::intersection(l, p));
   }
 
-  if (Nd > 1) {
+  if (Ad > 1) {
     for (int i = 1; i < 10; ++i) {
       auto p = p_t::constant(num_t(i));
       p(1)   = 0.;
       CHECK(!geometry::intersection.test(l, p));
       visit(
-       [&p](auto&& v) {
+       [](auto&& v) {
          using T = uncvref_t<decltype(v)>;
          if
            constexpr(Same<T, monostate>()) { CHECK(true); }
          else if
            constexpr(Same<T, p_t>{}) { CHECK(false); }
          else {
-           static_assert(fail<T>{}, "non-exhaustive variant");
+           static_assert(always_false<T>{}, "non-exhaustive variant");
          }
        },
        geometry::intersection(l, p));

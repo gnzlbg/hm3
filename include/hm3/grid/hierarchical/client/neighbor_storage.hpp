@@ -4,7 +4,7 @@
 /// Neighbors storage for a single grid within a hierarchical Cartesian
 /// multi-tree.
 #include <hm3/grid/hierarchical/types.hpp>
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 #include <hm3/utility/vector.hpp>
 
 namespace hm3 {
@@ -18,8 +18,9 @@ namespace client {
 ///
 template <suint_t neighbor_capacity>
 struct neighbor_storage {
-  using self           = neighbor_storage<neighbor_capacity>;
-  using node_neighbors = inline_vector<grid_node_idx, neighbor_capacity>;
+  using self = neighbor_storage<neighbor_capacity>;
+  using node_neighbors
+   = fixed_capacity_vector<grid_node_idx, neighbor_capacity>;
 
   /// Neighbors of each node
   vector<node_neighbors> data_;
@@ -28,10 +29,10 @@ struct neighbor_storage {
 
   template <typename At>
   void assert_within_capacity(grid_node_idx n, At&& at) const noexcept {
-    HM3_ASSERT_AT(n, "invalid node", at);
+    HM3_ASSERT_AT(n, "invalid node", std::forward<At>(at));
     HM3_ASSERT_AT(static_cast<std::size_t>(*n) < data_.capacity(),
-                  "node {} is out-of-capacity-bounds [0, {})", at, n,
-                  data_.capacity());
+                  "node {} is out-of-capacity-bounds [0, {})",
+                  std::forward<At>(at), n, data_.capacity());
   }
 
   /// Does node \p n have node \p neighbor as neighbor?

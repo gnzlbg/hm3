@@ -2,17 +2,17 @@
 /// \file
 ///
 /// Intersection of line segments.
-#include <hm3/geometry/algorithm/intersection.hpp>
-#include <hm3/geometry/primitive/line/coincidental.hpp>
-#include <hm3/geometry/primitive/line/parallel.hpp>
-#include <hm3/geometry/primitive/line/parameter.hpp>
-#include <hm3/geometry/primitive/segment/direction.hpp>
-#include <hm3/geometry/primitive/segment/segment.hpp>
+#include <hm3/geometry/algorithm/approx/line.hpp>
+#include <hm3/geometry/algorithm/approx/number.hpp>
+#include <hm3/geometry/algorithm/approx/point.hpp>
+#include <hm3/geometry/algorithm/line_intersection_parameter/line_line.hpp>
+#include <hm3/geometry/algorithm/parallel.hpp>
+#include <hm3/geometry/concept/segment.hpp>
 #include <hm3/utility/variant.hpp>
 
-namespace hm3::geometry::segment_primitive {
+namespace hm3::geometry {
 
-namespace segment_intersection_detail {
+namespace intersection_test_segment_segment_detail {
 
 /// Test the intersection of two monotonic 1D segments [a_0, a_1] and [b_0,
 /// b_1].
@@ -54,15 +54,6 @@ inline optional<pair<num_t, num_t>> intersection_1d(num_t a_0, num_t a_1,
   return make_pair(first, second);
 }
 
-}  // namespace segment_intersection_detail
-
-/// Do two line segments in 1D intersect?
-inline bool intersection_test(segment<1> const& a,
-                              segment<1> const& b) noexcept {
-  return segment_intersection_detail::test_1d(a.x(0)(0), a.x(1)(0), b.x(0)(0),
-                                              b.x(1)(0));
-}
-
 /// Do two line segments \p a and \p b intersect?
 ///
 /// Basically same as in line intersection but:
@@ -73,92 +64,198 @@ inline bool intersection_test(segment<1> const& a,
 ///
 /// Implemented similar to how it is explained
 /// [here](http://stackoverflow.com/a/565282) but probably not as efficient.
-template <dim_t Nd, CONCEPT_REQUIRES_(Nd > 1)>
-inline bool intersection_test(segment<Nd> const& a,
-                              segment<Nd> const& b) noexcept {
+template <typename T, typename U>
+inline bool test_nd(T const& a, U const& b, num_t abs_tol,
+                    num_t rel_tol) noexcept {
+  static_assert(ad_v<T>> 1);
+  static_assert(ad_v<T> == ad_v<U>);
+  static_assert(Segment<T>{});
+  static_assert(Segment<U>{});
+
+  using v_t = associated::vector_t<T>;
+
   auto a0        = a.x(0);
   auto b0        = b.x(0);
-  auto a_d       = vec<Nd>(a.x(1)() - a.x(0)());
-  auto b_d       = vec<Nd>(b.x(1)() - b.x(0)());
+  auto a_d       = v_t(a.x(1)() - a.x(0)());
+  auto b_d       = v_t(b.x(1)() - b.x(0)());
   auto b0_min_a0 = b0() - a0();
 
-  if (parallel(a_d, b_d)) {
-    if (!line_primitive::coincidental(a0, a_d, b0, b_d)) { return false; }
+  if (parallel(a_d, b_d, abs_tol, rel_tol)) {
+    if (!coincidental_lines(a0, a_d, b0, b_d, abs_tol, rel_tol)) {
+      return false;
+    }
 
     auto ad_dot_ad = a_d().dot(a_d());
     auto bd_dot_ad = b_d().dot(a_d());
     auto t0        = b0_min_a0.dot(a_d()) / ad_dot_ad;
     auto t1        = t0 + bd_dot_ad / ad_dot_ad;
 
-    return segment_intersection_detail::test_1d(t0, t1, 0., 1.);
+    return test_1d(t0, t1, 0., 1.);
   }
 
-  auto is = line_primitive::parameter(a0, a_d, b0, b_d);
+  auto is
+   = intersection_parameter_line_line(a0, a_d, b0, b_d, abs_tol, rel_tol);
   if (!is) { return false; }
-  auto t = is.value().first();
-  auto s = is.value().second();
+  auto t = first(is.value());
+  auto s = second(is.value());
   if (0. <= t and t <= 1. and 0. <= s and s <= 1.) {
     return true;  // both segments intersect
   }
   return false;  // Case 3: not parallel and not intersect
 }
 
-/// Intersection between two 1D segments
-variant<monostate, segment<1>, point<1>> intersection(
- segment<1> const& a, segment<1> const& b) noexcept {
-  using p_t = point<1>;
-  using s_t = segment<1>;
+struct intersection_test_segment_segment_fn {
+  /// Do two line segments in 1D intersect?
+  template <typename T, typename U>
+  static constexpr bool impl(T const& a, U const& b, trait::segment<1>, num_t,
+                             num_t) noexcept {
+    return test_1d(a.x(0)(0), a.x(1)(0), b.x(0)(0), b.x(1)(0));
+  }
 
-  auto result = segment_intersection_detail::intersection_1d(
-   a.x(0)(0), a.x(1)(0), b.x(0)(0), b.x(1)(0));
-  if (!result) { return monostate{}; }
+  /// Do two line segments in 2D intersect?
+  template <typename T, typename U>
+  static constexpr bool impl(T const& a, U const& b, trait::segment<2>,
+                             num_t abs_tol, num_t rel_tol) noexcept {
+    return test_nd(a, b, abs_tol, rel_tol);
+  }
 
-  auto r  = result.value();
-  auto x0 = p_t{r.first()};
-  auto x1 = p_t{r.second()};
-  if (geometry::approx(x0, x1)) { return x0; }
-  return s_t(x0, x1);
+  /// Do two line segments in 3D intersect?
+  template <typename T, typename U>
+  static constexpr bool impl(T const& a, U const& b, trait::segment<3>,
+                             num_t abs_tol, num_t rel_tol) noexcept {
+    return test_nd(a, b, abs_tol, rel_tol);
+  }
+
+  /// Does the one dimensional segments \p s and \p u intersect?
+  static bool one_dimensional(num_t s0, num_t s1, num_t u0, num_t u1) noexcept {
+    return test_1d(s0, s1, u0, u1);
+  }
+
+  template <typename T, typename U>
+  constexpr bool operator()(T const& a, U const& b, num_t abs_tol,
+                            num_t rel_tol) const noexcept {
+    static_assert(Segment<T>{});
+    static_assert(Segment<U>{});
+    static_assert(ad_v<T> == ad_v<U>);
+
+    return impl(a, b, associated::v_<T>, abs_tol, rel_tol);
+  }
+};
+
+}  // namespace intersection_test_segment_segment_detail
+
+namespace {
+static constexpr auto const& intersection_test_segment_segment = static_const<
+ with_default_tolerance<intersection_test_segment_segment_detail::
+                         intersection_test_segment_segment_fn>>::value;
 }
 
+namespace intersection_segment_segment_detail {
+
 /// Intersection between two 2D/3D segments
-template <dim_t Nd>
-variant<monostate, segment<Nd>, point<Nd>> intersection(
- segment<Nd> const& a, segment<Nd> const& b) noexcept {
-  using p_t = point<Nd>;
-  using s_t = segment<Nd>;
-  using v_t = vec<Nd>;
+template <typename T, typename U, typename ET = uncvref_t<T>,
+          typename PT = associated::point_t<T>>
+constexpr auto intersection_nd(T const& a, U const& b, num_t abs_tol,
+                               num_t rel_tol) noexcept
+ -> variant<monostate, ET, PT> {
+  using v_t = associated::vector_t<T>;
   auto a0   = a.x(0);
   auto b0   = b.x(0);
   auto a_d  = v_t(a.x(1)() - a.x(0)());
   auto b_d  = v_t(b.x(1)() - b.x(0)());
 
-  if (parallel(a_d, b_d)) {
-    if (!line_primitive::coincidental(a0, a_d, b0, b_d)) { return monostate{}; }
+  // TODO: pass tolerance here?
+  if (parallel(a_d, b_d, abs_tol, rel_tol)) {
+    // TODO: pass tolerance here?
+    if (not coincidental_lines(a0, a_d, b0, b_d, abs_tol, rel_tol)) {
+      return monostate{};
+    }
     auto ad_dot_ad = a_d().dot(a_d());
     auto bd_dot_ad = b_d().dot(a_d());
     auto t0        = (b0() - a0()).dot(a_d()) / ad_dot_ad;
     auto t1        = t0 + bd_dot_ad / ad_dot_ad;
 
-    auto ps = segment_intersection_detail::intersection_1d(t0, t1, 0., 1.);
+    auto ps = intersection_test_segment_segment_detail::intersection_1d(t0, t1,
+                                                                        0., 1.);
     if (!ps) { return monostate{}; }
 
-    num_t t = ps.value().first();
-    num_t u = ps.value().second();
+    num_t t = first(ps.value());
+    num_t u = second(ps.value());
 
-    auto p0 = p_t(a0() + t * a_d());
-    if (geometry::approx(t, u)) { return p0; }
-    auto p1 = p_t(a0() + u * a_d());
-    return s_t(p0, p1);
+    auto p0 = PT(a0() + t * a_d());
+    if (approx_number(t, u, abs_tol, rel_tol)) { return p0; }
+    auto p1 = PT(a0() + u * a_d());
+    return ET(p0, p1);
   }
 
-  auto is = line_primitive::parameter(a0, a_d, b0, b_d);
+  auto is
+   = intersection_parameter_line_line(a0, a_d, b0, b_d, abs_tol, rel_tol);
   if (!is) { return monostate{}; }
-  auto t = is.value().first();
-  auto s = is.value().second();
+  auto t = first(is.value());
+  auto s = second(is.value());
   if (0. <= t and t <= 1. and 0. <= s and s <= 1.) {
-    return p_t{a0() + t * a_d()};  // both segments intersect
+    return PT{a0() + t * a_d()};  // both segments intersect
   }
   return monostate{};  // Case 3: not parallel and not intersect
+}
+
+struct intersection_segment_segment_fn {
+  /// Intersection point of the one dimensional segments \p s and \p u
+  /// intersect?
+  static auto one_dimensional(num_t s0, num_t s1, num_t u0, num_t u1) noexcept {
+    return intersection_test_segment_segment_detail::intersection_1d(s0, s1, u0,
+                                                                     u1);
+  }
+
+  /// Intersection between two 1D segments
+  template <typename T, typename U, typename ET = uncvref_t<T>,
+            typename PT = associated::point_t<T>>
+  static constexpr auto impl(T const& a, U const& b, trait::segment<1>,
+                             num_t abs_tol, num_t rel_tol) noexcept
+   -> variant<monostate, ET, PT> {
+    auto result = one_dimensional(a.x(0)(0), a.x(1)(0), b.x(0)(0), b.x(1)(0));
+
+    if (!result) { return monostate{}; }
+
+    auto r  = result.value();
+    auto x0 = PT{first(r)};
+    auto x1 = PT{second(r)};
+    if (approx_point(x0, x1, abs_tol, rel_tol)) { return x0; }
+    return ET(x0, x1);
+  }
+
+  /// Intersection between two 1D segments
+  template <typename T, typename U, typename ET = uncvref_t<T>,
+            typename PT = associated::point_t<T>>
+  static constexpr auto impl(T const& a, U const& b, trait::segment<2>,
+                             num_t abs_tol, num_t rel_tol) noexcept {
+    return intersection_nd(a, b, abs_tol, rel_tol);
+  }
+
+  /// Intersection between two 1D segments
+  template <typename T, typename U, typename ET = uncvref_t<T>,
+            typename PT = associated::point_t<T>>
+  static constexpr auto impl(T const& a, U const& b, trait::segment<3>,
+                             num_t abs_tol, num_t rel_tol) noexcept {
+    return intersection_nd(a, b, abs_tol, rel_tol);
+  }
+
+  template <typename T, typename U>
+  constexpr auto operator()(T const& a, U const& b, num_t abs_tol,
+                            num_t rel_tol) const noexcept {
+    static_assert(Segment<T>{});
+    static_assert(Segment<U>{});
+    static_assert(ad_v<T> == ad_v<U>);
+    return impl(a, b, associated::v_<T>, abs_tol, rel_tol);
+  }
+};
+
+}  // namespace intersection_segment_segment_detail
+
+namespace {
+static constexpr auto const& intersection_segment_segment
+ = static_const<with_default_tolerance<
+  intersection_segment_segment_detail::intersection_segment_segment_fn>>::value;
 }
 
 }  // namespace hm3::geometry::segment_primitive

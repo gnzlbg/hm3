@@ -1,168 +1,26 @@
 #pragma once
 /// \file
 ///
-/// Vertex Primitive concepts
-///
-/// The hierarchy is as follows:
-///
-/// VertexPrimitive (access/iteration over vertices)
-///  |---> SegmentPrimitive (line-like => length)
-///  |---> AreaPrimitive (surface-like => area, normal, perimeter)
-///  |---> VolumePrimitive (volume-like => volume, surface-area)
-///
-#include <hm3/geometry/access.hpp>
-#include <hm3/geometry/algorithm/centroid.hpp>
-#include <hm3/geometry/algorithm/direction.hpp>
-#include <hm3/geometry/algorithm/integral.hpp>
-#include <hm3/geometry/algorithm/normal.hpp>
-#include <hm3/geometry/primitive/fwd.hpp>
-#include <hm3/geometry/primitive/point/point.hpp>
-#include <hm3/geometry/primitive/vec/vec.hpp>
-#include <hm3/geometry/rank.hpp>
-
-namespace hm3::geometry {
-
-/// Geometry concepts.
-namespace concepts {
-
-namespace rc = ranges::concepts;
-
-template <typename T>
-struct is_bounded : std::true_type {};
-
-template <typename T>
-struct is_primitive : std::true_type {};
-
-struct primitive : rc::refines<rc::Regular, Ranked, access::concepts::Vertex> {
-  template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(  //
-   rc::valid_expr(                           //
-    rc::is_true(is_bounded<UT>{}),           //
-    rc::is_true(is_primitive<UT>{})          //
-    ));
-};
-
-using Primitive = primitive;
-
-// SegmentPrimitive (Rank 1)
-struct segment_primitive : rc::refines<Primitive> {
-  template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(  //
-   rc::valid_expr(                           //
-    rc::is_true(geometry::Ranked<T, UT::dimension(), 1>{})));
-};
-
-using Segment = segment_primitive;
-
-// SurfacePrimitive (Rank: Nd - 1)
-struct surface_primitive : rc::refines<Primitive> {
-  template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(  //
-   rc::valid_expr(                           //
-    rc::is_true(geometry::Ranked<T, UT::dimension(), UT::dimension() - 1>{})));
-};
-
-using Surface = surface_primitive;
-
-// VolumePrimitive (Rank Nd)
-struct volume_primitive : rc::refines<Primitive> {
-  template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(  //
-   rc::valid_expr(                           //
-    rc::is_true(geometry::Ranked<T, UT::dimension(), UT::dimension()>{})));
-};
-
-using Volume = volume_primitive;
-
-template <typename T>
-struct is_polygon : std::true_type {};
-
-struct polygon : rc::refines<Primitive> {
-  template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(                 //
-   rc::valid_expr(                                          //
-    rc::is_true(is_polygon<UT>{}),                          //
-    rc::is_true(geometry::Ranked<T, UT::dimension(), 2>{})  //
-    ));
-};
-
-using Polygon = polygon;
-
-template <typename T>
-struct is_polyline : std::true_type {};
-
-struct polyline : rc::refines<Primitive> {
-  template <typename T, typename UT = uncvref_t<T>>
-  static auto requires_(T&& t) -> decltype(                 //
-   rc::valid_expr(                                          //
-    rc::is_true(is_polyline<UT>{}),                         //
-    rc::is_true(geometry::Ranked<T, UT::dimension(), 1>{})  //
-    ));
-};
-
-using Polyline = polyline;
-
-}  // namespace concepts
-
-template <typename T>
-using Primitive = concepts::rc::models<concepts::Primitive, uncvref_t<T>>;
-
-template <typename T>
-using Segment = concepts::rc::models<concepts::Segment, uncvref_t<T>>;
-
-template <typename T>
-using Surface = concepts::rc::models<concepts::Surface, uncvref_t<T>>;
-
-template <typename T>
-using Volume = concepts::rc::models<concepts::Volume, uncvref_t<T>>;
-
-template <typename T, dim_t Nd = math::highest<dim_t>>
-using Polygon
- = meta::and_<concepts::rc::models<concepts::Polygon, ranges::uncvref_t<T>>,
-              meta::bool_<Dimensional<T, Nd>{}>>;
-
-template <typename T, dim_t Nd = math::highest<dim_t>>
-using Polyline
- = meta::and_<concepts::rc::models<concepts::Polyline, ranges::uncvref_t<T>>,
-              meta::bool_<Dimensional<T, Nd>{}>>;
-
-namespace concepts {
-
-namespace rc = ranges::concepts;
-
-struct pushbackable {
-  template <typename T, typename U>
-  static auto requires_(T&& t, U&& u) -> decltype(  //
-   rc::valid_expr(((void)t.push_back(std::forward<U>(u)), 42)));
-};
-
-using PushBackable = pushbackable;
-
-struct popbackable {
-  template <typename T>
-  static auto requires_(T&& t) -> decltype(  //
-   rc::valid_expr(((void)t.pop_back(), 42)));
-};
-
-using PopBackable = popbackable;
-
-struct reservable {
-  template <typename T>
-  static auto requires_(T&& t) -> decltype(  //
-   rc::valid_expr(((void)t.reserve(0), 42)));
-};
-
-using Reservable = reservable;
-}  // concepts
-
-template <typename T, typename U>
-using PushBackable
- = concepts::rc::models<concepts::PushBackable, uncvref_t<T>, uncvref_t<U>>;
-
-template <typename T>
-using PopBackable = concepts::rc::models<concepts::PopBackable, uncvref_t<T>>;
-
-template <typename T>
-using Reservable = concepts::rc::models<concepts::Reservable, uncvref_t<T>>;
-
-}  // namespace hm3::geometry
+/// Includes all concepts.
+#include <hm3/geometry/concept/aabb.hpp>
+#include <hm3/geometry/concept/ambient_dimension.hpp>
+#include <hm3/geometry/concept/box.hpp>
+#include <hm3/geometry/concept/edge.hpp>
+#include <hm3/geometry/concept/edge_access.hpp>
+#include <hm3/geometry/concept/element_dimension.hpp>
+#include <hm3/geometry/concept/face.hpp>
+#include <hm3/geometry/concept/face_access.hpp>
+#include <hm3/geometry/concept/geometry_object.hpp>
+#include <hm3/geometry/concept/line.hpp>
+#include <hm3/geometry/concept/plane.hpp>
+#include <hm3/geometry/concept/point.hpp>
+#include <hm3/geometry/concept/polygon.hpp>
+#include <hm3/geometry/concept/polyhedron.hpp>
+#include <hm3/geometry/concept/polyline.hpp>
+#include <hm3/geometry/concept/ray.hpp>
+#include <hm3/geometry/concept/resizable.hpp>
+#include <hm3/geometry/concept/segment.hpp>
+#include <hm3/geometry/concept/signed_distance.hpp>
+#include <hm3/geometry/concept/vector.hpp>
+#include <hm3/geometry/concept/vertex.hpp>
+#include <hm3/geometry/concept/vertex_access.hpp>

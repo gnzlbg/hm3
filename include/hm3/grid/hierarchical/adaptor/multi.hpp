@@ -65,8 +65,8 @@ struct multi : TreeGrid {
 
   template <typename At>
   void assert_grid_in_bounds(grid_idx g, At&& at) const noexcept {
-    HM3_ASSERT_AT(g && g < no_grids(), "grid {} out-of-bounds [0, {})", at, g,
-                  no_grids());
+    HM3_ASSERT_AT(g && g < no_grids(), "grid {} out-of-bounds [0, {})",
+                  std::forward<At>(at), g, no_grids());
   }
 
   /// Sorts the grid using dfs
@@ -80,8 +80,9 @@ struct multi : TreeGrid {
     assert_node_in_use(n, HM3_AT_);
     if (TreeGrid::is_leaf(n)) {
       auto c = tree::balanced_refine(static_cast<TreeGrid&>(*this), n);
-      HM3_ASSERT(c, "balanced_refine of node {} failed (size: {}, capacity: "
-                    "{}, is full: {})!",
+      HM3_ASSERT(c,
+                 "balanced_refine of node {} failed (size: {}, capacity: "
+                 "{}, is full: {})!",
                  n, TreeGrid::size(), TreeGrid::capacity(),
                  TreeGrid::size() == TreeGrid::capacity());
       return TreeGrid::nodes(c);

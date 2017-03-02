@@ -3,121 +3,101 @@
 ///
 /// Primitive forward declarations.
 #include <hm3/types.hpp>
-#include <hm3/utility/array.hpp>
-#include <hm3/utility/inline_vector.hpp>
 #include <hm3/utility/small_vector.hpp>
 
 namespace hm3::geometry {
 
+/// \name Fundamental geometric primitives
+///@{
+
 namespace point_primitive {
-template <dim_t Nd>
+template <dim_t Ad>
 struct point;
 }  // namespace point_primitive
 using point_primitive::point;
 
 namespace vec_primitive {
-template <dim_t Nd>
+template <dim_t Ad>
 struct vec;
 }  // namespace vec_primitive
 using vec_primitive::vec;
 
 namespace aabb_primitive {
-template <dim_t Nd>
+template <dim_t Ad>
 struct aabb;
 }  // namespace aabb_primitive
 using aabb_primitive::aabb;
 
 namespace box_primitive {
-template <dim_t Nd>
+template <dim_t Ad>
 struct box;
 }  // namespace box_primitive
 using box_primitive::box;
 
 namespace line_primitive {
-template <dim_t Nd>
+template <dim_t Ad, typename PointT = point<Ad>>
 struct line;
-}  // namespace segment_primitive
+}  // namespace line_primitive
 using line_primitive::line;
 
 namespace ray_primitive {
-template <dim_t Nd>
+template <dim_t Ad>
 struct ray;
 }  // namespace ray_primitive
+using ray_primitive::ray;
 
 namespace segment_primitive {
-template <dim_t Nd>
+template <dim_t Ad>
 struct segment;
 }  // namespace segment_primitive
 using segment_primitive::segment;
 
-namespace polygon_primitive {
-
-template <dim_t Nd, typename Storage>
-struct polygon;
-
-/// Small polygon.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam EstNp Maximum expected number of vertices that the polygon
-/// can contain.
-template <dim_t Nd, dim_t EstNp>
-using small_polygon = polygon<Nd, small_vector<point<Nd>, EstNp>>;
-
-/// Fixed polygon.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam Nv Number of vertices.
-template <dim_t Nd, dim_t Nv>
-using fixed_polygon = polygon<Nd, array<point<Nd>, Nv>>;
-
-/// Bounded polygon
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam MaxNv Maximum number of vertices that the polygon can contain.
-template <dim_t Nd, dim_t MaxNv>
-using bounded_polygon = polygon<Nd, inline_vector<point<Nd>, MaxNv>>;
-
-}  // namespace polygon_primitive
-using polygon_primitive::bounded_polygon;
-using polygon_primitive::small_polygon;
-using polygon_primitive::fixed_polygon;
-template <dim_t Nd>
-using triangle = fixed_polygon<Nd, 3>;
-template <dim_t Nd>
-using quad = fixed_polygon<Nd, 4>;
-
 namespace polyline_primitive {
-template <dim_t Nd, typename Storage>
+template <dim_t Ad, typename Storage = small_vector<point<Ad>, 5>>
 struct polyline;
-
-/// Small polyline.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam EstNp Maximum expected number of vertices that the polyline
-/// can contain.
-template <dim_t Nd, dim_t EstNp>
-using small_polyline = polyline<Nd, small_vector<point<Nd>, EstNp>>;
-
-/// Fixed polyline.
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam Nv Number of vertices.
-template <dim_t Nd, dim_t Nv>
-using fixed_polyline = polyline<Nd, array<point<Nd>, Nv>>;
-
-/// Bounded polyline
-///
-/// \tparam Nd Number of spatial dimensions.
-/// \tparam MaxNv Maximum number of vertices that the polyline can contain.
-template <dim_t Nd, dim_t MaxNv>
-using bounded_polyline = polyline<Nd, inline_vector<point<Nd>, MaxNv>>;
-
 }  // namespace polyline_primitive
-using polyline_primitive::bounded_polyline;
-using polyline_primitive::small_polyline;
-using polyline_primitive::fixed_polyline;
+using polyline_primitive::polyline;
 
-namespace simplex_primitive {
+namespace polygon_primitive {
+template <dim_t Ad, typename Storage = small_vector<point<Ad>, 5>>
+struct polygon;
+}  // namespace polygon_primitive
+using polygon_primitive::polygon;
+
+namespace plane_primitive {
+template <dim_t Ad>
+struct plane;
+}  // namespace plane_primitive
+using plane_primitive::plane;
+
+///@}  // Fundamental geometric primitives
+
+/// Polymorphic primitive
+///@{
+
+namespace some_primitive {
+template <dim_t Ad>
+struct some;
+}
+using some_primitive::some;
+
+///@}
+
+/// \name Specialized primitives
+///@{
+
+/// Fixed-size polygon
+///
+/// \tparam Ad Dimension of the ambient space.
+/// \tparam Nv Number of polygon vertices.
+template <dim_t Ad, dim_t Nv>
+using fixed_polygon
+ = polygon<Ad, array<point<Ad>, Nv + 1>>;  // TODO: make this == Nv ?
+
+template <dim_t Ad>
+using triangle = fixed_polygon<Ad, 3>;
+template <dim_t Ad>
+using quad = fixed_polygon<Ad, 4>;
 
 namespace simplex_detail {
 struct ERROR_UNKNOWN_DIMENSION;
@@ -126,23 +106,13 @@ struct ERROR_UNKNOWN_DIMENSION;
 // clang-format off
 
 /// Simplex: points (1D), segments (2D), triangles(3D)
-template <dim_t Nd>  
-using simplex = std::conditional_t<Nd == 1, point<Nd>,
-                std::conditional_t<Nd == 2, segment<Nd>,
-                std::conditional_t<Nd == 3, triangle<Nd>,
-                                   simplex_detail::ERROR_UNKNOWN_DIMENSION
-                >>>;
+template <dim_t Ad>
+using simplex = std::conditional_t<Ad == 1, point<1>,
+                std::conditional_t<Ad == 2, segment<2>,
+                std::conditional_t<Ad == 3, triangle<3>,
+                simplex_detail::ERROR_UNKNOWN_DIMENSION
+               >>>;
 
 // clang-format on
-
-}  // namespace simplex_primitive
-
-using simplex_primitive::simplex;
-
-namespace any_primitive {
-template <dim_t Nd>
-struct any;
-}
-using any_primitive::any;
 
 }  // namespace hm3::geometry

@@ -2,53 +2,68 @@
 /// \file
 ///
 /// Split one primitive with another
-#include <hm3/utility/range.hpp>
+#include <hm3/geometry/algorithm/split/polygon_polyline.hpp>
+#include <hm3/geometry/algorithm/split/polyline_point.hpp>
+#include <hm3/geometry/algorithm/split/range.hpp>
+#include <hm3/geometry/algorithm/split/segment_point.hpp>
 
 namespace hm3::geometry {
 
 namespace split_detail {
 
 struct split_fn {
-  template <typename T, typename U>
-  static constexpr auto split_impl(T&& t, U&& u, long)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(split(std::forward<U>(u),
-                                              std::forward<T>(t)));
+  /// Split segment-point
+  template <typename S, typename P, dim_t Ad = ad_v<S>>
+  static constexpr auto impl(S const& s, P const& p, trait::segment<Ad>,
+                             trait::point<Ad>) noexcept {
+    static_assert(Segment<S>{});
+    static_assert(Point<P>{});
+    static_assert(ad_v<S> == ad_v<P>);
+    return split_segment_point(s, p);
+  }
+
+  /// Split polyline-point
+  template <typename S, typename P, dim_t Ad = ad_v<S>>
+  static constexpr auto impl(S const& s, P const& p, trait::polyline<Ad>,
+                             trait::point<Ad>) noexcept {
+    static_assert(Polyline<S>{});
+    static_assert(Point<P>{});
+    static_assert(ad_v<S> == ad_v<P>);
+    return split_polyline_point(s, p);
+  }
+
+  /// Split polygon-polyline
+  template <typename S, typename P, dim_t Ad = ad_v<S>>
+  static constexpr auto impl(S const& s, P const& p, trait::polygon<Ad>,
+                             trait::polyline<Ad>) noexcept {
+    static_assert(Polygon<S>{});
+    static_assert(Polyline<P>{});
+    static_assert(ad_v<S> == ad_v<P>);
+    return split_polygon_polyline(s, p);
+  }
 
   template <typename T, typename U>
-  static constexpr auto split_impl(T&& t, U&& u, int)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(split(std::forward<T>(t),
-                                              std::forward<U>(u)));
+  static constexpr auto dispatch(T&& t, U&& u, long)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<U>(u),
+                                             std::forward<T>(t),
+                                             associated::v_<U>,
+                                             associated::v_<T>));
+
+  template <typename T, typename U>
+  static constexpr auto dispatch(T&& t, U&& u, int)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
+                                             std::forward<U>(u),
+                                             associated::v_<T>,
+                                             associated::v_<U>));
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(split_impl(std::forward<T>(t),
-                                                   std::forward<U>(u), 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(dispatch(std::forward<T>(t),
+                                                 std::forward<U>(u), 0));
 
-  // Split each primitive in vector \p v against each primitive in range \p
-  // rng (and the result is returned in the vector \p v)
-  template <typename Vec, typename Rng>
-  static auto range(Vec& v, Rng&& rng) {
-    HM3_ASSERT(not v.empty(), "");
-    for (auto&& p : rng) {
-      for (auto&& it = begin(v); it != end(v);) {
-        // Split the current polygon with the first polyline that works
-        auto r = split_fn{}(*it, p);
-
-        // If the result of the split is zero or one polygon, the poly line does
-        // not split the current polygon so go to the next one:
-        if (r.size() < 2_su) {
-          ++it;
-          continue;
-        }
-
-        // If the split succeeded, replace the split polygon with the two
-        // resulting polygons while maintaining the iterators valid:
-        v.erase(it);
-        std::size_t pos = it - begin(v);
-        v.insert(end(v), begin(r), end(r));
-        it = begin(v) + pos;
-      }
-    }
+  template <typename T, typename Rng>
+  static auto against_range(T&& t, Rng&& r) {
+    return split_range(std::forward<T>(t), std::forward<Rng>(r), split_fn{});
   }
 };
 

@@ -14,7 +14,7 @@ namespace tree {
 
 struct node_location_fn {
   /// Location code of the node with index \p n within the tree \p t
-  template <typename Tree, typename Loc = loc_t<Tree::dimension()>,
+  template <typename Tree, typename Loc = loc_t<ad_v<Tree>>,
             CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, node_idx n, Loc loc = Loc()) const noexcept
    -> Loc {

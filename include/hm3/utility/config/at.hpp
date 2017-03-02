@@ -36,12 +36,12 @@ struct source_location {
 }  // namespace hm3
 
 /// Formats a source code location
-#define HM3_FMT_AT(AT)                                                      \
-  ::hm3::fmt::format("  at function: {}\n  at file: {}\n  at line: {}\n\n", \
-                     (AT).function_name, (AT).file_name, (AT).line_number)
+#define HM3_FMT_AT(AT)                                                        \
+  ::hm3::ascii_fmt::detail::format(                                           \
+   "  at function: {}\n  at file: {}\n  at line: {}\n\n", (AT).function_name, \
+   (AT).file_name, (AT).line_number)
 
 /// Formats a source code location
-#define HM3_PRINT_AT(AT)                                                   \
-  ::hm3::fmt::print(stderr,                                                \
-                    "  at function: {}\n  at file: {}\n  at line: {}\n\n", \
-                    (AT).function_name, (AT).file_name, (AT).line_number)
+#define HM3_PRINT_AT(AT)                                                       \
+  ::hm3::ascii_fmt::err("  at function: {}\n  at file: {}\n  at line: {}\n\n", \
+                        (AT).function_name, (AT).file_name, (AT).line_number)

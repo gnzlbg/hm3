@@ -18,6 +18,8 @@ option(HM3_ENABLE_WERROR "Fail and stop if a warning is triggered." OFF)
 option(HM3_ENABLE_PARAVIEW_PLUGINS "Builds ParaView plugins." ON)
 option(HM3_ENABLE_VTK "Builds with VTK libraries." OFF)
 option(HM3_VERBOSE_CONFIGURE "Prints helpful debug information about CMake scripts." OFF)
+option(HM3_ENABLE_DEBUG_INFO_GDB "Include GDB debug information in the binaries." OFF)
+option(HM3_ENABLE_DEBUG_INFO_LLDB "Include LLDB debug information in the binaries." OFF)
 
 # Enable verbose configure when passing -Wdev to CMake
 if (DEFINED CMAKE_SUPPRESS_DEVELOPER_WARNINGS AND

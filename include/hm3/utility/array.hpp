@@ -135,14 +135,6 @@ constexpr T&& get(array<T, N>&& a) noexcept {
   return std::move(a.elems_[I]);
 }
 
-template <typename OStream, typename T, suint_t N>
-OStream& operator<<(OStream& os, array<T, N> const& a) {
-  os << "[";
-  for (suint_t i = 0; i < (N - 1); ++i) { os << a[i] << ", "; }
-  os << a[N - 1] << "]";
-  return os;
-}
-
 static_assert(RandomAccessRange<array<int, 2>>{}, "");
 }  // namespace hm3
 

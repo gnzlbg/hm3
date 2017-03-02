@@ -23,23 +23,31 @@ bool operator!=(compressed_pair<T, U> const& t,
   return !(t == u);
 }
 
-template <typename OStream, typename T, typename U>
-OStream& operator<<(OStream& os, compressed_pair<T, U> const& t) {
-  os << "(" << t.first() << ", " << t.second() << ")";
-  return os;
-}
-
 }  // inline namespace v3
 }  // namespace ranges
 
 namespace hm3 {
 
 template <typename T, typename U>
-using pair = ranges::compressed_pair<T, U>;
+using pair = std::pair<T, U>;
 
-template <typename T, typename U>
-auto make_pair(T&& t, U&& u) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
- ranges::make_compressed_pair(std::forward<T>(t), std::forward<U>(u)));
+using std::get;
+using std::make_pair;
+
+template <typename T>
+constexpr auto first(T&& t) noexcept {
+  return get<0>(std::forward<T>(t));
+}
+
+template <typename T>
+constexpr auto second(T&& t) noexcept {
+  return get<1>(std::forward<T>(t));
+}
+
+// range-v3 compressed pair is broken in C++17
+// template <typename T, typename U>
+// auto make_pair(T&& t, U&& u) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+//  ranges::make_compressed_pair(std::forward<T>(t), std::forward<U>(u)));
 
 template <typename T>
 using static_const = ranges::static_const<T>;
@@ -56,9 +64,13 @@ using ranges::range_iterator_t;
 using ranges::unwrap_reference;
 using ranges::tuple_indices_t;
 using ranges::range_value_t;
+using ranges::iterator_reference_t;
 
 // standard concepts:
 using ranges::Same;
+
+template <typename U, typename V>
+static constexpr bool UCVSame = Same<uncvref_t<U>, uncvref_t<V>>{};
 
 using ranges::Range;
 using ranges::InputRange;
@@ -66,6 +78,7 @@ using ranges::ForwardRange;
 using ranges::RandomAccessRange;
 using ranges::IteratorRange;
 using ranges::InputIterator;
+using ranges::OutputIterator;
 using ranges::ForwardIterator;
 using ranges::RandomAccessIterator;
 using ranges::RandomAccessIncrementable;
@@ -84,7 +97,6 @@ using ranges::Constructible;
 using ranges::CopyConstructible;
 using ranges::DefaultConstructible;
 using ranges::MoveConstructible;
-using ranges::Function;
 using ranges::ConvertibleTo;
 
 // core algorithms

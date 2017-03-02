@@ -11,8 +11,9 @@ namespace fv {
 /// Finite volume discretization state
 template <typename TileLayout, typename Physics, typename TimeIntegration,
           typename NumericalFlux, typename Method>
-struct state : grid_client_type<tile_type<TileLayout, Physics, TimeIntegration,
-                                          NumericalFlux, Method>> {
+struct state
+ : grid_client_type<
+    tile_type<TileLayout, Physics, TimeIntegration, NumericalFlux, Method>> {
   using self
    = state<TileLayout, Physics, TimeIntegration, NumericalFlux, Method>;
   using tile_t

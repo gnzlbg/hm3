@@ -49,7 +49,7 @@ struct d2q9 : geometry::dimensional<2> {
   template <typename Distributions>
   static constexpr num_t rho(Distributions&& d) noexcept {
     num_t tmp = 0;
-    RANGES_FOR (auto&& d_i, distributions()) { tmp += d[d_i]; }
+    for (auto&& d_i : distributions()) { tmp += d[d_i]; }
     return tmp;
   }
 
@@ -113,7 +113,7 @@ struct d2q9 : geometry::dimensional<2> {
     const num_t sx[9] = {0., 1., 0., -1., 0., 1., -1., -1., 1.};
     const num_t sy[9] = {0., 0., 1., 0., -1., 1., 1., -1., -1.};
     num_t u_n[9]      = {0};
-    RANGES_FOR (auto i, distributions()) { u_n[i] = sx[i] * u_x + sy[i] * u_y; }
+    for (auto i : distributions()) { u_n[i] = sx[i] * u_x + sy[i] * u_y; }
 
     // equilibrium densities:
     // (this can be rewritten to improve computational performance
@@ -129,17 +129,17 @@ struct d2q9 : geometry::dimensional<2> {
     n_equ[0]       = t_0 * dloc * (1. - f2);  // zero velocity density
 
     // axis speeds (factor: t_1)
-    RANGES_FOR (auto i, direct_node_ids()) {
+    for (auto i : direct_node_ids()) {
       n_equ[i] = f3 * (1. + u_n[i] / c_squ + std::pow(u_n[i], 2.) / f0 - f2);
     }
 
     // diagonal speeds (factor: t_2)
-    RANGES_FOR (auto i, diagonal_node_ids()) {
+    for (auto i : diagonal_node_ids()) {
       n_equ[i] = f4 * (1. + u_n[i] / c_squ + std::pow(u_n[i], 2.) / f0 - f2);
     }
 
     // relaxation step
-    RANGES_FOR (auto n, node_ids()) {
+    for (auto n : node_ids()) {
       to[n] = from[n] + omega * (n_equ[n] - from[n]);
     }
   }

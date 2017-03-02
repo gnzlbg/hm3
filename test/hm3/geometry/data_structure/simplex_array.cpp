@@ -7,10 +7,9 @@ int main() {
 
   {  // 2D
     static constexpr dim_t nd = 2;
-
-    using mesh_t = simplex_array<nd>;
-    using p_t    = point<nd>;
-    using s_t    = simplex<nd>;
+    using s_t                 = simplex<nd>;
+    using mesh_t              = simplex_array<nd>;
+    using p_t                 = point<nd>;
 
     p_t ps[] = {
      // Triangle Bottom Right

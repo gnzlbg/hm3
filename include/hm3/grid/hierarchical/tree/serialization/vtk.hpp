@@ -3,7 +3,7 @@
 ///
 /// Tree serialization to VKT
 #ifdef HM3_ENABLE_VTK
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbor.hpp>
@@ -20,10 +20,10 @@ namespace vtk {
 /// Adapts a tree<Nd> to be Serializable to a vtkUnstructuredGrid
 ///  - a cell_geometry(node_idx) method
 ///  - a bounding_box() method
-///  - a dimensions() method
+///  - a ambient_dimensions() method
 ///  - a for_each_cell(F&&) method
 template <dim_t Nd>
-struct serializable_tree : geometry::dimensional<Nd> {
+struct serializable_tree : geometry::with_ambient_dimension<Nd> {
   tree<Nd> const& t_;
   sint_t level_ = -1;
 

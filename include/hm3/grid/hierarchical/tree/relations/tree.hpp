@@ -5,9 +5,10 @@
 ///
 /// TODO: move some of these to grid relations since they are also needed by
 /// structured grids
-#include <hm3/geometry/dimension.hpp>
-#include <hm3/geometry/primitive/box.hpp>
-#include <hm3/geometry/primitive/point.hpp>
+#include <hm3/geometry/algorithm/bounding_length.hpp>
+#include <hm3/geometry/algorithm/centroid.hpp>
+#include <hm3/geometry/concepts.hpp>
+#include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
@@ -84,10 +85,9 @@ static constexpr nidx_t no_nodes_sharing_face_at_level(
 /// Formula: \f$\ 2^{n_d - m} \begin{pmatrix} n_d // m \end{pmatrix} \f$
 ///
 static constexpr npidx_t no_faces(dim_t nd, dim_t m) noexcept {
-  return m <= nd
-          ? math::ipow(npidx_t{2}, npidx_t(nd - m))
-             * math::binomial_coefficient(nd, m)
-          : npidx_t{0};
+  return m <= nd ? math::ipow(npidx_t{2}, npidx_t(nd - m))
+                    * math::binomial_coefficient(nd, m)
+                 : npidx_t{0};
 }
 
 /// Number of nodes at an uniformly refined level \p level
@@ -127,7 +127,7 @@ static constexpr num_t node_length_at_level(level_idx l) {
   return num_t{1.} / math::ipow(nidx_t{2}, static_cast<nidx_t>(*l));
 }
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct relative_child_positions_ {
   static constexpr array<array<rcpidx_t, 0>, 0> stencil{{}};
 };
@@ -164,14 +164,14 @@ struct relative_child_positions_<3> {
 };
 
 namespace {
-template <dim_t Nd>
+template <dim_t Ad>
 static constexpr auto relative_child_position_stencil
- = relative_child_positions_<Nd>::stencil;
+ = relative_child_positions_<Ad>::stencil;
 }  // namespace
 
 /// Relative position of the children w.r.t. their parent's center:
 ///
-/// \tparam Nd number of spatial dimensions of the node
+/// \tparam Ad number of spatial dimensions of the node
 /// \param [in] p position of the children
 ///
 /// \returns relative position (+1/-1, ...) of child \p w.r.t. his parent node
@@ -198,43 +198,56 @@ static constexpr auto relative_child_position_stencil
 ///
 ///
 ///
-template <dim_t Nd>
-constexpr auto relative_child_position(const child_pos<Nd> p)
- -> const offset_t<Nd> {
+template <dim_t Ad>
+constexpr auto relative_child_position(const child_pos<Ad> p)
+ -> const offset_t<Ad> {
 #ifdef HM3_USE_CHILDREN_LOOKUP_TABLE
-  return relative_child_position_stencil<Nd>[*p];
+  return relative_child_position_stencil<Ad>[*p];
 #else
-  offset_t<Nd> r;
-  for (dim_t d = 0; d < Nd; ++d) {
+  offset_t<Ad> r;
+  for (dim_t d = 0; d < Ad; ++d) {
     r[d] = (*p / math::ipow(coidx_t{2}, coidx_t{d})) % 2 ? 1 : -1;
   }
   return r;
 #endif
 }
 
-/// Centroid of child at position \p child_position for a parent with centroid
-/// \p parent_centroid and length \p parent_length
-template <dim_t Nd>
-constexpr auto child_centroid(const child_pos<Nd> child_position,
-                              geometry::point<Nd> parent_centroid,
-                              num_t parent_length) -> geometry::point<Nd> {
-  const auto rcp = relative_child_position<Nd>(child_position);
-  const num_t l4 = parent_length / 4.;
-  for (dim_t d = 0; d < Nd; ++d) { parent_centroid(d) += l4 * rcp[d]; }
-  return parent_centroid;
+namespace child_centroid_detail {
+struct child_centroid_fn {
+  /// Centroid of child at position \p child_position for a parent with centroid
+  /// \p parent_centroid and length \p parent_length
+  template <typename Point, dim_t Ad>
+  constexpr auto operator()(const child_pos<Ad> child_position,
+                            Point parent_centroid, num_t parent_length) const
+   noexcept -> Point {
+    static_assert(geometry::Point<Point, Ad>{});
+    const auto rcp = relative_child_position<Ad>(child_position);
+    const num_t l4 = parent_length / 4.;
+    for (dim_t d = 0; d < Ad; ++d) { parent_centroid(d) += l4 * rcp[d]; }
+    return parent_centroid;
+  }
+
+  /// Centroid of child at position \p child_position for a \p parent geometry
+  template <typename Box, dim_t Ad>
+  constexpr auto operator()(const child_pos<Ad> child_position,
+                            Box parent) const noexcept
+   -> geometry::associated::point_t<Box> {
+    static_asssert(geometry::trait::check<Box, geometry::trait::box<Ad>>);
+    return child_centroid(child_position, geometry::centroid(parent),
+                          geometry::bounding_length(parent));
+  }
+};
+}  // namespace child_centroid_detail
+
+namespace {
+static constexpr auto const& child_centroid
+ = static_const<child_centroid_detail::child_centroid_fn>::value;
 }
 
-/// Centroid of child at position \p child_position for a \p parent geometry
-template <dim_t Nd>
-constexpr auto child_centroid(const child_pos<Nd> child_position,
-                              geometry::box<Nd> parent) -> geometry::point<Nd> {
-  return child_centroid(child_position, geometry::centroid(parent),
-                        geometry::bounding_length(parent));
-}
-
-template <dim_t Nd>
-constexpr auto child_geometry(const child_pos<Nd> child_position,
-                              geometry::box<Nd> parent) -> geometry::box<Nd> {
+template <typename Box, dim_t Ad>
+constexpr auto child_geometry(const child_pos<Ad> child_position, Box parent)
+ -> Box {
+  static_asssert(geometry::trait::check<Box, geometry::trait::box<Ad>>);
   return {child_centroid(child_position, parent),
           geometry::bounding_length(parent) / 2.};
 }

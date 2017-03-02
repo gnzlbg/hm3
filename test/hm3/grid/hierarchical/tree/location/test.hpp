@@ -2,15 +2,13 @@
 /// \file
 ///
 /// Location testing functions
-#include <hm3/geometry/dimension.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/utility/bit.hpp>
 #include <hm3/utility/math.hpp>
 #include <hm3/utility/test.hpp>
-#define HM3_TEST_DEBUG_OUTPUT
 
-template <hm3::uint_t Nd, hm3::uint_t NoLevels, typename Loc>
+template <hm3::uint_t Ad, hm3::uint_t NoLevels, typename Loc>
 void test_location(Loc) {
   using namespace hm3;
   using namespace tree;
@@ -19,28 +17,28 @@ void test_location(Loc) {
   static_assert(SemiRegular<Loc>{}, "");
   static_assert(EqualityComparable<Loc>{}, "");
   static_assert(Regular<Loc>{}, "");
-  static_assert(geometry::Dimensional<Loc>{}, "");
+  static_assert(geometry::AmbientDimension<Loc>{}, "");
   static_assert(TotallyOrdered<Loc>{}, "");
   static_assert(Location<Loc>{}, "");
   Loc l;
-  STATIC_CHECK(l.dimension() == Nd);
+  STATIC_CHECK(l.ambient_dimension() == Ad);
   STATIC_CHECK(l.max_no_levels() == NoLevels);
   STATIC_CHECK(*l.max_level() == NoLevels - 1);
-  test::check_equal(l.dimensions(), dimensions(Nd));
+  test::check_equal(l.ambient_dimensions(), ambient_dimension[l]);
   {
     auto a        = l;
     uint_t count_ = 0;
     CHECK(a.level() == count_);
     // CHECK(a[0_u] == 1_u);
-    for (auto&& c : view::iota(0_su, no_children(Nd))) {
+    for (auto&& c : view::iota(0_su, no_children(Ad))) {
       a.push(c);
       count_++;
       CHECK(a.level() == count_);
       CHECK(a[count_] == c);
     }
     test::check_equal(a.levels(), view::iota(1_u, count_ + 1));
-    test::check_equal(a(), view::iota(0_u, no_children(Nd)));
-    ranges::for_each(view::iota(0_su, no_children(Nd)) | view::reverse,
+    test::check_equal(a(), view::iota(0_u, no_children(Ad)));
+    ranges::for_each(view::iota(0_su, no_children(Ad)) | view::reverse,
                      [&](auto&& c) {
                        CHECK(a.pop() == c);
                        count_--;
@@ -57,94 +55,63 @@ void test_location(Loc) {
     {
       using morton_idx = morton_idx_t<Loc>;
       auto a_uint      = static_cast<morton_idx>(a);
-#ifdef HM3_TEST_DEBUG_OUTPUT
-      std::cerr << "HERE_A" << std::endl;
-#endif
       auto a_uint_should
-       = math::ipow(morton_idx{2}, morton_idx{Nd * *a.max_level()});
-#ifdef HM3_TEST_DEBUG_OUTPUT
-      std::cerr << "HERE_B" << std::endl;
-      std::cout << "sizeof(uint_t): " << sizeof(uint_t)
-                << " max_level: " << a.max_level() << std::endl;
-#endif
+       = math::ipow(morton_idx{2}, morton_idx{Ad * *a.max_level()});
       CHECK(a_uint == a_uint_should);
       CHECK(a_uint == a.morton_idx());
     }
 
     {
       auto b = a;
-#ifdef HM3_TEST_DEBUG_OUTPUT
-      std::cout << "[min start] Nd: " << Nd << " max_lvl: " << a.max_level()
-                << std::endl;
-#endif
-      for (auto d : dimensions(Nd)) {
-        hm3::array<int_t, Nd> offset{};
+      for (auto d : ambient_dimension[l]) {
+        hm3::array<int_t, Ad> offset{};
         ranges::fill(offset, int_t{0});
 
         auto bs = shift(b, offset);
-#ifdef HM3_TEST_DEBUG_OUTPUT
-        std::cout << "  before shift (" << d << "): " << bs << std::endl;
-#endif
         CHECK(bs);
 
         offset[d] = -1;
 
         auto as = shift(b, offset);
-#ifdef HM3_TEST_DEBUG_OUTPUT
-        std::cout << "  after shift (" << d << "): " << as << std::endl;
-#endif
         CHECK(!as);
       }
-#ifdef HM3_TEST_DEBUG_OUTPUT
-      std::cout << "[min end] Nd: " << Nd << " max_lvl: " << a.max_level()
-                << std::endl;
-#endif
     }
   }
-  {  // test push up to max level (max pip index: no_children(Nd) - 1)
+  {  // test push up to max level (max pip index: no_children(Ad) - 1)
     auto a = l;
-    while (a.level() != a.max_level()) { a.push(no_children(Nd) - 1_u); }
+    while (a.level() != a.max_level()) { a.push(no_children(Ad) - 1_u); }
     CHECK(a.level() == a.max_level());
     morton_idx_t<Loc> r = 0;
     for (auto&& lvl : a.levels()) {
-      for (auto&& d : dimensions(Nd)) {
-        bit::set(r, (*lvl - 1) * Nd + d, true);
+      for (auto&& d : ambient_dimension[l]) {
+        bit::set(r, (*lvl - 1) * Ad + d, true);
       }
     }
-    bit::set(r, *a.level() * Nd, true);
+    bit::set(r, *a.level() * Ad, true);
 
     CHECK(static_cast<morton_idx_t<Loc>>(a) == r);
     CHECK(a.morton_idx() == r);
 
     {
       auto b = a;
-#ifdef HM3_TEST_DEBUG_OUTPUT
-      std::cout << "[max start] Nd: " << Nd << " max_lvl: " << a.max_level()
-                << std::endl;
-#endif
-      for (auto d : dimensions(Nd)) {
-        hm3::array<int_t, Nd> offset{};
+      for (auto d : ambient_dimension[l]) {
+        hm3::array<int_t, Ad> offset{};
         ranges::fill(offset, int_t{0});
 
         auto bs = shift(b, offset);
-#ifdef HM3_TEST_DEBUG_OUTPUT
-        std::cout << "  before shift (" << d << "): " << bs << std::endl;
-#endif
         CHECK(bs);
 
         offset[d] = 1;
 
         auto as = shift(b, offset);
-#ifdef HM3_TEST_DEBUG_OUTPUT
-        std::cout << "  after shift (" << d << "): " << as << std::endl;
-#endif
         CHECK(!as);
       }
-#ifdef HM3_TEST_DEBUG_OUTPUT
-      std::cout << "[max end] Nd: " << Nd << " max_lvl: " << a.max_level()
-                << std::endl;
-#endif
     }
+  }
+
+  {  // check min
+    auto min_loc = Loc::min();
+    CHECK(min_loc.level() == min_loc.max_no_levels());
   }
 }
 

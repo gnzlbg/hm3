@@ -164,7 +164,8 @@ template <
  typename UInt,
  CONCEPT_REQUIRES_(
   UnsignedIntegral<UInt>{}
-  and width<UInt> == width<unsigned long> and width<unsigned long> != width<unsigned int>)>
+  and width<
+       UInt> == width<unsigned long> and width<unsigned long> != width<unsigned int>)>
 constexpr int clz(UInt n) noexcept {
 #if defined(__GCC__) || defined(__clang__)
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzl(n);
@@ -178,7 +179,8 @@ template <
  typename UInt,
  CONCEPT_REQUIRES_(
   UnsignedIntegral<UInt>{}
-  and width<UInt> == width<unsigned long long> and width<unsigned long> != width<unsigned long long>)>
+  and width<
+       UInt> == width<unsigned long long> and width<unsigned long> != width<unsigned long long>)>
 constexpr int clz(UInt n) noexcept {
 #if defined(__GCC__) || defined(__clang__)
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzll(n);

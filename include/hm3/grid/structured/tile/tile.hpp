@@ -16,7 +16,7 @@ namespace tile {
 /// \tparam Nd number of spatial dimensions
 /// \tparam Nc length (per dimension)
 template <dim_t Nd, tidx_t Nc>
-struct tile : geometry::dimensional<Nd> {
+struct tile : geometry::with_ambient_dimension<Nd> {
   using cell_indices_t    = cell::indices<Nd, Nc>;
   using surface_indices_t = surface::indices<Nd, Nc>;
   using geometry_t        = tile_geometry<Nd, Nc>;

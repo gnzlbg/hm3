@@ -46,7 +46,7 @@ struct physics : Lattice {
             CONCEPT_REQUIRES_(!Same<num_t, uncvref_t<Distributions>>{})>
   static constexpr num_t rho(Distributions&& d) noexcept {
     num_t tmp = 0.;
-    RANGES_FOR (auto&& d_i, l::all()) { tmp += d[d_i]; }
+    for (auto&& d_i : l::all()) { tmp += d[d_i]; }
     return tmp;
   }
 
@@ -117,15 +117,13 @@ struct physics : Lattice {
     dist_t f_eq = {{0}};
 
     num_t u_2 = 0.0;
-    RANGES_FOR (auto&& dim, l::dimensions()) { u_2 += us[dim] * us[dim]; }
+    for (auto&& dim : l::dimensions()) { u_2 += us[dim] * us[dim]; }
 
     const num_t f3 = 0.5 * u_2 * f1();
 
-    RANGES_FOR (auto&& d, l::all()) {
+    for (auto&& d : l::all()) {
       num_t ei_u = 0.0;
-      RANGES_FOR (auto&& dim, l::dimensions()) {
-        ei_u += l::dir(d)[dim] * us[dim];
-      }
+      for (auto&& dim : l::dimensions()) { ei_u += l::dir(d)[dim] * us[dim]; }
       const num_t ei_u_2 = ei_u * ei_u;
       num_t omega_i      = l::constants(d);
       f_eq[d] = rho * omega_i * (1. + ei_u * f1() + (ei_u_2)*f2() - f3);
@@ -152,7 +150,7 @@ struct physics : Lattice {
   static constexpr dist_t non_equilibrium_distribution(
    Distributions&& distributions) {
     auto eq = equilibrium_distribution(distributions);
-    RANGES_FOR (auto&& d, l::all()) {
+    for (auto&& d : l::all()) {
       eq[d] = distributions[d] - eq[d];  //: f_non_eq = f - f_eq
     }
     return eq;

@@ -85,3 +85,17 @@ struct coordinate
 }  // namespace structured
 }  // namespace grid
 }  // namespace hm3
+
+namespace std {
+
+template <hm3::dim_t Nd, hm3::grid::structured::tile::tidx_t Nc,
+          hm3::grid::structured::tile::tidx_t Nhl>
+struct hash<hm3::grid::structured::halo_tile::cell::coordinate<Nd, Nc, Nhl>> {
+  constexpr std::size_t operator()(
+   hm3::grid::structured::halo_tile::cell::coordinate<Nd, Nc, Nhl> const& c)
+   const noexcept {
+    return static_cast<std::size_t>(*(c.idx_));
+  }
+};
+
+}  // namespace std

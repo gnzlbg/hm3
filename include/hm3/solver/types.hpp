@@ -50,5 +50,8 @@ constexpr boundary_idx operator"" _b(unsigned long long int i) {
   return boundary_idx{static_cast<sidx_t>(i)};
 }
 
+/// Index of a boundary cell
+using boundary_cell_idx = optional_idx<idx_t, struct boundary_cell_idx_tag>;
+
 }  // namespace solver
 }  // namespace hm3
