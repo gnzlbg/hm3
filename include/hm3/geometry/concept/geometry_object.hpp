@@ -9,10 +9,11 @@ namespace hm3::geometry {
 
 namespace concept {
 struct GeometryObject : rc::refines<AmbientDimension, ElementDimension> {
-  template <typename T> auto requires_(T &&t) -> void;
+  template <typename T>
+  auto requires_(T&& t) -> void;
 };
 
-} // namespace concept
+}  // namespace concept
 
 /// GeometryObject concept.
 ///
@@ -26,7 +27,7 @@ struct GeometryObject : rc::refines<AmbientDimension, ElementDimension> {
 /// \tparam Ed Element dimension.
 template <typename T, dim_t Ad = concept::detail::dimension_independent,
           dim_t Ed = concept::detail::dimension_independent>
-using GeometryObject =
-    meta::and_<AmbientDimension<T, Ad>, ElementDimension<T, Ad, Ed>>;
+using GeometryObject
+ = meta::and_<AmbientDimension<T, Ad>, ElementDimension<T, Ad, Ed>>;
 
-} // namespace hm3::geometry
+}  // namespace hm3::geometry

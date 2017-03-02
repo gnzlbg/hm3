@@ -106,7 +106,7 @@ struct vertex_storage : public Storage {
     auto no_vertices = ranges::distance(vs);
     HM3_ASSERT(no_vertices <= max_size(),
                "number of vertices {} exceeds max_size {}!\n\nvertices:\n\n{}",
-               no_vertices, this->max_size()/*, view::all(vs) */);
+               no_vertices, this->max_size() /*, view::all(vs) */);
     this->clear();
     reserve(no_vertices);
     for (auto&& v : std::forward<Vertices>(vs)) { this->push_back(v); }
@@ -119,10 +119,11 @@ struct vertex_storage : public Storage {
              and not PushBackable<storage_t, range_value_t<Vertices>>{})>
   constexpr vertex_storage& operator=(Vertices&& vs) noexcept /*TODO*/ {
     auto no_vertices = ranges::distance(vs);
-    HM3_ASSERT(no_vertices == size(), "number of vertices {} != fixed-size "
-                                      "number of vertices in storage "
-                                      "{}!\n\nvertices:\n\n{}",
-               no_vertices, this->size()/*, view::all(vs) */);
+    HM3_ASSERT(no_vertices == size(),
+               "number of vertices {} != fixed-size "
+               "number of vertices in storage "
+               "{}!\n\nvertices:\n\n{}",
+               no_vertices, this->size() /*, view::all(vs) */);
 
     ranges::copy(vs, this->begin());
     return (*this);

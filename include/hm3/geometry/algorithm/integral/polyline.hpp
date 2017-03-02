@@ -15,8 +15,8 @@ namespace integral_polyline_detail {
 struct integral_polyline_fn {
   /// Path integral of the polyline \p s.
   template <typename T>
-  constexpr associated::num_type_t<T> operator()(T&& s,
-                                            trait::path_integral<T>) const {
+  constexpr associated::num_type_t<T> operator()(
+   T&& s, trait::path_integral<T>) const {
     static_assert(Polyline<uncvref_t<T>>{});
     num_t l = 0.;
     for (auto&& e : edges(s)) {

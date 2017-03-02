@@ -12,8 +12,8 @@ namespace integral_point_detail {
 
 struct integral_point_fn {
   template <typename T>
-  constexpr associated::num_type_t<T> operator()(T&&,
-                                            trait::surface_integral<T>) const {
+  constexpr associated::num_type_t<T> operator()(
+   T&&, trait::surface_integral<T>) const {
     static_assert(Point<uncvref_t<T>, 1>{});
     return 1.;
   }

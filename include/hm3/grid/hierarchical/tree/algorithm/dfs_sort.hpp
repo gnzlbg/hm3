@@ -5,9 +5,7 @@
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 
-namespace hm3 {
-namespace tree {
-//
+namespace hm3::tree {
 
 struct dfs_sort_fn {
  private:
@@ -16,10 +14,10 @@ struct dfs_sort_fn {
   /// \param t         [in] Tree to be sorted
   /// \param a         [in] Sibling groups to swap with \p b
   /// \param b         [in] Sibling groups to swap with \p a
-  /// \param data_swap [in] Function (node, node) -> ignored that swaps data
+  /// \param data_swap [in] Invocable (node, node) -> ignored that swaps data
   ///                       between two nodes.
   template <typename Tree, typename DataSwap,
-            CONCEPT_REQUIRES_(Function<DataSwap, node_idx, node_idx>{})>
+            CONCEPT_REQUIRES_(Invocable<DataSwap, node_idx, node_idx>{})>
   static void swap_data(Tree& t, siblings_idx a, siblings_idx b,
                         DataSwap&& data_swap) noexcept {
     for (auto&& s : ranges::view::zip(t.nodes(a), t.nodes(b))) {
@@ -35,7 +33,7 @@ struct dfs_sort_fn {
   ///
   /// \param t [in] Tree to be sorted.
   /// \param s [in] Start sibling group. All nodes below it will be sorted
-  /// \param data_swap [in] Function (node, node) -> ignored that swaps data
+  /// \param data_swap [in] Invocable (node, node) -> ignored that swaps data
   ///                       between two nodes.
   ///
   /// \pre \p s is at its correct position
@@ -48,7 +46,7 @@ struct dfs_sort_fn {
   ///
   /// \post is_compact() && is_sorted()
   template <typename Tree, typename DataSwap,
-            CONCEPT_REQUIRES_(Function<DataSwap, node_idx, node_idx>{})>
+            CONCEPT_REQUIRES_(Invocable<DataSwap, node_idx, node_idx>{})>
   static siblings_idx sort_impl(Tree& t, siblings_idx s,
                                 DataSwap&& data_swap) noexcept {
     siblings_idx should = s;
@@ -79,7 +77,7 @@ struct dfs_sort_fn {
   /// sorted in Morton Z-Curve order
   ///
   /// \param t [in] Tree to be sorted
-  /// \param data_swap [in] Function (node, node) -> ignored that swaps data
+  /// \param data_swap [in] Invocable (node, node) -> ignored that swaps data
   ///                       between two tree nodes.
   ///
   /// Runtime complexity: O(N), where N is the number of nodes in the tree.
@@ -87,7 +85,7 @@ struct dfs_sort_fn {
   ///
   /// \post is_compact() && is_sorted()
   template <typename Tree, typename DataSwap = binary_fn_t,
-            CONCEPT_REQUIRES_(Function<DataSwap, node_idx, node_idx>{})>
+            CONCEPT_REQUIRES_(Invocable<DataSwap, node_idx, node_idx>{})>
   void operator()(Tree& t, DataSwap&& data_swap = DataSwap{}) const noexcept {
     sort_impl(t, 0_sg, std::forward<DataSwap>(data_swap));
     t.set_first_free_sibling_group(t.sibling_group(t.size()));
@@ -115,5 +113,4 @@ namespace {
 constexpr auto&& dfs_sort = static_const<dfs_sort_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

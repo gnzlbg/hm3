@@ -1,3 +1,5 @@
+#ifdef ABC
+
 #pragma once
 /// \file
 ///
@@ -81,3 +83,4 @@ static constexpr auto const& sd_intersection_test
 }  // namespace
 
 }  // namespace hm3::geometry
+#endif

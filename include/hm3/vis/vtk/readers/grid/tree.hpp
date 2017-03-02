@@ -89,7 +89,7 @@ inline auto make_tree(io::json const& b)
   }
 
   if (b["files"].empty()) {
-    HM3_FATAL_ERROR("tree contains no files:\n\n{}\n\n", b.dump(2));
+    HM3_FATAL_ERROR("tree contains no files:\n\n{}\n\n", b);
   }
 
   dim_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);

@@ -148,26 +148,23 @@ constexpr num_t area(P&& p) noexcept {
 struct integral_polygon_fn {
   /// Surface integral of the polygon \p s.
   template <typename T, CONCEPT_REQUIRES_(Polygon<uncvref_t<T>, 2>{})>
-  constexpr associated::num_type_t<T> operator()(T&& s,
-                                            trait::volume_integral<T>) const
-   noexcept {
+  constexpr associated::num_type_t<T> operator()(
+   T&& s, trait::volume_integral<T>) const noexcept {
     return area(std::forward<T>(s));
   }
 
   /// Surface integral of the polygon \p s.
   template <typename T, CONCEPT_REQUIRES_(Polygon<uncvref_t<T>, 3>{})>
-  constexpr associated::num_type_t<T> operator()(T&& s,
-                                            trait::surface_integral<T>) const
-   noexcept {
+  constexpr associated::num_type_t<T> operator()(
+   T&& s, trait::surface_integral<T>) const noexcept {
     return area(std::forward<T>(s));
   }
 
   /// Boundary integral of the polygon \p s.
   template <typename T, typename UT = uncvref_t<T>,
             CONCEPT_REQUIRES_(Polygon<UT>{})>
-  constexpr associated::num_type_t<T> operator()(T&& s,
-                                            trait::boundary_integral<T>) const
-   noexcept {
+  constexpr associated::num_type_t<T> operator()(
+   T&& s, trait::boundary_integral<T>) const noexcept {
     using p_t = typename UT::polyline_t;
     return integral_polyline(s.polyline(), trait::path_integral<p_t>{});
   }

@@ -476,10 +476,11 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   /// Move assignment.
   CONCEPT_REQUIRES(ranges::Assignable<reference, reference>{})
-  constexpr fixed_capacity_vector&
-   operator=(fixed_capacity_vector&& other) noexcept(
-    noexcept(clear()) and noexcept(move_insert(begin(), ranges::begin(other),
-                                               ranges::end(other)))) {
+  constexpr fixed_capacity_vector& operator=(
+   fixed_capacity_vector&& other) noexcept(noexcept(clear())
+                                           and noexcept(move_insert(
+                                                begin(), ranges::begin(other),
+                                                ranges::end(other)))) {
     // nothin to assert: size of other cannot exceed capacity because both
     // vectors have the same type
     clear();
@@ -491,8 +492,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
   CONCEPT_REQUIRES(CopyConstructible<T>{} or MoveConstructible<T>{})
   constexpr fixed_capacity_vector(size_type n) noexcept(
    noexcept(emplace_n(n))) {
-    HM3_ASSERT(n <= capacity(), "tried to initialize inline vector of capacity "
-                                "{} with {} elements",
+    HM3_ASSERT(n <= capacity(),
+               "tried to initialize inline vector of capacity "
+               "{} with {} elements",
                capacity(), n);
     emplace_n(n);
   }
@@ -501,8 +503,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
   CONCEPT_REQUIRES(CopyConstructible<T>{})
   constexpr fixed_capacity_vector(size_type n, T const& value) noexcept(
    noexcept(insert(begin(), n, value))) {
-    HM3_ASSERT(n <= capacity(), "tried to initialize inline vector of capacity "
-                                "{} with {} elements",
+    HM3_ASSERT(n <= capacity(),
+               "tried to initialize inline vector of capacity "
+               "{} with {} elements",
                capacity(), n);
     insert(begin(), n, value);
   }
@@ -582,8 +585,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   CONCEPT_REQUIRES(CopyConstructible<T>{})
   constexpr void assign(size_type n, const T& u) {
-    HM3_ASSERT(n <= capacity(), "tried to initialize inline vector of capacity "
-                                "{} with {} elements",
+    HM3_ASSERT(n <= capacity(),
+               "tried to initialize inline vector of capacity "
+               "{} with {} elements",
                capacity(), n);
     clear();
     insert(begin(), n, u);

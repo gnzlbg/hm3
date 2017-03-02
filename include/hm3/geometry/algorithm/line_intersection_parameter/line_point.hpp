@@ -4,6 +4,9 @@
 /// Parameter of the intersection of a point with a line.
 #include <hm3/geometry/algorithm/approx/number.hpp>
 #include <hm3/geometry/algorithm/distance/minimum_line_point.hpp>
+#include <hm3/geometry/concept/line.hpp>
+#include <hm3/geometry/concept/point.hpp>
+#include <hm3/geometry/concept/segment.hpp>
 #include <hm3/utility/optional.hpp>
 
 namespace hm3::geometry {

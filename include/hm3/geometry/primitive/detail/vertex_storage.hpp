@@ -117,9 +117,10 @@ struct vertex_storage : Storage {
              and not PushBackable<storage_t, range_value_t<Vertices>>{})>
   constexpr vertex_storage& operator=(Vertices&& vs) noexcept /*TODO*/ {
     auto no_vertices = ranges::distance(vs);
-    HM3_ASSERT(no_vertices == size(), "number of vertices {} != fixed-size "
-                                      "number of vertices in storage "
-                                      "{}!\n\nvertices:\n\n{}",
+    HM3_ASSERT(no_vertices == size(),
+               "number of vertices {} != fixed-size "
+               "number of vertices in storage "
+               "{}!\n\nvertices:\n\n{}",
                no_vertices, this->size() /*, view::all(vs) */);
 
     ranges::copy(vs, this->begin());

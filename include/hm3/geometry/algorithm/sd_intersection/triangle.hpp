@@ -1,3 +1,4 @@
+#ifdef ABCD
 #pragma once
 /// \file
 ///
@@ -170,3 +171,4 @@ triangle_sd_intersection_result<Nd> sd_intersection(triangle<Nd> const& tri,
 }
 
 }  // namespace hm3::geometry::polygon_primitive
+#endif

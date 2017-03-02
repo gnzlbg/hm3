@@ -1,3 +1,4 @@
+#ifdef ABCD
 #pragma once
 /// \file
 ///
@@ -69,3 +70,4 @@ vector<small_polygon<Nd, 4>> sd_split(P&& poly, SDF&& sdf) {
 }
 
 }  // namespace hm3::geometry::polygon_primitive
+#endif

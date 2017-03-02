@@ -1,3 +1,5 @@
+#ifdef ABC
+
 #pragma once
 /// \file
 ///
@@ -33,3 +35,4 @@ static constexpr auto const& sd_split
 }  // namespace
 
 }  // namespace hm3::geometry
+#endif

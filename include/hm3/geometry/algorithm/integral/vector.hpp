@@ -11,8 +11,8 @@ namespace integral_vector_detail {
 
 struct integral_vector_fn {
   template <typename T>
-  constexpr associated::num_type_t<T> operator()(T&& t,
-                                            trait::path_integral<T>) const {
+  constexpr associated::num_type_t<T> operator()(
+   T&& t, trait::path_integral<T>) const {
     static_assert(Vector<uncvref_t<T>>{});
     return t().norm();
   }

@@ -6,31 +6,29 @@
 #include <hm3/solver/level_set/fio.hpp>
 #include <hm3/solver/level_set/fwd.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace level_set {
+namespace hm3::solver::level_set {
 
 /// Solver-state type-name
-template <dim_t Nd>
-string type(state<Nd> const&) {
+template <dim_t Ad>
+string type(state<Ad> const&) {
   return "level_set";
 }
 
 /// Name of the level-set solver state
-template <dim_t Nd>
-string name(state<Nd> const& s, grid_idx idx) {
+template <dim_t Ad>
+string name(state<Ad> const& s, grid_idx idx) {
   using std::to_string;
   return type(s) + "_" + to_string(*idx);
 }
 
-template <dim_t Nd>
-string name(state<Nd> const& s) {
+template <dim_t Ad>
+string name(state<Ad> const& s) {
   return name(s, s.idx());
 }
 
-template <dim_t Nd>
-struct state : geometry::dimensional<Nd> {
-  using grid = ::hm3::grid::hierarchical::client::multi<Nd>;
+template <dim_t Ad>
+struct state : geometry::with_ambient_dimension<Ad> {
+  using grid = ::hm3::grid::hierarchical::client::multi<Ad>;
 
   using tree_t   = typename grid::tree_t;
   using cell_idx = grid_node_idx;
@@ -149,24 +147,22 @@ struct state : geometry::dimensional<Nd> {
   }
   auto bounding_box() const noexcept { return g.tree().bounding_box(); }
 
-  static state<Nd> from_session(io::session& s, tree_t& t, string name_,
+  static state<Ad> from_session(io::session& s, tree_t& t, string name_,
                                 io::file::index_t i) {
-    io::client io_(s, name_, type(state<Nd>{}), name(t));
+    io::client io_(s, name_, type(state<Ad>{}), name(t));
     auto f = io_.get_file(i);
-    return from_file(state<Nd>{}, f, t, s);
+    return from_file(state<Ad>{}, f, t, s);
   }
 };
 
-template <dim_t Nd>
-bool operator==(state<Nd> const& a, state<Nd> const& b) {
+template <dim_t Ad>
+bool operator==(state<Ad> const& a, state<Ad> const& b) {
   return a.g == b.g and equal(a.signed_distance, b.signed_distance);
 }
 
-template <dim_t Nd>
-bool operator!=(state<Nd> const& a, state<Nd> const& b) {
+template <dim_t Ad>
+bool operator!=(state<Ad> const& a, state<Ad> const& b) {
   return !(a == b);
 }
 
-}  // namespace level_set
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::level_set

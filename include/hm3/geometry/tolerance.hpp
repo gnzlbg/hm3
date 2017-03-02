@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Default tolerances
+#include <hm3/math/constants.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
-#include <hm3/math/constants.hpp>
 
 // Relative tolerance
 #ifndef HM3_GEOMETRY_DISTANCE_RELATIVE_TOLERANCE

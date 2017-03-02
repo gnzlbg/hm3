@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -34,3 +35,4 @@ constexpr variant<monostate, point<Nd>, segment<Nd>> sd_intersection(
 }
 
 }  // namespace hm3::geometry::segment_primitive
+#endif

@@ -105,7 +105,7 @@ struct state {
     const auto no_nodes = ranges::distance(t_.nodes());
     nodes_.clear();
     nodes_.reserve(no_nodes);
-    for (auto &&n :, t_.nodes()) { nodes_.emplace_back(node{n, action(n)}); }
+    for (auto&& n : t_.nodes()) { nodes_.emplace_back(node{n, action(n)}); }
     ranges::sort(nodes_, std::less<>{}, &node::idx);
   }
 

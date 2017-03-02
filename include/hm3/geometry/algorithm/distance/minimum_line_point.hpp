@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Minimum distance between a line and a point.
-#include <hm3/geometry/concept/point.hpp>
 #include <hm3/geometry/concept/line.hpp>
+#include <hm3/geometry/concept/point.hpp>
 
 namespace hm3::geometry {
 
@@ -17,11 +17,11 @@ struct minimum_distance_line_point_fn {
   }
 };
 
-} // namespace minimum_distance_line_point_detail
+}  // namespace minimum_distance_line_point_detail
 
 namespace {
-static constexpr auto const &minimum_distance_line_point = static_const<
-    minimum_distance_line_point_detail::minimum_distance_line_point_fn>::value;
+static constexpr auto const& minimum_distance_line_point = static_const<
+ minimum_distance_line_point_detail::minimum_distance_line_point_fn>::value;
 }
 
-} // namespace hm3::geometry
+}  // namespace hm3::geometry

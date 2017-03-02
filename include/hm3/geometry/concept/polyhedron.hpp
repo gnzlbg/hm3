@@ -12,7 +12,7 @@ namespace concept {
 
 struct Polyhedron : rc::refines<VertexAccess, EdgeAccess, FaceAccess> {
   template <typename T, typename UT = uncvref_t<T>>
-  auto requires_(T&& t) -> decltype(rc::valid_expr(  //
+  auto requires_(T&& t) -> decltype(rc::valid_expr(   //
    rc::is_true(trait::check<UT, trait::polyhedron>),  //
    // polyhedrons have Ad > 1:
    rc::is_true(meta::bool_<(ambient_dimension_v<UT> /* */ > 2)>{})  //
@@ -26,6 +26,6 @@ struct Polyhedron : rc::refines<VertexAccess, EdgeAccess, FaceAccess> {
 /// Refines: VertexAccess, EdgeAccess, FaceAcces
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
 using Polyhedron = meta::and_<GeometryObject<T, Ad, 3>,
-                             concept::rc::models<concept::Polyhedron, T>>;
+                              concept::rc::models<concept::Polyhedron, T>>;
 
 }  // namespace hm3::geometry

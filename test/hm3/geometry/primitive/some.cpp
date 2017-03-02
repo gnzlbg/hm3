@@ -127,14 +127,14 @@ int main() {
     static constexpr dim_t ad = 3;
     using p_t                 = point<ad>;
     using b_t                 = box<ad>;
-     using a_t                 = aabb<ad>;
-    using s_t  = segment<ad>;
-    using r_t  = ray<ad>;
-    using l_t  = line<ad>;
-    using v_t  = vec<ad>;
-    using bp_t = polygon<ad>;
-    using fp_t = fixed_polygon<ad, 5>;
-    using some = some<ad>;
+    using a_t                 = aabb<ad>;
+    using s_t                 = segment<ad>;
+    using r_t                 = ray<ad>;
+    using l_t                 = line<ad>;
+    using v_t                 = vec<ad>;
+    using bp_t                = polygon<ad>;
+    using fp_t                = fixed_polygon<ad, 5>;
+    using some                = some<ad>;
 
     auto p0 = p_t::constant(0.);
     auto p1 = p_t::constant(1.);

@@ -98,6 +98,7 @@ using ranges::CopyConstructible;
 using ranges::DefaultConstructible;
 using ranges::MoveConstructible;
 using ranges::ConvertibleTo;
+using ranges::Invocable;
 
 // core algorithms
 using ranges::begin;

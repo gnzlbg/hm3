@@ -6,18 +6,16 @@
 #include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/solver/level_set/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace level_set {
+namespace hm3::solver::level_set {
 
 /// Adaptive mesh refinement target for the level set solver
-template <dim_t Nd>
-struct amr : geometry::dimensional<Nd> {
+template <dim_t Ad>
+struct amr : geometry::with_ambient_dimension<Ad> {
   using amr_node_idx = grid_node_idx;
 
-  state<Nd>* ls_;
+  state<Ad>* ls_;
 
-  amr(state<Nd>& s) : ls_{&s} {}
+  amr(state<Ad>& s) : ls_{&s} {}
 
   /// Siblings of node \p n within the solver grid
   auto siblings(amr_node_idx n) const { return ls_->g.siblings(n); }
@@ -58,11 +56,9 @@ struct amr : geometry::dimensional<Nd> {
 
 /// Creates an adaptive mesh refinement handler for the level-set solver state
 /// \p s
-template <dim_t Nd>
-::hm3::hierarchical::amr::state<amr<Nd>> make_amr(state<Nd>& s) noexcept {
-  return amr<Nd>{s};
+template <dim_t Ad>
+::hm3::hierarchical::amr::state<amr<Ad>> make_amr(state<Ad>& s) noexcept {
+  return amr<Ad>{s};
 }
 
-}  // namespace level_set
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::level_set

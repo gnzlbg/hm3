@@ -338,7 +338,7 @@ struct file {
     verify(f, "fields");
 
     if (!valid_header) {
-      HM3_FATAL_ERROR("Invalid file header:\n\n{}", header.dump(2));
+      HM3_FATAL_ERROR("Invalid file header:\n\n{}", header);
     }
 
     current_.group = static_cast<string const&>(*g);

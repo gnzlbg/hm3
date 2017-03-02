@@ -1,5 +1,5 @@
-#include <hm3/geometry/sd/functions/aabb.hpp>
 #include <hm3/geometry/sd.hpp>
+#include <hm3/geometry/sd/functions/aabb.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;

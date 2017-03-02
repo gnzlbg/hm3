@@ -3,8 +3,8 @@
 ///
 /// Aabb concept.
 #include <hm3/geometry/concept/ambient_dimension.hpp>
-#include <hm3/geometry/concept/primitive_hierarchy.hpp>
 #include <hm3/geometry/concept/geometry_object.hpp>
+#include <hm3/geometry/concept/primitive_hierarchy.hpp>
 
 namespace hm3::geometry {
 

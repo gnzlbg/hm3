@@ -3,10 +3,10 @@
 ///
 /// Edge concept.
 #include <hm3/geometry/concept/geometry_object.hpp>
-#include <hm3/geometry/fwd.hpp>
-#include <hm3/geometry/concept/vertex_access.hpp>
 #include <hm3/geometry/concept/line.hpp>
 #include <hm3/geometry/concept/point.hpp>
+#include <hm3/geometry/concept/vertex_access.hpp>
+#include <hm3/geometry/fwd.hpp>
 
 namespace hm3::geometry {
 

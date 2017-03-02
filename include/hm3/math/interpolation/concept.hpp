@@ -8,7 +8,7 @@
 ///
 /// TODO: figure out a way to verify this at compile time? Or provide an
 /// "StructuredInterpolable" concept?
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/concept/ambient_dimension.hpp>
 
 namespace hm3::math {
 
@@ -18,7 +18,7 @@ namespace concepts {
 namespace rc = ranges::concepts;
 
 /// Interpolable concept: points + data
-struct interpolable : rc::refines<geometry::concepts::Dimensional> {
+struct interpolable : rc::refines<geometry::concept::AmbientDimension> {
   template <typename T>
   auto requires_(T&& t)
    -> decltype(rc::valid_expr(rc::model_of<rc::RandomAccessRange>(t.points()),

@@ -7,8 +7,17 @@
 #include <hm3/utility/config/fatal_error.hpp>
 #include <json.hpp>
 
-namespace hm3 {
-namespace io {
+namespace nlohmann {
+
+template <typename OStream>
+constexpr OStream& to_ascii(OStream& os, json const& t) {
+  os << t.dump(2);
+  return os;
+}
+
+}  // namespace nlohmann
+
+namespace hm3::io {
 
 using namespace nlohmann;
 
@@ -20,7 +29,7 @@ template <typename At>
 inline void require_field(json const& j, string const& name, At&& at) {
   if (!has_field(j, name)) {
     HM3_FATAL_ERROR_AT(at, "field \"{}\" is required by json entry:\n\n{}",
-                       name, j.dump());
+                       name, j);
   }
 }
 
@@ -36,5 +45,4 @@ inline auto read_file_field(io::json const& j, string const& name, At&& at) {
   return j["files"][0]["fields"][name];
 }
 
-}  // namespace io
-}  // namespace hm3
+}  // namespace hm3::io

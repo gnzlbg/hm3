@@ -186,8 +186,7 @@ namespace customization {
 
 template <typename T, dim_t Nv, typename = void>
 struct fixed_polygon {
-  using type
-   = hm3::geometry::fixed_polygon<ad_v<uncvref_t<T>>, Nv>;
+  using type = hm3::geometry::fixed_polygon<ad_v<uncvref_t<T>>, Nv>;
 };
 
 }  // namespace customization

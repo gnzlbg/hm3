@@ -13,15 +13,15 @@ struct distance_centroid_fn {
   /// Minimum distance between the geometric object \p t and \t u.
   template <typename T, typename U>
   constexpr auto operator()(T const& t, U const& u) const
-      RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
-          minimum_distance_point_point(centroid(t), centroid(u)));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
+    minimum_distance_point_point(centroid(t), centroid(u)));
 };
 
-} // namespace distance_centroid_detail
+}  // namespace distance_centroid_detail
 
 namespace {
-static constexpr auto const &distance_centroid =
-    static_const<distance_centroid_detail::distance_centroid_fn>::value;
+static constexpr auto const& distance_centroid
+ = static_const<distance_centroid_detail::distance_centroid_fn>::value;
 }
 
-} // namespace hm3::geometry
+}  // namespace hm3::geometry

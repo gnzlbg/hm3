@@ -13,4 +13,4 @@ namespace rc = ranges::concepts;
 
 }  // namespace concept
 
-} // namespace hm3::geometry
+}  // namespace hm3::geometry

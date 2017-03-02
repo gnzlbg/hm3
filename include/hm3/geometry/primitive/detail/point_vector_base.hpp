@@ -12,5 +12,5 @@ namespace point_vector_detail {
 template <dim_t Nd>
 using base_t = dense::vector<num_t, static_cast<int_t>(Nd), dim_t>;
 
-} // namespace point_vector_detail
-} // namespace hm3::geometry
+}  // namespace point_vector_detail
+}  // namespace hm3::geometry

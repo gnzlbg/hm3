@@ -310,7 +310,7 @@ updater::updater(state* n) : timer_(n) {
   HM3_ASSERT((timer_->parent and timer_->parent->running)
               || (!timer_->parent and timer_->name == "main"),
              "parent timer {} of timer {} is not running! Timers:\n\n{}",
-             timer_->parent->name, timer_->name, initialized().data().dump(4));
+             timer_->parent->name, timer_->name, initialized().data());
 
   start_ = clock_t::now();
 }
@@ -340,7 +340,7 @@ updater::~updater() {
   HM3_ASSERT((timer_->parent and timer_->parent->running)
               || (!timer_->parent and timer_->name == "main"),
              "parent timer {} of timer {} is not running! Timers:\n\n{}",
-             timer_->parent->name, timer_->name, initialized().data().dump(4));
+             timer_->parent->name, timer_->name, initialized().data());
 }
 
 updater::updater(updater&& other)

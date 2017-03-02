@@ -8,13 +8,9 @@
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbor.hpp>
 #include <hm3/utility/log.hpp>
-#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace cartesian {
+namespace hm3::grid::hierarchical::cartesian {
 
 /// Serialization to VTK
 namespace vtk {
@@ -85,8 +81,5 @@ void serialize(multi<Ad> const& t, string const& fname_, sint_t level = -1) {
 }
 
 }  // namespace vtk
-}  // namespace cartesian
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::cartesian
 #endif  // HM3_ENABLE_VTK

@@ -96,7 +96,7 @@ static constexpr bool should_wrap
 
 template <typename T, CONCEPT_REQUIRES_(should_wrap<T>)>
 wrap_t<T> wrap(T&& t) {
-  return wrap_t<T>{t};
+  return wrap_t<T>{ref_t<T>{std::forward<T>(t)}};
 }
 
 template <typename T, CONCEPT_REQUIRES_(not should_wrap<T>)>

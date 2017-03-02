@@ -123,7 +123,8 @@ struct polyhedron {
     auto vs = vertices();
 
     auto vertex_idx = [&](auto&& v) {
-      auto it = ranges::find_if(vs, [&](auto&& i) { return approx_point(i, v); });
+      auto it
+       = ranges::find_if(vs, [&](auto&& i) { return approx_point(i, v); });
       HM3_ASSERT(it != ranges::end(vs), "all points must be there??");
       return suint_t(it - ranges::begin(vs));
     };

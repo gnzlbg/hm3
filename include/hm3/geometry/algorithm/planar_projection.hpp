@@ -95,8 +95,7 @@ struct planar_basis_fn {
             CONCEPT_REQUIRES_(Polygon<UP, 3>{})>
   constexpr auto operator()(P&& p, num_t abs_tol, num_t rel_tol) const noexcept
    -> basis_3d_t {
-    HM3_ASSERT(is_planar(p, abs_tol, rel_tol), "polygon {} is not planar",
-               p);
+    HM3_ASSERT(is_planar(p, abs_tol, rel_tol), "polygon {} is not planar", p);
 
     // Get 3 non-colinear polygon vertices:
     auto r = get_three_non_collinear_vertices(p);

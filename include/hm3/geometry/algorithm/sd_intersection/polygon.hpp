@@ -1,3 +1,5 @@
+#ifdef ABCD
+
 #pragma once
 /// \file
 ///
@@ -941,3 +943,4 @@ intersection_result<Shape> signed_distance_intersection(
 }  // namespace geometry
 }  // namespace hm3
 */
+#endif

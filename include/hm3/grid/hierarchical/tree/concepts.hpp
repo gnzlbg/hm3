@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Tree concepts
+#include <hm3/geometry/concept/ambient_dimension.hpp>
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/types.hpp>
@@ -9,8 +10,7 @@
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 template <typename Loc>
 using morton_idx_t = typename Loc::morton_idx_t;
@@ -55,5 +55,4 @@ using Location = location;
 template <typename T>
 using Location = concepts::rc::models<concepts::Location, ranges::uncvref_t<T>>;
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

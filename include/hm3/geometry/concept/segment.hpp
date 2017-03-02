@@ -9,7 +9,7 @@ namespace hm3::geometry {
 
 namespace concept {
 
-  struct Segment : rc::refines<Edge, EdgeAccess, VertexAccess> {
+struct Segment : rc::refines<Edge, EdgeAccess, VertexAccess> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(
    rc::is_true(trait::check<UT, trait::segment<ambient_dimension_v<UT>>>)  //

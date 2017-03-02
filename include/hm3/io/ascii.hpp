@@ -4,6 +4,7 @@
 /// ASCII OStream writer.
 #include <hm3/geometry/io/ascii.hpp>
 #include <hm3/grid/hierarchical/tree/serialization/ascii.hpp>
+#include <hm3/io/json.hpp>
 #include <hm3/utility/ascii.hpp>
 
 namespace hm3::io::ascii {

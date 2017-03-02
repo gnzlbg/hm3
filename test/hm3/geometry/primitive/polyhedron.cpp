@@ -43,8 +43,8 @@ int main() {
   h_t tet(fs);
 
   // Hexas:
-  aabb_t a(p_t{1.5, 1.5, 1.5}, p_t{2., 2.5 ,3.});
-  box_t b(p_t{5.,5.,5.}, 1.5);
+  aabb_t a(p_t{1.5, 1.5, 1.5}, p_t{2., 2.5, 3.});
+  box_t b(p_t{5., 5., 5.}, 1.5);
 
   h_t ha(faces(a));
   h_t hb(faces(b));

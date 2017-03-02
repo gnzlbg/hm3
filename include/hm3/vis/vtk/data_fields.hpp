@@ -88,7 +88,7 @@ struct data_fields {
   auto push(string const& name, ComputeComponent&& g,
             const int default_value = 0) noexcept {
     auto f = field(name,
-                   [&, name, g, default_value]() {
+                   [&, name, g]() {
                      base()->load(name, [&](auto&& i, auto&&) { return g(i); });
                    },
                    default_value);

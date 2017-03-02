@@ -72,7 +72,7 @@ struct session {
     bool empty() const { return file_group_["files"].is_null(); }
 
     /// Serialize the file-group to JSON
-    explicit operator io::json() const { return file_group_; }
+    friend void to_json(io::json& j, file_group const& g) { j = g.file_group_; }
 
     /// Has the file group a dependency?
     bool has_dependency() const {
