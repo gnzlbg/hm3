@@ -4,7 +4,7 @@
 /// Bounding length of a aabb
 
 #include <hm3/geometry/algorithm/ambient_dimension.hpp>
-#include <hm3/geometry/algorithm/approx/point.hpp>
+#include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/fwd.hpp>
 
 namespace hm3::geometry {
@@ -33,7 +33,8 @@ struct bounding_length_aabb_fn {
     HM3_ASSERT(
      [&]() {
        for (dim_t d = 0; d < ad; ++d) {
-         HM3_ASSERT(std::abs(x_max(s)(d) - x_min(s)(d)) <= res, "d: {}", d);
+         HM3_ASSERT(approx.leq(std::abs(x_max(s)(d) - x_min(s)(d)), res),
+                    "d: {}", d);
        }
        return true;
      }(),

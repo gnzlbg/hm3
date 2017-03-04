@@ -34,7 +34,8 @@ struct minimum_distance_segment_point_fn {
      "segment x(1) end: {} of segment: {} does not lie on the segment line: {}",
      s.x(1), s, sl);
     auto tx1 = tx1_.value();
-    if (t >= 0. and t <= tx1) {
+    if (approx.geq(t, 0., abs_tol, rel_tol)
+        and approx.leq(t, tx1, abs_tol, rel_tol)) {
       // if distance == 0, point is on the line
       return distance_centroid(p, pp);
     }

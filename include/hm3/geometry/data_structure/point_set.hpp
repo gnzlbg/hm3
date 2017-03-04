@@ -21,6 +21,7 @@ struct point_set {
   static constexpr dim_t Ad = ad_v<P>;
   using point_t             = P;
   using aabb_t              = associated::aabb_t<point_t>;
+  using s_t                 = associated::edge_t<point_t>;
   using bbox_t              = associated::box_t<point_t>;
   using tree_t              = grid::hierarchical::cartesian::single<Ad>;
   using point_storage       = vector<point_t>;
@@ -164,7 +165,7 @@ struct point_set {
       xmin(d) = std::min(xmin(d), p(d));
       xmax(d) = std::max(xmax(d), p(d));
     }
-    auto new_bbox = bounding_volume.box(aabb_t{xmin, xmax});
+    auto new_bbox = bounding_volume.box(s_t{xmin, xmax});
 
     /// Create a new point set:
     point_set ps(next_tree_capacity(), new_bbox);

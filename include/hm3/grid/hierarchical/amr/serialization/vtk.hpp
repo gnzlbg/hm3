@@ -11,10 +11,7 @@
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace amr {
+namespace hm3::grid::hierarchical::amr {
 
 namespace vtk {
 
@@ -69,8 +66,5 @@ void serialize(state<Target> const& amr_state, string fname_) {
 }
 
 }  // namespace vtk
-}  // namespace amr
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::amr
 #endif  // HM3_ENABLE_VTK

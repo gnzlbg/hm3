@@ -19,7 +19,7 @@ struct num_type {
 template <typename T>
 using num_type_t = typename num_type<uncvref_t<T>>::type;
 
-/// \name Index types
+/// \name Vertex/Face/Edge Index types
 ///@{
 
 namespace customization {
@@ -228,7 +228,23 @@ struct face<T, std::void_t<typename uncvref_t<T>::face_value_type>> {
 template <typename T>
 using face_t = typename customization::face<T>::type;
 
-///@}
+namespace customization {
+
+template <typename T, typename = void>
+struct concatenated {};
+
+template <typename T>
+struct concatenated<
+ T, std::void_t<typename uncvref_t<T>::concatenated_value_type>> {
+  using type = typename uncvref_t<T>::concatenated_value_type;
+};
+
+}  // namespace customization
+
+template <typename T>
+using concatenated_t = typename customization::concatenated<T>::type;
+
+///@} // Primitive types
 
 }  // namespace associated
 

@@ -5,7 +5,6 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <type_traits>
-
 namespace hm3 {
 namespace solver {
 namespace fv {
@@ -29,7 +28,7 @@ num_a<uncvref_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf, num_t dt,
   data.dt         = dt;
   const num_t f   = 1. / data.dx;
   const num_t dx2 = data.dx / 2.;
-  for (auto&& d : b.dimensions()) {
+  for (auto&& d : ambient_dimensions(b)) {
     auto c_m = c.offset(d, -1);
     auto c_p = c.offset(d, +1);
 

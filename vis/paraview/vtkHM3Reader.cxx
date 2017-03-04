@@ -25,6 +25,7 @@ vtkHM3Reader::vtkHM3Reader() try : session_(mpi::comm::world()) {
   SetNumberOfInputPorts(0);
   SetNumberOfOutputPorts(1);
 }
+
 HM3_REPORT_EXCEPTIONS
 
 vtkHM3Reader::~vtkHM3Reader() try { SetFileName(NULL); }

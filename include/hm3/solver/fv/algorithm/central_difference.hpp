@@ -51,7 +51,7 @@ struct structured_central_difference_fn {
     auto dx = t.geometry().cell_length();
     t.cells().for_each_internal(
      [&](auto c) {
-       for (auto d : t.dimensions()) {
+       for (auto d : ambient_dimensions(t)) {
          t.gradient(c, d) = unlimited(c, std::forward<VS>(vs), d, dx);
        }
      },
@@ -62,7 +62,7 @@ struct structured_central_difference_fn {
     // limit the gradients afterwards
     t.cells().for_each_internal(
      [&](auto c) {
-       for (auto d : t.dimensions()) {
+       for (auto d : ambient_dimensions(t)) {
          auto c_m = c.offset(d, -1);
          auto c_p = c.offset(d, +1);
          t.gradient(c, d) = limit_gradient(

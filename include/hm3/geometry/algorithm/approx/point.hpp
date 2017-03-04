@@ -17,7 +17,31 @@ constexpr bool approx_point_or_vector(T const& a, T const& b, NT abs_tol,
                                       NT rel_tol) noexcept {
   constexpr auto ad = ad_v<T>;
   for (dim_t d = 0; d < ad; ++d) {
-    if (!approx_number(a(d), b(d), abs_tol, rel_tol)) { return false; }
+    if (not approx_number(a(d), b(d), abs_tol, rel_tol)) { return false; }
+  }
+  return true;
+}
+
+template <typename T, typename NT>
+constexpr bool geq_point_or_vector(T const& a, T const& b, NT abs_tol,
+                                   NT rel_tol) noexcept {
+  constexpr auto ad = ad_v<T>;
+  for (dim_t d = 0; d < ad; ++d) {
+    if (not(a(d) >= b(d) or approx_number(a(d), b(d), abs_tol, rel_tol))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template <typename T, typename NT>
+constexpr bool leq_point_or_vector(T const& a, T const& b, NT abs_tol,
+                                   NT rel_tol) noexcept {
+  constexpr auto ad = ad_v<T>;
+  for (dim_t d = 0; d < ad; ++d) {
+    if (not(a(d) <= b(d) or approx_number(a(d), b(d), abs_tol, rel_tol))) {
+      return false;
+    }
   }
   return true;
 }
@@ -29,6 +53,20 @@ struct approx_point_fn {
     static_assert(Point<T>{});
     return approx_point_or_vector(a, b, abs_tol, rel_tol);
   }
+
+  template <typename T, typename NT>
+  static constexpr bool geq(T const& a, T const& b, NT abs_tol,
+                            NT rel_tol) noexcept {
+    static_assert(Point<T>{});
+    return geq_point_or_vector(a, b, abs_tol, rel_tol);
+  }
+
+  template <typename T, typename NT>
+  static constexpr bool leq(T const& a, T const& b, NT abs_tol,
+                            NT rel_tol) noexcept {
+    static_assert(Point<T>{});
+    return leq_point_or_vector(a, b, abs_tol, rel_tol);
+  }
 };
 
 struct approx_vector_fn {
@@ -37,6 +75,20 @@ struct approx_vector_fn {
                             NT rel_tol) const noexcept {
     static_assert(Vector<T>{});
     return approx_point_or_vector(a, b, abs_tol, rel_tol);
+  }
+
+  template <typename T, typename NT>
+  static constexpr bool geq(T const& a, T const& b, NT abs_tol,
+                            NT rel_tol) noexcept {
+    static_assert(Vector<T>{});
+    return geq_point_or_vector(a, b, abs_tol, rel_tol);
+  }
+
+  template <typename T, typename NT>
+  static constexpr bool leq(T const& a, T const& b, NT abs_tol,
+                            NT rel_tol) noexcept {
+    static_assert(Vector<T>{});
+    return leq_point_or_vector(a, b, abs_tol, rel_tol);
   }
 };
 

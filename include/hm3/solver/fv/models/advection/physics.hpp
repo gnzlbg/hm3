@@ -11,13 +11,13 @@ namespace solver {
 namespace fv {
 namespace advection {
 
-template <dim_t Nd>
-struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
-  using self = physics<Nd>;
+template <dim_t Ad>
+struct physics : state<Ad>, geometry::dimensional<Ad>, indices<Ad> {
+  using self = physics<Ad>;
 
   template <typename V>
   static decltype(auto) marker(V&& v) noexcept {
-    return v(indices<Nd>::marker());
+    return v(indices<Ad>::marker());
   }
 
   template <typename V>
@@ -42,7 +42,7 @@ struct physics : state<Nd>, geometry::dimensional<Nd>, indices<Nd> {
   physics& operator=(physics const&) = default;
   physics& operator=(physics&&) = default;
 
-  physics(num_a<Nd> u) : state<Nd>(u) {}
+  physics(num_a<Ad> u) : state<Ad>(u) {}
 
   template <typename S, typename V, typename CellData>
   static void load(V&& v, S const& s, CellData&& cell_data) noexcept {

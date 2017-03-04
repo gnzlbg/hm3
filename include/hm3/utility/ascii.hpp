@@ -17,7 +17,7 @@ constexpr OStream& range_to_ascii_impl(OStream& os, Rng&& rng) {
   os << "[";
   auto len = ranges::size(rng);
   for (std::size_t i = 0; i != len; ++i) {
-    to_ascii(os, rng[i]);
+    to_ascii(os, ranges::at(rng, i));
     if (i != len - 1) { os << ","; }
   }
   os << "]";

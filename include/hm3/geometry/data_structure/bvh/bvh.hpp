@@ -359,8 +359,8 @@ struct bvh : with_ambient_dimension<Ad> {
     nodes_.clear();
     uint_t size_ = mesh.size();
 
-    ascii_fmt::out("mesh size: {} => reserved capacity: {}\n", size_,
-                   capacity_estimate(size_));
+    // ascii_fmt::out("mesh size: {} => reserved capacity: {}\n", size_,
+    //                capacity_estimate(size_));
 
     nodes_.reserve(capacity_estimate(size_));
 
@@ -370,8 +370,8 @@ struct bvh : with_ambient_dimension<Ad> {
 
     sort_nodes(root_node);
 
-    ascii_fmt::out("Mesh size: {}, BVH #nodes: {}, #capacity: {}\n", size_,
-                   nodes_.size(), nodes_.capacity());
+    // ascii_fmt::out("Mesh size: {}, BVH #nodes: {}, #capacity: {}\n", size_,
+    //                nodes_.size(), nodes_.capacity());
     nodes_.shrink_to_fit();
 
     HM3_ASSERT(valid_nodes(), "invalid nodes present");

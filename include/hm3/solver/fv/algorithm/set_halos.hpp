@@ -207,7 +207,7 @@ for (auto&& bidx : s.grid()) {
         auto x_nc = bn.geometry().cell_centroid(nc);
         auto dx   = x_hc() - x_nc();
 
-        for (auto&& d : s.dimensions()) {
+        for (auto&& d : ambient_dimensions(s)) {
           auto gradients = compute_structured_gradient(s, bn, nc, d, lim);
           gradients *= dx(d);
           gradients += b_lhs(hc);

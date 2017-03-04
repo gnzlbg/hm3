@@ -82,7 +82,7 @@ struct compute_structured_gradients_fn {
     for (auto&& b : s.tiles()) {
       b.cells().for_each_internal(
        [&](auto c) {
-         for (auto d : b.dimensions()) {
+         for (auto d : ambient_dimensions(b)) {
            b.gradient(c, d)
             = compute_local_central_difference_structured_gradients(s, b, c, d,
                                                                     limiter);

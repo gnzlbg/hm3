@@ -16,20 +16,22 @@ namespace intersection_test_aabb_aabb_detail {
 struct intersection_test_aabb_aabb_fn {
   /// Returns whether the two AABBs \p a and \p b intersect.
   template <typename T, typename U>
-  constexpr bool operator()(T&& a, U&& b) const noexcept {
+  constexpr bool operator()(T&& a, U&& b, num_t abs_tol, num_t rel_tol) const
+   noexcept {
     static_assert(AABB<T>{});
     static_assert(AABB<U>{});
     static_assert(ad_v<T> == ad_v<U>);
-    return (x_min(a)().array() <= x_max(b)().array()).all()
-           and (x_max(a)().array() >= x_min(b)().array()).all();
+    return approx.leq(x_min(a), x_max(b), abs_tol, rel_tol)
+           and approx.geq(x_max(a), x_min(b));
   }
 };
 
 }  // namespace namespace intersection_test_aabb_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_test_aabb_aabb = static_const<
- intersection_test_aabb_aabb_detail::intersection_test_aabb_aabb_fn>::value;
+static constexpr auto const& intersection_test_aabb_aabb
+ = static_const<with_default_tolerance<
+  intersection_test_aabb_aabb_detail::intersection_test_aabb_aabb_fn>>::value;
 }
 
 namespace intersection_aabb_aabb_detail {
@@ -37,39 +39,43 @@ namespace intersection_aabb_aabb_detail {
 struct intersection_aabb_aabb_fn {
   /// 1D intersection between two bounding boxes \p a and \p b.
   template <typename T, typename U, typename PT = associated::point_t<T>>
-  static constexpr auto impl(T&& a, U&& b, trait::aabb<1>) noexcept
+  static constexpr auto impl(T&& a, U&& b, num_t abs_tol, num_t rel_tol,
+                             trait::aabb<1>) noexcept
    -> variant<monostate, PT, uncvref_t<T>> {
     static_assert(ad_v<T> == 1);
 
     auto result = intersection_test_segment_segment_detail::intersection_1d(
-     x_min(a)(0), x_max(a)(0), x_min(b)(0), x_max(b)(0));
+     x_min(a)(0), x_max(a)(0), x_min(b)(0), x_max(b)(0), abs_tol, rel_tol);
     if (!result) { return monostate{}; }
     auto r  = result.value();
     auto x0 = PT{first(r)};
     auto x1 = PT{second(r)};
-    if (x0 == x1) { return x0; }
+    if (approx(x0, x1, abs_tol, rel_tol)) { return x0; }
     return uncvref_t<T>(x0, x1);
   }
 
   /// 2D intersection between two bounding boxes \p a and \p b.
   template <typename T, typename U, typename PT = associated::point_t<T>,
             typename ET = associated::edge_t<T>>
-  static constexpr auto impl(T&& a, U&& b, trait::aabb<2>) noexcept
+  static constexpr auto impl(T&& a, U&& b, num_t abs_tol, num_t rel_tol,
+                             trait::aabb<2>) noexcept
    -> variant<monostate, PT, ET, uncvref_t<T>> {
     constexpr auto ad = ad_v<T>;
     static_assert(ad == 2);
 
-    if (!intersection_test_aabb_aabb(a, b)) { return monostate{}; }
+    if (!intersection_test_aabb_aabb(a, b, abs_tol, rel_tol)) {
+      return monostate{};
+    }
 
     PT x0
-     = (x_min(a)().array() <= x_min(b)().array()).all() ? x_min(b) : x_min(a);
+     = approx.leq(x_min(a), x_min(b), abs_tol, rel_tol) ? x_min(b) : x_min(a);
     PT x1
-     = (x_max(a)().array() >= x_max(b)().array()).all() ? x_max(b) : x_max(a);
+     = approx.geq(x_max(a), x_max(b), abs_tol, rel_tol) ? x_max(b) : x_max(a);
 
     bool equal_components[ad] = {};
 
     for (dim_t d = 0; d < ad; ++d) {
-      equal_components[d] = approx_number(x0(d), x1(d));
+      equal_components[d] = approx_number(x0(d), x1(d), abs_tol, rel_tol);
     }
 
     suint_t no_equal_components = ranges::count(equal_components, true);
@@ -90,23 +96,30 @@ struct intersection_aabb_aabb_fn {
   template <typename T, typename U, typename PT = associated::point_t<T>,
             typename ET = associated::edge_t<T>,
             typename QT = associated::fixed_polygon_t<T, 4>>
-  static constexpr auto impl(T&& a, U&& b, trait::aabb<3>) noexcept
+  static constexpr auto impl(T&& a, U&& b, num_t abs_tol, num_t rel_tol,
+                             trait::aabb<3>) noexcept
    -> variant<monostate, PT, ET, uncvref_t<T>, QT> {
     constexpr dim_t ad = ad_v<T>;
     static_assert(ad == 3);
 
-    if (!intersection_test_aabb_aabb(a, b)) { return monostate{}; }
+    if (!intersection_test_aabb_aabb(a, b, abs_tol, rel_tol)) {
+      return monostate{};
+    }
 
     PT x0, x1;
     for (dim_t d = 0; d < ad; ++d) {
-      x0(d) = x_min(a)(d) <= x_min(b)(d) ? x_min(b)(d) : x_min(a)(d);
-      x1(d) = x_max(a)(d) >= x_max(b)(d) ? x_max(b)(d) : x_max(a)(d);
+      x0(d) = approx.leq(x_min(a)(d), x_min(b)(d), abs_tol, rel_tol)
+               ? x_min(b)(d)
+               : x_min(a)(d);
+      x1(d) = approx.geq(x_max(a)(d), x_max(b)(d), abs_tol, rel_tol)
+               ? x_max(b)(d)
+               : x_max(a)(d);
     }
 
     bool equal_components[ad] = {};
 
     for (dim_t d = 0; d < ad; ++d) {
-      equal_components[d] = approx_number(x0(d), x1(d));
+      equal_components[d] = approx_number(x0(d), x1(d), abs_tol, rel_tol);
     }
 
     suint_t no_equal_components = ranges::count(equal_components, true);
@@ -130,20 +143,23 @@ struct intersection_aabb_aabb_fn {
   }
 
   template <typename T, typename U>
-  constexpr bool operator()(T&& a, U&& b) const noexcept {
+  constexpr bool operator()(T&& a, U&& b, num_t abs_tol, num_t rel_tol) const
+   noexcept {
     static_assert(AABB<T>{});
     static_assert(AABB<U>{});
     static_assert(ad_v<T> == ad_v<U>);
     static_assert(Same<uncvref_t<T>, uncvref_t<U>>{});
-    return impl(std::forward<T>(a), std::forward<U>(b), associated::v_<T>);
+    return impl(std::forward<T>(a), std::forward<U>(b), abs_tol, rel_tol,
+                associated::v_<T>);
   }
 };
 
 }  // namespace intersection_aabb_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_aabb_aabb = static_const<
- intersection_aabb_aabb_detail::intersection_aabb_aabb_fn>::value;
+static constexpr auto const& intersection_aabb_aabb
+ = static_const<with_default_tolerance<
+  intersection_aabb_aabb_detail::intersection_aabb_aabb_fn>>::value;
 }
 
 }  // namespace hm3::geometry::aabb_primitive

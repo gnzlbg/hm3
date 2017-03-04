@@ -5,9 +5,7 @@
 #include <hm3/grid/hierarchical/adaptor/multi.hpp>
 #include <hm3/grid/hierarchical/tree/serialization/fio.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
+namespace hm3::grid::hierarchical {
 namespace adaptor {
 
 /// Maps arrays in the file descriptor to memory addresses
@@ -73,6 +71,4 @@ void to_file_unwritten(io::file& f, multi<TreeGrid> const& t) {
 }
 
 }  // namespace adaptor
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical

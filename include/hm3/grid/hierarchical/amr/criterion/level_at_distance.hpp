@@ -9,11 +9,7 @@
 #include <type_traits>
 #include <utility>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace amr {
-namespace criterion {
+namespace hm3::grid::hierarchical::amr::criterion {
 
 /// Enforces a target level `l_t` up to a target distance `d_t`
 ///
@@ -108,8 +104,4 @@ struct level_till_cell_distances {
   }
 };
 
-}  // namespace criterion
-}  // namespace amr
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::amr::criterion

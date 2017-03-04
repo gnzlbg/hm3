@@ -747,16 +747,24 @@ struct discrete_boundary : hg::with_ambient_dimension<Ad> {
     auto intersection_count
      = bvh_.non_degenerate_intersection_count(as_bvh_mesh(), r);
 
+    ascii_fmt::out("point {} with ray {}!\n", p, r);
+
     // 4 If a degenerate intersection was found, cast a ray from the point in a
     // random direction, and retry until a non-degenerate intersection count is
     // found:
     suint_t rv = 0;
     while (not intersection_count) {
+      ascii_fmt::out("point {} with ray {} degenerate! next ray: {}\n", p, r,
+                     ray_t{p, random_vectors_[rv]});
       intersection_count = bvh_.non_degenerate_intersection_count(
        as_bvh_mesh(), ray_t{p, random_vectors_[rv]});
       ++rv;
       HM3_ASSERT(rv < max_no_rvs,
-                 "you are either extremely unlucky or your mesh sucks");
+                 "You are either extremely unlucky or your mesh is pure evil! "
+                 "Maybe increase discrete_boundary::max_no_rvs a bit, but the "
+                 "chances that 10 random rays hit boundary surfaces on "
+                 "degenerate locations are _really low_ and you should be "
+                 "ashamed of your geometry?");
     }
 
     HM3_ASSERT(intersection_count, "");
@@ -766,39 +774,32 @@ struct discrete_boundary : hg::with_ambient_dimension<Ad> {
     return (*intersection_count) % 2 == 0 ? hg::outside : hg::inside;
   }
 
-  /// Relative position of the primitive \p s w.r.t. the boundary.
-  template <typename S>
-  hg::relative_position_t relative_position_not_point(S&& s) const noexcept {
-    static_assert(not hg::Point<uncvref_t<S>>{});
-    // The primitive either intersects a simplex of the mesh:
-    if (hg::intersection.test(s)) { return hg::intersected; }
-    // Or all vertices of the primitive must be either outside or inside:
-    HM3_ASSERT(vertex_size(s) > 0, "");
-    auto result = relative_position_point(vertex(s, 0));
-    HM3_ASSERT(
-     [&]() {
-       for (auto&& v : vertices(s)) {
-         HM3_ASSERT(
-          result == relative_position_point(v),
-          "primitive {} does not intersect the mesh but its vertices have "
-          "different relative positions {} != {}",
-          result, relative_position_point(v));
-       }
-     },
-     "");
-    return result;
-  }
-
   /// Relative position of the primitive \p t w.r.t. the boundary.
   template <typename T>
   hg::relative_position_t relative_position(T&& t) const noexcept {
     using UT = uncvref_t<T>;
-    if
-      constexpr(hg::Point<UT>{}) {
-        return relative_position_point(std::forward<T>(t));
+    static_assert(hg::Point<UT>{});
+    // TODO: Implementation for other primitives. Requires doing intersection
+    // tests of the primitive "surfaces" (edges, faces)
+    return relative_position_point(std::forward<T>(t));
+  }
+
+  /// Signed-distance from point \p p to the boundary.
+  num_t signed_distance(point_t p) const noexcept {
+    switch (relative_position(p)) {
+      case hg::intersected: {
+        return 0.;
       }
-    else {
-      return relative_position_not_point(std::forward<T>(t));
+      case hg::inside: {
+        auto d = bvh_.closest_simplex(as_bvh_mesh(), p);
+        HM3_ASSERT(d, "no closest simplex found?");
+        return d.value().d;
+      }
+      case hg::outside: {
+        auto d = bvh_.closest_simplex(as_bvh_mesh(), p);
+        HM3_ASSERT(d, "no closest simplex found?");
+        return -1. * d.value().d;
+      }
     }
   }
 
@@ -843,7 +844,8 @@ struct discrete_boundary : hg::with_ambient_dimension<Ad> {
     auto is = intersected_simplices(v);
 
     // 2. Concatenates single polylines/polysurfaces into bigger ones
-    auto ps = hg::concatenate(is);
+    auto ps = hg::concatenate.range(
+     is | view::transform([&](auto&& sidx) { return surface(sidx); }));
 
     // 3. Split the volume with the polysurfaces
     return hg::split.against_range(v, ps);
@@ -857,8 +859,19 @@ struct discrete_boundary : hg::with_ambient_dimension<Ad> {
     auto volumes = split(v);
 
     // 2. Remove the results at the wrong relative position
-    action::remove_if(volumes,
-                      [&](auto&& v_) { return relative_position(v_) == rp; });
+    //
+    // That is, if the relative position of any of its vertices is any of the
+    // vertices is not either intersected or in rp
+    action::remove_if(volumes, [&](auto&& v_) {
+      for (auto&& p : hg::vertices(v_)) {
+        auto p_rp = relative_position(p);
+        if (p_rp == hg::intersected) { continue; }
+        if (p_rp == rp) { return false; }
+        return true;
+      }
+      HM3_FATAL_ERROR("all vertices are intersected ?");
+      return false;
+    });
 
     // 3. Return those matching the query
     return volumes;

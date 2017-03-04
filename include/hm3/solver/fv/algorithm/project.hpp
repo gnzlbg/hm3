@@ -24,8 +24,8 @@ struct project_fn {
     // Compute local gradients of the parent:
     using var_t = decltype(structured_central_difference.limited(
      cell_from, vars_from, dim_t{0}, from.geometry().cell_length(), limiter));
-    std::array<var_t, Tile::dimension()> grad_parent;
-    for (auto d : s.dimensions()) {
+    std::array<var_t, ad_v<Tile>> grad_parent;
+    for (auto d : ambient_dimensions(s)) {
       grad_parent[d] = structured_central_difference.limited(
        cell_from, vars_from, d, from.geometry().cell_length(), limiter);
     }
@@ -36,7 +36,7 @@ struct project_fn {
       HM3_ASSERT(child, "child {} of tile must be a halo cell", child);
 
       vars_to(child) = vars_from(cell_from);
-      for (auto d : s.dimensions()) {
+      for (auto d : ambient_dimensions(s)) {
         auto dx     = x_child(d) - x_parent(d);
         auto grad_x = grad_parent[d];
         vars_to(child) += grad_x * dx;

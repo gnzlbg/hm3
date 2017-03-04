@@ -18,17 +18,18 @@ namespace segment_primitive {
 /// \tparam Ad   Ambient space dimension.
 template <dim_t Ad>  //
 struct segment {
-  using data_t                = array<point<Ad>, 2>;
-  using geometry_type         = trait::segment<Ad>;
-  using num_type              = num_t;
-  using point_value_type      = point<Ad>;
-  using point_reference       = point_value_type&;
-  using point_const_reference = point_value_type const&;
-  using line_type             = geometry::line<Ad>;
-  using vector_type           = associated::vector_t<point_value_type>;
-  using edge_value_type       = segment<Ad>;
-  using edge_reference        = edge_value_type&;
-  using edge_const_reference  = edge_value_type const&;
+  using data_t                  = array<point<Ad>, 2>;
+  using geometry_type           = trait::segment<Ad>;
+  using num_type                = num_t;
+  using point_value_type        = point<Ad>;
+  using point_reference         = point_value_type&;
+  using point_const_reference   = point_value_type const&;
+  using line_type               = geometry::line<Ad>;
+  using vector_type             = associated::vector_t<point_value_type>;
+  using edge_value_type         = segment<Ad>;
+  using edge_reference          = edge_value_type&;
+  using edge_const_reference    = edge_value_type const&;
+  using concatenated_value_type = polyline<Ad>;
 
   array<point<Ad>, 2> xs_;
 

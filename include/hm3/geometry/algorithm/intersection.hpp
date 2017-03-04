@@ -429,20 +429,22 @@ struct intersection_fn {
   ///@{
   template <typename T, typename U, dim_t Ad = ad_v<T>>
   static auto constexpr intersection_test_impl(T&& t, U&& u, trait::aabb<Ad>,
-                                               trait::point<Ad>, num_t,
-                                               num_t) noexcept {
+                                               trait::point<Ad>, num_t abs_tol,
+                                               num_t rel_tol) noexcept {
     static_assert(Ad == ad_v<U>);
     static_assert(Point<uncvref_t<U>>{});
-    return intersection_test_aabb_point(std::forward<T>(t), std::forward<U>(u));
+    return intersection_test_aabb_point(std::forward<T>(t), std::forward<U>(u),
+                                        abs_tol, rel_tol);
   }
 
   template <typename T, typename U, dim_t Ad = ad_v<T>>
   static auto constexpr intersection_impl(T&& t, U&& u, trait::aabb<Ad>,
-                                          trait::point<Ad>, num_t,
-                                          num_t) noexcept {
+                                          trait::point<Ad>, num_t abs_tol,
+                                          num_t rel_tol) noexcept {
     static_assert(Ad == ad_v<U>);
     static_assert(Point<uncvref_t<U>>{});
-    return intersection_aabb_point(std::forward<T>(t), std::forward<U>(u));
+    return intersection_aabb_point(std::forward<T>(t), std::forward<U>(u),
+                                   abs_tol, rel_tol);
   }
 
   ///@}  // AABB-Point

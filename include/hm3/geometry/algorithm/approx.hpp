@@ -27,12 +27,48 @@ struct approx_fn {
   }
 
   template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_geq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                    trait::point<Ad>) {
+    static_assert(Point<uncvref_t<T>>{});
+    static_assert(Point<uncvref_t<U>>{});
+    return approx_point.geq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                            rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_leq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                    trait::point<Ad>) {
+    static_assert(Point<uncvref_t<T>>{});
+    static_assert(Point<uncvref_t<U>>{});
+    return approx_point.leq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                            rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
   static constexpr auto default_eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
                                    trait::vector<Ad>) {
     static_assert(Vector<uncvref_t<T>>{});
     static_assert(Vector<uncvref_t<U>>{});
     return approx_vector(std::forward<T>(t), std::forward<U>(u), abs_tol,
                          rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_geq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                    trait::vector<Ad>) {
+    static_assert(Vector<uncvref_t<T>>{});
+    static_assert(Vector<uncvref_t<U>>{});
+    return approx_vector.geq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                             rel_tol);
+  }
+
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto default_leq(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                    trait::vector<Ad>) {
+    static_assert(Vector<uncvref_t<T>>{});
+    static_assert(Vector<uncvref_t<U>>{});
+    return approx_vector.leq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                             rel_tol);
   }
 
   template <typename T, typename U, dim_t Ad = ad_v<T>>
@@ -109,6 +145,38 @@ struct approx_fn {
   }
 
   template <typename T, typename U>
+  static constexpr auto leq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol) {
+    if
+      constexpr(std::is_floating_point<uncvref_t<T>>{}
+                and std::is_floating_point<uncvref_t<U>>{}) {
+        return t <= u
+               or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                                rel_tol);
+      }
+    else {
+      static_assert(UCVSame<T, U>, "T and U must be equal");
+      return default_leq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                         rel_tol, associated::v_<T>);
+    }
+  }
+
+  template <typename T, typename U>
+  static constexpr auto geq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol) {
+    if
+      constexpr(std::is_floating_point<uncvref_t<T>>{}
+                and std::is_floating_point<uncvref_t<U>>{}) {
+        return t >= u
+               or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                                rel_tol);
+      }
+    else {
+      static_assert(UCVSame<T, U>, "T and U must be equal");
+      return default_geq(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                         rel_tol, associated::v_<T>);
+    }
+  }
+
+  template <typename T, typename U>
   static constexpr auto eq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(eq_impl(std::forward<T>(t),
                                                 std::forward<U>(u), abs_tol,
@@ -121,11 +189,15 @@ struct approx_fn {
 
   template <typename T, typename U>
   static constexpr auto leq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t <= u or eq(t, u, abs_tol, rel_tol));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(leq_impl(std::forward<T>(t),
+                                                 std::forward<U>(u), abs_tol,
+                                                 rel_tol));
 
   template <typename T, typename U>
   static constexpr auto geq(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t >= u or eq(t, u, abs_tol, rel_tol));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(geq_impl(std::forward<T>(t),
+                                                 std::forward<U>(u), abs_tol,
+                                                 rel_tol));
 
   template <typename T, typename U>
   static constexpr auto leq(T&& t, U&& u)

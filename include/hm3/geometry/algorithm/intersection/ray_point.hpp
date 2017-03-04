@@ -19,7 +19,7 @@ struct intersection_test_ray_point_fn {
     static_assert(ad_v<L> == ad_v<L>);
 
     if (auto t = line_intersection_parameter(l.line(), p, abs_tol, rel_tol)) {
-      return t.value() >= 0.;
+      return approx.geq(t.value(), 0., abs_tol, rel_tol);
     }
     return false;
   }

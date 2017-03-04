@@ -29,6 +29,7 @@ struct polyline {
   using data_t          = vertex_storage_detail::vertex_storage<PointStorage>;
   using geometry_type   = trait::polyline<Ad>;
   using edge_value_type = segment<Ad>;
+  using concatenated_value_type = polyline<Ad>;
   data_t data_;
 
   polyline()                = default;

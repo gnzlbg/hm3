@@ -14,7 +14,6 @@ struct bounding_length_box_fn {
   template <typename P>
   constexpr auto operator()(P&& s, dim_t) const noexcept {
     static_assert(Same<associated::t_<P>, trait::box<ad_v<P>>>{});
-    HM3_ASSERT(s.length() >= 0., "");
     return s.length();
   }
 
