@@ -11,10 +11,7 @@
 /// obtaining the other neighbors dynamically from the grid
 #include <hm3/grid/hierarchical/client/multi.hpp>
 #include <hm3/grid/hierarchical/client/neighbor_storage.hpp>
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace client {
+namespace hm3::grid::hierarchical::client {
 
 /// Stores a single grid within a hierarchical Cartesian multi-tree and
 /// internally caches grid neighbors (which allows having nodes that are not
@@ -93,7 +90,4 @@ struct multi_wn : multi<Ad> {
   }
 };
 
-}  // namespace client
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::client

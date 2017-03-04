@@ -7,10 +7,7 @@
 #include <hm3/grid/hierarchical/types.hpp>
 #include <hm3/utility/math.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace generation {
+namespace hm3::grid::hierarchical::generation {
 
 /// Refines the grid until all the leaf nodes are at the target level
 struct uniform_fn {
@@ -32,7 +29,4 @@ namespace {
 auto&& uniform = static_const<uniform_fn>::value;
 }  // namespace
 
-}  // namespace generation
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::generation

@@ -5,10 +5,7 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace generation {
+namespace hm3::grid::hierarchical::generation {
 
 struct generic_fn {
   template <typename Range, typename Refine, typename Predicate,
@@ -33,7 +30,4 @@ namespace {
 auto&& generic = static_const<generic_fn>::value;
 }  // namespace
 
-}  // namespace generation
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::generation

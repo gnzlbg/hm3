@@ -2,17 +2,14 @@
 /// \file
 ///
 /// Interprets cell variables as conservative variables
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/solver/fv/models/advection/indices.hpp>
 #include <hm3/solver/fv/models/advection/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace advection {
+namespace hm3::solver::fv::advection {
 
 template <dim_t Ad>
-struct physics : state<Ad>, geometry::dimensional<Ad>, indices<Ad> {
+struct physics : state<Ad>, geometry::with_ambient_dimension<Ad>, indices<Ad> {
   using self = physics<Ad>;
 
   template <typename V>
@@ -52,11 +49,8 @@ struct physics : state<Ad>, geometry::dimensional<Ad>, indices<Ad> {
     });
     cell_data.load(
      "velocity", [&](auto /*c*/, auto&& d) { return s.physics.velocity(d); },
-     v.dimension(), [&](auto&& d) { return v.dimension_name(d); });
+     ambient_dimensions(v), [&](auto&& d) { return v.dimension_name(d); });
   }
 };
 
-}  // namespace advection
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::advection

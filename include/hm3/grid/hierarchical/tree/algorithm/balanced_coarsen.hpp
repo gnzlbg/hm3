@@ -6,9 +6,7 @@
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 
-namespace hm3 {
-namespace tree {
-//
+namespace hm3::tree {
 
 struct balanced_coarsen_fn {
   struct restriction_fn {
@@ -60,5 +58,4 @@ namespace {
 auto&& balanced_coarsen = static_const<balanced_coarsen_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

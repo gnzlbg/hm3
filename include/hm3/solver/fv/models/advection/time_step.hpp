@@ -4,10 +4,7 @@
 ///
 #include <hm3/solver/fv/models/advection/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace advection {
+namespace hm3::solver::fv::advection {
 
 struct max_wave_speed_time_step_fn {
   template <typename V, typename S, typename B, typename C>
@@ -32,7 +29,4 @@ namespace {
 constexpr auto&& time_step = static_const<max_wave_speed_time_step_fn>::value;
 }  // namespace
 
-}  // namespace advection
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::advection

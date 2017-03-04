@@ -7,10 +7,7 @@
 #include <hm3/grid/hierarchical/cartesian/serialization/single_fio.hpp>
 #include <hm3/grid/hierarchical/cartesian/single.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace cartesian {
+namespace hm3::grid::hierarchical::cartesian {
 
 /// Multiple hierarchical Cartesian Grids
 ///
@@ -96,7 +93,4 @@ bool operator!=(multi<Nd> const& a, multi<Nd> const& b) noexcept {
   return !(a == b);
 }
 
-}  // namespace cartesian
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::cartesian

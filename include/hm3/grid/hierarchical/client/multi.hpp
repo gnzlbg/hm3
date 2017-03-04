@@ -5,10 +5,7 @@
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/grid.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace client {
+namespace hm3::grid::hierarchical::client {
 
 /// Client to a single grid stored within a hierarchical Cartesian multi-tree.
 ///
@@ -545,7 +542,4 @@ void to_file_unwritten(io::file& f, multi<Ad> const& g) {
 }
 ///@}
 
-}  // namespace client
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::client

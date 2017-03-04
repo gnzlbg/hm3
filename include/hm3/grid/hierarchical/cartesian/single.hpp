@@ -10,9 +10,7 @@
 #include <hm3/grid/hierarchical/tree/algorithm/shift_location.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
+namespace hm3::grid::hierarchical {
 
 //// Hierarchical Cartesian grids
 namespace cartesian {
@@ -171,6 +169,4 @@ string name(single<Ad> const&) {
 }
 
 }  // namespace cartesian
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical

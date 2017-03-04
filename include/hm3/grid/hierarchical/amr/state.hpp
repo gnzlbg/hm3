@@ -7,10 +7,7 @@
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/vector.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace amr {
+namespace hm3::grid::hierarchical::amr {
 
 /// Adaptive mesh refinement algorithm
 template <typename Target>
@@ -278,7 +275,4 @@ auto make(Targetable& t) {
   return state<target_t>{make_amr_target(t)};
 }
 
-}  // namespace amr
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::amr

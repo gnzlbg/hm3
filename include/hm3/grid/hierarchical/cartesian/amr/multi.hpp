@@ -6,10 +6,7 @@
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace cartesian {
+namespace hm3::grid::hierarchical::cartesian {
 
 template <dim_t Ad>
 struct multi_amr_target : amr::non_loggable,
@@ -49,7 +46,4 @@ multi_amr_target<Ad> make_amr_target(multi<Ad>& g) noexcept {
   return multi_amr_target<Ad>(g);
 };
 
-}  // namespace cartesian
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::cartesian

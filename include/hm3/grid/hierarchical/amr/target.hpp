@@ -3,10 +3,7 @@
 ///
 /// AMR target utilities
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace amr {
+namespace hm3::grid::hierarchical::amr {
 
 template <typename T>
 using amr_node_idx_t = typename T::amr_node_idx;
@@ -17,7 +14,4 @@ struct non_loggable {
   static void log(Args&&...) noexcept {}
 };
 
-}  // namespace amr
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::amr

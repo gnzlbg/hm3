@@ -7,10 +7,7 @@
 #include <hm3/utility/fixed_capacity_vector.hpp>
 #include <hm3/utility/vector.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace client {
+namespace hm3::grid::hierarchical::client {
 
 /// Storage for the neighbors of a single grid hierarchical grid.
 ///
@@ -143,7 +140,4 @@ struct neighbor_storage {
   }
 };
 
-}  // namespace client
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::client

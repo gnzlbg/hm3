@@ -5,10 +5,7 @@
 #include <hm3/grid/hierarchical/cartesian/single.hpp>
 #include <hm3/grid/hierarchical/tree/serialization/fio.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace cartesian {
+namespace hm3::grid::hierarchical::cartesian {
 
 /// Returns a yet to be read grid from a file descriptor \p f
 template <dim_t Nd>
@@ -44,7 +41,4 @@ void to_file_unwritten(io::file& f, single<Nd> const& g) {
    .field("root_node_length", geometry::bounding_length(g.bounding_box()));
 }
 
-}  // namespace cartesian
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::cartesian

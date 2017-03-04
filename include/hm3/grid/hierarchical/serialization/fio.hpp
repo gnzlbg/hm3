@@ -8,8 +8,7 @@
 #include <hm3/io/session.hpp>
 
 namespace hm3 {
-namespace grid {
-namespace hierarchical {
+namespace grid::hierarchical {
 
 /// Reads Grid from file \p file_name
 template <typename Grid>
@@ -38,8 +37,7 @@ void to_file(Grid const& g, string const& file_name) {
   c.write(f);
 }
 
-}  // namespace hierarchical
-}  // namespace grid
+}  // namespace grid::hierarchical
 
 using namespace grid;
 

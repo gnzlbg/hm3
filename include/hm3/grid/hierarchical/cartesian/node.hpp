@@ -6,10 +6,7 @@
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace hierarchical {
-namespace cartesian {
+namespace hm3::grid::hierarchical::cartesian {
 
 /// Hierarchical Cartesian grid node
 template <dim_t Nd>
@@ -48,7 +45,4 @@ constexpr bool operator!=(node<Nd> const& a, node<Nd> const& b) noexcept {
   return !(a == b);
 }
 
-}  // namespace cartesian
-}  // namespace hierarchical
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::hierarchical::cartesian
