@@ -115,7 +115,7 @@ struct polyline {
     if (data_.size() == 0) {
       data_.push_back(e.x(0));
     } else {
-      HM3_ASSERT(data_[vertex_size() - 1] == e.x(0),
+      HM3_ASSERT(approx_point(data_[vertex_size() - 1], e.x(0)),
                  "Fail to append edge! Last polyline vertex does not match "
                  "first vertex of edge!\n\n  edge: {}\n  polyline: {}\n",
                  e, *this);

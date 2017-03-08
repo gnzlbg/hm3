@@ -2,27 +2,26 @@
 /// \file
 ///
 /// Interprets cell variables as primitive variables
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/solver/fv/models/euler/equation_of_state.hpp>
 #include <hm3/solver/fv/models/euler/indices.hpp>
 #include <hm3/solver/fv/models/euler/state.hpp>
 #include <hm3/utility/matrix.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
-template <dim_t Nd>
-struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
+template <dim_t Ad>
+struct pv_base : geometry::with_ambient_dimension<Ad>,
+                 equation_of_state,
+                 indices<Ad> {
   using equation_of_state::mach_number;
   using equation_of_state::energy_density;
   using equation_of_state::speed_of_sound;
   using equation_of_state::temperature;
 
  private:
-  using i = indices<Nd>;
-  using d = geometry::dimensional<Nd>;
+  using i = indices<Ad>;
+  using d = geometry::with_ambient_dimension<Ad>;
 
  public:
   using vars = num_a<i::nvars()>;
@@ -35,7 +34,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   /// Velocities
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   static constexpr decltype(auto) u(V&& v) noexcept {
-    return v.template head<d::dimension()>();
+    return v.template head<d::ambient_dimension()>();
   }
   /// Velocity
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
@@ -63,7 +62,7 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   /// Momentum density
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   static constexpr decltype(auto) rho_u(V&& v) noexcept {
-    return v.template head<d::dimension()>() * v(i::rho());
+    return v.template head<d::ambient_dimension()>() * v(i::rho());
   }
   /// Momentum density
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
@@ -137,13 +136,13 @@ struct pv_base : geometry::dimensional<Nd>, equation_of_state, indices<Nd> {
   }
 };
 
-template <dim_t Nd>
-struct pv : pv_base<Nd>, state {
-  using b = pv_base<Nd>;
+template <dim_t Ad>
+struct pv : pv_base<Ad>, state {
+  using b = pv_base<Ad>;
   using state::gamma;
   using state::gamma_m1;
-  using pv_base<Nd>::mach_number;
-  using typename pv_base<Nd>::vars;
+  using pv_base<Ad>::mach_number;
+  using typename pv_base<Ad>::vars;
 
   pv(state s) : state{std::move(s)} {}
 
@@ -203,7 +202,4 @@ struct pv : pv_base<Nd>, state {
   }
 };
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

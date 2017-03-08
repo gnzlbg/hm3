@@ -3,6 +3,7 @@
 ///
 /// Workarounds std::math functions that are not constexpr
 #include <hm3/math/integer.hpp>
+#include <hm3/utility/assert.hpp>
 #include <type_traits>
 
 namespace hm3::math {

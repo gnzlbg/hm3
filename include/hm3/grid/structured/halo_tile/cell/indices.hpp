@@ -7,31 +7,27 @@
 #include <hm3/grid/structured/halo_tile/cell/coordinate.hpp>
 #include <hm3/grid/structured/tile/cell/indices.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace halo_tile {
-namespace cell {
+namespace hm3::grid::structured::halo_tile::cell {
 
 /// Square structured halo tile cell indices
 ///
-/// \tparam Nd  number of spatial dimensions
+/// \tparam Ad  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
-struct indices : bounds<Nd, Nic, Nhl>,
-                 tile::cell::indices<Nd, bounds<Nd, Nic, Nhl>::length()> {
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
+struct indices : bounds<Ad, Nic, Nhl>,
+                 tile::cell::indices<Ad, bounds<Ad, Nic, Nhl>::length()> {
   static_assert(Nhl > 0, "zero halo layers not supported");
 
-  using bounds = bounds<Nd, Nic, Nhl>;
+  using bounds = bounds<Ad, Nic, Nhl>;
 
  private:  // members from tile, used to call tile methods
-  using tile_cell_indices = tile::cell::indices<Nd, bounds::length()>;
+  using tile_cell_indices = tile::cell::indices<Ad, bounds::length()>;
   using tile_coordinate   = typename tile_cell_indices::coordinate;
 
  public:
   using index      = typename tile_cell_indices::index;
-  using coordinate = coordinate<Nd, Nic, Nhl>;
+  using coordinate = coordinate<Ad, Nic, Nhl>;
 
   /// Sizes
   ///@{
@@ -155,8 +151,4 @@ struct indices : bounds<Nd, Nic, Nhl>,
   }
 };
 
-}  // namespace cell
-}  // namespace halo_tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::halo_tile::cell

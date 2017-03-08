@@ -3,14 +3,13 @@
 ///
 /// Tree types
 #include <hm3/geometry/algorithm/ambient_dimension.hpp>
-#include <hm3/types.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/optional_idx.hpp>
+#include <hm3/types.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 using geometry::ambient_dimension;
 
@@ -44,8 +43,8 @@ constexpr level_idx operator"" _l(unsigned long long int i) {
   return level_idx{static_cast<lidx_t>(i)};
 }
 
-/// nd-tree
-template <dim_t Nd>
+/// ad-tree
+template <dim_t Ad>
 struct tree;
 
 /// Child-position index (weakly-typed)
@@ -57,8 +56,8 @@ using cpidx_t = suint_t;
 using rcpidx_t = std::make_signed_t<nidx_t>;
 
 /// Child positions
-template <dim_t Nd>
-using child_pos = bounded<cpidx_t, 0, math::ipow(cpidx_t(2), cpidx_t(Nd)),
+template <dim_t Ad>
+using child_pos = bounded<cpidx_t, 0, math::ipow(cpidx_t(2), cpidx_t(Ad)),
                           struct child_pos_tag>;
 
 template <typename Tree>
@@ -77,8 +76,7 @@ using coidx_t = std::make_signed_t<nidx_t>;  // signed version of node index
 /// Coordinate offset
 ///
 /// Coordinate type must be signed and can be arbitrarily long
-template <dim_t Nd>
-using offset_t = array<coidx_t, Nd>;
+template <dim_t Ad>
+using offset_t = array<coidx_t, Ad>;
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

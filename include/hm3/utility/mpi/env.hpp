@@ -2,14 +2,13 @@
 /// \file
 ///
 /// MPI Environment
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/mpi/call.hpp>
 #include <hm3/utility/mpi/comm.hpp>
 #include <hm3/utility/mpi/config.hpp>
 #include <hm3/utility/mpi/functions.hpp>
 
-namespace hm3 {
-namespace mpi {
+namespace hm3::mpi {
 
 /// MPI Environment
 struct env {
@@ -45,18 +44,16 @@ struct env {
   void initialize_mpi(int* argc, char*** argv) {
     if (initialized()) { return; }
     HM3_ASSERT(!initialized(), "MPI has already been initialized!");
+
     int thread_support;
     HM3_MPI_CALL(
      MPI_Init_thread(argc, argv, MPI_THREAD_MULTIPLE, &thread_support));
 
     if (thread_support != MPI_THREAD_MULTIPLE) {
-      ascii_fmt::out(
-       "[ERROR] MPI implementation does not support multi-thread\n");
+      ascii_fmt::err("[MPI-ERROR] Thread support is: {}\n",
+                     stringify_thread_support(thread_support));
     }
-    // HM3_ASSERT(thread_support == MPI_THREAD_MULTIPLE,
-    //             "multi-threaded MPI unavailable!");
   }
 };
 
-}  // namespace mpi
-}  // namespace hm3
+}  // namespace hm3::mpi

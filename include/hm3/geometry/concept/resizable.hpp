@@ -24,6 +24,6 @@ struct Resizable {
 /// - push_back
 /// - reserve
 template <typename T>
-using Resizable = concept::rc::models<concept::Resizable, T>;
+using Resizable = rc::models<concept::Resizable, T>;
 
 }  // namespace hm3::geometry

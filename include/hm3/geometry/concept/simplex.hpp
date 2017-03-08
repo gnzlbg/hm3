@@ -4,7 +4,7 @@
 /// Polyline concept.
 #include <hm3/geometry/concept/point.hpp>
 #include <hm3/geometry/concept/polygon.hpp>
-#include <hm3/geometry/concept/polyhedron.hpp>
+#include <hm3/geometry/concept/segment.hpp>
 
 namespace hm3::geometry {
 

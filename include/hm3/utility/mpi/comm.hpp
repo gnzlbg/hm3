@@ -9,8 +9,7 @@
 #include <hm3/utility/mpi/functions.hpp>
 #include <hm3/utility/mpi/rank.hpp>
 
-namespace hm3 {
-namespace mpi {
+namespace hm3::mpi {
 
 /// MPI Communicator
 struct comm {
@@ -108,5 +107,4 @@ constexpr auto root_do(const comm& comm, F&& f, Args&&... args)
                           std::forward<Args>(args)...);
 }
 
-}  // namespace mpi
-}  // namespace hm3
+}  // namespace hm3::mpi

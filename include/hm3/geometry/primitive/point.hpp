@@ -4,7 +4,7 @@
 /// Point type.
 #include <hm3/geometry/primitive/vec.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
 #include <iomanip>
 
 namespace hm3::geometry {

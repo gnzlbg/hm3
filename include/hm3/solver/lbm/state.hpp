@@ -6,12 +6,10 @@
 #include <hm3/solver/lbm/block.hpp>
 #include <hm3/solver/utility/hierarchical_block_structured_grid.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace lbm {
+namespace hm3::solver::lbm {
 
 template <typename Physics>
-using block_t_ = block<Physics::dimension(), Physics::size(), 128, 0>;
+using block_t_ = block<Physics::ambient_dimension(), Physics::size(), 128, 0>;
 
 template <typename Physics>
 struct state : hierarchical_block_structured_grid<block_t_<Physics>> {
@@ -48,7 +46,5 @@ struct state : hierarchical_block_structured_grid<block_t_<Physics>> {
   }
 };
 
-}  // namespace lbm
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::lbm
 #endif

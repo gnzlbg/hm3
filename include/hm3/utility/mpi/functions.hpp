@@ -5,8 +5,7 @@
 #include <hm3/utility/mpi/call.hpp>
 #include <hm3/utility/mpi/config.hpp>
 
-namespace hm3 {
-namespace mpi {
+namespace hm3::mpi {
 
 /// Has the MPI Environment been initialized?
 inline bool initialized() {
@@ -22,5 +21,4 @@ inline bool finalized() {
   return result != 0;
 };
 
-}  // namespace mpi
-}  // namespace hm3
+}  // namespace hm3::mpi

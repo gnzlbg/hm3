@@ -10,13 +10,13 @@ add_custom_target(test.headers
 add_custom_target(test.unit
   COMMENT "Build all the unit tests.")
 
+add_custom_target(tests.mpi
+  COMMENT "Build all the MPI unit tests.")
+
 add_custom_target(tests
-  DEPENDS test.headers test.unit
+  DEPENDS test.headers test.unit tests.mpi
   COMMENT "Build all the tests.")
 
-add_custom_target(tests.mpi
-  DEPENDS test.headers
-  COMMENT "Build all the MPI unit tests.")
 
 #   hm3_add_unit_test(<name> ...)
 #
@@ -24,6 +24,7 @@ add_custom_target(tests.mpi
 # dependency of the `tests` target.
 function(hm3_add_unit_test name)
   add_test(${name} ${ARGN})
+  #  add_test(${name} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 1 ${ARGN})
   hm3_add_packages_to_target(${name})
   add_dependencies(test.unit ${name})
   target_link_libraries(${name} ${HM3_LIBS})
@@ -34,12 +35,12 @@ endfunction()
 # Adds an MPI unit-test `hm3_add_unit_test` to target mpi-tests.
 function(hm3_add_mpi_unit_test name no_proc)
   set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${name}.cpp")
-  set(test_name "test.hm3.mpi.${no_proc}.${name}")
-  set(test_params -np ${no_proc} "${test_name}")
+  set(test_name "test.hm3.mpi.${name}.np${no_proc}")
   add_executable(${test_name} EXCLUDE_FROM_ALL ${name}.cpp)
   hm3_add_packages_to_target(${test_name})
   target_link_libraries(${test_name} ${HM3_LIBS})
-  add_test(${test_name} mpirun ${test_params})
+  add_test(${test_name} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${no_proc}
+    ${CMAKE_CURRENT_BINARY_DIR}/${test_name})
   add_dependencies(tests.mpi ${test_name})
 endfunction()
 

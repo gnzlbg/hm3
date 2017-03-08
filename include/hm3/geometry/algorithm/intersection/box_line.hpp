@@ -7,7 +7,7 @@
 // #include <hm3/geometry/algorithm/intersection/line_segment.hpp>
 // #include <hm3/geometry/primitive/box/box.hpp>
 // #include <hm3/geometry/primitive/line/line.hpp>
-// #include <hm3/utility/variant.hpp>
+// #include <hm3/ext/variant.hpp>
 
 // namespace hm3::geometry::box_primitive {
 
@@ -16,8 +16,8 @@
 // }
 
 // /// Does the Box \p b and the line \p l intersect?
-// template <dim_t Nd, CONCEPT_REQUIRES_(Nd != 1)>
-// constexpr bool intersection_test(box<Nd> const& b, line<Nd> const& l)
+// template <dim_t Ad, CONCEPT_REQUIRES_(Ad != 1)>
+// constexpr bool intersection_test(box<Ad> const& b, line<Ad> const& l)
 // noexcept {
 //   for (auto&& f : faces(b)) {
 //     if (geometry::intersection.test(f, l)) { return true; }

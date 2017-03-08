@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Gauss-Legendre quadrature points.
+#include <hm3/geometry/algorithm/integral.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/math/core.hpp>
@@ -18,17 +19,17 @@ namespace math_detail {
 /// Location in the interval [-1, +1.] and weights of the Gauss-Legendre
 /// quadrature points.
 ///
-/// \tparam Nd number of spatial dimensions of the interval.
+/// \tparam Ad number of spatial dimensions of the interval.
 /// \tparam Nppd number of integration points per spatial dimension.
 ///
 /// For dimensions > 1 the quadrature points are constructed using tensor
 /// products.
-template <dim_t Nd, dim_t Nppd>
+template <dim_t Ad, dim_t Nppd>
 struct gauss_legendre_points {};
 
-template <dim_t Nd>
-struct gauss_legendre_points<Nd, 1> {
-  using p_t = geometry::point<Nd>;
+template <dim_t Ad>
+struct gauss_legendre_points<Ad, 1> {
+  using p_t = geometry::point<Ad>;
   static array<p_t, 1> points() noexcept {
     static const array<p_t, 1> ps = {p_t::zero()};
     return ps;
@@ -117,10 +118,10 @@ struct gauss_legendre_points<3, 2> {
 
 ///@}  //  Gauss-Legendre quadrature points in the interval [-1, +1.]
 
-template <dim_t Nd, dim_t Np>
-array<geometry::point<Nd>, Np> to_interval(
- geometry::box<Nd> box, array<geometry::point<Nd>, Np> unit_points) {
-  using p_t = geometry::point<Nd>;
+template <dim_t Ad, dim_t Np>
+array<geometry::point<Ad>, Np> to_interval(
+ geometry::box<Ad> box, array<geometry::point<Ad>, Np> unit_points) {
+  using p_t = geometry::point<Ad>;
   auto a    = geometry::x_min(box);
   auto b    = geometry::x_max(box);
 
@@ -135,9 +136,9 @@ array<geometry::point<Nd>, Np> to_interval(
 
 }  // namespace math_detail
 
-template <typename F, dim_t Nd, dim_t Nppd = 2>
-num_t integral_gauss_legendre(F&& f, geometry::box<Nd> b) {
-  using qp            = math_detail::gauss_legendre_points<Nd, Nppd>;
+template <typename F, dim_t Ad, dim_t Nppd = 2>
+num_t integral_gauss_legendre(F&& f, geometry::box<Ad> b) {
+  using qp            = math_detail::gauss_legendre_points<Ad, Nppd>;
   static auto weights = qp::weights();
   auto points         = math_detail::to_interval(b, qp::points());
 
@@ -146,7 +147,7 @@ num_t integral_gauss_legendre(F&& f, geometry::box<Nd> b) {
     result += weights[pidx] * f(points[pidx]);
   }
 
-  result *= geometry::volume(b) / math::ipow(dim_t{2}, Nd);
+  result *= geometry::volume(b) / math::ipow(dim_t{2}, Ad);
   return result;
 }
 

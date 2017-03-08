@@ -4,28 +4,25 @@
 ///
 /// Serialization of LBM solver to VTK
 #ifdef HM3_ENABLE_VTK
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/solver/lbm/state.hpp>
-#include <hm3/utility/variant.hpp>
 #include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace lbm {
-
-namespace vtk {
+namespace hm3::solver::lbm::vtk {
 
 template <typename State, typename Solid>
-struct serializable : geometry::dimensional<State::dimension()> {
+struct serializable
+ : geometry::with_ambient_dimension<State::ambient_dimension()> {
   State const& s;
   Solid const& solid;
   using block_idx = grid_node_idx;
   block_idx idx   = block_idx{};
 
   using vtk_cell_idx        = cell_idx;
-  static constexpr dim_t Nd = State::dimension();
+  static constexpr dim_t Ad = State::ambient_dimension();
 
   auto geometry(cell_idx c) const noexcept { return s.geometry(c); }
 
@@ -86,11 +83,11 @@ struct ls_serializable : serializable<State, Solid> {
   using base::s;
   using base::idx;
   using block_idx           = typename base::block_idx;
-  static constexpr dim_t Nd = State::dimension();
+  static constexpr dim_t Ad = State::ambient_dimension();
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
-  vis::vtk::geometries<Nd> geometry(cell_idx c) const noexcept {
+  vis::vtk::geometry_t<Ad> geometry(cell_idx c) const noexcept {
     auto g = s.geometry(c);
     if (!ls.is_cut(g)) { return g; }
     return std::get<0>(intersect(g, ls));
@@ -146,10 +143,6 @@ void ls_serialize(State const& state, Solid const& solid, Ls const& ls,
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 
-}  // namespace vtk
-
-}  // namespace lbm
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::lbm::vtk
 #endif  // HM3_ENABLE_VTK
 #endif

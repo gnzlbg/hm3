@@ -4,23 +4,19 @@
 /// Square structured halo tile coordinate
 #include <hm3/grid/structured/halo_tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace halo_tile {
-namespace cell {
+namespace hm3::grid::structured::halo_tile::cell {
 
 /// Square structured grid cell coordinate
 ///
-/// \tparam Nd  number of spatial dimensions.
+/// \tparam Ad  number of spatial dimensions.
 /// \tparam Nic number of internal cells.
 /// \tparam Nhl number of halo layers.
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
 struct coordinate
- : tile::cell::indexed_coordinate<Nd, bounds<Nd, Nic, Nhl>::length()> {
+ : tile::cell::indexed_coordinate<Ad, bounds<Ad, Nic, Nhl>::length()> {
   using self    = coordinate;
-  using bounds  = bounds<Nd, Nic, Nhl>;
-  using tile_ic = tile::cell::indexed_coordinate<Nd, bounds::length()>;
+  using bounds  = bounds<Ad, Nic, Nhl>;
+  using tile_ic = tile::cell::indexed_coordinate<Ad, bounds::length()>;
 
   using value_t        = typename tile_ic::value_t;
   using signed_value_t = typename tile_ic::signed_value_t;
@@ -43,7 +39,7 @@ struct coordinate
 
   /// Is the coordinate an internal cell.
   constexpr bool is_internal() const noexcept {
-    for (dim_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Ad; ++d) {
       const auto i = (*this)[d];
       if (i < bounds::first_internal() or i > bounds::last_internal()) {
         return false;
@@ -80,19 +76,15 @@ struct coordinate
   }
 };
 
-}  // namespace cell
-}  // namespace halo_tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::halo_tile::cell
 
 namespace std {
 
-template <hm3::dim_t Nd, hm3::grid::structured::tile::tidx_t Nc,
+template <hm3::dim_t Ad, hm3::grid::structured::tile::tidx_t Nc,
           hm3::grid::structured::tile::tidx_t Nhl>
-struct hash<hm3::grid::structured::halo_tile::cell::coordinate<Nd, Nc, Nhl>> {
+struct hash<hm3::grid::structured::halo_tile::cell::coordinate<Ad, Nc, Nhl>> {
   constexpr std::size_t operator()(
-   hm3::grid::structured::halo_tile::cell::coordinate<Nd, Nc, Nhl> const& c)
+   hm3::grid::structured::halo_tile::cell::coordinate<Ad, Nc, Nhl> const& c)
    const noexcept {
     return static_cast<std::size_t>(*(c.idx_));
   }

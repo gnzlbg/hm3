@@ -11,8 +11,7 @@
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/fixed_capacity_vector.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 struct node_neighbors_fn {
   struct always_true_pred {
@@ -112,13 +111,13 @@ struct node_neighbors_fn {
   ///
   template <
    typename Tree, typename Loc, typename UnaryPredicate = always_true_pred,
-   dim_t Nd = Tree::ambient_dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
+   dim_t Ad = Tree::ambient_dimension(), CONCEPT_REQUIRES_(Location<Loc>{})>
   auto operator()(Tree const& t, Loc&& loc,
                   UnaryPredicate&& pred = UnaryPredicate()) const noexcept
-   -> fixed_capacity_vector<node_idx, max_no_neighbors(Nd)> {
-    fixed_capacity_vector<node_idx, max_no_neighbors(Nd)> neighbors;
+   -> fixed_capacity_vector<node_idx, max_no_neighbors(Ad)> {
+    fixed_capacity_vector<node_idx, max_no_neighbors(Ad)> neighbors;
 
-    for_each_neighbor_manifold<Nd>(
+    for_each_neighbor_manifold<Ad>(
      [&](auto m) { (*this)(m, t, loc, neighbors, pred); });
 
     // sort them and remove dupplicates
@@ -144,5 +143,4 @@ namespace {
 constexpr auto&& node_neighbors = static_const<node_neighbors_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

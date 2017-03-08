@@ -21,6 +21,6 @@ struct Point : rc::refines<Vertex, VertexAccess> {
 /// Refines Vertex, VertexAccess.
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
 using Point
- = meta::and_<GeometryObject<T, Ad, 0>, concept::rc::models<concept::Point, T>>;
+ = meta::and_<GeometryObject<T, Ad, 0>, rc::models<concept::Point, T>>;
 
 }  // namespace hm3::geometry

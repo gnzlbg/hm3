@@ -4,7 +4,7 @@
 /// Trapezoidal rule for 1D functions
 #include <hm3/math/approx.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3::math {

@@ -2,10 +2,10 @@
 /// \file
 ///
 /// ASCII OStream writer.
+#include <hm3/ext/variant.hpp>
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/fmt.hpp>
 #include <hm3/utility/optional.hpp>
-#include <hm3/utility/variant.hpp>
 #include <iomanip>
 
 namespace hm3::ascii_fmt {

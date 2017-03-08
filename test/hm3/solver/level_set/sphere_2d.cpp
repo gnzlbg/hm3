@@ -57,8 +57,10 @@ int main(int argc, char* argv[]) {
 
   /// Generate moving spheres
   const num_t radius = 0.1;
-  auto sphere0       = geometry::sd::moving_sphere<nd>{radius};
-  auto sphere1       = geometry::sd::moving_sphere<nd>{radius};
+  auto sphere0       = geometry::sd::sphere_at_point<nd>{};
+  auto sphere1       = geometry::sd::sphere_at_point<nd>{};
+  sphere0.set_radius(radius);
+  sphere1.set_radius(radius);
 
   using geometry::point;
   auto sphere_center0 = [](auto&& step) {
@@ -112,8 +114,8 @@ int main(int argc, char* argv[]) {
   RANGES_FOR (auto&& t, time_steps) {
     string root_name0 = "amr_state_ls0_" + std::to_string(count_);
     // Update sphere centers
-    sphere0.centroid = sphere_center0(t);
-    sphere1.centroid = sphere_center1(t);
+    sphere0.set_center(sphere_center0(t));
+    sphere1.set_center(sphere_center1(t));
     ls0.set_node_values(sphere0);
     ls1.set_node_values(sphere1);
 

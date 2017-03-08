@@ -8,15 +8,12 @@
 #include <hm3/vis/vtk/reader.hpp>
 #include <hm3/vis/vtk/readers/grid/reader.hpp>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
-namespace level_set {
+namespace hm3::vis::vtk::level_set {
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct reader : ::hm3::vis::vtk::reader {
-  using grid_reader_t = ::hm3::vis::vtk::grid::reader<Nd>;
-  using level_set_s   = ::hm3::solver::level_set::state<Nd>;
+  using grid_reader_t = ::hm3::vis::vtk::grid::reader<Ad>;
+  using level_set_s   = ::hm3::solver::level_set::state<Ad>;
 
   using vtk_cell_idx = typename level_set_s::cell_idx;
 
@@ -25,7 +22,7 @@ struct reader : ::hm3::vis::vtk::reader {
 
   /// Cached VTK grid:
   unstructured_grid vtk_grid;
-  using cell_data_t = cell_data<reader<Nd>, unstructured_grid>;
+  using cell_data_t = cell_data<reader<Ad>, unstructured_grid>;
 
   /// Cell Data handler:
   cell_data_t cell_data;
@@ -134,10 +131,10 @@ struct reader : ::hm3::vis::vtk::reader {
   }
 };
 
-/// Makes a level_set reader of dimension `Nd`
-template <dim_t Nd>
+/// Makes a level_set reader of dimension `Ad`
+template <dim_t Ad>
 auto make_level_set() -> std::unique_ptr<::hm3::vis::vtk::reader> {
-  return std::make_unique<reader<Nd>>();
+  return std::make_unique<reader<Ad>>();
 }
 
 /// Makes a level_set reader from io::session block of type
@@ -149,8 +146,8 @@ inline auto make(io::json const& b)
     HM3_FATAL_ERROR(
      "Cannot make a level_set reader from a block of type \"{}\"", block_type);
   }
-  dim_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
-  switch (nd) {
+  dim_t ad = io::read_file_field(b, "spatial_dimension", HM3_AT_);
+  switch (ad) {
     case 1: {
       return make_level_set<1>();
     }
@@ -161,13 +158,10 @@ inline auto make(io::json const& b)
       return make_level_set<3>();
     }
     default: {
-      HM3_FATAL_ERROR("unsupported #of spatial dimensions, nd = {}", nd);
+      HM3_FATAL_ERROR("unsupported #of spatial dimensions, ad = {}", ad);
     }
   }
 }
 
-}  // namespace level_set
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk::level_set
 #endif  // HM3_ENABLE_VTK

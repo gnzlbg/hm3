@@ -4,6 +4,7 @@
 /// Bounding volume of a polyline or polygon.
 #include <hm3/geometry/algorithm/approx/number.hpp>
 #include <hm3/geometry/algorithm/x_min_max.hpp>
+#include <hm3/geometry/algorithm/bounding_length/aabb.hpp>
 #include <hm3/geometry/concept/polygon.hpp>
 #include <hm3/geometry/concept/polyhedron.hpp>
 #include <hm3/geometry/concept/polyline.hpp>

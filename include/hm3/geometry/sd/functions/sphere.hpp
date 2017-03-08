@@ -30,7 +30,7 @@ static constexpr auto const& sphere
 ///@}  // Sphere
 
 template <dim_t Ad>
-struct sphere_at_origin : with_ambient_dimension<Ad> {
+struct sphere_at_origin : signed_distance<Ad> {
   num_t radius_                = 1.0;
   constexpr sphere_at_origin() = default;
   constexpr sphere_at_origin(num_t radius) noexcept : radius_(radius) {

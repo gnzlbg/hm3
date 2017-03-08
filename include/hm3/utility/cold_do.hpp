@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Performs a cold computation (prevents inlining)
-#include <hm3/utility/config/attributes.hpp>
+#include <hm3/config/attributes.hpp>
 
 namespace hm3 {
 

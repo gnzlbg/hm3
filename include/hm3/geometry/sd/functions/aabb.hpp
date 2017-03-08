@@ -26,7 +26,7 @@ static constexpr auto const& aabb = static_const<aabb_detail::aabb_fn>::value;
 }
 
 template <dim_t Ad>
-struct aabb_at_origin : with_ambient_dimension<Ad> {
+struct aabb_at_origin : signed_distance<Ad> {
   vec<Ad> lengths_ = vec<Ad>::constant(1.);
 
   constexpr aabb_at_origin() = default;

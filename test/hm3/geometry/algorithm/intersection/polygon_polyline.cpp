@@ -11,7 +11,6 @@ int main() {
   using pl_t = polyline<2>;
 
   using p_t = point<2>;
-  using s_t = segment<2>;
 
   auto pg0    = p_t{0.0, 0.0};
   auto pg1    = p_t{1.0, 0.0};

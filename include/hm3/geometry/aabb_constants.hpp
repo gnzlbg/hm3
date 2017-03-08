@@ -4,28 +4,28 @@
 /// AABB constants.
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/utility/array.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/fatal_error.hpp>
 
 namespace hm3::geometry {
 
 namespace aabb_constants {
 
-/// Number of vertices in an \p nd dimensional AABB.
-constexpr dim_t vertex_size(dim_t nd) noexcept {
-  return math::ipow(dim_t{2}, nd);
+/// Number of vertices in an \p ad dimensional AABB.
+constexpr dim_t vertex_size(dim_t ad) noexcept {
+  return math::ipow(dim_t{2}, ad);
 }
 
 namespace detail {
-constexpr dim_t face_size(dim_t nd, dim_t m) noexcept {
-  return m <= nd ? math::ipow(dim_t{2}, dim_t(nd - m))
-                    * math::binomial_coefficient(nd, m)
+constexpr dim_t face_size(dim_t ad, dim_t m) noexcept {
+  return m <= ad ? math::ipow(dim_t{2}, dim_t(ad - m))
+                    * math::binomial_coefficient(ad, m)
                  : dim_t{0};
 }
 
 }  // namespace detail
 
-/// Number of m-dimensional edges in an \p nd dimensional AABB.
-constexpr dim_t face_size(dim_t nd, dim_t m) noexcept {
+/// Number of m-dimensional edges in an \p ad dimensional AABB.
+constexpr dim_t face_size(dim_t ad, dim_t m) noexcept {
   static_assert(detail::face_size(1, 3) == 0);
   static_assert(detail::face_size(1, 2) == 0);
   static_assert(detail::face_size(1, 1) == 1);
@@ -40,7 +40,7 @@ constexpr dim_t face_size(dim_t nd, dim_t m) noexcept {
   static_assert(detail::face_size(3, 2) == 6);
   static_assert(detail::face_size(3, 1) == 12);
   static_assert(detail::face_size(3, 0) == 8);
-  return detail::face_size(nd, m);
+  return detail::face_size(ad, m);
 }
 
 /// Relative position of AABB vertices (+-1) wrt to the AABB centroid. This
@@ -141,28 +141,28 @@ constexpr dim_t face_vertices(dim_t fidx, dim_t vidx) noexcept {
 #include <hm3/geometry/access/face.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/utility/array.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/fatal_error.hpp>
 
 namespace hm3::geometry::aabb_primitive {
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct face_idx_to_face_neighbor {
-  using face_neighbor_ids    = tree::face_neighbors<Nd>;
+  using face_neighbor_ids    = tree::face_neighbors<Ad>;
   using face_neighbor_offset = typename face_neighbor_ids::offset_t;
   using face_neighbor_index  = typename face_neighbor_ids::neighbor_idx;
 
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   static constexpr face_neighbor_index neighbor_idx(suint_t face_idx) noexcept {
     return face_neighbor_ids{}(face_idx);
   }
 
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   static constexpr face_neighbor_index neighbor_idx(suint_t face_idx) noexcept {
     constexpr array<suint_t, 4> neighbor_ids{{2, 1, 3, 0}};
     return face_neighbor_ids{}(neighbor_ids[face_idx]);
   }
 
-  // CONCEPT_REQUIRES(Nd == 3)
+  // CONCEPT_REQUIRES(Ad == 3)
   // static constexpr face_neighbor_index neighbor_idx(fidx_t face_idx) noexcept
   // {
   //   constexpr array<fidx_t, 6> neighbor_ids{{2, 1, 3, 0}};

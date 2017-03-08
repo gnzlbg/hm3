@@ -8,7 +8,6 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/amr/state.hpp>
-#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
 namespace hm3::grid::hierarchical::amr {

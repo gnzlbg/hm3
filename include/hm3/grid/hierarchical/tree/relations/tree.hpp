@@ -10,17 +10,17 @@
 #include <hm3/geometry/concepts.hpp>
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/utility/assert.hpp>
+#include <hm3/utility/fatal_error.hpp>
 /// Use look-up table for the relative children position instead of arithmetic
 /// operations
 #define HM3_USE_CHILDREN_LOOKUP_TABLE
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
+
 //
 
 /// \name Tree relations
@@ -28,40 +28,40 @@ namespace tree {
 
 /// Number of children of a node
 ///
-/// \param nd [in] spatial dimension of the node
+/// \param ad [in] spatial dimension of the node
 ///
 /// Formula: \f$ 2^{nd} \f$
 ///
-static constexpr cpidx_t no_children(dim_t nd) noexcept {
-  return math::ipow(cpidx_t{2}, cpidx_t(nd));
+static constexpr cpidx_t no_children(dim_t ad) noexcept {
+  return math::ipow(cpidx_t{2}, cpidx_t(ad));
 }
 
 /// Number of siblings of a node
 ///
 /// Siblings are nodes sharing the same parent.
 ///
-/// \param nd [in] spatial dimension of the node
+/// \param ad [in] spatial dimension of the node
 ///
 /// Formula: \f$ 2^{nd} \f$
 ///
-static constexpr cpidx_t no_siblings(dim_t nd) noexcept {
-  return no_children(nd);
+static constexpr cpidx_t no_siblings(dim_t ad) noexcept {
+  return no_children(ad);
 }
 
 /// Number of nodes sharing a single face within a node
 ///
-/// \param nd [in] spatial dimension of the node
+/// \param ad [in] spatial dimension of the node
 /// \param m [in] spatial dimension of a face
 ///
 /// Formula: \f$ 2 ^ {m} \f$ for \f$ m >= m \f$ otherwise 0.
 ///
-static constexpr npidx_t no_nodes_sharing_face(dim_t nd, dim_t m) noexcept {
-  return (nd >= m) ? math::ipow(npidx_t{2}, npidx_t(m)) : npidx_t{0};
+static constexpr npidx_t no_nodes_sharing_face(dim_t ad, dim_t m) noexcept {
+  return (ad >= m) ? math::ipow(npidx_t{2}, npidx_t(m)) : npidx_t{0};
 }
 
 /// Number of nodes sharing a single face at a given level
 ///
-/// \param nd [in] spatial dimension of the nodes
+/// \param ad [in] spatial dimension of the nodes
 /// \param m [in] spatial dimension of the face
 /// \param level [in] level starting from the root node (which is at level 0)
 ///
@@ -70,8 +70,8 @@ static constexpr npidx_t no_nodes_sharing_face(dim_t nd, dim_t m) noexcept {
 /// \note The result can be very big => nidx_t type.
 ///
 static constexpr nidx_t no_nodes_sharing_face_at_level(
- dim_t nd, dim_t m, level_idx level) noexcept {
-  const auto nsf = no_nodes_sharing_face(nd, m);
+ dim_t ad, dim_t m, level_idx level) noexcept {
+  const auto nsf = no_nodes_sharing_face(ad, m);
   return nsf == npidx_t{0} and *level == lidx_t{0}
           ? nidx_t{0}
           : math::ipow(nidx_t{nsf}, static_cast<nidx_t>(*level));
@@ -79,45 +79,45 @@ static constexpr nidx_t no_nodes_sharing_face_at_level(
 
 /// Number of node faces
 ///
-/// \param nd [in] spatial dimension of the node
+/// \param ad [in] spatial dimension of the node
 /// \param m [in] spatial dimension of the face
 ///
 /// Formula: \f$\ 2^{n_d - m} \begin{pmatrix} n_d // m \end{pmatrix} \f$
 ///
-static constexpr npidx_t no_faces(dim_t nd, dim_t m) noexcept {
-  return m <= nd ? math::ipow(npidx_t{2}, npidx_t(nd - m))
-                    * math::binomial_coefficient(nd, m)
+static constexpr npidx_t no_faces(dim_t ad, dim_t m) noexcept {
+  return m <= ad ? math::ipow(npidx_t{2}, npidx_t(ad - m))
+                    * math::binomial_coefficient(ad, m)
                  : npidx_t{0};
 }
 
 /// Number of nodes at an uniformly refined level \p level
 ///
-/// \param nd [in] spatial dimension of the nodes
+/// \param ad [in] spatial dimension of the nodes
 /// \param level [in] distance from nodes to the root node
 ///
 /// Formula \f$\ (2^{n_d})^{\mathrm{level}} \f$
 ///
 /// \note The result can be very big => nidx_t type.
 ///
-static constexpr nidx_t no_nodes_at_uniform_level(dim_t nd, level_idx level) {
-  return math::ipow(math::ipow(nidx_t{2}, nidx_t(nd)),
+static constexpr nidx_t no_nodes_at_uniform_level(dim_t ad, level_idx level) {
+  return math::ipow(math::ipow(nidx_t{2}, nidx_t(ad)),
                     static_cast<nidx_t>(*level));
 }
 
 /// Number of nodes in a tree with a uniformly refined level \p level
 ///
-/// \param nd [in] spatial dimension of the nodes
+/// \param ad [in] spatial dimension of the nodes
 /// \param level [in] distance from nodes to the root node
 ///
 /// Formula \f$\ \sum_{l = 0}^{level} (2^{n_d})^{\mathrm{l}} \f$
 ///
 /// \note The result can be very big => nidx_t type.
 ///
-static constexpr nidx_t no_nodes_until_uniform_level(dim_t nd,
+static constexpr nidx_t no_nodes_until_uniform_level(dim_t ad,
                                                      level_idx level) {
   nidx_t no_nodes = 0;
   for (lidx_t l = 0, e = *level; l <= e; ++l) {
-    no_nodes += no_nodes_at_uniform_level(nd, l);
+    no_nodes += no_nodes_at_uniform_level(ad, l);
   }
   return no_nodes;
 }
@@ -175,7 +175,7 @@ static constexpr auto relative_child_position_stencil
 /// \param [in] p position of the children
 ///
 /// \returns relative position (+1/-1, ...) of child \p w.r.t. his parent node
-/// center (an array of size nd)
+/// center (an array of size ad)
 ///
 /// That is:
 ///              __________________________
@@ -254,5 +254,4 @@ constexpr auto child_geometry(const child_pos<Ad> child_position, Box parent)
 
 ///@} // Tree relations
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

@@ -12,9 +12,9 @@ namespace hm3::grid::hierarchical::cartesian {
 /// Multiple hierarchical Cartesian Grids
 ///
 ///
-template <dim_t Nd>
-struct multi : adaptor::multi<single<Nd>> {
-  using base_t = adaptor::multi<single<Nd>>;
+template <dim_t Ad>
+struct multi : adaptor::multi<single<Ad>> {
+  using base_t = adaptor::multi<single<Ad>>;
   io::client io_;
   hm3::log::serial log;
 
@@ -30,7 +30,7 @@ struct multi : adaptor::multi<single<Nd>> {
         this->capacity(), this->no_grids(), this->bounding_box(), this->size());
   }
   multi(io::session& s, tree_node_idx node_capacity, grid_idx grid_capacity,
-        geometry::box<Nd> bounding_box)
+        geometry::box<Ad> bounding_box)
    : multi(s, base_t(node_capacity, grid_capacity, std::move(bounding_box))) {}
 
   bool is_sorted() const noexcept { return ::hm3::tree::dfs_sort.is(*this); }
@@ -42,7 +42,7 @@ struct multi : adaptor::multi<single<Nd>> {
     io_.write(f);
   }
 
-  static multi<Nd> from_session(io::session& s, string const& type_,
+  static multi<Ad> from_session(io::session& s, string const& type_,
                                 string const& name_,
                                 io::file::index_t i = io::file::index_t{},
                                 tree_node_idx node_capacity = tree_node_idx{},
@@ -52,18 +52,18 @@ struct multi : adaptor::multi<single<Nd>> {
 
     if (type_ == type(base_t{})) {
       auto d = from_file(base_t{}, f, node_capacity, grid_capacity);
-      return multi<Nd>{s, std::move(d)};
+      return multi<Ad>{s, std::move(d)};
     }
 
-    if (type_ == type(single<Nd>{})) {
-      auto d = from_file(single<Nd>{}, f, node_capacity);
-      return multi<Nd>{s, base_t{0, std::move(d)}};
+    if (type_ == type(single<Ad>{})) {
+      auto d = from_file(single<Ad>{}, f, node_capacity);
+      return multi<Ad>{s, base_t{0, std::move(d)}};
     }
 
-    if (type_ == type(tree::tree<Nd>{})) {
-      auto d = from_file(tree::tree<Nd>{}, f, node_capacity);
-      return multi<Nd>{
-       s, base_t{0, single<Nd>{geometry::box<Nd>::unit(), std::move(d)}}};
+    if (type_ == type(tree::tree<Ad>{})) {
+      auto d = from_file(tree::tree<Ad>{}, f, node_capacity);
+      return multi<Ad>{
+       s, base_t{0, single<Ad>{geometry::box<Ad>::unit(), std::move(d)}}};
     }
 
     HM3_FATAL_ERROR("Cannot read block of type {} and name {} into a "
@@ -72,24 +72,24 @@ struct multi : adaptor::multi<single<Nd>> {
   }
 };
 
-template <dim_t Nd>
-string name(multi<Nd>) {
-  return name(typename multi<Nd>::base_t{});
+template <dim_t Ad>
+string name(multi<Ad>) {
+  return name(typename multi<Ad>::base_t{});
 }
 
-template <dim_t Nd>
-string type(multi<Nd>) {
-  return type(typename multi<Nd>::base_t{});
+template <dim_t Ad>
+string type(multi<Ad>) {
+  return type(typename multi<Ad>::base_t{});
 }
 
-template <dim_t Nd>
-bool operator==(multi<Nd> const& a, multi<Nd> const& b) noexcept {
-  using base_t = typename multi<Nd>::base_t const&;
+template <dim_t Ad>
+bool operator==(multi<Ad> const& a, multi<Ad> const& b) noexcept {
+  using base_t = typename multi<Ad>::base_t const&;
   return static_cast<base_t>(a) == static_cast<base_t>(b);
 }
 
-template <dim_t Nd>
-bool operator!=(multi<Nd> const& a, multi<Nd> const& b) noexcept {
+template <dim_t Ad>
+bool operator!=(multi<Ad> const& a, multi<Ad> const& b) noexcept {
   return !(a == b);
 }
 

@@ -8,7 +8,7 @@
 #include <hm3/grid/hierarchical/tree/algorithm/node_location.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/matrix.hpp>
 
 namespace hm3::grid::hierarchical {

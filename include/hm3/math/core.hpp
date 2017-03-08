@@ -14,4 +14,5 @@ namespace hm3 {
 
 /// Math utilities
 namespace math {}  // namespace math
+
 }  // namespace hm3

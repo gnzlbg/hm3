@@ -29,6 +29,6 @@ struct VertexAccess {
 ///  - vertex_size(t) -> IndexType
 ///  - vertex(t, IndexType{}) -> Vertex
 template <typename T>
-using VertexAccess = concept::rc::models<concept::VertexAccess, T>;
+using VertexAccess = rc::models<concept::VertexAccess, T>;
 
 }  // namespace hm3::geometry

@@ -33,6 +33,9 @@ struct plane : object<Ad, Ad - 1> {};
 template <>
 struct plane<2> : line<2> {};
 
+template <dim_t Ad>
+struct signed_distance : object<Ad, Ad> {};
+
 ///@} // Primitive Hierarchy
 
 template <dim_t Ad>

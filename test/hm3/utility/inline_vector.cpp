@@ -13,18 +13,18 @@
 //
 //===----------------------------------------------------------------------===//
 #include <hm3/types.hpp>
-#include <hm3/utility/inline_vector.hpp>
+#include <hm3/utility/fixed_capacity_vector.hpp>
 #include <hm3/utility/range.hpp>
 #include <hm3/utility/test.hpp>
 #include <memory>
 
-template struct hm3::inline_vector<int, 0>;
-template struct hm3::inline_vector<int, 10>;
-template struct hm3::inline_vector<std::unique_ptr<int>, 10>;
+template struct hm3::fixed_capacity_vector<int, 0>;
+template struct hm3::fixed_capacity_vector<int, 10>;
+template struct hm3::fixed_capacity_vector<std::unique_ptr<int>, 10>;
 
-template struct hm3::inline_vector<const int, 0>;
-template struct hm3::inline_vector<const int, 10>;
-// template struct hm3::inline_vector<const std::unique_ptr<int>, 10>;
+template struct hm3::fixed_capacity_vector<const int, 0>;
+template struct hm3::fixed_capacity_vector<const int, 10>;
+// template struct hm3::fixed_capacity_vector<const std::unique_ptr<int>, 10>;
 
 using namespace hm3;
 
@@ -63,7 +63,8 @@ static_assert(!std::is_trivial<moint>{} and !std::is_copy_constructible<moint>{}
               "");
 
 template <typename T, std::size_t N>
-constexpr bool test_bounds(inline_vector<T, N> const& v, std::size_t sz) {
+constexpr bool test_bounds(fixed_capacity_vector<T, N> const& v,
+                           std::size_t sz) {
   CHECK(v.size() == sz);
   CHECK(v.max_size() == N);
   CHECK(v.capacity() == N);
@@ -109,24 +110,24 @@ struct vec {
 
 void libcxx_tests() {
   {  // const
-    inline_vector<const int, 0> v0 = {};
+    fixed_capacity_vector<const int, 0> v0 = {};
     test_bounds(v0, 0);
 
-    constexpr inline_vector<const int, 0> vc0 = {};
+    constexpr fixed_capacity_vector<const int, 0> vc0 = {};
     test_bounds(vc0, 0);
     CHECK(test_bounds(vc0, 0));
 
     // one and two elements initializer_list don't work
-    inline_vector<const int, 1> v1 = {1};
+    fixed_capacity_vector<const int, 1> v1 = {1};
     test_bounds(v1, 1);
     //
-    // constexpr inline_vector<const int, 1> vc1 = {1};
+    // constexpr fixed_capacity_vector<const int, 1> vc1 = {1};
     //  test_bounds(vc1, 1);
     //  CHECK(test_bounds(vc1, 1));
 
-    inline_vector<const int, 3> v3 = {1, 2, 3};
+    fixed_capacity_vector<const int, 3> v3 = {1, 2, 3};
     test_bounds(v3, 3);
-    constexpr inline_vector<const int, 3> vc3 = {1, 2, 3};
+    constexpr fixed_capacity_vector<const int, 3> vc3 = {1, 2, 3};
     test_bounds(vc3, 3);
     CHECK(test_bounds(vc3, 3));
   }
@@ -141,7 +142,7 @@ void libcxx_tests() {
 
   {  // contiguous
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     auto e = C();
     CHECK(e.empty());
     test_contiguous(e);
@@ -149,7 +150,7 @@ void libcxx_tests() {
   }
   {  // default construct element
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     C c(1);
     CHECK(c.back() == 0);
     CHECK(c.front() == 0);
@@ -158,7 +159,7 @@ void libcxx_tests() {
 
   {  // iterator
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     C c;
     C::iterator i = c.begin();
     C::iterator j = c.end();
@@ -167,7 +168,7 @@ void libcxx_tests() {
   }
   {  // const iterator
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     const C c{};
     C::const_iterator i = c.begin();
     C::const_iterator j = c.end();
@@ -176,7 +177,7 @@ void libcxx_tests() {
   }
   {  // cbegin/cend
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     C c;
     C::const_iterator i = c.cbegin();
     C::const_iterator j = c.cend();
@@ -186,7 +187,7 @@ void libcxx_tests() {
   }
   {  // iterator constructor
     typedef int T;
-    typedef inline_vector<T, 10> C;
+    typedef fixed_capacity_vector<T, 10> C;
     const T t[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     C c(std::begin(t), std::end(t));
     CHECK(std::equal(std::begin(t), std::end(t), std::begin(c), std::end(c)));
@@ -199,7 +200,7 @@ void libcxx_tests() {
     CHECK(std::distance(std::begin(c), std::end(c)) == 10);
   }
   {  // N3644 testing
-    typedef inline_vector<int, 10> C;
+    typedef fixed_capacity_vector<int, 10> C;
     C::iterator ii1{}, ii2{};
     C::iterator ii4 = ii1;
     C::const_iterator cii{};
@@ -225,7 +226,7 @@ void libcxx_tests() {
   }
 
   {  // capacity
-    inline_vector<int, 10> a;
+    fixed_capacity_vector<int, 10> a;
     CHECK(a.capacity() == std::size_t(10));
     CHECK(a.empty());
     for (int i = 0; i != 10; ++i) { a.push_back(0); }
@@ -236,7 +237,7 @@ void libcxx_tests() {
 
   {  // resize copyable
     using Copyable = int;
-    inline_vector<Copyable, 10> a(std::size_t(10), 5);
+    fixed_capacity_vector<Copyable, 10> a(std::size_t(10), 5);
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
@@ -264,7 +265,7 @@ void libcxx_tests() {
   }
   {  // resize move-only
     using MoveOnly = std::unique_ptr<int>;
-    inline_vector<MoveOnly, 10> a(10);
+    fixed_capacity_vector<MoveOnly, 10> a(10);
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
     a.resize(5);
@@ -278,7 +279,7 @@ void libcxx_tests() {
 
   {  // resize value:
     using Copyable = int;
-    inline_vector<Copyable, 10> a(std::size_t(10));
+    fixed_capacity_vector<Copyable, 10> a(std::size_t(10));
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
@@ -304,10 +305,10 @@ void libcxx_tests() {
   }
 
   {  // assign copy
-    inline_vector<int, 3> z(3, 5);
-    inline_vector<int, 3> a = {0, 1, 2};
+    fixed_capacity_vector<int, 3> z(3, 5);
+    fixed_capacity_vector<int, 3> a = {0, 1, 2};
     CHECK(a.size() == std::size_t{3});
-    inline_vector<int, 3> b;
+    fixed_capacity_vector<int, 3> b;
     CHECK(b.size() == std::size_t{0});
     b = a;
     CHECK(b.size() == std::size_t{3});
@@ -315,9 +316,9 @@ void libcxx_tests() {
   }
 
   {  // copy construct
-    inline_vector<int, 3> a = {0, 1, 2};
+    fixed_capacity_vector<int, 3> a = {0, 1, 2};
     CHECK(a.size() == std::size_t{3});
-    inline_vector<int, 3> b(a);
+    fixed_capacity_vector<int, 3> b(a);
     CHECK(b.size() == std::size_t{3});
 
     CHECK(std::equal(std::begin(a), std::end(a), std::begin(b), std::end(b)));
@@ -325,9 +326,9 @@ void libcxx_tests() {
 
   {  // assign move
     using MoveOnly = std::unique_ptr<int>;
-    inline_vector<MoveOnly, 3> a(3);
+    fixed_capacity_vector<MoveOnly, 3> a(3);
     CHECK(a.size() == std::size_t{3});
-    inline_vector<MoveOnly, 3> b;
+    fixed_capacity_vector<MoveOnly, 3> b;
     CHECK(b.size() == std::size_t{0});
     b = std::move(a);
     CHECK(b.size() == std::size_t{3});
@@ -336,15 +337,15 @@ void libcxx_tests() {
 
   {  // move construct
     using MoveOnly = std::unique_ptr<int>;
-    inline_vector<MoveOnly, 3> a(3);
+    fixed_capacity_vector<MoveOnly, 3> a(3);
     CHECK(a.size() == std::size_t{3});
-    inline_vector<MoveOnly, 3> b(std::move(a));
+    fixed_capacity_vector<MoveOnly, 3> b(std::move(a));
     CHECK(b.size() == std::size_t{3});
     CHECK(a.size() == std::size_t{3});
   }
 
   {  // old tests
-    using vec_t = inline_vector<int, 5>;
+    using vec_t = fixed_capacity_vector<int, 5>;
     vec_t vec1(5);
     vec1[0] = 0;
     vec1[1] = 1;
@@ -389,7 +390,7 @@ void libcxx_tests() {
     }
   }
   {
-    using vec_t = inline_vector<int, 0>;
+    using vec_t = fixed_capacity_vector<int, 0>;
     static_assert(sizeof(vec_t) == 1, "");
 
     constexpr auto a = vec_t{};
@@ -397,7 +398,7 @@ void libcxx_tests() {
   }
 
   {  // back and front:
-    using C = inline_vector<int, 2>;
+    using C = fixed_capacity_vector<int, 2>;
     C c(1);
     CHECK(c.back() == 0);
     CHECK(c.front() == 0);
@@ -424,7 +425,7 @@ void libcxx_tests() {
   }
 
   {  // const back:
-    using C = inline_vector<int, 2>;
+    using C = fixed_capacity_vector<int, 2>;
     const C c(1);
     CHECK(c.back() == 0);
     CHECK(c.front() == 0);
@@ -433,7 +434,7 @@ void libcxx_tests() {
   }
 
   {  // swap: same type
-    using C = inline_vector<int, 5>;
+    using C = fixed_capacity_vector<int, 5>;
     C c0(3, 5);
     C c1(5, 1);
     C c2(0);
@@ -454,7 +455,7 @@ void libcxx_tests() {
   }
 
   {  // std::swap: same type
-    using C = inline_vector<int, 5>;
+    using C = fixed_capacity_vector<int, 5>;
     C c0(3, 5);
     C c1(5, 1);
     C c2(0);
@@ -475,22 +476,22 @@ void libcxx_tests() {
   }
 
   {  // TODO: throwing swap different types
-    inline_vector<int, 5> v;
+    fixed_capacity_vector<int, 5> v;
     CHECK(v.data() != nullptr);
 
-    inline_vector<int, 0> v0;
+    fixed_capacity_vector<int, 0> v0;
     CHECK(v0.data() == nullptr);
 
-    const inline_vector<int, 5> cv;
+    const fixed_capacity_vector<int, 5> cv;
     CHECK(cv.data() != nullptr);
 
-    const inline_vector<int, 0> cv0;
+    const fixed_capacity_vector<int, 0> cv0;
     CHECK(cv0.data() == nullptr);
   }
 
   {// emplace:
-   {inline_vector<A, 3> c;
-  inline_vector<A, 3>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
+   {fixed_capacity_vector<A, 3> c;
+  fixed_capacity_vector<A, 3>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
   CHECK(i == c.begin());
   CHECK(c.size() == 1);
   CHECK(c.front().geti() == 2);
@@ -513,8 +514,8 @@ void libcxx_tests() {
   CHECK(c.back().getd() == 4.5);
 }
 {
-  inline_vector<A, 3> c;
-  inline_vector<A, 3>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
+  fixed_capacity_vector<A, 3> c;
+  fixed_capacity_vector<A, 3>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
   CHECK(i == c.begin());
   CHECK(c.size() == 1);
   CHECK(c.front().geti() == 2);
@@ -539,7 +540,7 @@ void libcxx_tests() {
 }
 
 {// emplace_back
- {inline_vector<A, 2> c;
+ {fixed_capacity_vector<A, 2> c;
 c.emplace_back(2, 3.5);
 CHECK(c.size() == 1);
 CHECK(c.front().geti() == 2);
@@ -552,7 +553,7 @@ CHECK(c.back().geti() == 3);
 CHECK(c.back().getd() == 4.5);
 }
 {
-  inline_vector<A, 2> c;
+  fixed_capacity_vector<A, 2> c;
   c.emplace_back(2, 3.5);
   CHECK(c.size() == 1);
   CHECK(c.front().geti() == 2);
@@ -568,14 +569,14 @@ CHECK(c.back().getd() == 4.5);
 
 { // emplace extra:
  {//
-  inline_vector<int, 4> v;
+  fixed_capacity_vector<int, 4> v;
 v = {1, 2, 3};
 
 v.emplace(v.begin(), v.back());
 CHECK(v[0] == 3);
 }
 {
-  inline_vector<int, 4> v;
+  fixed_capacity_vector<int, 4> v;
   v = {1, 2, 3};
   v.emplace(v.begin(), v.back());
   CHECK(v[0] == 3);
@@ -584,11 +585,11 @@ CHECK(v[0] == 3);
 
 {// erase
  {int a1[] = {1, 2, 3};
-inline_vector<int, 4> l1(a1, a1 + 3);
+fixed_capacity_vector<int, 4> l1(a1, a1 + 3);
 CHECK(l1.size() == 3);
-inline_vector<int, 4>::const_iterator i = l1.begin();
+fixed_capacity_vector<int, 4>::const_iterator i = l1.begin();
 ++i;
-inline_vector<int, 4>::iterator j = l1.erase(i);
+fixed_capacity_vector<int, 4>::iterator j = l1.erase(i);
 CHECK(l1.size() == 2);
 CHECK(std::distance(l1.begin(), l1.end()) == 2);
 CHECK(*j == 3);
@@ -608,7 +609,7 @@ CHECK(std::distance(l1.begin(), l1.end()) == 0);
 
 {  // erase iter iter
   int a1[]    = {1, 2, 3};
-  using vec_t = inline_vector<int, 5>;
+  using vec_t = fixed_capacity_vector<int, 5>;
   {
     vec_t l1(a1, a1 + 3);
     vec_t::iterator i = l1.erase(l1.cbegin(), l1.cbegin());
@@ -640,7 +641,7 @@ CHECK(std::distance(l1.begin(), l1.end()) == 0);
     CHECK(i == l1.begin());
   }
   {
-    inline_vector<vec_t, 3> outer(2, vec_t(1));
+    fixed_capacity_vector<vec_t, 3> outer(2, vec_t(1));
     outer.erase(outer.begin(), outer.begin());
     CHECK(outer.size() == 2);
     CHECK(outer[0].size() == 1);
@@ -649,8 +650,9 @@ CHECK(std::distance(l1.begin(), l1.end()) == 0);
 }
 
 {// insert init list
- {inline_vector<int, 15> d(10, 1);
-inline_vector<int, 15>::iterator i = d.insert(d.cbegin() + 2, {3, 4, 5, 6});
+ {fixed_capacity_vector<int, 15> d(10, 1);
+fixed_capacity_vector<int, 15>::iterator i
+ = d.insert(d.cbegin() + 2, {3, 4, 5, 6});
 CHECK(d.size() == 14);
 CHECK(i == d.begin() + 2);
 CHECK(d[0] == 1);
@@ -671,10 +673,10 @@ CHECK(d[13] == 1);
 }
 
 {// insert iter iter
- {inline_vector<int, 120> v(100);
+ {fixed_capacity_vector<int, 120> v(100);
 int a[]             = {1, 2, 3, 4, 5};
 const std::size_t N = sizeof(a) / sizeof(a[0]);
-inline_vector<int, 120>::iterator i
+fixed_capacity_vector<int, 120>::iterator i
  = v.insert(v.cbegin() + 10, (a + 0), (a + N));
 CHECK(v.size() == 100 + N);
 CHECK(i == v.begin() + 10);
@@ -684,11 +686,11 @@ for (std::size_t k = 0; k < N; ++j, ++k) CHECK(v[j] == a[k]);
 for (; j < 105; ++j) CHECK(v[j] == 0);
 }
 {
-  inline_vector<int, 120> v(100);
+  fixed_capacity_vector<int, 120> v(100);
   size_t sz        = v.size();
   int a[]          = {1, 2, 3, 4, 5};
   const unsigned N = sizeof(a) / sizeof(a[0]);
-  inline_vector<int, 120>::iterator i
+  fixed_capacity_vector<int, 120>::iterator i
    = v.insert(v.cbegin() + 10, (a + 0), (a + N));
   CHECK(v.size() == sz + N);
   CHECK(i == v.begin() + 10);
@@ -700,8 +702,9 @@ for (; j < 105; ++j) CHECK(v[j] == 0);
 }
 
 {// insert iter rvalue
- {inline_vector<moint, 103> v(100);
-inline_vector<moint, 103>::iterator i = v.insert(v.cbegin() + 10, moint(3));
+ {fixed_capacity_vector<moint, 103> v(100);
+fixed_capacity_vector<moint, 103>::iterator i
+ = v.insert(v.cbegin() + 10, moint(3));
 CHECK(v.size() == 101);
 CHECK(i == v.begin() + 10);
 std::size_t j;
@@ -714,8 +717,8 @@ for (++j; j < 101; ++j)
 }
 
 {// insert iter size
- {inline_vector<int, 130> v(100);
-inline_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+ {fixed_capacity_vector<int, 130> v(100);
+fixed_capacity_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
 CHECK(v.size() == 105);
 CHECK(i == v.begin() + 10);
 std::size_t j;
@@ -724,9 +727,9 @@ for (; j < 15; ++j) CHECK(v[j] == 1);
 for (++j; j < 105; ++j) CHECK(v[j] == 0);
 }
 {
-  inline_vector<int, 130> v(100);
+  fixed_capacity_vector<int, 130> v(100);
   size_t sz = v.size();
-  inline_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+  fixed_capacity_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
   CHECK(v.size() == sz + 5);
   CHECK(i == v.begin() + 10);
   std::size_t j;
@@ -735,9 +738,9 @@ for (++j; j < 105; ++j) CHECK(v[j] == 0);
   for (++j; j < v.size(); ++j) CHECK(v[j] == 0);
 }
 {
-  inline_vector<int, 130> v(100);
+  fixed_capacity_vector<int, 130> v(100);
   size_t sz = v.size();
-  inline_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
+  fixed_capacity_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
   CHECK(v.size() == sz + 5);
   CHECK(i == v.begin() + 10);
   std::size_t j;
@@ -748,8 +751,8 @@ for (++j; j < 105; ++j) CHECK(v[j] == 0);
 }
 
 {// iter value:
- {inline_vector<int, 130> v(100);
-inline_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
+ {fixed_capacity_vector<int, 130> v(100);
+fixed_capacity_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
 CHECK(v.size() == 101);
 CHECK(i == v.begin() + 10);
 std::size_t j;
@@ -758,9 +761,9 @@ CHECK(v[j] == 1);
 for (++j; j < 101; ++j) CHECK(v[j] == 0);
 }
 {
-  inline_vector<int, 130> v(100);
+  fixed_capacity_vector<int, 130> v(100);
   size_t sz = v.size();
-  inline_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
+  fixed_capacity_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
   CHECK(v.size() == sz + 1);
   CHECK(i == v.begin() + 10);
   std::size_t j;
@@ -769,11 +772,11 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
   for (++j; j < v.size(); ++j) CHECK(v[j] == 0);
 }
 {
-  inline_vector<int, 130> v(100);
+  fixed_capacity_vector<int, 130> v(100);
   v.pop_back();
   v.pop_back();  // force no reallocation
   size_t sz = v.size();
-  inline_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
+  fixed_capacity_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
   CHECK(v.size() == sz + 1);
   CHECK(i == v.begin() + 10);
   std::size_t j;
@@ -785,7 +788,7 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
 
 {  // push back move only
   {
-    inline_vector<moint, 6> c;
+    fixed_capacity_vector<moint, 6> c;
     c.push_back(moint(0));
     CHECK(c.size() == 1);
     for (std::size_t j = 0; j < c.size(); ++j)
@@ -812,7 +815,7 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
 
 int main() {
   {  // const
-    inline_vector<const int, 3> v = {1, 2, 3};
+    fixed_capacity_vector<const int, 3> v = {1, 2, 3};
     CHECK(v[0] == 1);
     CHECK(v[1] == 2);
     CHECK(v[2] == 3);
@@ -826,14 +829,14 @@ int main() {
 
   {  // contiguous
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     test_contiguous(C());
     test_contiguous(C(3, 5));
   }
 
   {  // default construct element
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     C c(1);
     CHECK(back(c) == 0);
     CHECK(front(c) == 0);
@@ -842,7 +845,7 @@ int main() {
 
   {  // iterator
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     C c;
     C::iterator i = begin(c);
     C::iterator j = end(c);
@@ -851,7 +854,7 @@ int main() {
   }
   {  // const iterator
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     const C c{};
     C::const_iterator i = begin(c);
     C::const_iterator j = end(c);
@@ -860,7 +863,7 @@ int main() {
   }
   {  // cbegin/cend
     typedef int T;
-    typedef inline_vector<T, 3> C;
+    typedef fixed_capacity_vector<T, 3> C;
     C c;
     C::const_iterator i = cbegin(c);
     C::const_iterator j = cend(c);
@@ -870,7 +873,7 @@ int main() {
   }
   {  // range constructor
     typedef int T;
-    typedef inline_vector<T, 10> C;
+    typedef fixed_capacity_vector<T, 10> C;
     const T t[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     C c(t);
     test::check_equal(t, c);
@@ -884,7 +887,7 @@ int main() {
   }
   {  // iterator constructor
     typedef int T;
-    typedef inline_vector<T, 10> C;
+    typedef fixed_capacity_vector<T, 10> C;
     const T t[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     C c(begin(t), end(t));
     test::check_equal(t, c);
@@ -897,7 +900,7 @@ int main() {
     CHECK(ranges::distance(c) == 10);
   }
   {  // N3644 testing
-    typedef inline_vector<int, 10> C;
+    typedef fixed_capacity_vector<int, 10> C;
     C::iterator ii1{}, ii2{};
     C::iterator ii4 = ii1;
     C::const_iterator cii{};
@@ -947,19 +950,19 @@ int main() {
       static_assert(std::is_nothrow_move_constructible<C>::value, "");
     };
 
-    using m = inline_vector<int, 10>;
+    using m = fixed_capacity_vector<int, 10>;
     using c = const m;
     check_types(m{}, int{});
     check_types(c{}, int{});
 
-    using mm = inline_vector<std::unique_ptr<int>, 10>;
+    using mm = fixed_capacity_vector<std::unique_ptr<int>, 10>;
     using mc = const mm;
     check_types(mm{}, std::unique_ptr<int>{});
     check_types(mc{}, std::unique_ptr<int>{});
   }
 
   {  // capacity
-    inline_vector<int, 10> a;
+    fixed_capacity_vector<int, 10> a;
     CHECK(a.capacity() == 10_u);
     for (int i = 0; i != 10; ++i) { a.push_back(0); }
     CHECK(a.capacity() == 10_u);
@@ -972,7 +975,7 @@ int main() {
 
   {  // resize copyable
     using Copyable = int;
-    inline_vector<Copyable, 10> a(10_u, 5);
+    fixed_capacity_vector<Copyable, 10> a(10_u, 5);
     CHECK(a.size() == 10_u);
     CHECK(a.capacity() == 10_u);
     test_contiguous(a);
@@ -1000,7 +1003,7 @@ int main() {
 
   {  // resize move-only
     using MoveOnly = std::unique_ptr<int>;
-    inline_vector<MoveOnly, 10> a(10);
+    fixed_capacity_vector<MoveOnly, 10> a(10);
     CHECK(a.size() == 10_u);
     CHECK(a.capacity() == 10_u);
     a.resize(5);
@@ -1012,9 +1015,9 @@ int main() {
   }
 
   {  // assign copy
-    inline_vector<int, 3> a = {0, 1, 2};
+    fixed_capacity_vector<int, 3> a = {0, 1, 2};
     CHECK(a.size() == 3_u);
-    inline_vector<int, 3> b;
+    fixed_capacity_vector<int, 3> b;
     CHECK(b.size() == 0_u);
     b = a;
     CHECK(b.size() == 3_u);
@@ -1022,9 +1025,9 @@ int main() {
   }
 
   {  // copy construct
-    inline_vector<int, 3> a = {0, 1, 2};
+    fixed_capacity_vector<int, 3> a = {0, 1, 2};
     CHECK(a.size() == 3_u);
-    inline_vector<int, 3> b(a);
+    fixed_capacity_vector<int, 3> b(a);
     CHECK(b.size() == 3_u);
 
     test::check_equal(a, b);
@@ -1032,9 +1035,9 @@ int main() {
 
   {  // assign move
     using MoveOnly = std::unique_ptr<int>;
-    inline_vector<MoveOnly, 3> a(3);
+    fixed_capacity_vector<MoveOnly, 3> a(3);
     CHECK(a.size() == 3_u);
-    inline_vector<MoveOnly, 3> b;
+    fixed_capacity_vector<MoveOnly, 3> b;
     CHECK(b.size() == 0_u);
     b = std::move(a);
     CHECK(b.size() == 3_u);
@@ -1043,16 +1046,16 @@ int main() {
 
   {  // move construct
     using MoveOnly = std::unique_ptr<int>;
-    inline_vector<MoveOnly, 3> a(3);
+    fixed_capacity_vector<MoveOnly, 3> a(3);
     CHECK(a.size() == 3_u);
-    inline_vector<MoveOnly, 3> b(std::move(a));
+    fixed_capacity_vector<MoveOnly, 3> b(std::move(a));
     CHECK(b.size() == 3_u);
     CHECK(a.size() == 3_u);
   }
 
   {  // old tests
 
-    using stack_vec = inline_vector<int, 5>;
+    using stack_vec = fixed_capacity_vector<int, 5>;
     stack_vec vec1(5);
     vec1[0] = 0;
     vec1[1] = 1;
@@ -1103,7 +1106,7 @@ int main() {
     }
   }
   {
-    using stack_vec = inline_vector<int, 0>;
+    using stack_vec = fixed_capacity_vector<int, 0>;
     static_assert(sizeof(stack_vec) == 1, "");
 
     constexpr auto a = stack_vec{};

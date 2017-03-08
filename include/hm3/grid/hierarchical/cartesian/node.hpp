@@ -9,10 +9,10 @@
 namespace hm3::grid::hierarchical::cartesian {
 
 /// Hierarchical Cartesian grid node
-template <dim_t Nd>
-struct node : geometry::box<Nd>, tree_node_idx {
-  using point_t               = geometry::point<Nd>;
-  using box_t                 = geometry::box<Nd>;
+template <dim_t Ad>
+struct node : geometry::box<Ad>, tree_node_idx {
+  using point_t               = geometry::point<Ad>;
+  using box_t                 = geometry::box<Ad>;
   constexpr node()            = default;
   constexpr node(node const&) = default;
   constexpr node(node&&)      = default;
@@ -32,16 +32,16 @@ struct node : geometry::box<Nd>, tree_node_idx {
    : box_t{box}, tree_node_idx{i} {}
 };
 
-template <dim_t Nd>
-constexpr bool operator==(node<Nd> const& a, node<Nd> const& b) noexcept {
+template <dim_t Ad>
+constexpr bool operator==(node<Ad> const& a, node<Ad> const& b) noexcept {
   return static_cast<tree_node_idx const&>(a)
           == static_cast<tree_node_idx const&>(b)
-         and static_cast<geometry::box<Nd> const&>(a)
-              == static_cast<geometry::box<Nd> const&>(b);
+         and static_cast<geometry::box<Ad> const&>(a)
+              == static_cast<geometry::box<Ad> const&>(b);
 }
 
-template <dim_t Nd>
-constexpr bool operator!=(node<Nd> const& a, node<Nd> const& b) noexcept {
+template <dim_t Ad>
+constexpr bool operator!=(node<Ad> const& a, node<Ad> const& b) noexcept {
   return !(a == b);
 }
 

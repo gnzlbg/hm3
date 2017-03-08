@@ -7,17 +7,15 @@
 #include <hm3/solver/utility/tile.hpp>
 #include <hm3/solver/utility/tiled_hierarchical_grid.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 /// Grid client type of FV state
 template <typename Tile>
 using grid_client_type = tiled_hierarchical_grid<Tile>;
 
 /// Finite Volume tile layout
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
-using tile_layout = grid::structured::grid<Nd, Nic, Nhl>;
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
+using tile_layout = grid::structured::grid<Ad, Nic, Nhl>;
 
 template <typename T>
 using tile_variables_t = typename T::tile_variables;
@@ -55,9 +53,7 @@ using tile_type = typename meta::_t<unwrap_variables_into_tile<
  Grid, tile_variables<Grid, Physics, TimeIntegration, NumFlux,
                       Method>>>;  //
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv
 
 // tile.hpp
 // #include <hm3/geometry/dimension.hpp>
@@ -73,10 +69,10 @@ using tile_type = typename meta::_t<unwrap_variables_into_tile<
 
 // using tidx_t = grid::structured::tidx_t;
 
-// template <dim_t Nd, uint_t Nv, tidx_t Nic, tidx_t Nhl>
-// struct tile_base : grid::structured::grid<Nd, Nic, Nhl> {
-//   using grid_t = grid::structured::grid<Nd, Nic, Nhl>;
-//   using grid_t::dimension;
+// template <dim_t Ad, uint_t Nv, tidx_t Nic, tidx_t Nhl>
+// struct tile_base : grid::structured::grid<Ad, Nic, Nhl> {
+//   using grid_t = grid::structured::grid<Ad, Nic, Nhl>;
+//   using grid_t::ambient_dimension;
 
 //   static constexpr auto size() { return grid_t::cells().size(); }
 
@@ -206,7 +202,7 @@ using tile_type = typename meta::_t<unwrap_variables_into_tile<
 
 //   tile_base() {}
 
-//   void reinitialize(level_idx level_, geometry::box<Nd> bbox) noexcept {
+//   void reinitialize(level_idx level_, geometry::box<Ad> bbox) noexcept {
 //     this->geometry().set_internal_bounding_box(bbox);
 //     length = this->geometry().tile_internal_length();
 //     level  = level;
@@ -217,7 +213,7 @@ using tile_type = typename meta::_t<unwrap_variables_into_tile<
 //     // info_.resize(size());
 //   }
 
-//   tile_base(level_idx level_, geometry::box<Nd> bbox)
+//   tile_base(level_idx level_, geometry::box<Ad> bbox)
 //   // : info_(size()) {
 //   {
 //     reinitialize(std::move(level_), std::move(bbox));

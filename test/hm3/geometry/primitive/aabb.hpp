@@ -98,8 +98,8 @@ void test_unit_aabb() {
 
   CHECK(!intersection.test(b, p_t::constant(-0.1)));
   CHECK(!intersection.test(b, p_t::constant(1.1)));
-  CHECK(!intersection.test(b, p_t::constant(-0.00000000000001)));
-  CHECK(!intersection.test(b, p_t::constant(+1.00000000000001)));
+  CHECK(!intersection.test(b, p_t::constant(-0.0000001)));
+  CHECK(!intersection.test(b, p_t::constant(+1.0000001)));
 
   // volume:
   CHECK(volume(b) == 1.);

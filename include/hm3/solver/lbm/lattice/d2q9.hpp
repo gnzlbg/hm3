@@ -1,12 +1,9 @@
 #pragma once
 /// \file
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/utility/array.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace lbm {
-namespace lattice {
+namespace hm3::solver::lbm::lattice {
 
 /// D2Q9 Lattice:
 ///
@@ -16,7 +13,7 @@ namespace lattice {
 ///
 ///  6   2   5     SW  S  SE
 ///
-struct d2q9 : geometry::dimensional<2> {
+struct d2q9 : geometry::with_ambient_dimension<2> {
   static constexpr suint_t size() noexcept { return 9; }
   static auto all() noexcept { return view::iota(suint_t{0}, size()); }
   /*
@@ -122,7 +119,4 @@ struct d2q9 : geometry::dimensional<2> {
   }
 };
 
-}  // namespace lattice
-}  // namespace lbm
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::lbm::lattice

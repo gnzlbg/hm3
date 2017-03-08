@@ -12,8 +12,6 @@ namespace vertex_storage_detail {
 
 namespace concepts {
 
-namespace rc = ranges::concepts;
-
 struct pushbackable {
   template <typename T, typename U>
   static auto requires_(T&& t, U&& u) -> decltype(  //
@@ -42,13 +40,13 @@ using Reservable = reservable;
 
 template <typename T, typename U>
 using PushBackable
- = concepts::rc::models<concepts::PushBackable, uncvref_t<T>, uncvref_t<U>>;
+ = rc::models<concepts::PushBackable, uncvref_t<T>, uncvref_t<U>>;
 
 template <typename T>
-using PopBackable = concepts::rc::models<concepts::PopBackable, uncvref_t<T>>;
+using PopBackable = rc::models<concepts::PopBackable, uncvref_t<T>>;
 
 template <typename T>
-using Reservable = concepts::rc::models<concepts::Reservable, uncvref_t<T>>;
+using Reservable = rc::models<concepts::Reservable, uncvref_t<T>>;
 
 template <typename Storage>
 struct vertex_storage : Storage {

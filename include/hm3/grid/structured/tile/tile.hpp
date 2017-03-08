@@ -6,20 +6,17 @@
 #include <hm3/grid/structured/tile/geometry.hpp>
 #include <hm3/grid/structured/tile/surface.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
+namespace hm3::grid::structured::tile {
 
 /// Square structured tile
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nc length (per dimension)
-template <dim_t Nd, tidx_t Nc>
-struct tile : geometry::with_ambient_dimension<Nd> {
-  using cell_indices_t    = cell::indices<Nd, Nc>;
-  using surface_indices_t = surface::indices<Nd, Nc>;
-  using geometry_t        = tile_geometry<Nd, Nc>;
+template <dim_t Ad, tidx_t Nc>
+struct tile : geometry::with_ambient_dimension<Ad> {
+  using cell_indices_t    = cell::indices<Ad, Nc>;
+  using surface_indices_t = surface::indices<Ad, Nc>;
+  using geometry_t        = tile_geometry<Ad, Nc>;
 
   geometry_t geometry_;
 
@@ -34,7 +31,4 @@ struct tile : geometry::with_ambient_dimension<Nd> {
   }
 };
 
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile

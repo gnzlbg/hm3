@@ -48,11 +48,11 @@
 // std
 #include <string>
 // hm3
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/primitive/aabb.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/some.hpp>
 #include <hm3/utility/tuple.hpp>
-#include <hm3/utility/variant.hpp>
 
 namespace hm3::vis {
 

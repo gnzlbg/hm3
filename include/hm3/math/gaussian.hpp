@@ -18,33 +18,33 @@ struct gaussian_fn {
   /// Sigma is the spread
   /// mu is the center
   ///
-  /// f(x) = \frac {1}{\sqrt{2 \pi}^Nd \prod \sigma_i} \exp{- \left ( \sum
+  /// f(x) = \frac {1}{\sqrt{2 \pi}^Ad \prod \sigma_i} \exp{- \left ( \sum
   /// \frac{(x_i - \mu_i)^2}{2 \sigma_i^2} \right )}
-  template <dimt Nd>
-  constexpr num_t operator()(num_a<Nd> x, num_a<Nd> mu, num_a<Nd> sigma) const
+  template <dim_t Ad>
+  constexpr num_t operator()(num_a<Ad> x, num_a<Ad> mu, num_a<Ad> sigma) const
    noexcept {
     // compute the exponent:
     num_t exponent = 0.;
-    for (dim_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Ad; ++d) {
       exponent += std::pow(x(d) - mu(d), 2.) / (2. * std::pow(sigma(d), 2.));
     }
     exponent *= -1.;
 
     // compute the front factor:
-    num_t factor = 1. / std::pow(std::sqrt(2. * pi), Nd);
-    for (dim_t d = 0; d < Nd; ++d) { factor *= 1. / sigma(d); }
+    num_t factor = 1. / std::pow(std::sqrt(2. * pi), Ad);
+    for (dim_t d = 0; d < Ad; ++d) { factor *= 1. / sigma(d); }
 
     return factor * std::exp(exponent);
   }
 
   /// Computes an n-dimensional gaussian function with constant sigma:
   ///
-  /// f(x) = \frac {1}{(\sqrt{2 \pi} \sigma)^Nd} \exp{- \left ( \sum
+  /// f(x) = \frac {1}{(\sqrt{2 \pi} \sigma)^Ad} \exp{- \left ( \sum
   /// (x_i - \mu_i)^2 \right ) / (2 \sigma^2)}
-  template <dim_t Nd>
-  constexpr num_t operator()(num_a<Nd> x, num_a<Nd> mu, num_t sigma) const
+  template <dim_t Ad>
+  constexpr num_t operator()(num_a<Ad> x, num_a<Ad> mu, num_t sigma) const
    noexcept {
-    return gaussian(x, mu, num_a<Nd>::constant(sigma));
+    return gaussian(x, mu, num_a<Ad>::constant(sigma));
   }
 };
 

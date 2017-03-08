@@ -7,7 +7,7 @@
 #include <hm3/geometry/algorithm/make_aa_quad.hpp>
 #include <hm3/geometry/concept/aabb.hpp>
 #include <hm3/geometry/fwd.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

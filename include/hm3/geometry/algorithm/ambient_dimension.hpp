@@ -4,7 +4,7 @@
 /// Dimension of the ambient space a geometric primitive lives in.
 #include <hm3/geometry/concept/associated_dimension.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 
 namespace hm3::geometry {
 
@@ -31,8 +31,8 @@ struct ambient_dimension_fn {
 
   template <typename T>
   static constexpr char xyz_name(T&&, dim_t d) noexcept {
-    constexpr dim_t nd = get_dim(T{});
-    static_assert(nd > 0 and nd <= 3, "unimplemented");
+    constexpr dim_t ad = get_dim(T{});
+    static_assert(ad > 0 and ad <= 3, "unimplemented");
     constexpr char n[3] = {'x', 'y', 'z'};
     HM3_ASSERT(d >= 0 and d < 3, "d = {} is out-of-bounds [0, 3)", d);
     return n[d];
@@ -40,8 +40,8 @@ struct ambient_dimension_fn {
 
   template <typename T>
   static string basis_name(T&&, dim_t d) noexcept {
-    constexpr dim_t nd = get_dim(T{});
-    static_assert(nd > 0 and nd <= 3, "unimplemented");
+    constexpr dim_t ad = get_dim(T{});
+    static_assert(ad > 0 and ad <= 3, "unimplemented");
     constexpr char n[3] = {'0', '1', '2'};
     HM3_ASSERT(d >= 0 and d < 3, "d = {} is out-of-bounds [0, 3)", d);
     string result({'e', n[d]});

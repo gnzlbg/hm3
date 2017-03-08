@@ -3,10 +3,10 @@
 ///
 /// Dense matrix storage
 #include <bitset>
+#include <hm3/ext/dynamic_bitset.hpp>
+#include <hm3/ext/vector.hpp>
 #include <hm3/utility/array.hpp>
-#include <hm3/utility/boost/dynamic_bitset.hpp>
-#include <hm3/utility/boost/vector.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/matrix/bounds.hpp>
 #include <hm3/utility/matrix/traits.hpp>
 #include <hm3/utility/range.hpp>

@@ -9,19 +9,19 @@
 using namespace hm3;
 using tidx_t = grid::structured::halo_tile::tidx_t;
 
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>  //
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>  //
 void test_indices() {
-  using ci_t = grid::structured::halo_tile::cell::indices<Nd, Nic, Nhl>;
+  using ci_t = grid::structured::halo_tile::cell::indices<Ad, Nic, Nhl>;
   static_assert(std::is_literal_type<ci_t>{}, "");
 
   // Size tests:
-  STATIC_CHECK(ci_t::dimension() == Nd);
+  STATIC_CHECK(ci_t::ambient_dimension() == Ad);
   STATIC_CHECK(ci_t::halo_layers() == Nhl);
   STATIC_CHECK(ci_t::internal_cell_length() == Nic);
   STATIC_CHECK(ci_t::length() == Nic + 2 * Nhl);
-  STATIC_CHECK(ci_t::size() == math::ipow(ci_t::length(), tidx_t(Nd)));
+  STATIC_CHECK(ci_t::size() == math::ipow(ci_t::length(), tidx_t(Ad)));
   STATIC_CHECK(ci_t::internal_cell_size()
-               == math::ipow(ci_t::internal_cell_length(), tidx_t(Nd)));
+               == math::ipow(ci_t::internal_cell_length(), tidx_t(Ad)));
   STATIC_CHECK(ci_t::halo_cell_size()
                == ci_t::size() - ci_t::internal_cell_size());
 
@@ -44,7 +44,7 @@ void test_indices() {
   unsigned c = 0;
   g.for_each([&](auto i) {
     bool should_be_internal = true;
-    for (auto d : g.dimensions()) {
+    for (auto d : g.ambient_dimensions()) {
       if (i[d] < g.first_internal() or i[d] > g.last_internal()) {
         should_be_internal = false;
         break;

@@ -4,10 +4,9 @@
 /// Integer arithmetic
 ///
 /// TODO: benchmark non-look-up-table vs look-up-table based integer pow
+#include <hm3/config/attributes.hpp>
 #include <hm3/math/constants.hpp>
-#include <hm3/math/constexpr.hpp>
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/config/attributes.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
 
 // Define this to use look-up table based integer pow

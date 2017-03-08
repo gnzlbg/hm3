@@ -5,20 +5,17 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct indices {
-  static constexpr suint_t nvars() noexcept { return Nd + 2; }
+  static constexpr suint_t nvars() noexcept { return Ad + 2; }
   static constexpr auto variables() noexcept { return view::iota(0, nvars()); }
   /// \name Conservative variables
   ///@{
   static constexpr sidx_t rho_u(sidx_t d) noexcept { return d; }
-  static constexpr sidx_t rho() noexcept { return Nd; }
-  static constexpr sidx_t rho_E() noexcept { return Nd + 1; }
+  static constexpr sidx_t rho() noexcept { return Ad; }
+  static constexpr sidx_t rho_E() noexcept { return Ad + 1; }
   ///@}  // Convervative variables
 
   /// \name Primitive variables
@@ -27,12 +24,9 @@ struct indices {
   // Note: primitive rho() == convervative rho()
 
   static constexpr sidx_t u(sidx_t d) noexcept { return d; }
-  static constexpr sidx_t p() noexcept { return Nd + 1; }
+  static constexpr sidx_t p() noexcept { return Ad + 1; }
 
   ///@}  // Primitive variables
 };
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

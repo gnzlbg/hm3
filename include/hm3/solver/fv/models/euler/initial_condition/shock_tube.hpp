@@ -3,14 +3,11 @@
 ///
 ///
 #include <hm3/geometry/primitive/point.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/solver/fv/models/euler/indices.hpp>
 #include <hm3/solver/fv/models/euler/pv.hpp>
-#include <hm3/utility/math.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
 /// Initial conditions for the Euler equations
 namespace ic {
@@ -18,16 +15,16 @@ namespace ic {
 /// Initial condition for shock tube problems
 ///
 /// Can be customized along 2 directions only (x0, y1).
-template <dim_t Nd>
+template <dim_t Ad>
 struct shock_tube {
-  using i       = indices<Nd>;
-  using p       = pv_base<Nd>;
+  using i       = indices<Ad>;
+  using p       = pv_base<Ad>;
   using var_v   = num_a<i::nvars()>;
-  using point_t = geometry::point<Nd>;
+  using point_t = geometry::point<Ad>;
 
   num_t gamma = 1.4;  ///< Ratio of specific heats
   int_t dir   = 0;    ///< Direction: 0 => (L -> R), 1 => (R -> L)
-  num_t angle = 0.;   ///< Angle for the sod shock in Nd > 1
+  num_t angle = 0.;   ///< Angle for the sod shock in Ad > 1
   num_t x_0;          ///< Interface position normalized [0, 1]
   num_t alpha;        ///< Angle in radians.
   num_t pos;          ///< Interface position in the rotated system.
@@ -36,7 +33,7 @@ struct shock_tube {
 
   /// \name Helpers
   ///@{
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   point_t rotate_x(point_t x) const noexcept {
     point_t x_rot;
     x_rot(0) = std::cos(alpha) * x(0) - std::sin(alpha) * x(1);
@@ -44,7 +41,7 @@ struct shock_tube {
     return x_rot;
   }
 
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   var_v rotate_u(num_t u_mag) const noexcept {
     var_v pv;
     p::u(pv, 0) = u_mag * std::cos(alpha);
@@ -108,9 +105,9 @@ struct shock_tube {
 /// Nonlinear Hyperbolic Conservation Laws", Journal of Computational Physics,
 /// 27:1-31, 1978.
 ///
-template <dim_t Nd>
+template <dim_t Ad>
 constexpr auto sod_shock_tube() {
-  return shock_tube<Nd>(1.0, 0.0, 1.0,   // left state
+  return shock_tube<Ad>(1.0, 0.0, 1.0,   // left state
                         0.125, 0.0, 0.1  // right state
                         );
 }
@@ -127,9 +124,9 @@ constexpr auto sod_shock_tube() {
 /// \note this is a really easy problem. If something goes wrong here,
 /// something fundamental is wrong.
 ///
-template <dim_t Nd>
+template <dim_t Ad>
 auto modified_sod_shock_tube() {
-  return shock_tube<Nd>(1.0, 0.75, 1.0,   // left state
+  return shock_tube<Ad>(1.0, 0.75, 1.0,   // left state
                         0.125, 0.0, 0.1,  // right state
                         0.3);
 }
@@ -147,16 +144,13 @@ auto modified_sod_shock_tube() {
 /// flows. The checks for negative density/pressure should fail before anything
 /// goes wrong here.
 ///
-template <dim_t Nd>
+template <dim_t Ad>
 auto one_two_three_shock_tube() {
-  return shock_tube<Nd>(1.0, -2.0, 0.4,  // left state
+  return shock_tube<Ad>(1.0, -2.0, 0.4,  // left state
                         1.0, 2.0, 0.4    // right state
                         );
 }
 
 }  // namespace ic
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

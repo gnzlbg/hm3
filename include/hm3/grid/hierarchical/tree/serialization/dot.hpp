@@ -5,15 +5,14 @@
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 #include <string>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 /// Serialization to dot format (graphviz)
 namespace dot {
 
 /// Serializes the tree \p t to dot format
-template <typename OStream, dim_t Nd>
-OStream& operator<<(OStream&& os, tree<Nd> const& t) {
+template <typename OStream, dim_t Ad>
+OStream& operator<<(OStream&& os, tree<Ad> const& t) {
   using namespace hm3;
   using std::to_string;
   os << "digraph graphname {\n";
@@ -71,5 +70,4 @@ OStream& operator<<(OStream&& os, tree<Nd> const& t) {
 }
 
 }  // namespace dot
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

@@ -4,7 +4,7 @@
 /// Intersection of line segments with aabbs.
 #include <hm3/geometry/algorithm/direction/segment.hpp>
 #include <hm3/geometry/algorithm/intersection/ray_aabb.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

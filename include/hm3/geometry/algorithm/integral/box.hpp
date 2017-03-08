@@ -27,7 +27,7 @@ struct integral_box_fn {
     static_assert(Same<associated::t_<T>, trait::box<ad>>{});
     switch (ad) {
       case 1: {
-        return 0.;
+        return 2.;
       }
       case 2: {
         return 4. * bounding_length.max(s);

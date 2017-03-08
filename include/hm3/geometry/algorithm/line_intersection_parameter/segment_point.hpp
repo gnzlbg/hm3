@@ -6,7 +6,7 @@
 #include <hm3/geometry/algorithm/direction.hpp>
 #include <hm3/geometry/algorithm/distance/minimum_segment_point.hpp>
 #include <hm3/utility/optional.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

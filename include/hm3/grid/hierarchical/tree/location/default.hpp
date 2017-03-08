@@ -3,18 +3,16 @@
 ///
 /// Default location to use
 #include <hm3/grid/hierarchical/tree/location/interleaved.hpp>
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 namespace location {
 
-template <dim_t Nd, typename T = uint_t>
-using default_location = interleaved<Nd, T>;
+template <dim_t Ad, typename T = uint_t>
+using default_location = interleaved<Ad, T>;
 
 }  // namespace location
 
-template <dim_t Nd, typename T = uint_t>
-using loc_t = location::default_location<Nd, T>;
+template <dim_t Ad, typename T = uint_t>
+using loc_t = location::default_location<Ad, T>;
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

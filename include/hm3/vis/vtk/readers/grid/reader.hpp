@@ -17,10 +17,7 @@
 /// STD:
 #include <memory>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
-namespace grid {
+namespace hm3::vis::vtk::grid {
 
 /// Common VTK Grid reader functionality
 ///
@@ -36,9 +33,9 @@ namespace grid {
 /// The current vtk grid displayed as well as the cell data
 /// are cached inside the reader.
 ///
-template <dim_t Nd>
+template <dim_t Ad>
 struct reader : ::hm3::vis::vtk::reader {
-  using grid_t       = ::hm3::grid::hierarchical::cartesian::multi<Nd>;
+  using grid_t       = ::hm3::grid::hierarchical::cartesian::multi<Ad>;
   using vtk_cell_idx = tree::node_idx;
 
  protected:
@@ -47,7 +44,7 @@ struct reader : ::hm3::vis::vtk::reader {
 
   /// Cached VTK grid:
   unstructured_grid vtk_grid;
-  using cell_data_t = cell_data<reader<Nd>, unstructured_grid>;
+  using cell_data_t = cell_data<reader<Ad>, unstructured_grid>;
   /// Cell Data handler:
   cell_data_t cell_data;
 
@@ -182,7 +179,7 @@ struct reader : ::hm3::vis::vtk::reader {
       log("Reader grid topology changed...");
       cell_data.unload_all();
 
-      ::hm3::hierarchical::cartesian::vtk::serializable_multi<Nd> s(*grid);
+      ::hm3::hierarchical::cartesian::vtk::serializable_multi<Ad> s(*grid);
 
       for_each_cell([&](auto&& nodes) { vtk_grid.reinitialize(nodes, s); });
       status = reader_status::topology_ready;
@@ -196,8 +193,5 @@ struct reader : ::hm3::vis::vtk::reader {
   }
 };
 
-}  // namespace grid
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk::grid
 #endif  // HM3_ENABLE_VTK

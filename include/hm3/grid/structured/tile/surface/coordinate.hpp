@@ -7,20 +7,16 @@
 #include <hm3/grid/structured/tile/surface/bounds.hpp>
 #include <hm3/grid/structured/tile/surface/index.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
-namespace surface {
+namespace hm3::grid::structured::tile::surface {
 
-template <dim_t Nd, tidx_t Nc>
+template <dim_t Ad, tidx_t Nc>
 struct coordinate {
   using self            = coordinate;
-  using cell_coordinate = cell::coordinate<Nd, Nc>;
-  using point_t         = geometry::point<Nd>;
-  using index           = index<Nd, Nc>;
-  using bounds          = bounds<Nd, Nc>;
-  using cell_bounds     = cell::bounds<Nd, Nc>;
+  using cell_coordinate = cell::coordinate<Ad, Nc>;
+  using point_t         = geometry::point<Ad>;
+  using index           = index<Ad, Nc>;
+  using bounds          = bounds<Ad, Nc>;
+  using cell_bounds     = cell::bounds<Ad, Nc>;
   using value_t         = tidx_t;
 
   constexpr coordinate(cell_coordinate x_c_, suint_t d_) : x_c(x_c_), d(d_) {
@@ -48,7 +44,7 @@ struct coordinate {
   ///
   ///          d = 1
   ///
-  /// For each x_c, only Nd surfaces are stored
+  /// For each x_c, only Ad surfaces are stored
   dim_t d;
 
   /// Surface normal vector.
@@ -66,7 +62,7 @@ struct coordinate {
   constexpr explicit operator bool() const noexcept {
     constexpr auto max_cell_idx = cell_bounds::length() + 1;
     // the cell index can be one row past the end of the tile on each component
-    for (dim_t d_ = 0; d_ < Nd; ++d_) {
+    for (dim_t d_ = 0; d_ < Ad; ++d_) {
       const auto v = x_c[d_];
       static_assert(std::is_unsigned<value_t>{},
                     "for signed value_t it must also be checked whether v < 0 "
@@ -75,16 +71,16 @@ struct coordinate {
         return false;
       }
     }
-    return d < Nd;
+    return d < Ad;
   }
 
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   static constexpr index idx(self x) noexcept {
     HM3_ASSERT(x, "invalid surface: {}", x);
     return index(x.x_c[0]);
   }
 
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   static constexpr index idx(self x) noexcept {
     HM3_ASSERT(x, "invalid surface: {}", x);
     if (x.d == 0) {
@@ -95,7 +91,7 @@ struct coordinate {
                  + x.x_c[1]);
   }
 
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   static constexpr index idx(self x) noexcept {
     HM3_ASSERT(x, "invalid surface: {}", x);
     if (x.d == 0) {
@@ -115,7 +111,7 @@ struct coordinate {
 
   constexpr index idx() const noexcept { return idx(*this); }
 
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   static constexpr self from(index i) noexcept {
     HM3_ASSERT(i, "invalid index");
     self x(*i, suint_t{0});
@@ -123,12 +119,12 @@ struct coordinate {
     return x;
   }
 
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   static constexpr self from(index id) noexcept {
     HM3_ASSERT(id, "invalid index");
     const auto v  = *id;
     const auto d_ = v / bounds::size_per_dir();
-    HM3_ASSERT(d_ < Nd, "");
+    HM3_ASSERT(d_ < Ad, "");
     auto x_c = d_ == 0? [=]() {
       const auto j   = v / bounds::sides_per_dir();
       const auto i   = v - j * bounds::sides_per_dir();
@@ -144,12 +140,12 @@ struct coordinate {
     return x;
   }
 
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   static constexpr self from(index id) noexcept {
     HM3_ASSERT(id, "invalid index");
     const auto v  = *id;
     const auto d_ = v / bounds::size_per_dir();
-    HM3_ASSERT(d_ < Nd, "");
+    HM3_ASSERT(d_ < Ad, "");
     auto x_c = d_ == 0? [=]() {
       const auto k = v / (bounds::sides_per_dir() * Nc);
       const auto j   = (v - k * bounds::sides_per_dir() * Nc)
@@ -182,7 +178,7 @@ struct coordinate {
   friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.d << " : " << ic.x_c[0];
-      for (dim_t d_ = 1; d_ < Nd; ++d_) { os << ", " << ic.x_c[d_]; }
+      for (dim_t d_ = 1; d_ < Ad; ++d_) { os << ", " << ic.x_c[d_]; }
       os << "}";
     } else {
       os << "{ invalid : invalid }";
@@ -210,8 +206,4 @@ struct coordinate {
   }
 };
 
-}  // namespace surface
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile::surface

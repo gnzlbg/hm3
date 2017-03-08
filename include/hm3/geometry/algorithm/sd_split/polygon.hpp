@@ -1,73 +1,42 @@
-#ifdef ABCD
 #pragma once
 /// \file
 ///
 /// Split a polygon with a signed-distance field.
+#include <hm3/geometry/algorithm/is_convex.hpp>
+#include <hm3/geometry/algorithm/sd_intersection/polygon.hpp>
+#include <hm3/geometry/algorithm/split.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 
-#include <hm3/geometry/algorithm/sd_intersection/polygon.hpp>
-#include <hm3/geometry/algorithm/sd_split.hpp>
-#include <hm3/geometry/algorithm/split/polygon_polyline.hpp>
+namespace hm3::geometry::sd {
 
-namespace hm3::geometry::polygon_primitive {
+namespace split_polygon_detail {
 
-template <typename P, typename SDF, dim_t Nd = uncvref_t<P>::dimension()>
-vector<small_polygon<Nd, 4>> sd_split(P&& poly, SDF&& sdf) {
-  if (geometry::sd_intersection.test(poly, sdf)
-      != relative_position_t::intersected) {
-    return {};
+struct split_polygon_fn {
+  template <typename P, typename SDF>
+  constexpr auto operator()(P&& poly, SDF&& sdf, num_t abs_tol,
+                            num_t rel_tol) const noexcept {
+    using p_t = associated::point_t<P>;
+    static_assert(Polygon<uncvref_t<P>>{});
+    static_assert(SignedDistance<uncvref_t<SDF>, p_t>{});
+
+    using r_t = decltype(split.against_range(
+     poly, intersection_polygon(poly, sdf, abs_tol, rel_tol).polylines));
+
+    HM3_ASSERT(is_convex(poly),
+               "TODO: implement sd::split_polygon for convex polygons");
+    // TODO: supporting non-convex polygons in sd::intersection would be enough!
+
+    if (not intersection.test(poly, sdf, abs_tol, rel_tol)) { return r_t{}; }
+    auto ir = intersection_polygon(poly, sdf, abs_tol, rel_tol);
+    return split.against_range(poly, ir.polylines);
   }
+};
 
-  vector<small_polygon<Nd, 4>> result;
+}  // namespace sd_split_polygon_detail
 
-  auto ir = geometry::sd_intersection(poly, sdf);
+namespace {
+static constexpr auto const& split_polygon = static_const<
+ with_default_tolerance<split_polygon_detail::split_polygon_fn>>::value;
+}  // namespace
 
-  visit(
-   [&](auto&& v) {
-     using T = uncvref_t<decltype(v)>;
-
-     if
-       constexpr(Same<T, monostate>{}) {
-         HM3_FATAL_ERROR("sd_intersection.test should have caught this above");
-       }
-     else if
-       constexpr(Same<T, sd_intersection_result_t<Nd>>{}) {
-         // Add the polygon to the result:
-         result.push_back(poly);
-         if (v.polylines.size() == 0) {
-           HM3_ASSERT(v.points.size() > 0, "?");
-           return;  // only cut at the corner points
-         }
-
-         // split the polygon (and its descendents) against all polylines
-         for (auto&& pl : v.polylines) {
-           suint_t i = 0;
-           suint_t e = result.size();
-           while (i < e) {
-             auto sr = geometry::split(result[i], pl);
-             if (sr.size() < 2) {
-               HM3_ASSERT(sr.size() == 0
-                           or (sr.size() == 1 and sr[0] == result[i]),
-                          "??");
-               ++i;
-               continue;
-             }
-
-             result.erase(ranges::begin(result) + i);
-             result.insert(ranges::end(result), ranges::begin(sr),
-                           ranges::end(sr));
-             --e;
-           }
-         }
-       }
-     else {
-       static_assert(always_false<T>{}, "non-exhaustive visitor");
-     }
-   },
-   ir);
-
-  return result;
-}
-
-}  // namespace hm3::geometry::polygon_primitive
-#endif
+}  // namespace hm3::geometry::sd

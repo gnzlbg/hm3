@@ -8,13 +8,14 @@
 #include <hm3/geometry/concept/vector.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/vec.hpp>
+#include <hm3/geometry/sd/signed_distance.hpp>
 #include <hm3/geometry/sd/views/view.hpp>
 
 namespace hm3::geometry {
 
 /// Implicit signed-distance functions.
 ///
-/// Outside:  g(x) > 0 outside,
+/// Outside: g(x) > 0 outside,
 /// Surface: g(x) = 0, and
 /// Inside:  g(x) < 0 .
 namespace sd {

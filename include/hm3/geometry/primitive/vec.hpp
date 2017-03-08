@@ -4,6 +4,7 @@
 /// Vector primitive
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/geometry/primitive/detail/point_vector_base.hpp>
+#include <hm3/types.hpp>
 
 namespace hm3::geometry {
 

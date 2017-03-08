@@ -6,13 +6,9 @@
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/structured/halo_tile/index_type.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace halo_tile {
-namespace cell {
+namespace hm3::grid::structured::halo_tile::cell {
 
 namespace detail {
 
@@ -38,21 +34,21 @@ constexpr tidx_t last_halo_right(tidx_t nic, tidx_t nhl) noexcept {
   return 2 * nhl + nic - 1;
 }
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct subtile_bounds {
-  array<tile::tidx_t, Nd> from, to;
+  array<tile::tidx_t, Ad> from, to;
 };
 
 }  // namespace detail
 
 /// Bounds of a square structured grid
 ///
-/// Nd: number of spatial dimensions
+/// Ad: number of spatial dimensions
 /// Nic: number of internal cells per dimension
 /// Nhl: number of of halo layers
 ///
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
-struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
+struct bounds : tile::cell::bounds<Ad, detail::cells_per_length(Nic, Nhl)> {
   using self = bounds;
   /// \name Sizes
   ///@{
@@ -63,7 +59,7 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
   static constexpr tidx_t internal_cell_length() noexcept { return Nic; }
   /// Total number of internal cells
   static constexpr tidx_t internal_cell_size() noexcept {
-    return math::ipow(internal_cell_length(), static_cast<tidx_t>(Nd));
+    return math::ipow(internal_cell_length(), static_cast<tidx_t>(Ad));
   }
   /// Total number of halo cells
   static constexpr tidx_t halo_cell_size() noexcept {
@@ -125,9 +121,9 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
 
   ///@}  // Coordinates
 
-  static constexpr detail::subtile_bounds<Nd> internal_cells() noexcept {
-    detail::subtile_bounds<Nd> b;
-    for (dim_t d = 0; d < Nd; ++d) {
+  static constexpr detail::subtile_bounds<Ad> internal_cells() noexcept {
+    detail::subtile_bounds<Ad> b;
+    for (dim_t d = 0; d < Ad; ++d) {
       b.from[d] = fi;
       b.to[d]   = li;
     }
@@ -137,7 +133,7 @@ struct bounds : tile::cell::bounds<Nd, detail::cells_per_length(Nic, Nhl)> {
 
 namespace detail {
 
-template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>
+template <dim_t Ad, tidx_t M, tidx_t Nic, tidx_t Nhl>
 struct halo_tiles_lookup_table_ {
   static constexpr array<subtile_bounds<0>, 0> indices{};
 };
@@ -305,9 +301,9 @@ struct halo_tiles_lookup_table_<3, 3, Nic, Nhl> {
 };
 
 namespace {
-template <dim_t Nd, tidx_t M, tidx_t Nic, tidx_t Nhl>
+template <dim_t Ad, tidx_t M, tidx_t Nic, tidx_t Nhl>
 static constexpr auto halo_tiles_lookup_table
- = halo_tiles_lookup_table_<Nd, M, Nic, Nhl>::indices;
+ = halo_tiles_lookup_table_<Ad, M, Nic, Nhl>::indices;
 }  // namespace
 
 }  // namespace detail
@@ -316,14 +312,10 @@ template <typename Neighbor, typename Bounds>
 constexpr auto halos(Neighbor pos, Bounds) noexcept {
   using manifold     = get_tag_t<Neighbor>;
   constexpr auto r   = manifold::rank();
-  constexpr auto nd  = manifold::ambient_dimension();
+  constexpr auto ad  = manifold::ambient_dimension();
   constexpr auto nic = Bounds::internal_cell_length();
   constexpr auto nhl = Bounds::halo_layers();
-  return detail::halo_tiles_lookup_table<nd, r, nic, nhl>[*pos];
+  return detail::halo_tiles_lookup_table<ad, r, nic, nhl>[*pos];
 }
 
-}  // namespace cell
-}  // namespace halo_tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::halo_tile::cell

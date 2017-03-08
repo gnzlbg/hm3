@@ -5,7 +5,7 @@
 #include <hm3/grid/hierarchical/generation/generic.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
 
 namespace hm3::grid::hierarchical::generation {
 

@@ -6,7 +6,7 @@
 #include <hm3/geometry/algorithm/line_intersection_parameter/line_line.hpp>
 #include <hm3/geometry/algorithm/parallel.hpp>
 #include <hm3/geometry/concept/segment.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

@@ -4,8 +4,7 @@
 /// Conversion from C++ types to MPI Datatypes
 #include <hm3/utility/mpi/config.hpp>
 
-namespace hm3 {
-namespace mpi {
+namespace hm3::mpi {
 
 /// Integers:
 #ifdef HM3_DISABLE_MPI_SIZED_DATATYPES
@@ -42,5 +41,4 @@ inline auto data_type(long double) { return MPI_LONG_DOUBLE; }
 inline auto data_type(char) { return MPI_CHAR; }
 inline auto data_type(wchar_t) { return MPI_WCHAR; }
 
-}  // namespace mpi
-}  // namespace hm3
+}  // namespace hm3::mpi

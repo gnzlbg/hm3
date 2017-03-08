@@ -17,7 +17,7 @@ namespace lattice {
 ///
 ///  7   4   8
 ///
-struct d2q9 : geometry::dimensional<2> {
+struct d2q9 : geometry::with_ambient_dimension<2> {
   static constexpr suint_t no_distributions() noexcept { return 9; }
   static auto distributions() noexcept {
     return view::iota(0, no_distributions());

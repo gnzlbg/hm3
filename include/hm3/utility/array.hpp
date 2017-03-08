@@ -2,9 +2,10 @@
 /// \file
 ///
 /// Array
-#include <hm3/types.hpp>
 #include <hm3/utility/range.hpp>
+#include <hm3/types.hpp>
 #include <iterator>
+#include <stdexcept>
 #include <utility>
 
 namespace hm3 {

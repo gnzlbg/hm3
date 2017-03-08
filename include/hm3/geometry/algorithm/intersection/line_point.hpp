@@ -3,7 +3,7 @@
 ///
 /// Intersection of line with points.
 #include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

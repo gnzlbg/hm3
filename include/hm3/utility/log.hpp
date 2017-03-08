@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Logging utilities
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/fmt.hpp>
 #define HM3_LOG_TO_STDOUT
 #define HM3_LOG_DEBUG
@@ -79,8 +79,8 @@ struct serial {
   template <typename... Args>
   void operator()(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
-    if (console_output_) { console_logger_->info(args...); }
-    file_logger_->info(std::forward<Args>(args)...);
+    if (console_output_) { console_logger_->info(ascii_fmt::wrap(args)...); }
+    file_logger_->info(ascii_fmt::wrap(std::forward<Args>(args))...);
   }
 
   bool initialized() const noexcept { return console_logger_ and file_logger_; }
@@ -97,14 +97,14 @@ struct serial {
   void debug(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
     if (console_output_) { console_logger_->debug(args...); }
-    file_logger_->debug(std::forward<Args>(args)...);
+    file_logger_->debug(ascii_fmt::wrap(std::forward<Args>(args))...);
   }
 
   template <typename... Args>
   void error(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
     if (console_output_) { console_logger_->error(args...); }
-    file_logger_->error(std::forward<Args>(args)...);
+    file_logger_->error(ascii_fmt::wrap(std::forward<Args>(args))...);
   }
 };
 

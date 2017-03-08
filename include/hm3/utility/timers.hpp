@@ -8,10 +8,10 @@
 #include <atomic>
 #include <chrono>
 #include <hm3/io/json.hpp>
-#include <hm3/types.hpp>
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
+#include <hm3/types.hpp>
 
 /// Enables timers
 #define HM3_ENABLE_TIMERS

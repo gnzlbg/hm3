@@ -9,23 +9,20 @@
 #include <hm3/grid/structured/halo_tile/geometry.hpp>
 #include <hm3/grid/structured/halo_tile/surface.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace halo_tile {
+namespace hm3::grid::structured::halo_tile {
 
 /// Square structured halo tile cell
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
-struct tile : geometry::with_ambient_dimension<Nd> {
-  using cell_indices_t       = cell::indices<Nd, Nic, Nhl>;
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
+struct tile : geometry::with_ambient_dimension<Ad> {
+  using cell_indices_t       = cell::indices<Ad, Nic, Nhl>;
   using cell_coordinate_t    = typename cell_indices_t::coordinate;
-  using surface_indices_t    = surface::indices<Nd, Nic, Nhl>;
+  using surface_indices_t    = surface::indices<Ad, Nic, Nhl>;
   using surface_coordinate_t = typename surface_indices_t::coordinate;
-  using geometry_t           = tile_geometry<Nd, Nic, Nhl>;
+  using geometry_t           = tile_geometry<Ad, Nic, Nhl>;
   using box_t                = typename geometry_t::box_t;
 
   geometry_t geometry_;
@@ -49,7 +46,4 @@ struct tile : geometry::with_ambient_dimension<Nd> {
   constexpr tile(box_t bbox) : geometry_(std::move(bbox)) {}
 };
 
-}  // namespace halo_tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::halo_tile

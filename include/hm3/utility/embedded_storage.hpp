@@ -3,11 +3,11 @@
 ///
 /// Embedded storage.
 #include <cstdint>
+#include <hm3/math/constants.hpp>
 #include <hm3/utility/array.hpp>
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/assert.hpp>
+#include <hm3/utility/fatal_error.hpp>
 #include <hm3/utility/range.hpp>
-#include <limits>
 #include <type_traits>
 
 /// Forces embedded_storage to align its contents at list to the SIMD alignment
@@ -18,15 +18,17 @@ namespace hm3 {
 
 namespace embedded_storage_detail {
 
+// clang-format off
+
 template <std::size_t N>
-using smallest_size_t = std::conditional_t<
- (N < std::numeric_limits<uint8_t>::max()), std::uint8_t,
- std::conditional_t<
-  (N < std::numeric_limits<uint16_t>::max()), std::uint16_t,
-  std::conditional_t<
-   (N < std::numeric_limits<uint32_t>::max()), std::uint32_t,
-   std::conditional_t<(N < std::numeric_limits<uint64_t>::max()), std::uint64_t,
+using smallest_size_t
+= std::conditional_t<(N < math::highest<uint8_t>),  std::uint8_t,
+  std::conditional_t<(N < math::highest<uint16_t>), std::uint16_t,
+  std::conditional_t<(N < math::highest<uint32_t>), std::uint32_t,
+  std::conditional_t<(N < math::highest<uint64_t>), std::uint64_t,
                       std::size_t>>>>;
+
+// clang-format on
 
 /// Alignment requirements of type `T`.
 template <typename T>

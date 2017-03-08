@@ -7,6 +7,7 @@
 #include <hm3/geometry/algorithm/normal/polygon.hpp>
 #include <hm3/geometry/algorithm/normal/segment.hpp>
 #include <hm3/geometry/algorithm/normal/vector.hpp>
+#include <hm3/geometry/concept/plane.hpp>
 
 namespace hm3::geometry {
 

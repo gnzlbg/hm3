@@ -12,9 +12,9 @@ This module implements:
 
 There are two fundamental concepts:
 
-- `Dimensional<Nd>`: where `Nd` is the ambient dimension where the geometry lives.
-- `Rank<Nd, R>`: where `R` is the `Rank` of a geometry within its ambient
-  dimension (e.g. `R == Nd` means that a geometry is a "volume" within their
+- `Dimensional<Ad>`: where `Ad` is the ambient dimension where the geometry lives.
+- `Rank<Ad, R>`: where `R` is the `Rank` of a geometry within its ambient
+  dimension (e.g. `R == Ad` means that a geometry is a "volume" within their
   ambient dimension).
 
 The main concept is the geometry `Primitive` which is:
@@ -24,8 +24,8 @@ The main concept is the geometry `Primitive` which is:
 The rank of the geometry determines whether it is a refinement of `Primitive`:
 
   - `PathPrimitive`: rank 1.
-  - `SurfacePrimitive`: rank `Nd - 1`
-  - `VolumePrimitive`: rank `Nd`
+  - `SurfacePrimitive`: rank `Ad - 1`
+  - `VolumePrimitive`: rank `Ad`
   - `Polygon`: rank 2 and closed (as opposed to a line stripe).
 
 
@@ -64,10 +64,10 @@ The following algorithms are available:
 
 ## Data-structures
 
-- `point_set<Nd, MaxPPN>`: Stores a unique set of points in an octree.
-- `simplex_array<Nd>`: Stores an array of simplices with unique vertices.
-- `bvh<Nd>`: Builds a Bounding-Volume-Hierarchy using SAH.
-- `simplex_mesh<Nd>`: Stores a mesh of simplices (`simplex_array` + `bvh`).
+- `point_set<Ad, MaxPPN>`: Stores a unique set of points in an octree.
+- `simplex_array<Ad>`: Stores an array of simplices with unique vertices.
+- `bvh<Ad>`: Builds a Bounding-Volume-Hierarchy using SAH.
+- `simplex_mesh<Ad>`: Stores a mesh of simplices (`simplex_array` + `bvh`).
 
 ## Serialization
 

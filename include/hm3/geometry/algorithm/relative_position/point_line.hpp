@@ -11,9 +11,11 @@ namespace hm3::geometry {
 
 namespace relative_position_point_line_detail {
 struct relative_position_point_line_fn {
-  template <typename P, typename L,
-            CONCEPT_REQUIRES_(Point<P, 2>{} and Line<L, 2>{})>
-  constexpr auto operator()(P const& p, L const& l) const noexcept {
+  template <typename P, typename L>
+  constexpr auto operator()(P const& p, L const& l, num_t abs_tol,
+                            num_t rel_tol) const noexcept {
+    static_assert(Point<P, 2>{});
+    static_assert(Line<L, 2>{});
     auto a         = l.origin();
     auto ab        = l.direction();
     using vector_t = uncvref_t<decltype(ab)>;
@@ -21,21 +23,21 @@ struct relative_position_point_line_fn {
 
     auto d = perp_product(ab, ap);
 
-    if (d > 0.) {
-      return relative_position_t::outside;
-    } else if (d < 0.) {
-      return relative_position_t::inside;
+    if (approx_number(d, 0., abs_tol, rel_tol)) {
+      return relative_position_t::intersected;
     }
-    HM3_ASSERT(math::approx(d, 0.), "");
-    return relative_position_t::intersected;
+
+    if (d > 0.) { return relative_position_t::outside; }
+    return relative_position_t::inside;
   }
 };
 
 }  // namespace relative_position_point_line_detail
 
 namespace {
-static constexpr auto const& relative_position_point_line = static_const<
- relative_position_point_line_detail::relative_position_point_line_fn>::value;
+static constexpr auto const& relative_position_point_line
+ = static_const<with_default_tolerance<
+  relative_position_point_line_detail::relative_position_point_line_fn>>::value;
 }  // namespace
 
 }  // namespace hm3::geometry

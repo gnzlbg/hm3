@@ -10,32 +10,31 @@ using namespace hm3;
 template <typename Tile>  //
 void closest_cell_tests() {
   using x_t = typename Tile::coordinate;
-  for (auto c : Tile::all()) {
-    for (auto o : Tile::all()) {
+  for (auto&& c : Tile::all()) {
+    for (auto&& o : Tile::all()) {
       if (c == o) { continue; }
       int cells_visited_upper_bound = math::ipow<suint_t>(
        2
-         * ranges::accumulate(x_t::dimensions(), suint_t{1},
+         * ranges::accumulate(x_t::ambient_dimensions(), suint_t{1},
                               [&](auto&& acc, auto&& i) {
                                 return std::max(
                                  acc, math::absdiff(x_t(c)[i], x_t(o)[i]));
                               })
         + 1,
-       x_t::dimension());
+       x_t::ambient_dimension());
       int cells_visited = 0;
-      auto x_c = Tile::closest_cell(x_t(c), [=, &cells_visited](auto i) {
+      auto x_c = Tile::closest_cell(x_t(c), [=, &cells_visited](auto&& i) {
         cells_visited++;
-        return *i == suint_t{o};
+        return *i == *o;
       });
       if (!x_c) {
-        hm3::fmt::print("Closest cell not found. Start: {}, Sought: {}\n", c,
-                        o);
+        ascii_fmt::out("Closest cell not found. Start: {}, Sought: {}\n", c, o);
       }
       CHECK(x_c);
-      CHECK(*x_c == suint_t{o});
+      CHECK(*x_c == *o);
       if (cells_visited > cells_visited_upper_bound) {
-        hm3::fmt::print("c: {}, o: {}, cv: {}, ub: {}\n", x_t(c), x_t(o),
-                        cells_visited, cells_visited_upper_bound);
+        ascii_fmt::out("c: {}, o: {}, cv: {}, ub: {}\n", x_t(c), x_t(o),
+                       cells_visited, cells_visited_upper_bound);
       }
       CHECK(cells_visited <= cells_visited_upper_bound);
     }
@@ -52,7 +51,7 @@ void tile_cell_indices_tests() {
 
     suint_t c      = 0;
     auto check_all = [&](auto i) {
-      // hm3::fmt::print("{}\n", i);
+      // ascii_fmt::out("{}\n", i);
       CHECK(i.idx() == i.x().idx());
       CHECK(*i.idx() == c);
       CHECK(i.x()[0] == c);
@@ -65,7 +64,7 @@ void tile_cell_indices_tests() {
     c = 0_u;
 
     auto check = [&c](auto i) {
-      // hm3::fmt::print("{}\n", i);
+      // ascii_fmt::out("{}\n", i);
       CHECK(i.idx() == i.x().idx());
       CHECK(*i == *i.x().idx());
       CHECK(*i.idx() == c);
@@ -78,7 +77,7 @@ void tile_cell_indices_tests() {
     CHECK(c == t.size());
 
     c = 0_u;
-    RANGES_FOR (auto i, t.sub_tile(x_min, x_max)) { check(i); }
+    for (auto i : t.sub_tile(x_min, x_max)) { check(i); }
     CHECK(c == t.size());
 
     closest_cell_tests<tile_t>();
@@ -124,7 +123,7 @@ void tile_cell_indices_tests() {
     suint_t x_j = 0;
 
     auto check_all = [&](auto i) {
-      // hm3::fmt::print("{}\n", i);
+      // ascii_fmt::out("{}\n", i);
       CHECK(i.idx() == i.x().idx());
       CHECK(*i.idx() == c);
       CHECK(i.x()[0] == x_i);
@@ -146,7 +145,7 @@ void tile_cell_indices_tests() {
     c   = 0_u;
     x_i = 0_u;
     x_j = 0_u;
-    RANGES_FOR (auto i, t.sub_tile(x_t(0, 0), x_t(3, 3))) { check_all(i); }
+    for (auto&& i : t.sub_tile(x_t(0, 0), x_t(3, 3))) { check_all(i); }
     CHECK(c == t.size());
     CHECK(x_i == 0_u);
     CHECK(x_j == t.length());
@@ -155,7 +154,7 @@ void tile_cell_indices_tests() {
     x_i        = 1_u;
     x_j        = 1_u;
     auto check = [&](auto i) {
-      // hm3::fmt::print("{}\n", i);
+      // ascii_fmt::out("{}\n", i);
       CHECK(i.idx() == i.x().idx());
       CHECK(*i.idx() == c);
       CHECK(i.x()[0] == x_i);
@@ -180,7 +179,7 @@ void tile_cell_indices_tests() {
     x_i = 1_u;
     x_j = 1_u;
 
-    RANGES_FOR (auto i, t.sub_tile(x_t(1, 1), x_t(2, 2))) { check(i); }
+    for (auto i : t.sub_tile(x_t(1, 1), x_t(2, 2))) { check(i); }
     CHECK(c == 13_u);
     CHECK(x_i == 1_u);
     CHECK(x_j == 3_u);
@@ -227,7 +226,7 @@ void tile_cell_indices_tests() {
     suint_t x_j    = 0;
     suint_t x_k    = 0;
     auto check_all = [&](auto i) {
-      // hm3::fmt::print("{}\n", i);
+      // ascii_fmt::out("{}\n", i);
       CHECK(i.idx() == i.x().idx());
       CHECK(*i.idx() == c);
       CHECK(i.x()[0] == x_i);
@@ -258,9 +257,7 @@ void tile_cell_indices_tests() {
     x_i = 0;
     x_j = 0;
     x_k = 0;
-    RANGES_FOR (auto i, t.sub_tile(x_t(0, 0, 0), x_t(4, 4, 4))) {
-      check_all(i);
-    }
+    for (auto i : t.sub_tile(x_t(0, 0, 0), x_t(4, 4, 4))) { check_all(i); }
     CHECK(c == t.size());
     CHECK(x_i == 0_u);
     CHECK(x_j == 0_u);
@@ -271,7 +268,7 @@ void tile_cell_indices_tests() {
     x_j        = 1_u;
     x_k        = 1_u;
     auto check = [&](auto i) {
-      // hm3::fmt::print("{}\n", i);
+      // ascii_fmt::out("{}\n", i);
       CHECK(i.idx() == i.x().idx());
       CHECK(*i.idx() == c);
       CHECK(i.x()[0] == x_i);
@@ -302,7 +299,7 @@ void tile_cell_indices_tests() {
     x_i = 1_u;
     x_j = 1_u;
     x_k = 1_u;
-    RANGES_FOR (auto i, t.sub_tile(x_min, x_max)) { check(i); }
+    for (auto i : t.sub_tile(x_min, x_max)) { check(i); }
 
     {  // rings one:
       auto f = x_t(0, 0, 0);
@@ -323,7 +320,7 @@ void tile_cell_indices_tests() {
       };
       int counter_one = 0;
       auto check_one  = [&](auto i) {
-        // hm3::fmt::print("{}\n", i);
+        // ascii_fmt::out("{}\n", i);
         CHECK(*i == one[counter_one]);
         ++counter_one;
       };
@@ -360,7 +357,7 @@ void tile_cell_indices_tests() {
 
       suint_t c      = 0;
       auto check_one = [&](auto i) {
-        // hm3::fmt::print("{}\n", i);
+        // ascii_fmt::out("{}\n", i);
         CHECK(*i == c);
         ++c;
         if (c == 86_su || c == 92_su || c == 122_su || c == 128_su) {
@@ -398,7 +395,7 @@ void tile_cell_indices_bench() {
     using x_t    = typename tile_t::coordinate;
     constexpr tile_t t{};
     unsigned val = 0;
-    RANGES_FOR (auto&& i, t.sub_tile(x_t(10, 10, 10), x_t(90, 90, 90))) {
+    for (auto&& i : t.sub_tile(x_t(10, 10, 10), x_t(90, 90, 90))) {
       val += v_[*i.idx()];
     }
     return val;

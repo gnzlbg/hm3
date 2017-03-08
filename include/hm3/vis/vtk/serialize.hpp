@@ -7,15 +7,13 @@
 /// Define this to switch to ASCII output format for VTK files
 //#define HM3_VTK_OUTPUT_ASCII
 
+#include <hm3/utility/range.hpp>
 #include <hm3/vis/vtk/cell_data.hpp>
 #include <hm3/vis/vtk/unstructured_grid.hpp>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
+namespace hm3::vis::vtk {
 
 namespace concepts {
-namespace rc = ranges::concepts;
 
 /// SerializableToVTK concept
 struct serializable_to_vtk {
@@ -42,7 +40,7 @@ struct serializable_to_vtk {
 
 template <typename T>
 using SerializableToVTK
- = concepts::rc::models<concepts::serializable_to_vtk, ranges::uncvref_t<T>>;
+ = rc::models<concepts::serializable_to_vtk, ranges::uncvref_t<T>>;
 
 template <typename Source, CONCEPT_REQUIRES_(SerializableToVTK<Source>{})>
 void serialize(Source const& s, string file_name_, log::serial log) {
@@ -70,7 +68,5 @@ void serialize(Source const& s, string file_name_, log::serial log) {
   writer->Write();
 }
 
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk
 #endif  // HM3_ENABLE_VTK

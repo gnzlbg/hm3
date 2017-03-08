@@ -4,8 +4,8 @@
 /// Location testing functions
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/bit.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/test.hpp>
 
 template <hm3::uint_t Ad, hm3::uint_t NoLevels, typename Loc>
@@ -57,6 +57,7 @@ void test_location(Loc) {
       auto a_uint      = static_cast<morton_idx>(a);
       auto a_uint_should
        = math::ipow(morton_idx{2}, morton_idx{Ad * *a.max_level()});
+
       CHECK(a_uint == a_uint_should);
       CHECK(a_uint == a.morton_idx());
     }
@@ -111,7 +112,7 @@ void test_location(Loc) {
 
   {  // check min
     auto min_loc = Loc::min();
-    CHECK(min_loc.level() == min_loc.max_no_levels());
+    CHECK(min_loc.level() == min_loc.max_no_levels() - 1);
   }
 }
 

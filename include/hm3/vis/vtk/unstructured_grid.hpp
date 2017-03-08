@@ -23,11 +23,11 @@ struct unstructured_grid {
             CONCEPT_REQUIRES_(InputRange<NodeRange>{})>
   void append_internal_cells(NodeRange&& nodes, Grid&& grid) noexcept {
     using grid_t             = uncvref_t<Grid>;
-    static constexpr auto nd = geometry::ambient_dimension_v<grid_t>;
+    static constexpr auto ad = geometry::ambient_dimension_v<grid_t>;
     using geometry::ambient_dimension;
     using geometry::vertices;
     auto geometry
-     = [&](auto&& n) -> geometry_t<nd> { return grid.geometry(n); };
+     = [&](auto&& n) -> geometry_t<ad> { return grid.geometry(n); };
 
     using grid_cell_t   = decltype(geometry(*begin(nodes)));
     const auto no_cells = ranges::distance(use_copy_if_single_pass(nodes));

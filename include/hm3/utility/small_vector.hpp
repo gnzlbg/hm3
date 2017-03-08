@@ -1,7 +1,7 @@
 #pragma once
 /// Small Vector: a vector with the Small Vector Optimizaiton (SVO).
+#include <hm3/ext/variant.hpp>
 #include <hm3/utility/fixed_capacity_vector.hpp>
-#include <hm3/utility/variant.hpp>
 #include <hm3/utility/vector.hpp>
 
 namespace hm3 {
@@ -358,7 +358,7 @@ struct small_vector {
     return insert(position, ranges::begin(il), ranges::end(il));
   }
 
-  CONCEPT_REQUIRES(ranges::Movable<reference>{})
+  CONCEPT_REQUIRES(ranges::Movable<value_type>{})
   constexpr iterator erase(const_iterator position) noexcept {
     assert_position(position, HM3_AT_);
     return match_nc([&position](auto&& c) -> iterator {

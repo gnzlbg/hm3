@@ -5,19 +5,13 @@
 #include <hm3/solver/types.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace heat {
+namespace hm3::solver::fv::heat {
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct indices {
   static constexpr vidx_t nvars() noexcept { return 1; }
   static constexpr auto variables() noexcept { return view::iota(0, nvars()); }
   static constexpr vidx_t temperature() noexcept { return 0; }
 };
 
-}  // namespace heat
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::heat

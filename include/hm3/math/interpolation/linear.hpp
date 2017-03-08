@@ -4,9 +4,11 @@
 /// Linear interpolation in n spatial dimensions: two points
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
+#include <hm3/geometry/algorithm/bounding_length.hpp>
+#include <hm3/geometry/algorithm/direction.hpp>
 #include <hm3/math/interpolation/concept.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 
 namespace hm3::math::ip {
 
@@ -21,45 +23,45 @@ using geometry::segment;
 /// Equation: y(x) = y0 + (y1 - y0) / ||x1 - x0|| * ||x - x0||
 ///
 /// Note: x and y can be multi-dimensional
-template <dim_t Nd, typename T>
-T interpolate(point<Nd> x, point<Nd> x0, point<Nd> x1, T v0, T v1) noexcept {
+template <dim_t Ad, typename T>
+T interpolate(point<Ad> x, point<Ad> x0, point<Ad> x1, T v0, T v1) noexcept {
   HM3_ASSERT((x1() - x0()).norm() > 0.,
              "points x0 and x1 must be different! x0: {}, x1: {}", x0, x1);
   return v0 + (v1 - v0) * (x() - x0()).norm() / (x1() - x0()).norm();
 }
 
-template <dim_t Nd, typename T>
-T interpolate(num_t d, segment<Nd> l, T v0, T v1) {
+template <dim_t Ad, typename T>
+T interpolate(num_t d, segment<Ad> l, T v0, T v1) {
   HM3_ASSERT((l.x(1)() - l.x(0)()).norm() > 0.,
              "points x0 and x1 must be different! x0: {}, x1: {}", l.x(0),
              l.x(1));
   return v0 + (v1 - v0) * d / (l.x(1)() - l.x(0)()).norm();
 }
 
-template <dim_t Nd, typename T>
-T interpolate(num_t d, segment<Nd> l, array<T, 2> vs) {
+template <dim_t Ad, typename T>
+T interpolate(num_t d, segment<Ad> l, array<T, 2> vs) {
   return interpolate(d, l, vs[0], vs[1]);
 }
 
-template <dim_t Nd, typename T>
-num_t distance_to_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
+template <dim_t Ad, typename T>
+num_t distance_to_value(T v, point<Ad> x0, point<Ad> x1, T v0, T v1) {
   HM3_ASSERT(v1 - v0 > 0. or v1 - v0 < 0., "");
   return (x1() - x0()).norm() * (v - v0) / (v1 - v0);  // TODO: use .array()
 }
 
-template <dim_t Nd, typename T>
-num_t distance_to_value(T v, segment<Nd> l, array<T, 2> vs) {
+template <dim_t Ad, typename T>
+num_t distance_to_value(T v, segment<Ad> l, array<T, 2> vs) {
   return distance_to_value(v, l.x(0), l.x(1), vs[0], vs[1]);
 }
 
-template <dim_t Nd, typename T>
-point<Nd> point_with_value(T v, point<Nd> x0, point<Nd> x1, T v0, T v1) {
-  auto dir = direction(segment<Nd>(x0, x1));
-  return point<Nd>{x0() + dir() * distance_to_value(v, x0, x1, v0, v1)};
+template <dim_t Ad, typename T>
+point<Ad> point_with_value(T v, point<Ad> x0, point<Ad> x1, T v0, T v1) {
+  auto dir = geometry::direction(segment<Ad>(x0, x1));
+  return point<Ad>{x0() + dir() * distance_to_value(v, x0, x1, v0, v1)};
 }
 
-template <dim_t Nd, typename T>
-point<Nd> point_with_value(T v, segment<Nd> l, array<T, 2> vs) {
+template <dim_t Ad, typename T>
+point<Ad> point_with_value(T v, segment<Ad> l, array<T, 2> vs) {
   return point_with_value(v, l.x(0), l.x(1), vs[0], vs[1]);
 }
 
@@ -73,8 +75,8 @@ void assert_is_valid_dataset(D const& d) {
              size(d.values()));
 }
 
-template <dim_t Nd, typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
-auto interpolate(point<Nd> const& x, D const& d) {
+template <dim_t Ad, typename D, CONCEPT_REQUIRES_(Interpolable<D>{})>
+auto interpolate(point<Ad> const& x, D const& d) {
   assert_is_valid_dataset(d);
   return interpolate(x, d.points()[0], d.points()[1], d.values()[0],
                      d.values()[1]);

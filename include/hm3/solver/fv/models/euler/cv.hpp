@@ -63,7 +63,7 @@ struct cv_base : geometry::with_ambient_dimension<Ad>,
   /// Velocities
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   static constexpr decltype(auto) u(V&& v) noexcept {
-    return v.template head<d::dimension()>() / v(i::rho());
+    return v.template head<d::ambient_dimension()>() / v(i::rho());
   }
 
   /// L2-Norm of the velocity squared ||u||_{L2}^{2}

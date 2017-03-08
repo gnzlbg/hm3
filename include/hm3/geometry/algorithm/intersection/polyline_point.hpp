@@ -3,7 +3,7 @@
 ///
 /// Intersection of polylines with points.
 #include <hm3/geometry/algorithm/intersection/segment_point.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

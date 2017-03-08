@@ -5,36 +5,36 @@ using namespace hm3;
 
 using tidx_t = grid::structured::tile::tidx_t;
 
-template <dim_t Nd, tidx_t Nc>
-using tile_geom = grid::structured::tile::tile_geometry<Nd, Nc>;
+template <dim_t Ad, tidx_t Nc>
+using tile_geom = grid::structured::tile::tile_geometry<Ad, Nc>;
 
 // Bounding box at the origin with length 1
-template <dim_t Nd>
-constexpr geometry::box<Nd> bbox_orig() {
-  auto x_c = geometry::point<Nd>::constant(0.);
+template <dim_t Ad>
+constexpr geometry::box<Ad> bbox_orig() {
+  auto x_c = geometry::point<Ad>::constant(0.);
   auto l   = 1.0;
-  return geometry::box<Nd>{x_c, l};
+  return geometry::box<Ad>{x_c, l};
 }
 
 // Bounding box at x=(-3., -3, ...) ith length 2
-template <dim_t Nd>
-constexpr geometry::box<Nd> bbox_off() {
-  auto x_c = geometry::point<Nd>::constant(-3.);
+template <dim_t Ad>
+constexpr geometry::box<Ad> bbox_off() {
+  auto x_c = geometry::point<Ad>::constant(-3.);
   auto l   = 2.0;
-  return geometry::box<Nd>{x_c, l};
+  return geometry::box<Ad>{x_c, l};
 }
 
-template <typename TileGeometry, dim_t Nd = TileGeometry::dimension()>
+template <typename TileGeometry, dim_t Ad = TileGeometry::ambient_dimension()>
 void test_orig(TileGeometry, tidx_t nc) {
-  TileGeometry g = TileGeometry(bbox_orig<Nd>());
-  using point_t  = geometry::point<Nd>;
+  TileGeometry g = TileGeometry(bbox_orig<Ad>());
+  using point_t  = geometry::point<Ad>;
 
   CHECK(g.cell_length() == (1.0 / nc));
-  CHECK(g.cell_volume() == std::pow(1.0 / nc, Nd));
-  CHECK(g.cell_surface_area() == std::pow(1.0 / nc, Nd - 1));
+  CHECK(g.cell_volume() == std::pow(1.0 / nc, Ad));
+  CHECK(g.cell_surface_area() == std::pow(1.0 / nc, Ad - 1));
   CHECK(g.tile_length() == 1.0);
   CHECK(g.tile_centroid() == point_t::constant(0.0));
-  CHECK(g.tile_bounding_box() == bbox_orig<Nd>());
+  CHECK(g.tile_bounding_box() == bbox_orig<Ad>());
 
   point_t p_inside  = point_t::constant(-0.49999999);
   point_t p_outside = point_t::constant(1.5);
@@ -51,19 +51,19 @@ void test_orig(TileGeometry, tidx_t nc) {
   }
 }
 
-template <typename TileGeometry, dim_t Nd = TileGeometry::dimension()>
+template <typename TileGeometry, dim_t Ad = TileGeometry::ambient_dimension()>
 void test_off5(TileGeometry) {
-  TileGeometry g = TileGeometry(bbox_off<Nd>());
-  using point_t  = geometry::point<Nd>;
+  TileGeometry g = TileGeometry(bbox_off<Ad>());
+  using point_t  = geometry::point<Ad>;
 
   tidx_t nc = 5;
   CHECK(g.cell_length() == 0.4);
 
-  CHECK(g.cell_volume() == std::pow(2.0 / nc, Nd));
-  CHECK(g.cell_surface_area() == std::pow(2.0 / nc, Nd - 1));
+  CHECK(g.cell_volume() == std::pow(2.0 / nc, Ad));
+  CHECK(g.cell_surface_area() == std::pow(2.0 / nc, Ad - 1));
   CHECK(g.tile_length() == 2.0);
   CHECK(g.tile_centroid() == point_t::constant(-3.0));
-  CHECK(g.tile_bounding_box() == bbox_off<Nd>());
+  CHECK(g.tile_bounding_box() == bbox_off<Ad>());
 
   point_t p_inside  = point_t::constant(-3.9999999);
   point_t p_outside = point_t::constant(1.5);
@@ -80,19 +80,19 @@ void test_off5(TileGeometry) {
   }
 }
 
-template <dim_t Nd>
+template <dim_t Ad>
 void test_tile() {
   {  // orig, 1 cell
-    using g_t = tile_geom<Nd, 1>;
+    using g_t = tile_geom<Ad, 1>;
     test_orig(g_t{}, 1);
   }
   {  // orig, 5 cell
-    using g_t = tile_geom<Nd, 5>;
+    using g_t = tile_geom<Ad, 5>;
     test_orig(g_t{}, 5);
   }
   {
     // off, 5 cells
-    using g_t = tile_geom<Nd, 5>;
+    using g_t = tile_geom<Ad, 5>;
     test_off5(g_t{});
   }
 }

@@ -28,7 +28,7 @@ void coordinate_tests(I index, suint_t length, const X x) {
   }
 
   // Single offset +1
-  for (auto&& d : X::dimensions()) {
+  for (auto&& d : X::ambient_dimensions()) {
     const auto w = x.offset(d, 1);
     if (x[d] < length - 1) {
       CHECK(w);
@@ -42,7 +42,7 @@ void coordinate_tests(I index, suint_t length, const X x) {
   }
 
   // Single offset -1
-  for (auto&& d : X::dimensions()) {
+  for (auto&& d : X::ambient_dimensions()) {
     auto w = x.offset(d, -1);
     if (x[d] > 0) {
       CHECK(w);
@@ -56,8 +56,8 @@ void coordinate_tests(I index, suint_t length, const X x) {
   }
 
   // Array offset +1
-  for (auto&& d : X::dimensions()) {
-    hm3::array<sint_t, X::dimension()> o;
+  for (auto&& d : X::ambient_dimensions()) {
+    hm3::array<sint_t, X::ambient_dimension()> o;
     o.fill(0);
     o[d]   = 1;
     auto w = x.offset(o);
@@ -73,8 +73,8 @@ void coordinate_tests(I index, suint_t length, const X x) {
   }
 
   // Array offset -1
-  for (auto&& d : X::dimensions()) {
-    hm3::array<sint_t, X::dimension()> o;
+  for (auto&& d : X::ambient_dimensions()) {
+    hm3::array<sint_t, X::ambient_dimension()> o;
     o.fill(0);
     o[d]   = -1;
     auto w = x.offset(o);

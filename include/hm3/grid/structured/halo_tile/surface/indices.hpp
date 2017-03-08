@@ -6,25 +6,22 @@
 #include <hm3/grid/structured/halo_tile/cell/indices.hpp>
 #include <hm3/grid/structured/tile/surface/indices.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace halo_tile {
+namespace hm3::grid::structured::halo_tile {
 
 namespace surface {
 
 /// Square structured halo tile surface indices
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
 struct indices
- : tile::surface::indices<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
-  using self         = indices<Nd, Nic, Nhl>;
-  using cell_bounds  = cell::bounds<Nd, Nic, Nhl>;
-  using base         = tile::surface::indices<Nd, cell_bounds::length()>;
-  using cell_indices = cell::indices<Nd, Nic, Nhl>;
+ : tile::surface::indices<Ad, cell::bounds<Ad, Nic, Nhl>::length()> {
+  using self         = indices<Ad, Nic, Nhl>;
+  using cell_bounds  = cell::bounds<Ad, Nic, Nhl>;
+  using base         = tile::surface::indices<Ad, cell_bounds::length()>;
+  using cell_indices = cell::indices<Ad, Nic, Nhl>;
   using base_cell_coordinate = typename base::cell_coordinate;
   using cell_coordinate      = typename cell_indices::coordinate;
 
@@ -52,7 +49,4 @@ struct indices
 
 }  // namespace surface
 
-}  // namespace halo_tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::halo_tile

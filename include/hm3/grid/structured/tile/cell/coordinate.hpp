@@ -2,33 +2,29 @@
 /// \file
 ///
 /// Square tile coordinate
+#include <hm3/config/attributes.hpp>
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/index.hpp>
 #include <hm3/grid/structured/tile/index_type.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/array.hpp>
-#include <hm3/utility/config/attributes.hpp>
-#include <hm3/utility/math.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
-namespace cell {
+namespace hm3::grid::structured::tile::cell {
 
 /// Square tile cell coordinate
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nc number of cells per length
-template <dim_t Nd, tidx_t Nc>
-struct coordinate : geometry::with_ambient_dimension<Nd> {
+template <dim_t Ad, tidx_t Nc>
+struct coordinate : geometry::with_ambient_dimension<Ad> {
   using self           = coordinate;
   using value_t        = tidx_t;
   using signed_value_t = std::make_signed_t<value_t>;
-  using coordinates_t  = array<value_t, Nd>;
-  using offset_t       = array<signed_value_t, Nd>;
-  using index          = index<Nd, Nc>;
-  using bounds         = bounds<Nd, Nc>;
+  using coordinates_t  = array<value_t, Ad>;
+  using offset_t       = array<signed_value_t, Ad>;
+  using index          = index<Ad, Nc>;
+  using bounds         = bounds<Ad, Nc>;
   static_assert(sizeof(value_t) == sizeof(signed_value_t), "");
 
   coordinates_t xs;
@@ -38,15 +34,15 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   static constexpr value_t invalid_x_() noexcept {
     return math::highest<value_t>;
   }
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   static constexpr coordinates_t invalid_xs_() noexcept {
     return {{invalid_x_()}};
   }
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   static constexpr coordinates_t invalid_xs_() noexcept {
     return {{invalid_x_(), invalid_x_()}};
   }
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   static constexpr coordinates_t invalid_xs_() noexcept {
     return {{invalid_x_(), invalid_x_(), invalid_x_()}};
   }
@@ -65,13 +61,13 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   /// \name Constructors from coordinate indices {i,j,k}
   ///@{
 
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   constexpr coordinate(value_t i) noexcept : xs{{i}} {}
 
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   constexpr coordinate(value_t i, value_t j) noexcept : xs{{i, j}} {}
 
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   constexpr coordinate(value_t i, value_t j, value_t k) noexcept
    : xs{{i, j, k}} {}
 
@@ -81,25 +77,25 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
 
   /// \name Constructors from constant value
   ///@{
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   static constexpr self constant(value_t v) noexcept { return self(v); }
 
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   static constexpr self constant(value_t v) noexcept { return self(v, v); }
 
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   static constexpr self constant(value_t v) noexcept { return self(v, v, v); }
 
   ///@}  // Constructors from constant value
 
   /// Access \p d -th coordinate component
   constexpr value_t operator[](value_t d) const noexcept {
-    HM3_ASSERT(d < Nd, "index {} is out-of-bounds [0, {})", d, Nd);
+    HM3_ASSERT(d < Ad, "index {} is out-of-bounds [0, {})", d, Ad);
     return xs[d];
   }
   /// Access \p d -th coordinate component
   constexpr value_t& operator[](value_t d) noexcept {
-    HM3_ASSERT(d < Nd, "index {} is out-of-bounds [0, {})", d, Nd);
+    HM3_ASSERT(d < Ad, "index {} is out-of-bounds [0, {})", d, Ad);
     return xs[d];
   }
 
@@ -107,7 +103,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   /// otherwise
   constexpr explicit operator bool() const noexcept {
     constexpr auto cpl = bounds::length();
-    for (value_t d = 0; d < Nd; ++d) {
+    for (value_t d = 0; d < Ad; ++d) {
       const auto v = xs[d];
       static_assert(std::is_unsigned<value_t>{},
                     "for signed value_t it must also be checked whether v < 0 "
@@ -123,7 +119,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   ///
   /// \pre The index must be valid (i.e. index a cell within the grid).
   /// \post The resulting coordinate will be valid.
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   static constexpr self from(index i) noexcept {
     HM3_ASSERT(i, "invalid index");
     self x(*i);
@@ -135,7 +131,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   ///
   /// \pre The index must be valid (i.e. index a cell within the grid).
   /// \post The resulting coordinate will be valid.
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   static constexpr self from(index i) noexcept {
     HM3_ASSERT(i, "invalid index");
     constexpr auto cpl = bounds::length();
@@ -149,7 +145,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   ///
   /// \pre The index must be valid (i.e. index a cell within the grid).
   /// \post The resulting coordinate will be valid.
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   static constexpr self from(index i) noexcept {
     HM3_ASSERT(i, "invalid index");
     constexpr auto cpl = bounds::length();
@@ -165,7 +161,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   /// \pre The coordinate must be valid (i.e. it must index a cell in the
   /// grid)
   /// \post The resulting index will be valid.
-  CONCEPT_REQUIRES(Nd == 1)
+  CONCEPT_REQUIRES(Ad == 1)
   [[HM3_FLATTEN]] static constexpr index idx(self x) noexcept {
     HM3_ASSERT(x, "invalid coordinate {}", x);
     index i(x[0]);
@@ -177,7 +173,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   /// \pre The coordinate must be valid (i.e. it must index a cell in the
   /// grid)
   /// \post The resulting index will be valid.
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   [[HM3_FLATTEN]] static constexpr index idx(self x) noexcept {
     HM3_ASSERT(x, "invalid coordinate {}", x);
     index i(x[0] + bounds::length() * x[1]);
@@ -189,7 +185,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   /// \pre The coordinate must be valid (i.e. it must index a cell in the
   /// grid)
   /// \post The resulting index will be valid.
-  CONCEPT_REQUIRES(Nd == 3)
+  CONCEPT_REQUIRES(Ad == 3)
   [[HM3_FLATTEN]] static constexpr index idx(self x) noexcept {
     HM3_ASSERT(x, "invalid coordinate {}", x);
     constexpr auto cpl = bounds::length();
@@ -233,7 +229,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   [[clang::no_sanitize("integer")]] constexpr self offset(offset_t o) const
    noexcept {
     self n = (*this);
-    for (value_t d = 0; d < Nd; ++d) {
+    for (value_t d = 0; d < Ad; ++d) {
       // todo: addwith overflow
       signed_value_t new_xs = static_cast<signed_value_t>(xs[d]) + o[d];
       n[d]                  = static_cast<value_t>(new_xs);
@@ -250,7 +246,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   [[clang::no_sanitize("integer")]] constexpr self offset(
    signed_value_t o) const noexcept {
     self n = (*this);
-    for (value_t d = 0; d < Nd; ++d) {
+    for (value_t d = 0; d < Ad; ++d) {
       // todo: addwith overflow
       signed_value_t new_xs = static_cast<signed_value_t>(xs[d]) + o;
       n[d]                  = static_cast<value_t>(new_xs);
@@ -267,7 +263,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   constexpr self offset_if_valid(signed_value_t o) const noexcept {
     HM3_ASSERT(*this, "the coordinate state must be valid");
     self n = (*this);
-    for (value_t d = 0; d < Nd; ++d) {
+    for (value_t d = 0; d < Ad; ++d) {
       auto new_n = n.offset(d, o);
       n          = new_n ? new_n : n;
     }
@@ -278,7 +274,7 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
   template <typename OStream>
   friend OStream& operator<<(OStream& os, self const& x) {
     os << "{" << x[0];
-    for (value_t d = 1; d < Nd; ++d) { os << ", " << x[d]; }
+    for (value_t d = 1; d < Ad; ++d) { os << ", " << x[d]; }
     os << "}";
     return os;
   }
@@ -319,14 +315,14 @@ struct coordinate : geometry::with_ambient_dimension<Nd> {
 /// Square distance between the coordinates \p a and \p b
 ///
 /// \pre Both coordinates must be valid
-template <dim_t Nd, tidx_t Nc>
-constexpr auto distance_square(coordinate<Nd, Nc> const& a,
-                               coordinate<Nd, Nc> const& b) noexcept {
+template <dim_t Ad, tidx_t Nc>
+constexpr auto distance_square(coordinate<Ad, Nc> const& a,
+                               coordinate<Ad, Nc> const& b) noexcept {
   HM3_ASSERT(a, "invalid coordinate {}", a);
   HM3_ASSERT(b, "invalid coordinate {}", b);
-  using value_t = typename coordinate<Nd, Nc>::value_t;
+  using value_t = typename coordinate<Ad, Nc>::value_t;
   value_t dist  = 0;
-  for (value_t d = 0; d < Nd; ++d) {
+  for (value_t d = 0; d < Ad; ++d) {
     dist += math::ipow(math::absdiff(b.xs[d], a.xs[d]), value_t{2});
   }
   return dist;
@@ -335,26 +331,22 @@ constexpr auto distance_square(coordinate<Nd, Nc> const& a,
 /// Distance between the coordinates \p a and \p b
 ///
 /// \pre Both coordinates must be valid
-template <dim_t Nd, tidx_t Nc>
-constexpr auto distance(coordinate<Nd, Nc> const& a,
-                        coordinate<Nd, Nc> const& b) noexcept {
+template <dim_t Ad, tidx_t Nc>
+constexpr auto distance(coordinate<Ad, Nc> const& a,
+                        coordinate<Ad, Nc> const& b) noexcept {
   HM3_ASSERT(a, "invalid coordinate {}", a);
   HM3_ASSERT(b, "invalid coordinate {}", b);
   return std::sqrt(static_cast<num_t>(distance_square(a, b)));
 }
 
-}  // namespace cell
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile::cell
 
 namespace std {
 
-template <hm3::dim_t Nd, hm3::grid::structured::tile::tidx_t Nc>
-struct hash<hm3::grid::structured::tile::cell::coordinate<Nd, Nc>> {
+template <hm3::dim_t Ad, hm3::grid::structured::tile::tidx_t Nc>
+struct hash<hm3::grid::structured::tile::cell::coordinate<Ad, Nc>> {
   constexpr std::size_t operator()(
-   hm3::grid::structured::tile::cell::coordinate<Nd, Nc> const& c) const
+   hm3::grid::structured::tile::cell::coordinate<Ad, Nc> const& c) const
    noexcept {
     return static_cast<std::size_t>(c.idx());
   }

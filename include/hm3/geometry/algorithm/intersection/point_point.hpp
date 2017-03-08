@@ -4,7 +4,7 @@
 /// Intersection between two points.
 #include <hm3/geometry/algorithm/approx/point.hpp>
 #include <hm3/geometry/fwd.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

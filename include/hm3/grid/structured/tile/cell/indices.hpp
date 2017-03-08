@@ -2,36 +2,32 @@
 /// \file
 ///
 /// Indices for iterating over a square tile cells'
+#include <hm3/config/attributes.hpp>
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/structured/tile/cell/bounds.hpp>
 #include <hm3/grid/structured/tile/cell/coordinate.hpp>
 #include <hm3/grid/structured/tile/cell/index.hpp>
 #include <hm3/grid/structured/tile/cell/indexed_coordinate.hpp>
-#include <hm3/utility/config/attributes.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
-namespace cell {
+namespace hm3::grid::structured::tile::cell {
 
 /// Square structured tile cell indices
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nc number of cells per dimension
-template <dim_t Nd, tidx_t Nc>
-struct indices : bounds<Nd, Nc> {
-  using self               = indices<Nd, Nc>;
-  using index              = index<Nd, Nc>;
-  using coordinate         = coordinate<Nd, Nc>;
-  using indexed_coordinate = indexed_coordinate<Nd, Nc>;
+template <dim_t Ad, tidx_t Nc>
+struct indices : bounds<Ad, Nc> {
+  using self               = indices<Ad, Nc>;
+  using index              = index<Ad, Nc>;
+  using coordinate         = coordinate<Ad, Nc>;
+  using indexed_coordinate = indexed_coordinate<Ad, Nc>;
 
   /// \name Internal iterators
   ///@{
 
   /// Executes \p f for each cell in the tile
-  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>
-  [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
+  template <typename F, CONCEPT_REQUIRES_(Ad == 1)>
+  HM3_KERNEL static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
@@ -42,8 +38,8 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each cell in the tile
-  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>
-  [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
+  template <typename F, CONCEPT_REQUIRES_(Ad == 2)>
+  HM3_KERNEL static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
     for (tidx_t j = 0; j < l; ++j) {
 #ifdef HM3_COMPILER_CLANG
@@ -56,8 +52,8 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each cell in the tile
-  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>
-  [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(F&& f) noexcept {
+  template <typename F, CONCEPT_REQUIRES_(Ad == 3)>
+  HM3_KERNEL static constexpr auto for_each(F&& f) noexcept {
     constexpr auto l = self::length();
     for (tidx_t k = 0; k < l; ++k) {
       for (tidx_t j = 0; j < l; ++j) {
@@ -78,7 +74,7 @@ struct indices : bounds<Nd, Nc> {
                self::length());
     HM3_ASSERT(to, "to {} is not within the tile (length: {})", to,
                self::length());
-    for (dim_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Ad; ++d) {
       HM3_ASSERT(to[d] >= from[d], "to[{}] = {} is not >= from[{}] = {}", d,
                  to[d], d, from[d]);
     }
@@ -122,29 +118,30 @@ struct indices : bounds<Nd, Nc> {
   ///@{
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
-  CONCEPT_REQUIRES(Nd == 1)
-  static constexpr array<tidx_t, Nd> offsets(coordinate, coordinate) {
+  CONCEPT_REQUIRES(Ad == 1)
+  static constexpr array<tidx_t, Ad> offsets(coordinate, coordinate) {
     return {{tidx_t{1}}};
   }
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
-  CONCEPT_REQUIRES(Nd == 2)
-  static constexpr array<tidx_t, Nd> offsets(coordinate from, coordinate to) {
+  CONCEPT_REQUIRES(Ad == 2)
+  static constexpr array<tidx_t, Ad> offsets(coordinate from, coordinate to) {
     return {{tidx_t{1}, tidx_t{Nc - (to[0] - from[0]) - 1}}};
   }
 
   /// Iteration offsets for sub-tiles (jump between coordinate dimensions)
-  CONCEPT_REQUIRES(Nd == 3)
-  static constexpr array<tidx_t, Nd> offsets(coordinate from, coordinate to) {
+  CONCEPT_REQUIRES(Ad == 3)
+  static constexpr array<tidx_t, Ad> offsets(coordinate from, coordinate to) {
     return {{tidx_t{1}, tidx_t{Nc - (to[0] - from[0]) - 1},
              tidx_t{Nc * (Nc - (to[1] - from[1]) - 1)}}};
   }
   ///@}  // Iteration offsets for sub-tiles
 
   /// Executes \p f for each sub-tile (\p from, \p to)
-  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>
-  [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(
-   const coordinate from, const coordinate to, F&& f) noexcept {
+  template <typename F, CONCEPT_REQUIRES_(Ad == 1)>
+  HM3_KERNEL static constexpr auto for_each(const coordinate from,
+                                            const coordinate to,
+                                            F&& f) noexcept {
     assert_from_to(from, to);
 #ifdef HM3_COMPILER_CLANG
 #pragma clang loop vectorize(enable) interleave(enable)
@@ -155,9 +152,10 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each sub-tile (\p from, \p to)
-  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>
-  [[ HM3_FLATTEN, HM3_HOT ]] static constexpr auto for_each(
-   const coordinate from, const coordinate to, F&& f) noexcept {
+  template <typename F, CONCEPT_REQUIRES_(Ad == 2)>
+  HM3_KERNEL static constexpr auto for_each(const coordinate from,
+                                            const coordinate to,
+                                            F&& f) noexcept {
     assert_from_to(from, to);
     for (tidx_t j = from[1]; j <= to[1]; ++j) {
 #ifdef HM3_COMPILER_CLANG
@@ -170,7 +168,7 @@ struct indices : bounds<Nd, Nc> {
   }
 
   /// Executes \p f for each sub-tile (\p from, \p to)
-  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>
+  template <typename F, CONCEPT_REQUIRES_(Ad == 3)>
   [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto for_each(
    const coordinate from, const coordinate to, F&& f) noexcept {
     assert_from_to(from, to);
@@ -201,7 +199,7 @@ struct indices : bounds<Nd, Nc> {
     for (auto pos : m()) {
       auto x_neighbor = x;
       auto offset     = m[pos];
-      for (tidx_t d = 0; d < Nd; ++d) {
+      for (tidx_t d = 0; d < Ad; ++d) {
         offset[d] *= static_cast<noffset_t>(dist);
       }
       x_neighbor = x_neighbor.at(offset);
@@ -221,7 +219,7 @@ struct indices : bounds<Nd, Nc> {
   static constexpr void for_each_neighbor(coordinate x, F&& f,
                                           tidx_t dist = 1) noexcept {
     HM3_ASSERT(x, "invalid coordinate: {}", x);
-    tree::for_each_neighbor_manifold<Nd>(
+    tree::for_each_neighbor_manifold<Ad>(
      [&](auto m) { for_each_neighbor(x, m, std::forward<F>(f), dist); });
   }
 
@@ -235,7 +233,7 @@ struct indices : bounds<Nd, Nc> {
   static constexpr void assert_from_to_w_ring(const coordinate from,
                                               const coordinate to,
                                               const tidx_t w) noexcept {
-    for (dim_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Ad; ++d) {
       HM3_ASSERT((to[d] - w) > (from[d] + w),
                  "d: {}, from[{}]: {}, to[{}]: {}, w: {} | (to[{}] - w) > "
                  "(from[{}] + w): {} > {} is false => the rings cells overlap "
@@ -244,7 +242,7 @@ struct indices : bounds<Nd, Nc> {
     }
   }
 
-  template <typename F, CONCEPT_REQUIRES_(Nd == 1)>
+  template <typename F, CONCEPT_REQUIRES_(Ad == 1)>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
                                       tidx_t w = 0) noexcept {
@@ -257,7 +255,7 @@ struct indices : bounds<Nd, Nc> {
     }
   }
 
-  template <typename F, CONCEPT_REQUIRES_(Nd == 2)>
+  template <typename F, CONCEPT_REQUIRES_(Ad == 2)>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
                                       tidx_t w = 0) noexcept {
@@ -287,7 +285,7 @@ struct indices : bounds<Nd, Nc> {
     }
   }
 
-  template <typename F, CONCEPT_REQUIRES_(Nd == 3)>
+  template <typename F, CONCEPT_REQUIRES_(Ad == 3)>
   static constexpr void for_each_ring(const coordinate from,
                                       const coordinate to, F&& f,
                                       tidx_t w = 0) noexcept {
@@ -388,10 +386,10 @@ struct indices : bounds<Nd, Nc> {
   /// \name External iterators
   ///@{
 
-  [[ HM3_FLATTEN, HM3_HOT, HM3_ALWAYS_INLINE ]] static constexpr auto
-   all() noexcept {
-    return view::iota(indexed_coordinate(index(tidx_t{0})),
-                      indexed_coordinate(index(self::size())));
+  HM3_KERNEL static constexpr auto all() noexcept {
+    HM3_ASSERT(self::size() > 0, "");
+    return view::closed_iota(indexed_coordinate(index(tidx_t{0})),
+                             indexed_coordinate(index(self::size() - 1)));
   }
 
   /// Sub-tile view
@@ -406,14 +404,13 @@ struct indices : bounds<Nd, Nc> {
     coordinate current_;
     bool done_ = false;
 
-    [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] constexpr indexed_coordinate
-     get() const noexcept {
+    HM3_KERNEL constexpr indexed_coordinate read() const noexcept {
       return indexed_coordinate(current_);
     }
 
-    [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] constexpr void
-     next() noexcept {
-      for (dim_t d = 0; d < Nd; ++d) {
+    HM3_KERNEL constexpr void next() noexcept {
+      HM3_ASSERT(not done_, "");
+      for (dim_t d = 0; d < Ad; ++d) {
         if (current_[d] < to_[d]) {
           ++current_[d];
           return;
@@ -423,34 +420,27 @@ struct indices : bounds<Nd, Nc> {
       done_ = true;
     }
 
-    [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] constexpr bool done() const
-     noexcept {
+    HM3_KERNEL constexpr bool equal(ranges::default_sentinel) const noexcept {
       return done_;
-      // return current_ == to_;
     }
-    [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] constexpr bool equal(
-     subtile_view const& that) const noexcept {
+
+    HM3_KERNEL constexpr bool equal(subtile_view const& that) const noexcept {
       return that.current_ == current_ and that.from_ == from_
              and that.to_ == to_;
     }
 
    public:
-    [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] subtile_view() = default;
+    HM3_KERNEL subtile_view() = default;
     [[ HM3_ALWAYS_INLINE, HM3_FLATTEN,
        HM3_HOT ]] constexpr subtile_view(coordinate from, coordinate to)
      : from_(std::move(from)), to_(std::move(to)), current_(from_) {}
   };
 
-  [[ HM3_ALWAYS_INLINE, HM3_FLATTEN, HM3_HOT ]] static auto sub_tile(
-   coordinate from, coordinate to) noexcept {
+  HM3_KERNEL static auto sub_tile(coordinate from, coordinate to) noexcept {
     return subtile_view(std::move(from), std::move(to));
   }
 
   ///@}  // External iterators
 };
 
-}  // namespace cell
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile::cell

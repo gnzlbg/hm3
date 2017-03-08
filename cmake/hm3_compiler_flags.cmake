@@ -36,6 +36,7 @@ hm3_append_flag(HM3_HAS_WDEPRECATED -Wdeprecated)
 hm3_append_flag(HM3_HAS_WDOCUMENTATION -Wdocumentation)
 hm3_append_flag(HM3_HAS_WCOMMENT -Wcomment)
 hm3_append_flag(HM3_HAS_PEDANTIC -Wpedantic)
+hm3_append_flag(HM3_HAS_WINCOMPLETE_UMBRELLA -Wincomplete-umbrella)
 hm3_append_flag(HM3_HAS_WSTACK_PROTECTOR -Wstack-protector)
 hm3_append_flag(HM3_HAS_WSTRICT_ALIASING "-Wstrict-aliasing=2")
 hm3_append_flag(HM3_HAS_WSTRICT_OVERFLOW "-Wstrict-overflow=5")
@@ -86,6 +87,17 @@ hm3_append_flag(HM3_HAS_EIGEN_NO_AUTOMATIC_RESIZING -DEIGEN_NO_AUTOMATIC_RESIZIN
 hm3_append_flag(HM3_HAS_EIGEN_STACK_ALLOCATION_LIMIT "-DEIGEN_STACK_ALLOCATION_LIMIT=0")
 
 # Compiler flags controlled by CMake options
+
+if (HM3_ENABLE_MODULES)
+  hm3_append_flag(HM3_HAS_MODULES -fmodules)
+  hm3_append_flag(HM3_HAS_MODULES -fmodules-ts)
+  hm3_append_flag(HM3_HAS_CXX_MODULES -fcxx-modules)
+  hm3_append_flag(HM3_HAS_GMODULES -gmodules)
+  hm3_append_flag(HM3_HAS_NO_IMPLICIT_MODULE_MAPS -fno-implicit-module-maps)
+  hm3_append_flag(HM3_HAS_MODULE_MAP_FILE_HM3 "-fmodule-map-file=${PROJECT_SOURCE_DIR}/include/module.modulemap")
+  hm3_append_flag(HM3_HAS_MODULE_MAP_FILE_STD "-fmodule-map-file=~/pool/include/c++/v1/module.modulemap")
+  hm3_append_flag(HM3_HAS_MODULE_CACHE "-fmodules-cache-path=${PROJECT_BINARY_DIR}/module.cache")
+endif()
 
 if (HM3_ENABLE_WERROR)
   hm3_append_flag(HM3_HAS_WERROR -Werror)

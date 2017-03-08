@@ -15,7 +15,7 @@
 
 #include <cassert>
 #include <functional>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <initializer_list>
 #include <stdexcept>
 #include <string>
@@ -739,7 +739,7 @@ class optional<T&> {
   }
 
   constexpr T& value() const {
-    HM3_ASSERT(ref_ == true, "bad optional access");
+    HM3_ASSERT(ref_ != nullptr, "bad optional access");
     // return ref_ ? *ref_
     //             : (throw bad_optional_access("bad optional access"), *ref_);
     return *ref_;

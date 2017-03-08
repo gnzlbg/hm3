@@ -2,7 +2,8 @@
 /// \file
 ///
 /// Range utitilties
-#include <hm3/utility/range-v3.hpp>
+#include <functional>
+#include <hm3/ext/range-v3.hpp>
 #include <hm3/utility/vector.hpp>
 
 namespace ranges {
@@ -27,6 +28,8 @@ bool operator!=(compressed_pair<T, U> const& t,
 }  // namespace ranges
 
 namespace hm3 {
+
+namespace rc = ranges::concepts;
 
 template <typename T, typename U>
 using pair = std::pair<T, U>;

@@ -2,10 +2,11 @@
 /// \file
 ///
 /// Does the AABB intersect a point?
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/x_min_max.hpp>
+#include <hm3/geometry/concept/aabb.hpp>
 #include <hm3/geometry/fwd.hpp>
-#include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry {
 

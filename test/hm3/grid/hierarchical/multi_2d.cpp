@@ -56,7 +56,8 @@ int main(int argc, char* argv[]) {
                     })
                     | view::take(2);
   const num_t radius = 0.15;
-  auto moving_sphere = geometry::sd::moving_sphere<nd>{radius};
+  auto moving_sphere = geometry::sd::sphere_at_point<nd>{};
+  moving_sphere.set_radius(radius);
   auto sphere_center = [&](num_t step) {
     return point<nd>{point<nd>::c(0.5) + point<nd>::c(0.25 * std::sin(step))};
   };
@@ -79,9 +80,9 @@ int main(int argc, char* argv[]) {
 
   // Loop over all time steps, moving the sphere, and adapting the grid
   int count_ = 0;
-  RANGES_FOR (auto&& t, time_steps) {
+  for (auto&& t : time_steps) {
     string root_name       = "amr_state_ts_" + std::to_string(count_);
-    moving_sphere.centroid = sphere_center(t);
+    moving_sphere.set_centroid(sphere_center(t));
     int iter_counter       = 0;
     while (amr_handler.adapt(amr_action, [&]() {
       // If VTK is enabled write the state of the AMR handler at each iteration

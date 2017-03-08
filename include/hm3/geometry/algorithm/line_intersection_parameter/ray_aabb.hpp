@@ -2,11 +2,13 @@
 /// \file
 ///
 /// Parameter of the intersection of a point with a line.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx/number.hpp>
 #include <hm3/geometry/algorithm/x_min_max.hpp>
+#include <hm3/geometry/concept/aabb.hpp>
+#include <hm3/geometry/concept/ray.hpp>
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/utility/optional.hpp>
-#include <hm3/utility/variant.hpp>
 
 namespace hm3::geometry {
 

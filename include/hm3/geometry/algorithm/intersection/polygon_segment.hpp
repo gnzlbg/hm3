@@ -7,7 +7,7 @@
 #include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
 #include <hm3/geometry/algorithm/is_convex.hpp>
 #include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

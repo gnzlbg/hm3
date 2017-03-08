@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Bit manipulation utilities
-#include <hm3/types.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/array.hpp>
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
+#include <hm3/types.hpp>
 #if defined(HM3_USE_BMI2) || defined(__BMI2__)
 #pragma message "using BMI2"
 #include <immintrin.h>

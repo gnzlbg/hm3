@@ -126,7 +126,7 @@ void check_variables(fv::euler::physics<Nd> p, test_state<Nd> a) {
     var_v cv_c = a.cv;
     cv.to_pv_ip(cv_c);
 
-    RANGES_FOR (auto&& v, p.variables()) {
+    for (auto&& v : p.variables()) {
       CHECK(cv_c(v) == a.pv(v));
       CHECK(cv.to_pv(a.cv)(v) == a.pv(v));
     }
@@ -134,7 +134,7 @@ void check_variables(fv::euler::physics<Nd> p, test_state<Nd> a) {
     for (auto d : p.dimensions()) {
       var_v cv_f;
       cv.flux_ip(a.cv, cv_f, d);
-      RANGES_FOR (auto&& v, p.variables()) {
+      for (auto&& v : p.variables()) {
         CHECK(cv_f(v) == a.f[d](v));
         CHECK(cv.flux(a.cv, d)(v) == a.f[d](v));
       }
@@ -171,7 +171,7 @@ void check_variables(fv::euler::physics<Nd> p, test_state<Nd> a) {
     var_v pv_c = a.pv;
     pv.to_cv_ip(pv_c);
 
-    RANGES_FOR (auto&& v, p.variables()) {
+    for (auto&& v : p.variables()) {
       CHECK(pv_c(v) == a.cv(v));
       CHECK(pv.to_cv(a.pv)(v) == a.cv(v));
     }
@@ -179,7 +179,7 @@ void check_variables(fv::euler::physics<Nd> p, test_state<Nd> a) {
     for (auto d : p.dimensions()) {
       var_v pv_f;
       pv.flux_ip(a.pv, pv_f, d);
-      RANGES_FOR (auto&& v, p.variables()) {
+      for (auto&& v : p.variables()) {
         CHECK(pv_f(v) == a.f[d](v));
         CHECK(pv.flux(a.pv, d)(v) == a.f[d](v));
       }
@@ -218,11 +218,11 @@ void check_lax_friedrichs_flux(fv::euler::physics<Nd> p, test_state<Nd> l,
     num_t area = 1.0;
   } s;
 
-  RANGES_FOR (auto&& d, p.dimensions()) {
+  for (auto&& d : p.dimensions()) {
     auto f_cv1 = fv::flux::rusanov(cv, l.cv, r.cv, d, s);
     auto f_cv2 = fv::flux::rusanov(cv, r.cv, l.cv, d, s);
 
-    RANGES_FOR (auto&& v, p.variables()) { CHECK(f_cv1(v) == -f_cv2(v)); }
+    for (auto&& v : p.variables()) { CHECK(f_cv1(v) == -f_cv2(v)); }
   }
 }
 

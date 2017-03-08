@@ -35,8 +35,8 @@ struct Line : rc::refines<GeometryObject, rc::Regular, LineLike> {
 }  // namespace concept
 
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using LineLike = meta::and_<GeometryObject<T, Ad, 1>,
-                            concept::rc::models<concept::LineLike, T>>;
+using LineLike
+ = meta::and_<GeometryObject<T, Ad, 1>, rc::models<concept::LineLike, T>>;
 
 /// Line concept:
 ///
@@ -50,7 +50,6 @@ using LineLike = meta::and_<GeometryObject<T, Ad, 1>,
 /// - T(point_t begin, point_t end)
 ///
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Line
- = meta::and_<GeometryObject<T, Ad, 1>, concept::rc::models<concept::Line, T>>;
+using Line = meta::and_<GeometryObject<T, Ad, 1>, rc::models<concept::Line, T>>;
 
 }  // namespace hm3::geometry

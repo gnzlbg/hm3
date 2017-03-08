@@ -3,6 +3,7 @@
 ///
 /// Inverse of a signed distance field
 #include <hm3/geometry/sd/core.hpp>
+#include <hm3/math/translation.hpp>
 
 namespace hm3::geometry::sd {
 

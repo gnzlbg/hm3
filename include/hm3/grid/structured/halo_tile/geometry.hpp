@@ -7,16 +7,13 @@
 #include <hm3/grid/structured/halo_tile/cell/indices.hpp>
 #include <hm3/grid/structured/tile/geometry.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace halo_tile {
+namespace hm3::grid::structured::halo_tile {
 
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
-struct cell_geometry : geometry::box<Nd>,
-                       cell::indices<Nd, Nic, Nhl>::coordinate {
-  using box_t        = geometry::box<Nd>;
-  using coordinate_t = typename cell::indices<Nd, Nic, Nhl>::coordinate;
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
+struct cell_geometry : geometry::box<Ad>,
+                       cell::indices<Ad, Nic, Nhl>::coordinate {
+  using box_t        = geometry::box<Ad>;
+  using coordinate_t = typename cell::indices<Ad, Nic, Nhl>::coordinate;
   cell_geometry(box_t s, coordinate_t x)
    : box_t{std::move(s)}, coordinate_t(std::move(x)) {}
   explicit operator box_t() const noexcept {
@@ -32,18 +29,18 @@ struct cell_geometry : geometry::box<Nd>,
 /// Note: external and internal are used to talk about the tile geometry of the
 /// tile with and without halo cells, respectively.
 ///
-/// \tparam Nd  number of spatial dimensions
+/// \tparam Ad  number of spatial dimensions
 /// \tparam Nic number of internal (non-halo) cells per dimension
 /// \tparam Nhl number of halo layers
-template <dim_t Nd, tidx_t Nic, tidx_t Nhl>
+template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
 struct tile_geometry
- : private tile::tile_geometry<Nd, cell::bounds<Nd, Nic, Nhl>::length()> {
-  using bounds                 = cell::bounds<Nd, Nic, Nhl>;
-  using external_tile_geometry = tile::tile_geometry<Nd, bounds::length()>;
-  using cell_coordinate        = cell::coordinate<Nd, Nic, Nhl>;
+ : private tile::tile_geometry<Ad, cell::bounds<Ad, Nic, Nhl>::length()> {
+  using bounds                 = cell::bounds<Ad, Nic, Nhl>;
+  using external_tile_geometry = tile::tile_geometry<Ad, bounds::length()>;
+  using cell_coordinate        = cell::coordinate<Ad, Nic, Nhl>;
   using point_t                = typename external_tile_geometry::point_t;
   using box_t                  = typename external_tile_geometry::box_t;
-  using cell_geometry_t        = cell_geometry<Nd, Nic, Nhl>;
+  using cell_geometry_t        = cell_geometry<Ad, Nic, Nhl>;
 
   // imports from external_tile_geometry
   using external_tile_geometry::cell_centroid;
@@ -61,11 +58,11 @@ struct tile_geometry
   constexpr tile_geometry& operator=(tile_geometry&&) = default;
 
   static constexpr box_t external_bounding_box(box_t internal_bbox) noexcept {
-    using internal_tile_geometry = tile::tile_geometry<Nd, Nic>;
+    using internal_tile_geometry = tile::tile_geometry<Ad, Nic>;
     auto cell_length = internal_tile_geometry::cell_length(internal_bbox);
-    auto external_tile_length          = cell_length * bounds::length();
-    auto external_tile_bounding_box    = internal_bbox;
-    external_tile_bounding_box.length_ = external_tile_length;
+    auto external_tile_length = cell_length * bounds::length();
+    auto external_tile_bounding_box
+     = box_t{geometry::centroid(internal_bbox), external_tile_length};
     return external_tile_bounding_box;
   }
 
@@ -140,9 +137,8 @@ struct tile_geometry
   ///
   /// TODO rename: remove tile_ ?
   constexpr box_t tile_internal_bounding_box() const noexcept {
-    auto internal_bbox    = tile_external_bounding_box();
-    internal_bbox.length_ = tile_internal_length();
-    return internal_bbox;
+    return box_t{geometry::centroid(tile_external_bounding_box()),
+                 tile_internal_length()};
   }
 
   /// Bounding box of the tile with halo cells
@@ -160,7 +156,4 @@ struct tile_geometry
   }
 };
 
-}  // namespace halo_tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::halo_tile

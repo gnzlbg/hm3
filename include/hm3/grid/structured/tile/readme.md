@@ -20,7 +20,7 @@ A tile contains 2 major components:
     then all with `n_y`, ...
 
 > TODO: extensions would be a `corner_indices` and `edge_indices`, and a
-> nd-generalization. None of these have been necessary for implementing
+> ad-generalization. None of these have been necessary for implementing
 > numerical methods yet. But might be.
 
 ### Tile coordinates
@@ -59,7 +59,7 @@ direction, as well as the coordinates of the adjacent grid cells.
 
 This is the only type of tile implemented, and its the easiest one to implement.
 All cells are visited following the i-th leading direction, and then the j-th,
-and k-th direction respectively. Its like traversing a nd-tensor in "row-major"
+and k-th direction respectively. Its like traversing a ad-tensor in "row-major"
 order. Should be fine for "small tiles", that is, where the whole tile fits in
 L1 cache.
 

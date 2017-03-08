@@ -5,7 +5,7 @@
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/line_intersection_parameter/segment_point.hpp>
 #include <hm3/io/ascii.hpp>
-#include <hm3/utility/variant.hpp>
+#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 

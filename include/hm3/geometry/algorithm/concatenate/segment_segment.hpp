@@ -5,7 +5,9 @@
 #include <hm3/geometry/algorithm/edge.hpp>
 #include <hm3/geometry/algorithm/vertex.hpp>
 #include <hm3/geometry/concept/polyline.hpp>
+#include <hm3/geometry/concept/segment.hpp>
 #include <hm3/geometry/fwd.hpp>
+#include <hm3/geometry/tolerance.hpp>
 #include <hm3/utility/optional.hpp>
 
 namespace hm3::geometry {

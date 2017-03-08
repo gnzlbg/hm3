@@ -23,6 +23,6 @@ struct Segment : rc::refines<Edge, EdgeAccess, VertexAccess> {
 /// Refines: Edge, EdgeAccess
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
 using Segment = meta::and_<GeometryObject<T, Ad, 1>,
-                           concept::rc::models<concept::Segment, T>>;
+                           rc::models<concept::Segment, T>>;
 
 }  // namespace hm3::geometry

@@ -3,22 +3,18 @@
 ///
 /// Serialization of FV solver to VTK
 #ifdef HM3_ENABLE_VTK
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/relative_position.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/solver/fv/state.hpp>
-#include <hm3/utility/variant.hpp>
-#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-
-namespace vtk {
+namespace hm3::solver::fv::vtk {
 
 template <typename State, typename T>
-struct serializable : geometry::dimensional<State::dimension()> {
+struct serializable
+ : geometry::with_ambient_dimension<State::ambient_dimension()> {
   State const& s;
   using tile_idx = grid_node_idx;
   tile_idx idx   = tile_idx{};
@@ -73,11 +69,11 @@ struct ls_serializable : serializable<State, T> {
   using base::s;
   using base::idx;
   using tile_idx            = typename base::tile_idx;
-  static constexpr dim_t nd = State::dimension();
+  static constexpr dim_t ad = State::ambient_dimension();
   Ls const& ls;
   using vtk_cell_idx = cell_idx;
 
-  vis::vtk::geometries<nd> geometry(cell_idx c) const noexcept {
+  vis::vtk::geometry_t<ad> geometry(cell_idx c) const noexcept {
     auto g = s.geometry(c);
     if (!geometry::intersection.test(g, ls)) { return g; }
     return std::get<0>(intersect(g, ls));
@@ -140,9 +136,5 @@ void ls_serialize(State const& state, Ls const& ls, string file_name,
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 
-}  // namespace vtk
-
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::vtk
 #endif  // HM3_ENABLE_VTK

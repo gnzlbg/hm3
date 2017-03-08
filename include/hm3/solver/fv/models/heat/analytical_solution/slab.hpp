@@ -6,19 +6,16 @@
 #include <hm3/math/integral/integrate_1d.hpp>
 #include <hm3/solver/fv/models/heat/indices.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace heat {
+namespace hm3::solver::fv::heat {
 
 /// Analytical solutions for the heat equation
 namespace as {
 
 /// Analytical solution on a 1D slab
-template <dim_t Nd>
+template <dim_t Ad>
 struct slab {
-  using i       = indices<Nd>;
-  using point_t = geometry::point<Nd>;
+  using i       = indices<Ad>;
+  using point_t = geometry::point<Ad>;
   using var_v   = num_a<i::nvars()>;
 
   /// Constant heat diffusivity of the material
@@ -77,7 +74,4 @@ struct slab {
 };
 
 }  // namespace as
-}  // namespace heat
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::heat

@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Optional index
+#include <hm3/math/core.hpp>
 #include <hm3/utility/compact_optional.hpp>
-#include <hm3/utility/math.hpp>
 
 namespace hm3 {
 

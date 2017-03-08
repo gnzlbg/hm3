@@ -458,8 +458,8 @@ struct bvh : with_ambient_dimension<Ad> {
     return smallest;
   }
 
-  /// Appends to the vector \p result the ids of the simplices whose bounding
-  /// boxes intersect with \p target.
+  /// Appends to the vector \p result the BVH nodes of the simplices whose
+  /// bounding boxes intersect with \p target.
   template <typename T, typename Vector>
   void aabb_intersection(T const& target, Vector& result,
                          node_idx start = node_idx{0}) const {
@@ -476,6 +476,7 @@ struct bvh : with_ambient_dimension<Ad> {
 
       // The bounding box of \p n intersects \p target and n is a leaf node
       // containing a simplex, so we add the node to the vector and are done:
+      HM3_ASSERT(node(n).simplex, "");
       result.push_back(n);
       return visitor_action::done;
     };
@@ -536,11 +537,11 @@ struct bvh : with_ambient_dimension<Ad> {
     return count;
   }
 
-  /// Returns a vector of simplex ids whose bounding boxes intersect with the
+  /// Returns a vector of BVH nodes whose bounding boxes intersect with the
   /// \p target.
   template <typename T>
-  small_vector<simplex_idx, 128> aabb_intersection(T const& target) const {
-    small_vector<simplex_idx, 128> result;
+  small_vector<node_idx, 128> aabb_intersection(T const& target) const {
+    small_vector<node_idx, 128> result;
     aabb_intersection(target, result);
     return result;
   }

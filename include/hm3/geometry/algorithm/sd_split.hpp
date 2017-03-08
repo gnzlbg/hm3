@@ -1,38 +1,51 @@
-#ifdef ABC
-
 #pragma once
 /// \file
 ///
-/// Split one primitive with another
+/// Split one primitive with the zero-th level of a signed-distance field.
+#include <hm3/geometry/algorithm/sd_split/polygon.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3::geometry {
+namespace hm3::geometry::sd {
 
-namespace sd_split_detail {
+namespace split_detail {
 
-struct sd_split_fn {
+struct split_fn {
+  template <typename T, typename U, dim_t Ad = ad_v<T>>
+  static constexpr auto impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                             trait::polygon<Ad>) {
+    static_assert(Polygon<uncvref_t<T>>{});
+    static_assert(SignedDistance<uncvref_t<U>, associated::point_t<T>>{});
+    static_assert(ad_v<T> == ad_v<U>);
+    return split_polygon(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                         rel_tol);
+  }
+
   template <typename T, typename U>
-  static constexpr auto sd_split_impl(T&& t, U&& u, long)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(sd_split(std::forward<U>(u),
-                                                 std::forward<T>(t)));
+  static constexpr auto split_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   long)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<U>(u),
+                                             std::forward<T>(t), abs_tol,
+                                             rel_tol, associated::v_<U>));
 
   template <typename T, typename U>
-  static constexpr auto sd_split_impl(T&& t, U&& u, int)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(sd_split(std::forward<T>(t),
-                                                 std::forward<U>(u)));
+  static constexpr auto split_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
+                                   int)
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
+                                             std::forward<U>(u), abs_tol,
+                                             rel_tol, associated::v_<T>));
 
   template <typename T, typename U>
-  constexpr auto operator()(T&& t, U&& u) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(sd_split_impl(std::forward<T>(t),
-                                                      std::forward<U>(u), 0));
+  constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(split_impl(std::forward<T>(t),
+                                                   std::forward<U>(u), abs_tol,
+                                                   rel_tol, 0));
 };
 
-}  // namespace sd_split_detail
+}  // namespace split_detail
 
 namespace {
-static constexpr auto const& sd_split
- = static_const<sd_split_detail::sd_split_fn>::value;
+static constexpr auto const& split
+ = static_const<with_default_tolerance<split_detail::split_fn>>::value;
 }  // namespace
 
-}  // namespace hm3::geometry
-#endif
+}  // namespace hm3::geometry::sd

@@ -2,16 +2,10 @@
 /// \file
 ///
 /// Numerical flux
-#include <hm3/geometry/dimension.hpp>
 #include <hm3/solver/fv/models/heat/indices.hpp>
 #include <hm3/utility/matrix.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace heat {
-
-namespace flux {
+namespace hm3::solver::fv::heat::flux {
 
 // struct three_point_fn {
 //   template <typename V, typename VT, typename State,
@@ -81,8 +75,4 @@ namespace {
 constexpr auto&& five_point = static_const<five_point_fn>::value;
 }  // namespace
 
-}  // namespace flux
-}  // namespace heat
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::heat::flux

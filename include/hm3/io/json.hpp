@@ -2,20 +2,9 @@
 /// \file
 ///
 /// Includes the json library and adds some utilities for HM3's File I/O
+#include <hm3/ext/json.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/config/exception.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
-#include <json.hpp>
-
-namespace nlohmann {
-
-template <typename OStream>
-constexpr OStream& to_ascii(OStream& os, json const& t) {
-  os << t.dump(2);
-  return os;
-}
-
-}  // namespace nlohmann
+#include <hm3/utility/fatal_error.hpp>
 
 namespace hm3::io {
 

@@ -26,6 +26,6 @@ struct Polyhedron : rc::refines<VertexAccess, EdgeAccess, FaceAccess> {
 /// Refines: VertexAccess, EdgeAccess, FaceAcces
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
 using Polyhedron = meta::and_<GeometryObject<T, Ad, 3>,
-                              concept::rc::models<concept::Polyhedron, T>>;
+                              rc::models<concept::Polyhedron, T>>;
 
 }  // namespace hm3::geometry

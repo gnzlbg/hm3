@@ -2,9 +2,7 @@
 /// \file
 ///
 /// Formatting utilties
-#include <cxxabi.h>
-#include <spdlog/fmt/ostr.h>
-#include <spdlog/spdlog.h>
+#include <hm3/ext/fmt.hpp>
 #include <hm3/utility/ref.hpp>
 
 /// Formatting of types on assertions.
@@ -92,7 +90,8 @@ static constexpr bool should_wrap
  = not std::is_integral<U>{}  // and not std::is_pointer<U>{}
    and not std::is_floating_point<U>{}
    and not std::is_same<std::decay_t<T>, const char*>{}
-   and not std::is_same<U, std::string>{};
+   and not std::is_same<U, std::string>{}
+   and not std::is_same<uncvref_t<std::remove_pointer_t<U>>, void>{};
 
 template <typename T, CONCEPT_REQUIRES_(should_wrap<T>)>
 wrap_t<T> wrap(T&& t) {

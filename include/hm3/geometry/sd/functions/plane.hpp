@@ -31,7 +31,7 @@ static constexpr auto const& plane
 /// Oriented plane at point centroid with normal vec. Signed distance is
 /// positive in positive normal direction.
 template <dim_t Ad>
-struct plane_at_origin : with_ambient_dimension<Ad> {
+struct plane_at_origin : signed_distance<Ad> {
   vec<Ad> normal = vec<Ad>::unit(0);
 
   constexpr plane_at_origin() = default;

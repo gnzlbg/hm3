@@ -12,9 +12,7 @@
 #include <memory>
 #include <string>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
+namespace hm3::vis::vtk {
 
 /// VTK Reader interface
 ///
@@ -180,7 +178,5 @@ struct reader {
   hm3::log::serial log;
 };
 
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk
 #endif  // HM3_ENABLE_VTK

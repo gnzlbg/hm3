@@ -2,14 +2,12 @@
 /// \file
 ///
 /// Compute time step
+#include <hm3/math/core.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 #include <limits>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct compute_time_step_fn {
   template <typename State, typename TimeStepF, typename V>
@@ -51,6 +49,4 @@ static constexpr auto&& compute_time_step
  = static_const<compute_time_step_fn>::value;
 }
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

@@ -5,7 +5,7 @@
 ///
 /// \todo Rename file
 /// \todo Remove unstable APIs
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/grid/hierarchical/client/multi.hpp>
 #include <hm3/solver/types.hpp>
 
@@ -16,8 +16,8 @@ namespace solver {
 ///
 /// \tparam Tile Type of the tile to store per octree node
 template <typename Tile>
-struct tiled_hierarchical_grid : geometry::dimensional<Tile::dimension()> {
-  using geometry::dimensional<Tile::dimension()>::dimension;
+struct tiled_hierarchical_grid : geometry::with_ambient_dimension<ad_v<Tile>> {
+  using geometry::with_ambient_dimension<ad_v<Tile>>::ambient_dimension;
 
   /// Type of the tile
   using tile_t     = Tile;
@@ -25,7 +25,7 @@ struct tiled_hierarchical_grid : geometry::dimensional<Tile::dimension()> {
   using tile_local_cell_idx_t = typename tile_t::cell_coordinate_t;
 
   /// Grid client
-  using grid_client_t = grid::hierarchical::client::multi<dimension()>;
+  using grid_client_t = grid::hierarchical::client::multi<ambient_dimension()>;
 
   /// Grid type
   using grid_t = typename grid_client_t::tree_t;

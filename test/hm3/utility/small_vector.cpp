@@ -362,19 +362,19 @@ void libcxx_tests() {
     CHECK(c.back() == 1);
     CHECK(c.front() == 1);
     CHECK(c[0] == 1);
-    CHECK(c.size() == 1);
+    CHECK(c.size() == 1_u);
     c.push_back(2);
     CHECK(c.back() == 2);
     CHECK(c.front() == 1);
     CHECK(c[0] == 1);
     CHECK(c[1] == 2);
-    CHECK(c.size() == 2);
+    CHECK(c.size() == 2_u);
     c.pop_back();
     CHECK(c.front() == 1);
     CHECK(c[0] == 1);
     CHECK(c.back() == 1);
     c.pop_back();
-    CHECK(c.size() == 0);
+    CHECK(c.size() == 0_u);
   }
 
   {  // const back:
@@ -383,7 +383,7 @@ void libcxx_tests() {
     CHECK(c.back() == 0);
     CHECK(c.front() == 0);
     CHECK(c[0] == 0);
-    CHECK(c.size() == 1);
+    CHECK(c.size() == 1_u);
   }
 
   {  // swap: same type
@@ -446,19 +446,19 @@ void libcxx_tests() {
    {small_vector<A, 3> c;
   small_vector<A, 3>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
   CHECK(i == c.begin());
-  CHECK(c.size() == 1);
+  CHECK(c.size() == 1_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   i = c.emplace(c.cend(), 3, 4.5);
   CHECK(i == c.end() - 1);
-  CHECK(c.size() == 2);
+  CHECK(c.size() == 2_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   CHECK(c.back().geti() == 3);
   CHECK(c.back().getd() == 4.5);
   i = c.emplace(c.cbegin() + 1, 4, 6.5);
   CHECK(i == c.begin() + 1);
-  CHECK(c.size() == 3);
+  CHECK(c.size() == 3_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   CHECK(c[1].geti() == 4);
@@ -470,19 +470,19 @@ void libcxx_tests() {
   small_vector<A, 3> c;
   small_vector<A, 3>::iterator i = c.emplace(c.cbegin(), 2, 3.5);
   CHECK(i == c.begin());
-  CHECK(c.size() == 1);
+  CHECK(c.size() == 1_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   i = c.emplace(c.cend(), 3, 4.5);
   CHECK(i == c.end() - 1);
-  CHECK(c.size() == 2);
+  CHECK(c.size() == 2_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   CHECK(c.back().geti() == 3);
   CHECK(c.back().getd() == 4.5);
   i = c.emplace(c.cbegin() + 1, 4, 6.5);
   CHECK(i == c.begin() + 1);
-  CHECK(c.size() == 3);
+  CHECK(c.size() == 3_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   CHECK(c[1].geti() == 4);
@@ -495,11 +495,11 @@ void libcxx_tests() {
 {// emplace_back
  {small_vector<A, 2> c;
 c.emplace_back(2, 3.5);
-CHECK(c.size() == 1);
+CHECK(c.size() == 1_u);
 CHECK(c.front().geti() == 2);
 CHECK(c.front().getd() == 3.5);
 c.emplace_back(3, 4.5);
-CHECK(c.size() == 2);
+CHECK(c.size() == 2_u);
 CHECK(c.front().geti() == 2);
 CHECK(c.front().getd() == 3.5);
 CHECK(c.back().geti() == 3);
@@ -508,11 +508,11 @@ CHECK(c.back().getd() == 4.5);
 {
   small_vector<A, 2> c;
   c.emplace_back(2, 3.5);
-  CHECK(c.size() == 1);
+  CHECK(c.size() == 1_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   c.emplace_back(3, 4.5);
-  CHECK(c.size() == 2);
+  CHECK(c.size() == 2_u);
   CHECK(c.front().geti() == 2);
   CHECK(c.front().getd() == 3.5);
   CHECK(c.back().geti() == 3);
@@ -539,23 +539,23 @@ CHECK(v[0] == 3);
 {// erase
  {int a1[] = {1, 2, 3};
 small_vector<int, 4> l1(a1, a1 + 3);
-CHECK(l1.size() == 3);
+CHECK(l1.size() == 3_u);
 small_vector<int, 4>::const_iterator i = l1.begin();
 ++i;
 small_vector<int, 4>::iterator j = l1.erase(i);
-CHECK(l1.size() == 2);
+CHECK(l1.size() == 2_u);
 CHECK(std::distance(l1.begin(), l1.end()) == 2);
 CHECK(*j == 3);
 CHECK(*l1.begin() == 1);
 CHECK(*std::next(l1.begin()) == 3);
 j = l1.erase(j);
 CHECK(j == l1.end());
-CHECK(l1.size() == 1);
+CHECK(l1.size() == 1_u);
 CHECK(std::distance(l1.begin(), l1.end()) == 1);
 CHECK(*l1.begin() == 1);
 j = l1.erase(l1.begin());
 CHECK(j == l1.end());
-CHECK(l1.size() == 0);
+CHECK(l1.size() == 0_u);
 CHECK(std::distance(l1.begin(), l1.end()) == 0);
 }
 }
@@ -566,14 +566,14 @@ CHECK(std::distance(l1.begin(), l1.end()) == 0);
   {
     vec_t l1(a1, a1 + 3);
     vec_t::iterator i = l1.erase(l1.cbegin(), l1.cbegin());
-    CHECK(l1.size() == 3);
+    CHECK(l1.size() == 3_u);
     CHECK(std::distance(l1.cbegin(), l1.cend()) == 3);
     CHECK(i == l1.begin());
   }
   {
     vec_t l1(a1, a1 + 3);
     vec_t::iterator i = l1.erase(l1.cbegin(), std::next(l1.cbegin()));
-    CHECK(l1.size() == 2);
+    CHECK(l1.size() == 2_u);
     CHECK(std::distance(l1.cbegin(), l1.cend()) == 2);
     CHECK(i == l1.begin());
     CHECK(l1 == vec_t(a1 + 1, a1 + 3));
@@ -581,7 +581,7 @@ CHECK(std::distance(l1.begin(), l1.end()) == 0);
   {
     vec_t l1(a1, a1 + 3);
     vec_t::iterator i = l1.erase(l1.cbegin(), std::next(l1.cbegin(), 2));
-    CHECK(l1.size() == 1);
+    CHECK(l1.size() == 1_u);
     CHECK(std::distance(l1.cbegin(), l1.cend()) == 1);
     CHECK(i == l1.begin());
     CHECK(l1 == vec_t(a1 + 2, a1 + 3));
@@ -589,23 +589,23 @@ CHECK(std::distance(l1.begin(), l1.end()) == 0);
   {
     vec_t l1(a1, a1 + 3);
     vec_t::iterator i = l1.erase(l1.cbegin(), std::next(l1.cbegin(), 3));
-    CHECK(l1.size() == 0);
+    CHECK(l1.size() == 0_u);
     CHECK(std::distance(l1.cbegin(), l1.cend()) == 0);
     CHECK(i == l1.begin());
   }
   {
     small_vector<vec_t, 3> outer(2, vec_t(1));
     outer.erase(outer.begin(), outer.begin());
-    CHECK(outer.size() == 2);
-    CHECK(outer[0].size() == 1);
-    CHECK(outer[1].size() == 1);
+    CHECK(outer.size() == 2_u);
+    CHECK(outer[0].size() == 1_u);
+    CHECK(outer[1].size() == 1_u);
   }
 }
 
 {// insert init list
  {small_vector<int, 15> d(10, 1);
 small_vector<int, 15>::iterator i = d.insert(d.cbegin() + 2, {3, 4, 5, 6});
-CHECK(d.size() == 14);
+CHECK(d.size() == 14_u);
 CHECK(i == d.begin() + 2);
 CHECK(d[0] == 1);
 CHECK(d[1] == 1);
@@ -630,7 +630,7 @@ int a[]             = {1, 2, 3, 4, 5};
 const std::size_t N = sizeof(a) / sizeof(a[0]);
 small_vector<int, 120>::iterator i
  = v.insert(v.cbegin() + 10, (a + 0), (a + N));
-CHECK(v.size() == 100 + N);
+CHECK(v.size() == 100_u + N);
 CHECK(i == v.begin() + 10);
 std::size_t j;
 for (j = 0; j < 10; ++j) CHECK(v[j] == 0);
@@ -656,7 +656,7 @@ for (; j < 105; ++j) CHECK(v[j] == 0);
 {// insert iter rvalue
  {small_vector<moint, 103> v(100);
 small_vector<moint, 103>::iterator i = v.insert(v.cbegin() + 10, moint(3));
-CHECK(v.size() == 101);
+CHECK(v.size() == 101_u);
 CHECK(i == v.begin() + 10);
 std::size_t j;
 for (j = 0; j < 10; ++j)
@@ -670,7 +670,7 @@ for (++j; j < 101; ++j)
 {// insert iter size
  {small_vector<int, 130> v(100);
 small_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
-CHECK(v.size() == 105);
+CHECK(v.size() == 105_u);
 CHECK(i == v.begin() + 10);
 std::size_t j;
 for (j = 0; j < 10; ++j) CHECK(v[j] == 0);
@@ -704,7 +704,7 @@ for (++j; j < 105; ++j) CHECK(v[j] == 0);
 {// iter value:
  {small_vector<int, 130> v(100);
 small_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
-CHECK(v.size() == 101);
+CHECK(v.size() == 101_u);
 CHECK(i == v.begin() + 10);
 std::size_t j;
 for (j = 0; j < 10; ++j) CHECK(v[j] == 0);
@@ -741,23 +741,23 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
   {
     small_vector<moint, 6> c;
     c.push_back(moint(0));
-    CHECK(c.size() == 1);
+    CHECK(c.size() == 1_u);
     for (std::size_t j = 0; j < c.size(); ++j)
       if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(1));
-    CHECK(c.size() == 2);
+    CHECK(c.size() == 2_u);
     for (std::size_t j = 0; j < c.size(); ++j)
       if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(2));
-    CHECK(c.size() == 3);
+    CHECK(c.size() == 3_u);
     for (std::size_t j = 0; j < c.size(); ++j)
       if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(3));
-    CHECK(c.size() == 4);
+    CHECK(c.size() == 4_u);
     for (std::size_t j = 0; j < c.size(); ++j)
       if (c[j] != moint(j)) { CHECK(false); }
     c.push_back(moint(4));
-    CHECK(c.size() == 5);
+    CHECK(c.size() == 5_u);
     for (std::size_t j = 0; j < c.size(); ++j)
       if (c[j] != moint(j)) { CHECK(false); }
   }

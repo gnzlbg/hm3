@@ -4,13 +4,11 @@
 /// VTK data fields
 #ifdef HM3_ENABLE_VTK
 #include <hm3/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/vector.hpp>
 #include <hm3/vis/field.hpp>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
+namespace hm3::vis::vtk {
 
 /// Manages loading/unloading of data fields (cell data, point data, field data)
 ///
@@ -170,7 +168,5 @@ struct data_fields {
   auto end() noexcept { return ::hm3::end(current_); }
 };
 
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk
 #endif  // HM3_ENABLE_VTK

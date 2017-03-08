@@ -10,11 +10,13 @@ namespace hm3::geometry {
 
 namespace relative_position_point_segment_detail {
 struct relative_position_point_segment_fn {
-  template <typename P, typename S,
-            CONCEPT_REQUIRES_(Point<P, 2>{} and Segment<S, 2>{})>
-  constexpr auto operator()(P const& p, S const& s) const noexcept {
+  template <typename P, typename S>
+  constexpr auto operator()(P const& p, S const& s, num_t abs_tol,
+                            num_t rel_tol) const noexcept {
+    static_assert(Point<P, 2>{});
+    static_assert(Segment<S, 2>{});
     auto l = s.line();
-    return relative_position_point_line(p, l);
+    return relative_position_point_line(p, l, abs_tol, rel_tol);
   }
 };
 
@@ -22,8 +24,9 @@ struct relative_position_point_segment_fn {
 
 namespace {
 static constexpr auto const& relative_position_point_segment
- = static_const<relative_position_point_segment_detail::
-                 relative_position_point_segment_fn>::value;
+ = static_const<with_default_tolerance<
+  relative_position_point_segment_detail::relative_position_point_segment_fn>>::
+  value;
 }  // namespace
 
 }  // namespace hm3::geometry

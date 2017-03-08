@@ -3,9 +3,14 @@
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
+# CMake Version:
+cmake_minimum_required(VERSION 3.0)
+cmake_policy(VERSION 3.7.1)
+set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
+#cmake_policy(SET CMP0066 NEW)
+
 # Setup project
 project(hm3 CXX)
-cmake_minimum_required(VERSION 3.0)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Export compilation data-base
 

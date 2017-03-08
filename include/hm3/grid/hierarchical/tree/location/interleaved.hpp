@@ -5,9 +5,9 @@
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bit.hpp>
 #include <hm3/utility/compact_optional.hpp>
-#include <hm3/utility/config/assert.hpp>
 #include <type_traits>
 
 namespace hm3::tree::location {
@@ -146,9 +146,10 @@ struct interleaved : geometry::with_ambient_dimension<Ad> {
 
   static constexpr self min() noexcept {
     self l;
-    while (*l.level() < *l.max_level() - 1) { l.push(0); }
+    while (*l.level() < *l.max_level()) { l.push(0); }
     return l;
   }
+
 
   /// Change location to the parent of the current node.
   ///

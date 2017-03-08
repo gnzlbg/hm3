@@ -2,14 +2,11 @@
 /// \file
 ///
 ///
+#include <hm3/math/core.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace heat {
+namespace hm3::solver::fv::heat {
 
 struct time_step_fn {
   static constexpr bool requires_cell_state = false;
@@ -26,7 +23,4 @@ namespace {
 constexpr auto&& time_step = static_const<time_step_fn>::value;
 }  // namespace
 
-}  // namespace heat
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::heat

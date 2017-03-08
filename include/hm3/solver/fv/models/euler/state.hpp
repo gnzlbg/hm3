@@ -3,12 +3,9 @@
 ///
 ///
 #include <hm3/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
 struct state {
   /// \name Physical constants
@@ -23,7 +20,4 @@ struct state {
   }
 };
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

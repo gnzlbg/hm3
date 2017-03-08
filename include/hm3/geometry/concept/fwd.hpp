@@ -7,10 +7,6 @@
 namespace hm3::geometry {
 
 /// Geometry concepts.
-namespace concept {
-
-namespace rc = ranges::concepts;
-
-}  // namespace concept
+namespace concept {}  // namespace concept
 
 }  // namespace hm3::geometry

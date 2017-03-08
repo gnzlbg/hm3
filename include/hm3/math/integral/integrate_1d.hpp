@@ -3,6 +3,7 @@
 ///
 /// Integrates a 1D function up-to a specific tolerance
 #include <hm3/math/integral/simpson_1d.hpp>
+#include <hm3/utility/fatal_error.hpp>
 
 namespace hm3::math {
 

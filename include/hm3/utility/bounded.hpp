@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Bounded integer type
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
 
 namespace hm3 {

@@ -6,22 +6,20 @@
 /// Slower and requires 4x more memory than the interleaved location
 /// implementation. It might be possible to make this faster by using BMI2.
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
+#include <hm3/grid/hierarchical/tree/location/interleaved.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/bit.hpp>
 #include <hm3/utility/compact_optional.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace tree {
-
-namespace location {
+namespace hm3::tree::location {
 
 /// Deinterleaved location code for a tree node
 ///
-/// \tparam Nd          number of spatial dimensions of the tree
+/// \tparam Ad          number of spatial dimensions of the tree
 /// \tparam MortonIdxT  internal storage of the location code, stored as a
 ///                     an interleaved Morton index in an unsigned integral.
 ///
@@ -32,7 +30,7 @@ namespace location {
 /// in an array. That is, the deinterleaved components (x0,x1,x2,...),
 /// (y0,y1,y2,...), form the morton index x0y0z0x1y1z1x2y2z2...
 ///
-/// \note The deinterleaved representation requires nd+1 words of storage while
+/// \note The deinterleaved representation requires ad+1 words of storage while
 /// the interleaved representation requires only 1 word of storage. While this
 /// representation is tested, it should probably not be used for anything in
 /// practice.
@@ -64,18 +62,22 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
   /// \name Node level
   ///@{
 
-  /// Maximum level that can be returned by the location code
+  /// Maximum number of levels that can be stored in the location code
   ///
-  /// Even though a larger level can be stored in the deinterleaved morton
-  /// coordinates, the level of the location code is _currently_ limited by the
-  /// type used to store a Morton index.
-  static constexpr level_idx max_level() noexcept {
-    constexpr auto max = 8 * sizeof(morton_idx_t) - Ad;
-    return max / Ad;
+  /// This is limited by the loss-less conversion to the morton_idx_t type.
+  static constexpr lidx_t max_no_levels() noexcept {
+    constexpr auto no_bits  = bit::width<morton_idx_t>;
+    constexpr auto loc_size = Ad;
+    return math::floor((static_cast<num_t>(no_bits - loc_size))
+                       / static_cast<num_t>(loc_size));
   }
 
-  /// Maximum number of levels that can be stored in the location code
-  static constexpr lidx_t max_no_levels() noexcept { return *max_level() + 1; }
+  /// Maximum level that can be returned by the location code
+  ///
+  /// The root level is zero so this is just the maximum number of levels - 1.
+  static constexpr level_idx max_level() noexcept {
+    return max_no_levels() - 1;
+  }
 
   /// Level of the node
   constexpr level_idx level() const noexcept { return level_; }
@@ -121,6 +123,7 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
     for (auto&& d : ambient_dimensions()) {
       x_[d] = static_cast<morton_idx_t>(0);
     }
+    level_ = 0;
   }
 
  public:
@@ -185,20 +188,9 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
 
   /// Explicit conversion operator to the underyling integer type as the
   /// interleaved Morton indices of the location
-  ///
-  /// TODO: use BMI2?
   constexpr explicit operator morton_idx_t() const noexcept {
-    morton_x_t tmp(*this);
-    tmp[0] += math::ipow(2_su, *level());
-    morton_idx_t result = 0;
-    std::size_t i       = 0;
-    for (auto l : view::iota(0_u, *level() + 1_u)) {
-      for (auto d : ambient_dimensions()) {
-        bit::set(result, i, bit::get(tmp[d], l));
-        ++i;
-      }
-    }
-    return result;
+    interleaved<Ad, MortonIdxT> tmp((*this)());
+    return static_cast<morton_idx_t>(tmp);
   }
 
   /// Explicit conversion operator to the deinterleaved Morton coordinates
@@ -230,9 +222,9 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
 
     for (auto&& d : ambient_dimensions()) {
       HM3_ASSERT(x[d] > 0. and x[d] < 1.,
-                 "location from non-normalized "
-                 "float (d: {}, x[d]: {}) "
-                 "out-of-range (0., 1.)",
+                 "location from non-normalized float "
+                 "(d: {}, x[d]: {}) out-of-range (0., "
+                 "1.)",
                  d, x[d]);
     }
 
@@ -292,29 +284,13 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
     return std::move(v);
   }
   ///@} // CompactOptional invalid state
-};
 
-template <typename OStream, dim_t Ad, typename MortonIdxT>
-OStream& operator<<(OStream& os, deinterleaved<Ad, MortonIdxT> const& lc) {
-  using f_int_t = morton_idx_t<deinterleaved<Ad, MortonIdxT>>;
-  os << "[id: " << static_cast<f_int_t>(lc) << ", lvl: " << lc.level()
-     << ", xs: {";
-  using morton_x_t = typename deinterleaved<Ad, MortonIdxT>::morton_x_t;
-  morton_x_t xs(lc);
-  for (auto&& d : ambient_dimensions(Ad)) {
-    os << xs[d];
-    if (d != Ad - 1) { os << ", "; }
+  static constexpr self min() noexcept {
+    self l;
+    while (*l.level() < *l.max_level()) { l.push(0); }
+    return l;
   }
-  os << "}, pip: {";
-  lidx_t counter = 0;
-  for (auto&& pip : lc()) {
-    counter++;
-    os << pip;
-    if (counter != *lc.level()) { os << ","; }
-  }
-  os << "}]";
-  return os;
-}
+};
 
 template <dim_t Ad, typename MortonIdxT>
 constexpr bool operator==(deinterleaved<Ad, MortonIdxT> const& a,
@@ -354,7 +330,4 @@ constexpr bool operator>=(deinterleaved<Ad, MortonIdxT> const& a,
   return !(a < b);
 }
 
-}  // namespace location
-
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree::location

@@ -22,8 +22,8 @@ struct Polyline : rc::refines<VertexAccess, EdgeAccess> {
 ///
 /// Refines: Edge, EdgeAccess
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Polyline = meta::and_<GeometryObject<T, Ad, 1>,
-                            concept::rc::models<concept::Polyline, T>>;
+using Polyline
+ = meta::and_<GeometryObject<T, Ad, 1>, rc::models<concept::Polyline, T>>;
 
 namespace concept {
 
@@ -41,8 +41,7 @@ struct MutablePolyline : rc::refines<Polyline> {
 ///
 /// Refines: Polyline
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using MutablePolyline
- = meta::and_<GeometryObject<T, Ad, 1>,
-              concept::rc::models<concept::MutablePolyline, T>>;
+using MutablePolyline = meta::and_<GeometryObject<T, Ad, 1>,
+                                   rc::models<concept::MutablePolyline, T>>;
 
 }  // namespace hm3::geometry

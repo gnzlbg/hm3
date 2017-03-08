@@ -9,10 +9,7 @@ int main() {
   {  // 2D
     static constexpr dim_t ad = 2;
     using p_t                 = point<2>;
-    using v_t                 = vec<2>;
     using oa_t                = sd::aabb_at_origin<ad>;
-    using pa_t                = sd::aabb_at_point<ad>;
-    using ra_t                = sd::rotated_aabb_at_point<ad>;
 
     p_t o = {0., 0.};
 

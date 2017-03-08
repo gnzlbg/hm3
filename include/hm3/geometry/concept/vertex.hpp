@@ -40,7 +40,7 @@ struct Vertex : rc::refines<GeometryObject, rc::Regular, rc::WeaklyOrdered> {
 /// T::ones() -> T: vertex with all coordinate values equal to one
 ///
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Vertex = meta::and_<GeometryObject<T, Ad, 0>,
-                          concept::rc::models<concept::Vertex, T>>;
+using Vertex
+ = meta::and_<GeometryObject<T, Ad, 0>, rc::models<concept::Vertex, T>>;
 
 }  // namespace hm3::geometry

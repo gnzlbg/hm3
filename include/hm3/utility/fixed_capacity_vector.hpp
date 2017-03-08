@@ -361,7 +361,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
     return insert(position, ranges::begin(il), ranges::end(il));
   }
 
-  CONCEPT_REQUIRES(ranges::Movable<reference>{})
+  CONCEPT_REQUIRES(ranges::Movable<value_type>{})
   constexpr iterator erase(const_iterator position) noexcept {
     assert_iterator_in_range(position);
     return erase(position, position + 1);

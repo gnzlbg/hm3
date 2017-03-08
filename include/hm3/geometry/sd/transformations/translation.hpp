@@ -31,6 +31,8 @@ template <typename Sd>
 struct translation : Sd {
   point<ad_v<Sd>> point_ = point<ad_v<Sd>>::constant(0.);
 
+  translation() = default;
+
   template <typename P, typename... Args>
   translation(P xc, Args&&... args)
    : Sd(std::forward<Args>(args)...), point_(std::move(xc())) {

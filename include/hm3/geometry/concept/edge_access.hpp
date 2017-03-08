@@ -30,6 +30,6 @@ struct EdgeAccess {
 ///  - edge_size(t) -> IndexType
 ///  - edge(t, IndexType{}) -> Edge
 template <typename T>
-using EdgeAccess = concept::rc::models<concept::EdgeAccess, T>;
+using EdgeAccess = rc::models<concept::EdgeAccess, T>;
 
 }  // namespace hm3::geometry

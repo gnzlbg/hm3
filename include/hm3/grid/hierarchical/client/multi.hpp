@@ -520,10 +520,10 @@ template <dim_t Ad, typename Tree = typename multi<Ad>::tree_t>
 multi<Ad> from_file_unread(multi<Ad> const&, io::file& f, Tree& t,
                            grid_node_idx node_capacity) {
   auto idx      = grid_idx{f.constant("grid_idx", hierarchical::gidx_t{})};
-  auto nd       = dim_t{f.constant("spatial_dimension", dim_t{})};
+  auto ad       = dim_t{f.constant("spatial_dimension", dim_t{})};
   auto no_nodes = grid_node_idx{f.constant("no_grid_nodes", idx_t{})};
-  if (Ad != nd) {
-    HM3_FATAL_ERROR("spatial_dimension mismatch, type {} vs file {}", Ad, nd);
+  if (Ad != ad) {
+    HM3_FATAL_ERROR("spatial_dimension mismatch, type {} vs file {}", Ad, ad);
   }
   if (!node_capacity) { node_capacity = no_nodes; }
   multi<Ad> g{t, idx, node_capacity};

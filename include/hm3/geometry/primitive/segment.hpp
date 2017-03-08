@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Line segment.
+#include <hm3/geometry/algorithm/approx/point.hpp>
 #include <hm3/geometry/algorithm/collinear.hpp>
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/geometry/primitive/line.hpp>
@@ -131,8 +132,8 @@ constexpr decltype(auto) vertex(P&& p,
 }
 
 /// Vertex \p v of the segment \p s.
-template <dim_t Nd>
-constexpr point<Nd> vertex(segment<Nd> const& s, dim_t v) noexcept {
+template <dim_t Ad>
+constexpr point<Ad> vertex(segment<Ad> const& s, dim_t v) noexcept {
   HM3_ASSERT(v < vertex_size(s), "segment vertex {} out of bounds [0, 2)", v);
   return s.x(v);
 }

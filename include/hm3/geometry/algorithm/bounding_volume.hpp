@@ -25,7 +25,6 @@ struct bounding_volume_fn {
   }
 
   template <typename T, dim_t Ad = ad_v<T>>
-
   static constexpr auto box_impl(T&& t, trait::point<Ad>) {
     static_assert(Point<uncvref_t<T>>{});
     return box_of_point(std::forward<T>(t));

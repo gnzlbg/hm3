@@ -6,14 +6,13 @@
 #include <hm3/io/file_system.hpp>
 #include <hm3/io/json.hpp>
 #include <hm3/types.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/compact_optional.hpp>
-#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/log.hpp>
 #include <hm3/utility/mpi.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace io {
+namespace hm3::io {
 
 struct array_data_t {};
 static constexpr array_data_t array_data{};
@@ -444,5 +443,4 @@ struct file {
   }
 };
 
-}  // namespace io
-}  // namespace hm3
+}  // namespace hm3::io

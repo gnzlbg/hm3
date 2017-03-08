@@ -3,21 +3,17 @@
 ///
 /// Square tile geometry
 #include <hm3/geometry/algorithm/intersection.hpp>
-#include <hm3/geometry/algorithm/intersection/box_point.hpp>
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/grid/structured/tile/cell.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
+namespace hm3::grid::structured::tile {
 
-template <dim_t Nd, tidx_t Nc>
-struct cell_geometry : geometry::box<Nd>, cell::indices<Nd, Nc>::coordinate {
-  using box_t        = geometry::box<Nd>;
-  using coordinate_t = typename cell::indices<Nd, Nc>::coordinate;
+template <dim_t Ad, tidx_t Nc>
+struct cell_geometry : geometry::box<Ad>, cell::indices<Ad, Nc>::coordinate {
+  using box_t        = geometry::box<Ad>;
+  using coordinate_t = typename cell::indices<Ad, Nc>::coordinate;
   cell_geometry(box_t s, coordinate_t x)
    : box_t{std::move(s)}, coordinate_t(std::move(x)) {}
   explicit operator box_t() const noexcept {
@@ -30,16 +26,16 @@ struct cell_geometry : geometry::box<Nd>, cell::indices<Nd, Nc>::coordinate {
 
 /// Box structured tile spatial information
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nc length (per dimension)
-template <dim_t Nd, tidx_t Nc>
-struct tile_geometry : geometry::with_ambient_dimension<Nd> {
-  using bounds          = cell::bounds<Nd, Nc>;
-  using point_t         = geometry::point<Nd>;
-  using box_t           = geometry::box<Nd>;
-  using cell_indices    = cell::indices<Nd, Nc>;
+template <dim_t Ad, tidx_t Nc>
+struct tile_geometry : geometry::with_ambient_dimension<Ad> {
+  using bounds          = cell::bounds<Ad, Nc>;
+  using point_t         = geometry::point<Ad>;
+  using box_t           = geometry::box<Ad>;
+  using cell_indices    = cell::indices<Ad, Nc>;
   using cell_coordinate = typename cell_indices::coordinate;
-  using cell_geometry_t = cell_geometry<Nd, Nc>;
+  using cell_geometry_t = cell_geometry<Ad, Nc>;
 
   num_t cell_length_;
   point_t x_first_cell_;
@@ -52,12 +48,12 @@ struct tile_geometry : geometry::with_ambient_dimension<Nd> {
 
   /// Cell volume
   constexpr num_t cell_volume() const noexcept {
-    return std::pow(cell_length(), Nd);
+    return std::pow(cell_length(), Ad);
   }
 
   /// Cell surface area
   constexpr num_t cell_surface_area() const noexcept {
-    return std::pow(cell_length(), Nd - 1);
+    return std::pow(cell_length(), Ad - 1);
   }
 
   /// Tile length
@@ -85,7 +81,7 @@ struct tile_geometry : geometry::with_ambient_dimension<Nd> {
     HM3_ASSERT(x, "cannot compute centroid of invalid coordinate {}", x);
     point_t r    = x_first_cell();
     const auto l = cell_length();
-    for (dim_t d = 0; d < Nd; ++d) { r(d) += x[d] * l; }
+    for (dim_t d = 0; d < Ad; ++d) { r(d) += x[d] * l; }
     return r;
   }
 
@@ -142,7 +138,7 @@ struct tile_geometry : geometry::with_ambient_dimension<Nd> {
     x() /= cell_length();
 
     cell_coordinate i;
-    for (dim_t d = 0; d < Nd; ++d) {
+    for (dim_t d = 0; d < Ad; ++d) {
       auto v = x[d];
       i[d]   = std::lround(v);
     }
@@ -170,7 +166,4 @@ struct tile_geometry : geometry::with_ambient_dimension<Nd> {
    , x_first_cell_(x_first_cell(bounding_box)) {}
 };
 
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile

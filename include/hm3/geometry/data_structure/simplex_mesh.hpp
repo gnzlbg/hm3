@@ -32,10 +32,10 @@ template <typename T>
 using poly_surface_t = typename poly_surface<T>::type;
 
 /// Mesh of simplices
-template <dim_t Nd>
-struct mesh : simplex_array<Nd>, bounding_volume_hierarchy<Nd> {
-  using array_t               = simplex_array<Nd>;
-  using bvh_t                 = bounding_volume_hierarchy<Nd>;
+template <dim_t Ad>
+struct mesh : simplex_array<Ad>, bounding_volume_hierarchy<Ad> {
+  using array_t               = simplex_array<Ad>;
+  using bvh_t                 = bounding_volume_hierarchy<Ad>;
   using simplex_idx           = bvh::simplex_idx;
   using simplex_t             = typename array_t::simplex_t;
   using intersection_result_t = small_vector<simplex_idx, 3>;
@@ -45,11 +45,11 @@ struct mesh : simplex_array<Nd>, bounding_volume_hierarchy<Nd> {
     this->rebuild(static_cast<array_t const&>(*this));
   }
 
-  bool intersection_test(aabb<Nd> const& b) const {
+  bool intersection_test(aabb<Ad> const& b) const {
     return this->aabb_intersection_test(b);
   }
 
-  intersection_result_t intersection(aabb<Nd> const& b) const {
+  intersection_result_t intersection(aabb<Ad> const& b) const {
     return this->aabb_intersection(b);
   }
 
@@ -58,8 +58,8 @@ struct mesh : simplex_array<Nd>, bounding_volume_hierarchy<Nd> {
     return this->face(*i);
   }
 
-  auto split(aabb<Nd> const& b) const {
-    vector<small_polygon<Nd, 10>> result;  // TODO small_
+  auto split(aabb<Ad> const& b) const {
+    vector<small_polygon<Ad, 10>> result;  // TODO small_
 
     if (not intersection_test(b)) { return result; }
 

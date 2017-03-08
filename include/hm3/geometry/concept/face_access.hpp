@@ -30,6 +30,6 @@ struct FaceAccess {
 ///  - face_size(t) -> IndexType
 ///  - face(t, IndexType{}) -> Face
 template <typename T>
-using FaceAccess = concept::rc::models<concept::FaceAccess, T>;
+using FaceAccess = rc::models<concept::FaceAccess, T>;
 
 }  // namespace hm3::geometry

@@ -5,15 +5,14 @@
 #include <hm3/geometry/fwd.hpp>
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/math/core.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/config/assert.hpp>
 #include <hm3/utility/fmt.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 #include <memory>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 /// Ad-octree data-structure
 template <dim_t Ad>
@@ -584,5 +583,4 @@ string name(tree<Ad> const&) {
   return type(tree<Ad>{}) + "_" + std::to_string(Ad) + "D";
 }
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

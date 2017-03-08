@@ -24,6 +24,8 @@
 #include <hm3/geometry/algorithm/parallel.hpp>
 #include <hm3/geometry/algorithm/planar_projection.hpp>
 #include <hm3/geometry/algorithm/relative_position.hpp>
+#include <hm3/geometry/algorithm/sd_intersection_test.hpp>
+#include <hm3/geometry/algorithm/sd_relative_position.hpp>
 #include <hm3/geometry/algorithm/simplify.hpp>
 #include <hm3/geometry/algorithm/split.hpp>
 #include <hm3/geometry/algorithm/surface.hpp>

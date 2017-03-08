@@ -8,10 +8,10 @@
 #include <cstdlib>
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/io/ascii.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/fatal_error.hpp>
 #include <hm3/utility/fmt.hpp>
-#include <hm3/utility/math.hpp>
 #include <hm3/utility/range.hpp>
 #include <iostream>
 #include <utility>

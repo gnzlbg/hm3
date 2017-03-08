@@ -8,6 +8,8 @@
 #include <hm3/geometry/concept/integral_traits.hpp>
 #include <hm3/geometry/concept/primitive_hierarchy.hpp>
 #include <hm3/geometry/primitive/fwd.hpp>
+#include <hm3/geometry/tolerance.hpp>
+#include <hm3/types.hpp>
 
 namespace hm3::geometry {
 

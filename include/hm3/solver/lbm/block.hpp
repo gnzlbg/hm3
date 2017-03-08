@@ -4,19 +4,17 @@
 /// \file
 #include <hm3/solver/utility/structured_grid.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace lbm {
+namespace hm3::solver::lbm {
 
-template <dim_t Nd, uint_t Ndist, uint_t Nic, uint_t Nhl>
-struct block : square_structured_grid<Nd, Nic, Nhl> {
-  using grid_t = square_structured_grid<Nd, Nic, Nhl>;
-  using grid_t::dimension;
+template <dim_t Ad, uint_t Adist, uint_t Nic, uint_t Nhl>
+struct block : square_structured_grid<Ad, Nic, Nhl> {
+  using grid_t = square_structured_grid<Ad, Nic, Nhl>;
+  using grid_t::ambient_dimension;
   using grid_t::size;
   using index_t = typename grid_t::index_t;
 
   static constexpr uint_t distribution_size() noexcept {
-    return size() * Ndist;
+    return size() * Adist;
   }
 
   level_idx level_;
@@ -27,7 +25,7 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
   array<bool, size()> is_boundary_;
 
   static constexpr uint_t dist(sidx_t c, uint_t d) noexcept {
-    return Ndist * c + d;
+    return Adist * c + d;
   }
 
   num_t const& nodes0(index_t c, uint_t d) const noexcept {
@@ -58,15 +56,13 @@ struct block : square_structured_grid<Nd, Nic, Nhl> {
 
   block() = default;
 
-  void reinitialize(level_idx block_level_, geometry::box<Nd> bbox) noexcept {
+  void reinitialize(level_idx block_level_, geometry::box<Ad> bbox) noexcept {
     grid_t::reinitialize(bbox);
     level_ = block_level_;
   }
 
-  block(level_idx l, geometry::box<Nd> bbox) noexcept { reinitialize(l, bbox); }
+  block(level_idx l, geometry::box<Ad> bbox) noexcept { reinitialize(l, bbox); }
 };
 
-}  // namespace lbm
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::lbm
 #endif

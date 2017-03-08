@@ -4,7 +4,7 @@
 /// AmbientDimension concept.
 #include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/geometry/concept/fwd.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
 
 namespace hm3::geometry {
 
@@ -20,11 +20,11 @@ struct AmbientDimension {
 
 namespace detail {
 
-// The following optionally enforces that dimension(T) -> dim_t == Nd.
+// The following optionally enforces that dimension(T) -> dim_t == Ad.
 
 static constexpr auto dimension_independent = math::highest<dim_t>;
 
-template <typename T, typename IsDimensional, dim_t Nd,
+template <typename T, typename IsDimensional, dim_t Ad,
           template <class> class F>
 struct ndimensional_ : meta::bool_<false> {};
 
@@ -32,8 +32,8 @@ template <typename T, template <class> class F>
 struct ndimensional_<T, meta::bool_<true>, dimension_independent, F>
  : meta::bool_<true> {};
 
-template <typename T, dim_t Nd, template <class> class F>
-struct ndimensional_<T, meta::bool_<true>, Nd, F> : meta::bool_<F<T>{} == Nd> {
+template <typename T, dim_t Ad, template <class> class F>
+struct ndimensional_<T, meta::bool_<true>, Ad, F> : meta::bool_<F<T>{} == Ad> {
 };
 
 }  // namespace detail
@@ -52,7 +52,7 @@ struct ndimensional_<T, meta::bool_<true>, Nd, F> : meta::bool_<F<T>{} == Nd> {
 /// \tparam Ad Ambient dimension.
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
 using AmbientDimension = concept::detail::ndimensional_<
- T, meta::bool_<concept::rc::models<concept::AmbientDimension, T>{}>, Ad,
+ T, meta::bool_<rc::models<concept::AmbientDimension, T>{}>, Ad,
  ambient_dimension_t>;
 
 }  // namespace hm3::geometry

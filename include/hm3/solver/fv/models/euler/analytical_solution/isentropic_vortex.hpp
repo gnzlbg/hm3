@@ -6,19 +6,16 @@
 #include <hm3/solver/fv/models/euler/indices.hpp>
 #include <hm3/solver/fv/models/euler/pv.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
 /// Analytical solutions for the Euler equations
 namespace as {
 
-template <dim_t Nd>
+template <dim_t Ad>
 struct isentropic_vortex {
-  using i       = indices<Nd>;
-  using p       = pv_base<Nd>;
-  using point_t = geometry::point<Nd>;
+  using i       = indices<Ad>;
+  using p       = pv_base<Ad>;
+  using point_t = geometry::point<Ad>;
   using var_v   = num_a<i::nvars()>;
 
   num_t beta  = 5.;
@@ -34,7 +31,7 @@ struct isentropic_vortex {
   /// \returns Conservative variables.
   ///
   /// \todo Where is this from? (Nodal Disc. Gal. Methods book?)
-  CONCEPT_REQUIRES(Nd == 2)
+  CONCEPT_REQUIRES(Ad == 2)
   var_v operator()(point_t x, num_t t) const noexcept {
     var_v pv;
 
@@ -61,7 +58,4 @@ struct isentropic_vortex {
 
 }  // namespace as
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

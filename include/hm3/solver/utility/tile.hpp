@@ -5,8 +5,7 @@
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/solver/types.hpp>
 
-namespace hm3 {
-namespace solver {
+namespace hm3::solver {
 
 template <typename B, typename T, typename F>
 void call_as(T&& t, F&& f) {
@@ -24,7 +23,7 @@ auto call_as(T&& t, F&& f) -> std::enable_if_t<(sizeof...(Bs) > 0), void> {
 template <typename BoxGrid, typename... Vars>
 struct tile : BoxGrid, Vars... {
   using grid_t = BoxGrid;
-  using bbox_t = geometry::box<BoxGrid::dimension()>;
+  using bbox_t = geometry::box<BoxGrid::ambient_dimension()>;
   /// Data
   ///
   /// \note The rest of the data is stored in base clases (see Vars...).
@@ -69,5 +68,4 @@ struct tile : BoxGrid, Vars... {
   }
 };
 
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver

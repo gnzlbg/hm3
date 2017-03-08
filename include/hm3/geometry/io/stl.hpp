@@ -12,6 +12,10 @@
 #define BOOST_SPIRIT_USE_PHOENIX_V3
 #define BOOST_NO_AUTO_PTR
 
+#include <hm3/utility/range.hpp>
+#include <string>
+#include <type_traits>
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 #pragma clang diagnostic ignored "-Wdeprecated"
@@ -22,10 +26,6 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/support_multi_pass.hpp>
 #pragma clang diagnostic pop
-
-#include <hm3/utility/range.hpp>
-#include <string>
-#include <type_traits>
 
 namespace stl {
 
@@ -471,5 +471,4 @@ std::pair<OutputIt, bool> write_triangle(OutputIt& out, Triangle& t, ascii_t) {
 // }
 
 }  // namespace v1
-
 }  // namespace stl

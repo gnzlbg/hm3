@@ -7,6 +7,7 @@
 #include <functional>
 #include <hm3/solver/lbm/lattice/d2q9.hpp>
 #include <hm3/solver/lbm/ns.hpp>
+#include <hm3/utility/fmt.hpp>
 #include <range/v3/all.hpp>
 #include <vector>
 ////////////////////////////////////////////////////////////////////////////////
@@ -203,7 +204,7 @@ struct data_structure {
     double n_sum = ranges::accumulate(
      cell_ids() | view::transform([&](auto c) { return d_loc(node_vars, c); }),
      num_t{0});
-    printf("# %d | integral density: %8.f\n", time_it, n_sum);
+    ascii_fmt::out("# {} | integral density: {}\n", time_it, n_sum);
   }
 
   // One-step density relaxation process
@@ -327,60 +328,62 @@ void write_vtk(const data_structure& cells, int time_it) {
   sprintf(fname, "output_%d.vtk", time_it);
 
   FILE* f = fopen(fname, "w");
-  fprintf(f, "# vtk DataFile Version 2.0\n");
-  fprintf(f, "LBM test output\n");
-  fprintf(f, "ASCII\n");
-  fprintf(f, "DATASET UNSTRUCTURED_GRID\n");
+
+  using ascii_fmt::detail::print;
+  print(f, "# vtk DataFile Version 2.0\n");
+  print(f, "LBM test output\n");
+  print(f, "ASCII\n");
+  print(f, "DATASET UNSTRUCTURED_GRID\n");
 
   num_t x_stencil[4] = {-1, 1, -1, 1};
   num_t y_stencil[4] = {-1, -1, 1, 1};
   num_t length       = 1;
-  fprintf(f, "POINTS %ld FLOAT\n", cells.no_cells() * 4);
+  print(f, "POINTS {} FLOAT\n", cells.no_cells() * 4);
   for (auto i : cells.cell_ids()) {
     num_t x = static_cast<num_t>(cells.x(i));
     num_t y = static_cast<num_t>(cells.y(i));
     for (int j = 0; j < 4; ++j) {
       num_t xp = x + x_stencil[j] * length / 2;
       num_t yp = y + y_stencil[j] * length / 2;
-      fprintf(f, "%f %f 0.0\n", xp, yp);
+      print(f, "{} {} 0.0\n", xp, yp);
     }
   }
 
-  fprintf(f, "CELLS %ld %ld\n", cells.no_cells(), cells.no_cells() * 5);
+  print(f, "CELLS {} {}\n", cells.no_cells(), cells.no_cells() * 5);
   for (auto i : cells.cell_ids()) {
-    fprintf(f, "4 %ld %ld %ld %ld\n", 4 * i, 4 * i + 1, 4 * i + 2, 4 * i + 3);
+    print(f, "4 {} {} {} {}\n", 4 * i, 4 * i + 1, 4 * i + 2, 4 * i + 3);
   }
 
-  fprintf(f, "CELL_TYPES %ld\n", cells.no_cells());
-  ranges::for_each(cells.cell_ids(), [&](auto) { fprintf(f, "8\n"); });
+  print(f, "CELL_TYPES {}\n", cells.no_cells());
+  ranges::for_each(cells.cell_ids(), [&](auto) { print(f, "8\n"); });
 
-  fprintf(f, "CELL_DATA %ld\n", cells.no_cells());
+  print(f, "CELL_DATA {}\n", cells.no_cells());
 
-  fprintf(f, "SCALARS p float\n");
-  fprintf(f, "LOOKUP_TABLE default\n");
+  print(f, "SCALARS p float\n");
+  print(f, "LOOKUP_TABLE default\n");
   {
     auto ps = cells.ps(node_vars);
-    for (auto i : cells.cell_ids()) { fprintf(f, "%f\n", ps[i]); }
+    for (auto i : cells.cell_ids()) { print(f, "{}\n", ps[i]); }
   }
 
-  fprintf(f, "SCALARS u float\n");
-  fprintf(f, "LOOKUP_TABLE default\n");
+  print(f, "SCALARS u float\n");
+  print(f, "LOOKUP_TABLE default\n");
   {
     auto us = cells.us(node_vars);
-    for (auto i : cells.cell_ids()) { fprintf(f, "%f\n", us[i]); }
+    for (auto i : cells.cell_ids()) { print(f, "{}\n", us[i]); }
   }
 
-  fprintf(f, "SCALARS v float\n");
-  fprintf(f, "LOOKUP_TABLE default\n");
+  print(f, "SCALARS v float\n");
+  print(f, "LOOKUP_TABLE default\n");
   {
     auto vs = cells.vs(node_vars);
-    for (auto i : cells.cell_ids()) { fprintf(f, "%f\n", vs[i]); }
+    for (auto i : cells.cell_ids()) { print(f, "{}\n", vs[i]); }
   }
 
-  fprintf(f, "SCALARS active int\n");
-  fprintf(f, "LOOKUP_TABLE default\n");
+  print(f, "SCALARS active int\n");
+  print(f, "LOOKUP_TABLE default\n");
   for (auto i : cells.cell_ids()) {
-    fprintf(f, "%d\n", static_cast<int>(!cells.obst(i)));
+    print(f, "%d\n", static_cast<int>(!cells.obst(i)));
   }
 
   fclose(f);
@@ -503,12 +506,12 @@ struct BoundaryConditions {
       auto offset = b.internal_cells_per_length();
       b.for_each_internal([&](auto c) {
         if (c.x[0] == 2) {
-          RANGES_FOR (auto&& d, l::node_ids()) {
+          for (auto&& d : l::node_ids()) {
             b.nodes1(c, d) = b.nodes0(c.idx + offset - 1, d);
           }
         }
         if (c.x[0] == 101) {
-          RANGES_FOR (auto&& d, l::node_ids()) {
+          for (auto&& d : l::node_ids()) {
             b.nodes1(c, d) = b.nodes0(c.idx - (offset - 1), d);
           }
         }
@@ -523,7 +526,7 @@ struct BoundaryConditions {
       b.for_each_internal([&](auto c) {
         if (c.x[0] == 0 || c.x[0] == 1 || c.x[1] == 2 || c.x[1] == 101
             || c.x[1] == 102 || c.x[1] == 103 || (*this)(b.center(c)) < 0.) {
-          RANGES_FOR (auto&& d, l::node_ids()) {
+          for (auto&& d : l::node_ids()) {
             b.nodes0(c, d) = b.nodes1(c, l::opposite_dist(d));
           }
         }

@@ -4,6 +4,7 @@
 /// Does the ray intersect the AABB?
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/line_intersection_parameter/ray_aabb.hpp>
+#include <hm3/geometry/concept/ray.hpp>
 #include <hm3/geometry/fwd.hpp>
 
 namespace hm3::geometry {

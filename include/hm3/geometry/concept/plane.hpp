@@ -3,7 +3,10 @@
 ///
 /// Plane concept.
 #include <hm3/geometry/concept/associated_dimension.hpp>
+#include <hm3/geometry/concept/associated_types.hpp>
 #include <hm3/geometry/concept/fwd.hpp>
+#include <hm3/geometry/concept/geometry_object.hpp>
+#include <hm3/geometry/concept/primitive_hierarchy.hpp>
 
 namespace hm3::geometry {
 
@@ -33,6 +36,6 @@ using Plane
                              Ad == concept::detail::dimension_independent
                               ? concept::detail::dimension_independent
                               : Ad - 1>,
-              concept::rc::models<concept::Plane, T>>;
+              rc::models<concept::Plane, T>>;
 
 }  // namespace hm3::geometry

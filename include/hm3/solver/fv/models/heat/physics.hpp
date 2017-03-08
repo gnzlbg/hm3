@@ -2,17 +2,14 @@
 /// \file
 ///
 /// Interprets cell variables as conservative variables
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/solver/fv/models/heat/indices.hpp>
 #include <hm3/utility/matrix.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace heat {
+namespace hm3::solver::fv::heat {
 
-template <dim_t Nd>
-struct physics : geometry::dimensional<Nd>, indices<Nd> {
+template <dim_t Ad>
+struct physics : geometry::with_ambient_dimension<Ad>, indices<Ad> {
   struct tile_variables {
     template <typename Grid, typename Order = dense::col_major_t>
     using invoke = meta::list<  //
@@ -22,8 +19,8 @@ struct physics : geometry::dimensional<Nd>, indices<Nd> {
 
   num_t thermal_diffusivity;
 
-  using self = physics<Nd>;
-  using i    = indices<Nd>;
+  using self = physics<Ad>;
+  using i    = indices<Ad>;
 
   template <typename V, CONCEPT_REQUIRES_(!rvref<V&&>)>
   static constexpr decltype(auto) temperature(V&& v) noexcept {
@@ -45,7 +42,4 @@ struct physics : geometry::dimensional<Nd>, indices<Nd> {
   }
 };
 
-}  // namespace heat
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::heat

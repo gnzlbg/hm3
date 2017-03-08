@@ -25,13 +25,12 @@ struct Ray : rc::refines<GeometryObject, rc::Regular, LineLike> {
 /// Requires:
 ///
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Ray
- = meta::and_<GeometryObject<T, Ad, 1>, concept::rc::models<concept::Ray, T>>;
+using Ray = meta::and_<GeometryObject<T, Ad, 1>, rc::models<concept::Ray, T>>;
 
 template <typename T, dim_t Ad = concept::detail::dimension_independent,
           typename UT = uncvref_t<T>>
-using LineOrRay       = meta::and_<GeometryObject<UT, Ad, 1>,
-                             meta::or_<concept::rc::models<concept::Ray, UT>,
-                                       concept::rc::models<concept::Line, UT>>>;
+using LineOrRay       = meta::and_<
+ GeometryObject<UT, Ad, 1>,
+ meta::or_<rc::models<concept::Ray, UT>, rc::models<concept::Line, UT>>>;
 
 }  // namespace hm3::geometry

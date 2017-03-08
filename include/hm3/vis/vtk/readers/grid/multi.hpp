@@ -5,19 +5,16 @@
 #ifdef HM3_ENABLE_VTK
 #include <hm3/vis/vtk/readers/grid/tree.hpp>
 
-namespace hm3 {
-namespace vis {
-namespace vtk {
-namespace grid {
+namespace hm3::vis::vtk::grid {
 
 /// Multi hierarchical Cartesian grid reader
-template <dim_t Nd>
-struct multi : tree<Nd> {
-  using tree<Nd>::grid;
+template <dim_t Ad>
+struct multi : tree<Ad> {
+  using tree<Ad>::grid;
   using grid_idx = ::hm3::hierarchical::grid_idx;
   using gidx_t   = ::hm3::hierarchical::gidx_t;
 
-  using tree<Nd>::cell_data;
+  using tree<Ad>::cell_data;
 
   multi(gidx_t no_grids) : no_grids_(no_grids) {}
 
@@ -38,15 +35,15 @@ struct multi : tree<Nd> {
       });
     }
 
-    tree<Nd>::register_cell_data();
+    tree<Ad>::register_cell_data();
   }
 };
 
-/// Makes a multi hierarchical Cartesian grid reader of dimension `Nd`
-template <dim_t Nd>
+/// Makes a multi hierarchical Cartesian grid reader of dimension `Ad`
+template <dim_t Ad>
 auto make_multi(hierarchical::gidx_t ng)
  -> std::unique_ptr<::hm3::vis::vtk::reader> {
-  return std::make_unique<multi<Nd>>(ng);
+  return std::make_unique<multi<Ad>>(ng);
 }
 
 /// Makes a multi hierarchical Cartesian grid reader from a io::session block of
@@ -64,10 +61,10 @@ inline auto make_multi(io::json const& b) {
      "multi hierarchical Cartesian grid contains no files:\n\n{}\n\n", b);
   }
 
-  dim_t nd = io::read_file_field(b, "spatial_dimension", HM3_AT_);
+  dim_t ad = io::read_file_field(b, "spatial_dimension", HM3_AT_);
   hierarchical::gidx_t ng = io::read_file_field(b, "no_grids", HM3_AT_);
 
-  switch (nd) {
+  switch (ad) {
     case 1: {
       return make_multi<1>(ng);
     }
@@ -78,13 +75,10 @@ inline auto make_multi(io::json const& b) {
       return make_multi<3>(ng);
     }
     default: {
-      HM3_FATAL_ERROR("unsupported #of spatial dimensions, nd = {}", nd);
+      HM3_FATAL_ERROR("unsupported #of spatial dimensions, ad = {}", ad);
     }
   }
 }
 
-}  // namespace grid
-}  // namespace vtk
-}  // namespace vis
-}  // namespace hm3
+}  // namespace hm3::vis::vtk::grid
 #endif  // HM3_ENABLE_VTK

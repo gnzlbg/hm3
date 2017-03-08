@@ -3,7 +3,7 @@
 ///
 /// Are two numbers approximately equal
 #include <hm3/geometry/tolerance.hpp>
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
 #include <type_traits>
 
 namespace hm3::geometry {

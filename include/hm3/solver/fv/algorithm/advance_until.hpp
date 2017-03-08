@@ -2,11 +2,9 @@
 /// \file
 ///
 /// Advance until a given time
-#include <hm3/utility/math.hpp>
+#include <hm3/math/core.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct advance_until_fn {
   template <typename State, typename BCs, typename TimeStep, typename Limiter,
@@ -31,6 +29,4 @@ namespace {
 static constexpr auto&& advance_until = static_const<advance_until_fn>::value;
 }  // namespace
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

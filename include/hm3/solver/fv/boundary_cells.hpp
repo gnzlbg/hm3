@@ -8,30 +8,30 @@
 // namespace solver {
 // namespace fv {
 
-// template <dim_t Nd>
+// template <dim_t Ad>
 // struct surface {
-//   point<Nd> x_center;       ///< Surface centroid
+//   point<Ad> x_center;       ///< Surface centroid
 //   num_t area;               ///< Surfae area
-//   vec<Nd> normal;           ///< Surface normal
+//   vec<Ad> normal;           ///< Surface normal
 //   block_cell_idx neighbor;  ///< Neighbor,  if any
 //   bc_idx bc;                ///< Boundary condition, if any
 // };
 
-// template <dim_t Nd>
+// template <dim_t Ad>
 // struct cut_cell {
 //   static constexpr std::size_t max_no_surfaces = 5;
 //   block_cell_idx idx;  ///< Cut-cell index
 //   num_t volume;        ///< Cut-cell volume
-//   point<Nd> x_center;  ///< Cut-cell center
-//   polygon<Nd> geometry;
-//   fixed_capacity_vector<surface<Nd>, max_no_surfaces>
+//   point<Ad> x_center;  ///< Cut-cell center
+//   polygon<Ad> geometry;
+//   fixed_capacity_vector<surface<Ad>, max_no_surfaces>
 //    surface_data;  ///< Cut-cell surfaces
 // };
 
 // template <typename State, typename Block, typename CIdx, typename BCs>
-// cut_cell<Nd> cut_cell(State& s, Block& b, CIdx c, BCs&& bcs) {
+// cut_cell<Ad> cut_cell(State& s, Block& b, CIdx c, BCs&& bcs) {
 //   // initialize with uncut geometry:
-//   cut_cell<Nd> cell.geometry = b.geometry(c);
+//   cut_cell<Ad> cell.geometry = b.geometry(c);
 
 //   // for each boundary condition:
 //   // - cut the geometry

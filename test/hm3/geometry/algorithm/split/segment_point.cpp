@@ -26,8 +26,6 @@ void test_segment_point_split() {
   auto s3 = split(s, p3);
   auto s4 = split(s, p4);
 
-  using r_t = decltype(split(s, p0));
-
   CHECK(s0.empty());
   CHECK(s1.size() == 1);
   CHECK(s1[0] == s);

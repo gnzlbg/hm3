@@ -32,7 +32,6 @@ struct Edge : rc::refines<GeometryObject, rc::Regular, VertexAccess> {
 /// - line() -> LineLike: unbounded line representation
 ///
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Edge
- = meta::and_<GeometryObject<T, Ad, 1>, concept::rc::models<concept::Edge, T>>;
+using Edge = meta::and_<GeometryObject<T, Ad, 1>, rc::models<concept::Edge, T>>;
 
 }  // namespace hm3::geometry

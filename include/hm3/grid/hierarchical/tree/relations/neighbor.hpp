@@ -9,51 +9,50 @@
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
+#include <hm3/math/core.hpp>
 #include <hm3/utility/array.hpp>
+#include <hm3/utility/assert.hpp>
 #include <hm3/utility/bounded.hpp>
-#include <hm3/utility/config/assert.hpp>
-#include <hm3/utility/config/fatal_error.hpp>
+#include <hm3/utility/fatal_error.hpp>
 #include <hm3/utility/fixed_capacity_vector.hpp>
-#include <hm3/utility/math.hpp>
 /// Use look-up table for the same level neighbors instead of
 /// arithmetic operations
 #define HM3_USE_NEIGHBOR_LOOKUP_TABLE
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 /// \name Neighbor relations
 ///@{
 
 /// Number of node neighbors at the node level (same level)
 ///
-/// \param nd [in] spatial dimension of the node
+/// \param ad [in] spatial dimension of the node
 /// \param m [in] spatial dimension of the face between node and neighbors
 ///
 /// Formula: \f$\ 2^{n_d - m} \begin{pmatrix} n_d // m \end{pmatrix} \f$
 ///
-/// Returns 0 if !(nd > m).
-static constexpr npidx_t no_neighbors(dim_t nd, dim_t m,
+/// Returns 0 if !(ad > m).
+static constexpr npidx_t no_neighbors(dim_t ad, dim_t m,
                                       same_level_tag) noexcept {
-  return nd >= m ? no_faces(nd, m) : 0;
+  return ad >= m ? no_faces(ad, m) : 0;
 }
 
 /// Number of node neighors at the children level of a node (node level + 1)
 ///
-/// \param nd [in] spatial dimension of the node
+/// \param ad [in] spatial dimension of the node
 /// \param m [in] spatial dimension of the face
 ///
 /// Formula: number of nodes sharing a face * number of neighbors
 ///
-/// Returns 0 if !(nd > m).
-static constexpr npidx_t no_neighbors(dim_t nd, dim_t m, child_level_tag) {
-  return nd >= m
-          ? no_nodes_sharing_face(nd, m) * no_neighbors(nd, m, same_level_tag{})
+/// Returns 0 if !(ad > m).
+static constexpr npidx_t no_neighbors(dim_t ad, dim_t m, child_level_tag) {
+  return ad >= m
+          ? no_nodes_sharing_face(ad, m) * no_neighbors(ad, m, same_level_tag{})
           : 0;
 }
 
 /// \name Stencils of neighbor children sharing a m dimensional face with a node
-/// of dimension nd
+/// of dimension ad
 ///@{
 
 template <dim_t Ad, dim_t M>
@@ -374,7 +373,7 @@ using edge_neighbors = manifold_neighbors<Ad, 2>;
 template <dim_t Ad>
 using corner_neighbors = manifold_neighbors<Ad, 3>;
 
-/// neighbor of a nd-dimensional node across an m dimensional surface
+/// neighbor of a ad-dimensional node across an m dimensional surface
 template <dim_t Ad, dim_t M>
 using surface_neighbors =
  // points:
@@ -391,10 +390,10 @@ using surface_neighbors =
              meta::if_c<M == 3 and Ad == 3, face_neighbors<3>, meta::nil_>>>;
 
 /// Max number of neighbors at children level across all manifolds
-constexpr auto max_no_neighbors(dim_t nd) {
+constexpr auto max_no_neighbors(dim_t ad) {
   npidx_t s = 0;
-  for (npidx_t i = 1; i != nd + 1; ++i) {
-    s += no_neighbors(nd, i, child_level_tag{});
+  for (npidx_t i = 1; i != ad + 1; ++i) {
+    s += no_neighbors(ad, i, child_level_tag{});
   }
   return s;
 }
@@ -438,5 +437,4 @@ void for_each_neighbor_manifold(F&& f) {
 
 ///@} Neighbor relations
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

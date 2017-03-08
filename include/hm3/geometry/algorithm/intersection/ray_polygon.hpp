@@ -3,13 +3,13 @@
 ///
 /// Ray-polygon intersection.
 
-// template <dim_t Nd, typename P, CONCEPT_REQUIRES_(Polygon<P, Nd>{})>
-// bool intersection_test(ray<Nd> const& r, P&& p) noexcept {
+// template <dim_t Ad, typename P, CONCEPT_REQUIRES_(Polygon<P, Ad>{})>
+// bool intersection_test(ray<Ad> const& r, P&& p) noexcept {
 //   return false;
 // }
 
-// template <dim_t Nd, typename P, CONCEPT_REQUIRES_(Polygon<P, Nd>{})>
-// small_vector<segment<Nd>, point<Nd>, 8> intersection(ray<Nd> const& r,
+// template <dim_t Ad, typename P, CONCEPT_REQUIRES_(Polygon<P, Ad>{})>
+// small_vector<segment<Ad>, point<Ad>, 8> intersection(ray<Ad> const& r,
 //                                                      P&& p) noexcept {
 //   return {};
 // }

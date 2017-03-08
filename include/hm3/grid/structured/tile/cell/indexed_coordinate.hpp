@@ -5,50 +5,58 @@
 #include <hm3/grid/structured/tile/cell/coordinate.hpp>
 #include <hm3/grid/structured/tile/cell/index.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
-namespace cell {
+namespace hm3::grid::structured::tile::cell {
 
 /// Square tile cell index-coordinate pair
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nc number of cells per tile length
-template <dim_t Nd, tidx_t Nc>
-struct indexed_coordinate : public coordinate<Nd, Nc> {
+template <dim_t Ad, tidx_t Nc>
+struct indexed_coordinate : public coordinate<Ad, Nc> {
   using self            = indexed_coordinate;
-  using index           = index<Nd, Nc>;
-  using coordinate      = coordinate<Nd, Nc>;
+  using index           = index<Ad, Nc>;
+  using coordinate      = coordinate<Ad, Nc>;
   using offset_t        = typename coordinate::offset_t;
   using value_t         = typename coordinate::value_t;
   using signed_value_t  = typename coordinate::signed_value_t;
   using difference_type = std::ptrdiff_t;
 
-  //  using idx_           = index;
+  // coordinate x_;
   using x_ = coordinate;
   index idx_;
-  // coordinate x_;
 
-  constexpr indexed_coordinate() : x_(), idx_(index::invalid()) {}
+  static void assert_invariants(self x) noexcept {
+    // checks that both convert to the same boolean value, both are either valid
+    // or invalid, and also that the index and coordinate types match:
+    HM3_ASSERT(static_cast<bool>(x.idx()) == static_cast<bool>(x.x()),
+               "idx {} to bool is {}, but coordinate {} to bool is {}", x.idx(),
+               static_cast<bool>(x.idx()), x.x(), static_cast<bool>(x.x()));
+    HM3_ASSERT((not x.idx() and not x.x()) or (x.idx() and x.x()),
+               "both must be valid/invalid");
+    if (not x.idx()) { return; }
+    HM3_ASSERT(coordinate(x.idx()) == x.x(), "idx {} produces x {} but x is {}",
+               x.idx(), coordinate(x.idx()), x.x());
+    HM3_ASSERT(x.x().idx() == x.idx(), "x {} produces idx {} but idx is {}",
+               x.x(), x.x().idx(), x.idx());
+  }
+
+  void assert_invariants() const noexcept { assert_invariants(*this); }
+
+  constexpr indexed_coordinate() : x_(), idx_(index::invalid()) {
+    assert_invariants();
+  }
 
   constexpr indexed_coordinate(index idx, coordinate x)
    : x_(std::move(x)), idx_(std::move(idx)) {
-    HM3_ASSERT(coordinate(this->idx()) == this->x(),
-               "idx {} produces x {} but x is {}", this->idx(), coordinate(idx),
-               this->x());
-    HM3_ASSERT(this->x().idx() == this->idx(),
-               "x {} produces idx {} but idx is {}", this->x(), this->x().idx(),
-               this->idx());
+    assert_invariants();
   }
   constexpr indexed_coordinate(index idx) : x_(idx), idx_(std::move(idx)) {}
-  constexpr indexed_coordinate(coordinate x)
-   : x_(x), idx_(coordinate::idx(x)) {}
+  constexpr indexed_coordinate(coordinate x) : x_(x), idx_(coordinate::idx(x)) {
+    assert_invariants();
+  }
 
   constexpr explicit operator bool() const noexcept {
-    HM3_ASSERT(static_cast<bool>(idx()) == static_cast<bool>(x()),
-               "idx {} to bool is {}, but coordinate {} to bool is {}", idx(),
-               static_cast<bool>(idx()), x(), static_cast<bool>(x()));
+    assert_invariants();
     return static_cast<bool>(idx());
   }
 
@@ -57,17 +65,25 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
     return static_cast<coordinate const&>(*this);
   }
 
-  constexpr operator index() const noexcept { return idx(); }
-  constexpr operator coordinate() const noexcept { return x(); }
+  constexpr operator index() const noexcept {
+    assert_invariants();
+    return idx();
+  }
+  constexpr operator coordinate() const noexcept {
+    assert_invariants();
+    return x();
+  }
 
   /// \p d -th coordinate component
   constexpr auto operator[](dim_t d) const noexcept {
     HM3_ASSERT(x(), "invalid coordinate {}", x());
+    assert_invariants();
     return x()[d];
   }
   /// Coordinate index
   constexpr auto operator*() const noexcept {
     HM3_ASSERT(idx(), "coordinate {} has invalid idx {}", x(), idx().value);
+    assert_invariants();
     return *idx();
   }
 
@@ -76,9 +92,11 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
   /// \pre The resulting coordinate must lie within the tile
   /// \note Faster than `at`
   constexpr self offset(dim_t d, noffset_t o) const noexcept {
+    assert_invariants();
     coordinate n = x().offset(d, o);
     HM3_ASSERT(n, "offsetting x = {} by ({}, {}) results in invalid coordinate",
                x(), d, o);
+    assert_invariants(self(n));
     return {n};
   }
 
@@ -87,9 +105,11 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
   /// \pre The resulting coordinate must lie within the tile
   /// \note Faster than `at`
   constexpr self offset(offset_t o) const noexcept {
+    assert_invariants();
     coordinate n = x().offset(o);
     HM3_ASSERT(n, "offsetting x = {} by {} results in invalid coordinate", x(),
                o);
+    assert_invariants(self(n));
     return {n};
   }
 
@@ -105,6 +125,7 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
   ///
   /// Returns invalid if the result lies outside the tile.
   constexpr self at(offset_t offset) const noexcept {
+    assert_invariants();
     coordinate n = x().offset(offset);
     return n ? self{n} : self{index(), n};
   }
@@ -115,13 +136,18 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
   }
 
   constexpr self& operator++() noexcept {
+    assert_invariants();
     ++idx_;
+    static_cast<coordinate&>(*this) = coordinate::from(idx_);
+    assert_invariants();
     return (*this);
   }
 
   constexpr self operator++(int)noexcept {
+    assert_invariants();
     self tmp(*this);
     ++(*this);
+    assert_invariants();
     return tmp;
   }
 
@@ -130,27 +156,62 @@ struct indexed_coordinate : public coordinate<Nd, Nc> {
   friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.idx() << " : " << ic.x()[0];
-      for (dim_t d = 1; d < Nd; ++d) { os << ", " << ic.x()[d]; }
+      for (dim_t d = 1; d < Ad; ++d) { os << ", " << ic.x()[d]; }
       os << "}";
     } else {
       os << "{ invalid : invalid }";
     }
     return os;
   }
+
+  friend constexpr bool operator==(indexed_coordinate const& a,
+                                   indexed_coordinate const& b) noexcept {
+    assert_invariants(a);
+    assert_invariants(b);
+    return a.idx() == b.idx();
+  }
+  friend constexpr bool operator!=(indexed_coordinate const& a,
+                                   indexed_coordinate const& b) noexcept {
+    assert_invariants(a);
+    assert_invariants(b);
+    return not(a == b);
+  }
+  friend constexpr bool operator<(indexed_coordinate const& a,
+                                  indexed_coordinate const& b) noexcept {
+    assert_invariants(a);
+    assert_invariants(b);
+    return a.idx() < b.idx();
+  }
+  friend constexpr bool operator<=(indexed_coordinate const& a,
+                                   indexed_coordinate const& b) noexcept {
+    assert_invariants(a);
+    assert_invariants(b);
+    return a.idx() <= b.idx();
+  }
+
+  friend constexpr bool operator>(indexed_coordinate const& a,
+                                  indexed_coordinate const& b) noexcept {
+    assert_invariants(a);
+    assert_invariants(b);
+    return a.idx() > b.idx();
+  }
+
+  friend constexpr bool operator>=(indexed_coordinate const& a,
+                                   indexed_coordinate const& b) noexcept {
+    assert_invariants(a);
+    assert_invariants(b);
+    return a.idx() >= b.idx();
+  }
 };
 
-}  // namespace cell
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile::cell
 
 namespace std {
 
-template <hm3::dim_t Nd, hm3::grid::structured::tile::tidx_t Nc>
-struct hash<hm3::grid::structured::tile::cell::indexed_coordinate<Nd, Nc>> {
+template <hm3::dim_t Ad, hm3::grid::structured::tile::tidx_t Nc>
+struct hash<hm3::grid::structured::tile::cell::indexed_coordinate<Ad, Nc>> {
   constexpr std::size_t operator()(
-   hm3::grid::structured::tile::cell::indexed_coordinate<Nd, Nc> const& c) const
+   hm3::grid::structured::tile::cell::indexed_coordinate<Ad, Nc> const& c) const
    noexcept {
     return static_cast<std::size_t>(*(c.idx_));
   }

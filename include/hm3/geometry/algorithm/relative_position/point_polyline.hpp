@@ -12,10 +12,11 @@ namespace hm3::geometry {
 
 namespace relative_position_point_polyline_detail {
 struct relative_position_point_polyline_fn {
-  template <typename P, typename PL,
-            CONCEPT_REQUIRES_(Point<P, 2>{} and Polyline<PL, 2>{})>
+  template <typename P, typename PL>
   constexpr auto operator()(P const& p, PL const& polyline, num_t abs_tol,
                             num_t rel_tol) const noexcept {
+    static_assert(Point<P, 2>{});
+    static_assert(Polyline<PL, 2>{});
     num_t dist               = math::highest<num_t>;
     suint_t closest_edge_idx = 0;
 

@@ -8,17 +8,14 @@
 #include <hm3/solver/fv/models/euler/pv.hpp>
 #include <hm3/solver/fv/models/euler/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
-template <dim_t Nd>
-struct physics : state, geometry::dimensional<Nd>, indices<Nd> {
+template <dim_t Ad>
+struct physics : state, geometry::with_ambient_dimension<Ad>, indices<Ad> {
   physics(num_t gamma) : state{std::move(gamma)} {}
 
-  using cv_t = cv<Nd>;
-  using pv_t = pv<Nd>;
+  using cv_t = cv<Ad>;
+  using pv_t = pv<Ad>;
 
   cv_t cv() const noexcept { return cv_t{*this}; }
   pv_t pv() const noexcept { return pv_t{*this}; }
@@ -72,8 +69,4 @@ struct physics : state, geometry::dimensional<Nd>, indices<Nd> {
   }
 };
 
-}  // namespace euler
-
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

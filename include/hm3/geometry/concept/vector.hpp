@@ -27,7 +27,7 @@ struct Vector : rc::refines<GeometryObject, rc::Regular, rc::RandomAccessRange,
 }  // namespace concept
 
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Vector = meta::and_<GeometryObject<T, Ad, 1>,
-                          concept::rc::models<concept::Vector, T>>;
+using Vector
+ = meta::and_<GeometryObject<T, Ad, 1>, rc::models<concept::Vector, T>>;
 
 }  // namespace hm3::geometry

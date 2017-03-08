@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Dense matrix traits
+#include <hm3/ext/eigen.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/matrix/eigen.hpp>
 
 namespace hm3 {
 namespace dense {

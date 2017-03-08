@@ -2,13 +2,10 @@
 /// \file
 ///
 ///
+#include <hm3/math/core.hpp>
 #include <hm3/types.hpp>
-#include <hm3/utility/math.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
 struct equation_of_state {
   /// Pressure
@@ -52,7 +49,4 @@ struct equation_of_state {
   }
 };
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

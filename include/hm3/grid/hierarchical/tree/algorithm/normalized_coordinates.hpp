@@ -10,23 +10,22 @@
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/array.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 struct normalized_coordinates_fn {
   /// Returns the position of the location \p loc in normalized coordinates
   ///
   /// \note normalized coordinates means normalized by the length of the root
   /// node, that is, the coordinates are in range (0., 1.).
-  template <typename Loc, dim_t Nd = Loc::ambient_dimension(),
+  template <typename Loc, dim_t Ad = Loc::ambient_dimension(),
             CONCEPT_REQUIRES_(Location<Loc>{})>
-  auto operator()(Loc loc) const noexcept -> geometry::point<Nd> {
-    auto result = geometry::point<Nd>::constant(0.5);
+  auto operator()(Loc loc) const noexcept -> geometry::point<Ad> {
+    auto result = geometry::point<Ad>::constant(0.5);
 
     lidx_t l = 0;
     for (auto&& p : loc()) {
       const auto length = node_length_at_level(l) * num_t{0.25};
-      const auto&& rcp  = relative_child_position<Nd>(p);
+      const auto&& rcp  = relative_child_position<Ad>(p);
       for (auto&& d : ambient_dimension[loc]) { result[d] += rcp[d] * length; }
       ++l;
     }
@@ -50,5 +49,4 @@ constexpr auto&& normalized_coordinates
  = static_const<normalized_coordinates_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

@@ -6,7 +6,7 @@
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/location/default.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
-#include <hm3/utility/config/assert.hpp>
+#include <hm3/utility/assert.hpp>
 
 namespace hm3 {
 namespace tree {

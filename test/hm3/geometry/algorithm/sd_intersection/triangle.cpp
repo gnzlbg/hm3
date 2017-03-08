@@ -1,71 +1,77 @@
-#include <hm3/geometry/algorithm/sd_intersection/triangle.hpp>
-#include <hm3/geometry/primitive/polygon.hpp>
-#include <hm3/geometry/sd/combinators.hpp>
-#include <hm3/geometry/sd/edge.hpp>
+#include <hm3/geometry/algorithm/sd_intersection.hpp>
+#include <hm3/geometry/primitives.hpp>
+#include <hm3/geometry/sd.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;
+using namespace geometry;
 
 void test_2d_triangle_intersection() {
-  static constexpr dim_t nd = 2;
+  static constexpr dim_t ad = 2;
 
-  using p_t  = geometry::point<nd>;
-  using s_t  = geometry::segment<nd>;
-  using pl_t = geometry::small_polyline<nd, 3>;
-  using t_t  = geometry::triangle<nd>;
-  using e_t  = geometry::sd::fixed_edge<nd>;
-  using geometry::sd_intersection;
+  using p_t  = point<ad>;
+  using v_t  = vec<ad>;
+  using s_t  = segment<ad>;
+  using pl_t = polyline<ad>;
+  using t_t  = triangle<ad>;
+  using e_t  = sd::plane_at_point<ad>;
 
-  t_t t0({{{p_t{0.0, 0.0}, p_t{1.0, 0.0}, p_t{0.0, 1.0}}}});
+  auto tvxs = {p_t{0.0, 0.0}, p_t{1.0, 0.0}, p_t{0.0, 1.0}};
+  t_t t0(make_segment_range(tvxs));
 
-  using r_t = decltype(sd_intersection(t0, e_t{}));
+  using r_t = decltype(sd::intersection_triangle(t0, e_t{}));
 
   {  // case 0: no zero vertices (0)
-    e_t e({0.5, 0.5}, {-1., 0.});
-    CHECK(sd_intersection(t0, e) == r_t{s_t(p_t{0.5, 0.0}, p_t{0.5, 0.5})});
+    e_t e(p_t{0.5, 0.5}, v_t{-1., 0.});
+    CHECK(sd::intersection_triangle(t0, e)
+          == r_t{s_t(p_t{0.5, 0.0}, p_t{0.5, 0.5})});
   }
 
   {  // case 0: no zero vertices (1)
-    e_t e({0.5, 0.5}, {0., -1.});
-    CHECK(sd_intersection(t0, e) == r_t{s_t(p_t{0.5, 0.5}, p_t{0.0, 0.5})});
+    e_t e(p_t{0.5, 0.5}, v_t{0., -1.});
+    CHECK(sd::intersection_triangle(t0, e)
+          == r_t{s_t(p_t{0.5, 0.5}, p_t{0.0, 0.5})});
   }
 
   {  // case 1: one zero vertex (0)
-    e_t e({1.0, 0.5}, {-1., 0.});
-    CHECK(sd_intersection(t0, e) == r_t{p_t{1.0, 0.0}});
+    e_t e(p_t{1.0, 0.5}, v_t{-1., 0.});
+    CHECK(sd::intersection_triangle(t0, e) == r_t{p_t{1.0, 0.0}});
   }
 
   {  // case 1: one zero vertex (1)
-    e_t e({1.0, 0.0}, {-0.5, -1.0});
-    CHECK(sd_intersection(t0, e) == r_t{s_t(p_t{1.0, 0.0}, p_t{0.0, 0.5})});
+    e_t e(p_t{1.0, 0.0}, v_t{-0.5, -1.0}.normalized());
+    CHECK(sd::intersection_triangle(t0, e)
+          == r_t{s_t(p_t{1.0, 0.0}, p_t{0.0, 0.5})});
   }
 
   {  // case 2: two zero vertices (0)
-    e_t e({0.0, 0.0}, {0.0, 1.0});
-    CHECK(sd_intersection(t0, e) == r_t{s_t(p_t{0.0, 0.0}, p_t{1.0, 0.0})});
+    e_t e(p_t{0.0, 0.0}, v_t{0.0, 1.0});
+    CHECK(sd::intersection_triangle(t0, e)
+          == r_t{s_t(p_t{0.0, 0.0}, p_t{1.0, 0.0})});
   }
 
   {  // case 3: three zero vertices (0): corner like sdf
-    e_t e0({0.0, 0.0}, {0.0, 1.0});
-    e_t e1({0.0, 0.0}, {1.0, 0.0});
-    auto corner_sdf = geometry::sd::neg_union(e0, e1);
-    CHECK(sd_intersection(t0, corner_sdf)
-          == r_t{pl_t({p_t{0.0, 1.0}, p_t{0.0, 0.0}, p_t{1.0, 0.0}})});
+    e_t e0(p_t{0.0, 0.0}, v_t{0.0, 1.0});
+    e_t e1(p_t{0.0, 0.0}, v_t{1.0, 0.0});
+    auto corner_sdf = sd::neg_union(e0, e1);
+    auto pl_vxs     = {p_t{0.0, 1.0}, p_t{0.0, 0.0}, p_t{1.0, 0.0}};
+    CHECK(sd::intersection_triangle(t0, corner_sdf)
+          == r_t{pl_t(make_open_segment_range(pl_vxs))});
   }
 
   {  // case 3: three zero vertices (1): triangle-like sdf
-    e_t e0({0.0, 0.0}, {0.0, 1.0});
-    e_t e1({0.0, 0.0}, {1.0, 0.0});
-    e_t e2({1.0, 0.0}, {-1.0, -1.0});
-    auto tri_sdf = geometry::sd::neg_union(e0, e1, e2);
-    CHECK(sd_intersection(t0, tri_sdf) == r_t{t0});
+    e_t e0(p_t{0.0, 0.0}, v_t{0.0, 1.0});
+    e_t e1(p_t{0.0, 0.0}, v_t{1.0, 0.0});
+    e_t e2(p_t{1.0, 0.0}, v_t{-1.0, -1.0}.normalized());
+    auto tri_sdf = sd::neg_union(e0, e1, e2);
+    CHECK(sd::intersection_triangle(t0, tri_sdf) == r_t{t0});
   }
 
   {  // case 3: three zero vertices (2): split like stl
-    e_t e0({0.0, 0.0}, {+1., 0.});
-    e_t e1({1.0, 0.0}, {-1., 0.});
-    auto split_sdf = geometry::sd::neg_union(e0, e1);
-    CHECK(sd_intersection(t0, split_sdf)
+    e_t e0(p_t{0.0, 0.0}, v_t{+1., 0.});
+    e_t e1(p_t{1.0, 0.0}, v_t{-1., 0.});
+    auto split_sdf = sd::neg_union(e0, e1);
+    CHECK(sd::intersection_triangle(t0, split_sdf)
           == r_t{make_pair(p_t{1.0, 0.}, s_t(p_t{0.0, 1.0}, p_t{0.0, 0.0}))});
   }
 }
@@ -74,8 +80,6 @@ int main() {
   test_2d_triangle_intersection();
   return test::result();
 }
-
-// int main() { return 0; }
 
 #ifdef ABC
 
@@ -87,18 +91,18 @@ int main() {
 
 using namespace hm3;
 
-using p2d    = geometry::point<2>;
-using t2d    = geometry::triangle<2>;
-using s2d    = geometry::segment<2>;
-using poly2d = geometry::bounded_polygon<2, 4>;
-using edge2d = geometry::sd::fixed_edge<2>;
+using p2d    = point<2>;
+using t2d    = triangle<2>;
+using s2d    = segment<2>;
+using poly2d = bounded_polygon<2, 4>;
+using edge2d = sd::fixed_edge<2>;
 
 template <typename Shape, typename SDF, typename S0, typename S1, typename S2>
 void test_triangle_intersect(Shape&& s, SDF&& sdf, S0&& inside, S1&& outside,
                              S2&& surface) {
-  using namespace geometry::discrete;
-  using polygon_primitive::sd_detail::triangle_intersection_result;
-  using polygon_primitive::sd_detail::signed_distance_intersection_triangle;
+  using namespace discrete;
+  using polygon_primitive::sd::detail::triangle_intersection_result;
+  using polygon_primitive::sd::detail::signed_distance_intersection_triangle;
   auto check = [&](auto&& is, auto&& should) {
     if (size(should) == 0) {
       CHECK(is.size() == 0_u);
@@ -116,7 +120,7 @@ void test_triangle_intersect(Shape&& s, SDF&& sdf, S0&& inside, S1&& outside,
     CHECK(is.size() == size(should));
     if (rev) {
       test::check_equal(is, should | view::transform([](auto&& seg) {
-                              return geometry::direction.invert(seg);
+                              return direction.invert(seg);
                             }));
     } else {
       test::check_equal(is, should);
@@ -124,9 +128,9 @@ void test_triangle_intersect(Shape&& s, SDF&& sdf, S0&& inside, S1&& outside,
 
     // check that the surface normal always point i
     for (auto&& seg : is) {
-      auto c = geometry::centroid(seg);
-      auto n = geometry::normal(seg);
-      geometry::point<2> tp(c() + n() * 0.01);
+      auto c = centroid(seg);
+      auto n = normal(seg);
+      point<2> tp(c() + n() * 0.01);
       CHECK(sf(tp) > 0.);
     }
   };
@@ -144,7 +148,7 @@ void test_triangle_intersect(Shape&& s, SDF&& sdf, S0&& inside, S1&& outside,
   // check consistency of the cut of the inverse signed distance function:
   // inside of the inverse equals outside, and vice-verse, while surface remains
   // the same
-  auto&& isdf = geometry::sd::invert(sdf);
+  auto&& isdf = sd::invert(sdf);
 
   auto ir = signed_distance_intersection_triangle(s, isdf);
 #ifdef SHOW_INTERSECTION
@@ -202,7 +206,7 @@ void test_2d_triangle_intersection() {
   {  // case 3: three zero vertices (0): corner like sdf
     edge2d e0({0.0, 0.0}, {0.0, 1.0});
     edge2d e1({0.0, 0.0}, {1.0, 0.0});
-    auto corner_sdf = geometry::sd::neg_union(e0, e1);
+    auto corner_sdf = sd::neg_union(e0, e1);
     poly2d inside   = {{0.0, 0.0}, {1., 0.}, {0.0, 1.0}};
     poly2d outside;
     s2d surface[] = {s2d({0.0, 0.0}, {1.0, 0.0}), s2d({0.0, 1.0}, {0.0, 0.0})};
@@ -213,7 +217,7 @@ void test_2d_triangle_intersection() {
     edge2d e0({0.0, 0.0}, {0.0, 1.0});
     edge2d e1({0.0, 0.0}, {1.0, 0.0});
     edge2d e2({1.0, 0.0}, {-1.0, -1.0});
-    auto tri_sdf  = geometry::sd::neg_union(e0, e1, e2);
+    auto tri_sdf  = sd::neg_union(e0, e1, e2);
     poly2d inside = {{0.0, 0.0}, {1., 0.}, {0.0, 1.0}};
     poly2d outside;
     s2d surface[] = {s2d({0.0, 0.0}, {1.0, 0.0}), s2d({1.0, 0.0}, {0.0, 1.0}),
@@ -229,23 +233,23 @@ int main() {
 
 /*
 
-using p2d    = geometry::point<2>;
-using v2d    = geometry::vec<2>;
-using quad2d = geometry::fixed_polygon<2, 4>;
-using tri2d  = geometry::fixed_polygon<2, 3>;
-using box2d  = geometry::box<2>;
-using aabb2d = geometry::aabb<2>;
+using p2d    = point<2>;
+using v2d    = vec<2>;
+using quad2d = fixed_polygon<2, 4>;
+using tri2d  = fixed_polygon<2, 3>;
+using box2d  = box<2>;
+using aabb2d = aabb<2>;
 
-template <uint_t MaxNp> using poly2d = geometry::bounded_polygon<2, MaxNp>;
+template <uint_t MaxNp> using poly2d = bounded_polygon<2, MaxNp>;
 
-using edge2d = geometry::sd::fixed_edge<2>;
+using edge2d = sd::fixed_edge<2>;
 
-static_assert(geometry::SignedDistance<edge2d, 2>{}, "");
+static_assert(SignedDistance<edge2d, 2>{}, "");
 
 template <typename Shape, typename SDF, typename RShape>
 void test_intersect(Shape&& s, SDF&& sdf, RShape&& inside, RShape&& outside,
                     RShape&& surface) {
-  using namespace geometry::discrete;
+  using namespace discrete;
   // check cut:
   auto r = intersection.signed_distance(s, sdf);
   CHECK(r.inside == inside);
@@ -258,7 +262,7 @@ void test_intersect(Shape&& s, SDF&& sdf, RShape&& inside, RShape&& outside,
   // check consistency of the cut of the inverse signed distance function:
   // inside of the inverse equals outside, and vice-verse, while surface remains
   // the same
-  auto&& isdf = geometry::sd::adapt(geometry::sd::op_inverse, sdf);
+  auto&& isdf = sd::adapt(sd::op_inverse, sdf);
   auto ir     = intersection.signed_distance(s, isdf);
   CHECK(ir.inside == outside);
   CHECK(ir.outside == inside);

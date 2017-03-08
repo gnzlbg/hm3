@@ -5,21 +5,17 @@
 #include <hm3/grid/structured/tile/surface/coordinate.hpp>
 #include <hm3/grid/structured/tile/surface/index.hpp>
 
-namespace hm3 {
-namespace grid {
-namespace structured {
-namespace tile {
-namespace surface {
+namespace hm3::grid::structured::tile::surface {
 
 /// Square tile surface index-coordinate pair
 ///
-/// \tparam Nd number of spatial dimensions
+/// \tparam Ad number of spatial dimensions
 /// \tparam Nc number of surfaces per tile length
-template <dim_t Nd, tidx_t Nc>
-struct indexed_coordinate : geometry::dimensional<Nd> {
+template <dim_t Ad, tidx_t Nc>
+struct indexed_coordinate : geometry::with_ambient_dimension<Ad> {
   using self       = indexed_coordinate;
-  using index      = index<Nd, Nc>;
-  using coordinate = coordinate<Nd, Nc>;
+  using index      = index<Ad, Nc>;
+  using coordinate = coordinate<Ad, Nc>;
   index idx_;
   coordinate x_;
 
@@ -65,7 +61,7 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   friend OStream& operator<<(OStream& os, self const& ic) {
     if (ic) {
       os << "{" << ic.idx() << " : " << ic.x()[0];
-      for (dim_t d = 1; d < Nd; ++d) { os << ", " << ic.x()[d]; }
+      for (dim_t d = 1; d < Ad; ++d) { os << ", " << ic.x()[d]; }
       os << "}";
     } else {
       os << "{ invalid : invalid }";
@@ -74,8 +70,4 @@ struct indexed_coordinate : geometry::dimensional<Nd> {
   }
 };
 
-}  // namespace surface
-}  // namespace tile
-}  // namespace structured
-}  // namespace grid
-}  // namespace hm3
+}  // namespace hm3::grid::structured::tile::surface
