@@ -47,7 +47,7 @@ constexpr std::remove_reference_t<T>&& constexpr_move(T&& t) noexcept {
 template <typename T>
 struct has_overloaded_addressof_ {
   template <typename X>
-  static constexpr bool has_overload(...) {
+  static constexpr bool has_overload(std::uint64_t) {
     return false;
   }
 
@@ -117,7 +117,7 @@ union storage_t {
   constexpr storage_t(Args&&... args)
    : value_(constexpr_forward<Args>(args)...) {}
 
-  ~storage_t(){};  // NOLINT
+  ~storage_t(){};
 };
 
 template <typename T>
@@ -139,10 +139,10 @@ constexpr struct only_set_initialized_t {
 
 template <typename T>
 struct optional_base {
-  bool init_;
+  bool init_{false};
   storage_t<T> storage_;
 
-  constexpr optional_base() noexcept : init_(false), storage_(trivial_init){};
+  constexpr optional_base() noexcept : storage_(trivial_init){};
 
   constexpr explicit optional_base(only_set_initialized_t, bool init) noexcept
    : init_(init), storage_(trivial_init){};
@@ -164,7 +164,11 @@ struct optional_base {
    : init_(true), storage_(il, std::forward<Args>(args)...) {}
 
   ~optional_base() {
-    if (init_) { storage_.value_.T::~T(); }
+    if (init_) {
+      storage_
+       .value_  // NOLINT(cppcoreguidelines-pro-type-union-access)
+       .T::~T();
+    }
   }
 };
 
@@ -173,8 +177,7 @@ struct constexpr_optional_base {
   bool init_{false};
   constexpr_storage_t<T> storage_;
 
-  constexpr constexpr_optional_base() noexcept
-   : init_(false), storage_(trivial_init){};
+  constexpr constexpr_optional_base() noexcept : storage_(trivial_init){};
 
   constexpr explicit constexpr_optional_base(only_set_initialized_t,
                                              bool init) noexcept
@@ -212,19 +215,33 @@ class optional : private OptionalBase<T> {
   static_assert(!std::is_same<std::decay_t<T>, in_place_t>{}, "bad T");
 
   constexpr bool initialized() const noexcept { return OptionalBase<T>::init_; }
-  T* dataptr() { return std::addressof(OptionalBase<T>::storage_.value_); }
+  T* dataptr() {
+    return std::addressof(
+     OptionalBase<T>::storage_
+      .value_);  // NOLINT(cppcoreguidelines-pro-type-union-access)
+  }
   constexpr const T* dataptr() const {
-    return static_addressof(OptionalBase<T>::storage_.value_);
+    return static_addressof(
+     OptionalBase<T>::storage_
+      .value_  // NOLINT(cppcoreguidelines - pro - type - union - access)
+     );
   }
 
   constexpr const T& contained_val() const & {
-    return OptionalBase<T>::storage_.value_;
+    return OptionalBase<T>::storage_
+     .value_;  // NOLINT(cppcoreguidelines - pro - type - union - access)
   }
 
   constexpr T&& contained_val() && {
-    return std::move(OptionalBase<T>::storage_.value_);
+    return std::move(
+     OptionalBase<T>::storage_
+      .value_  // NOLINT(cppcoreguidelines - pro - type - union - access)
+     );
   }
-  constexpr T& contained_val() & { return OptionalBase<T>::storage_.value_; }
+  constexpr T& contained_val() & {
+    return OptionalBase<T>::storage_
+     .value_;  // NOLINT(cppcoreguidelines - pro - type - union - access)
+  }
 
   void clear() noexcept {
     if (initialized()) { dataptr()->T::~T(); }

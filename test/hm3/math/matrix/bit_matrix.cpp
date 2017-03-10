@@ -1,7 +1,7 @@
 /// \file
 ///
 /// Tests bit dense matrix
-#include <hm3/utility/matrix/matrix.hpp>
+#include <hm3/math/matrix.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;

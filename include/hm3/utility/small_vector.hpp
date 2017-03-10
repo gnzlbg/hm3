@@ -210,7 +210,8 @@ struct small_vector {
     const auto it_idx = i - c.data();
     HM3_ASSERT(it_idx >= 0 and it_idx <= difference_type(c.size()),
                "it {} out-of-bounds [0, {}]", it_idx, c.size());
-    return c.begin() + it_idx;
+    return c.begin()
+           + it_idx;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
   template <typename C, typename It>
@@ -218,7 +219,8 @@ struct small_vector {
     const auto it_idx = it - c.begin();
     HM3_ASSERT(it_idx >= 0 and it_idx <= difference_type(c.size()),
                "it {} out-of-bounds [0, {}]", it_idx, c.size());
-    return c.data() + it_idx;
+    return c.data()
+           + it_idx;  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
  public:
@@ -448,6 +450,9 @@ struct small_vector {
 
   /// Move assignment.
   constexpr small_vector& operator=(small_vector&& other) = default;
+
+  /// Destructor
+  ~small_vector() = default;
 
   /// Initializes vector with \p n default-constructed elements.
   CONCEPT_REQUIRES(CopyConstructible<T>{} or MoveConstructible<T>{})

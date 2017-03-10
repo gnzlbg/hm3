@@ -57,6 +57,11 @@ struct point : private point_vector_detail::base_t<Ad> {
 
   operator base_t() const noexcept = delete;
 
+  base_t& layout() noexcept { return static_cast<base_t&>(*this); }
+  base_t const& layout() const noexcept {
+    return static_cast<base_t const&>(*this);
+  }
+
   /// Explicit construction from associated vector type.
   explicit constexpr point(vector_t const& v) noexcept : base_t(v.layout()) {}
 
@@ -135,8 +140,7 @@ template <typename P, typename PT = uncvref_t<P>,
           typename VT = associated::vector_t<PT>>
 constexpr VT as_v(P p) noexcept {
   static_assert(Same<VT, associated::vector_t<P>>{});
-  return reinterpret_cast<VT&&>(
-   p);  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+  return VT(p.layout());
 }
 
 }  // namespace hm3::geometry

@@ -6,8 +6,8 @@
 /// TODO: when returning an eigen view of the matrix using operator() return an
 /// EigenMap only when the matrix is an lvalue (& or const&), and return an
 /// EigenMatrix when the matrix is an rvalue (&&).
-#include <hm3/utility/matrix/access.hpp>
-#include <hm3/utility/matrix/storage.hpp>
+#include <hm3/math/matrix/access.hpp>
+#include <hm3/math/matrix/storage.hpp>
 #include <hm3/utility/unwrap.hpp>
 
 namespace hm3 {
@@ -76,6 +76,7 @@ struct matrix : bounds<NoRows, NoCols>,
 
   constexpr matrix& operator=(matrix const&) = default;
   constexpr matrix& operator=(matrix&&) = default;
+  ~matrix()                             = default;
 
   // template <typename Int,
   //           CONCEPT_REQUIRES_(is_vector() and std::is_integral<Int>{})>

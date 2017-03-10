@@ -5,10 +5,10 @@
 #include <bitset>
 #include <hm3/ext/dynamic_bitset.hpp>
 #include <hm3/ext/vector.hpp>
+#include <hm3/math/matrix/bounds.hpp>
+#include <hm3/math/matrix/traits.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/assert.hpp>
-#include <hm3/utility/matrix/bounds.hpp>
-#include <hm3/utility/matrix/traits.hpp>
 #include <hm3/utility/range.hpp>
 #define HM3_MATRIX_STORAGE_USE_ALIGNAS
 
@@ -98,7 +98,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
  private:
   template <std::size_t... Is>
   constexpr storage(std::index_sequence<Is...>, std::initializer_list<T> v)
-   : data_{{v.begin()[Is]...}} {}
+   : data_{{ranges::at(v, Is)...}} {}
 
  public:
   constexpr storage(std::initializer_list<T> v)
