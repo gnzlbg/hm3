@@ -43,14 +43,14 @@ struct split_fn {
   }
 
   template <typename T, typename U>
-  static constexpr auto dispatch(T&& t, U&& u, fallback)
+  static constexpr auto select(T&& t, U&& u, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<U>(u),
                                              std::forward<T>(t),
                                              associated::v_<U>,
                                              associated::v_<T>));
 
   template <typename T, typename U>
-  static constexpr auto dispatch(T&& t, U&& u, preferred)
+  static constexpr auto select(T&& t, U&& u, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
                                              std::forward<U>(u),
                                              associated::v_<T>,
@@ -58,9 +58,8 @@ struct split_fn {
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(dispatch(std::forward<T>(t),
-                                                 std::forward<U>(u),
-                                                 hm3::dispatch));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(select(std::forward<T>(t),
+                                               std::forward<U>(u), dispatch));
 
   template <typename T, typename Rng>
   static auto against_range(T&& t, Rng&& r) {

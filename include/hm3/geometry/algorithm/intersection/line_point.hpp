@@ -17,7 +17,7 @@ struct intersection_test_line_point_fn {
     static_assert(Line<L>{});
     static_assert(Point<P>{});
     static_assert(ad_v<L> == ad_v<P>);
-    return line_intersection_parameter(l, p, abs_tol, rel_tol);
+    return bool{line_intersection_parameter(l, p, abs_tol, rel_tol)};
   }
 };
 

@@ -516,7 +516,7 @@ struct intersection_fn {
   template <typename T, typename U>
   static constexpr auto test(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_impl(
-    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, hm3::dispatch));
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, dispatch));
 
   template <typename T, typename U>
   static constexpr auto test(T&& t, U&& u)
@@ -534,7 +534,7 @@ struct intersection_fn {
   static constexpr auto test_non_degenerate(T&& t, U&& u, num_t abs_tol,
                                             num_t rel_tol)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_non_degenerate_impl(
-    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, hm3::dispatch));
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, dispatch));
 
   template <typename T, typename U>
   static constexpr auto test_non_degenerate(T&& t, U&& u)
@@ -550,7 +550,7 @@ struct intersection_fn {
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_impl(
-    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, hm3::dispatch));
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, dispatch));
 
   ///@}  // Intersection
 };

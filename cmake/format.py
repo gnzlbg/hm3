@@ -25,6 +25,8 @@ import subprocess
 from threading import Thread
 import Queue
 import os
+import time
+import sys
 
 num_worker_threads = int(os.getenv('POOL_JOBS', 8))
 
@@ -74,7 +76,13 @@ def run(clang_format_path, file_paths, apply_format, verbose):
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
             q.put((clang_format_path, p, apply_format, verbose, results))
-    q.join()
+
+    while q.empty() is False:
+        try:
+            time.sleep(0.5)
+        except KeyboardInterrupt:
+            sys.exit(0)
+
     return all(results)
 
 def main():

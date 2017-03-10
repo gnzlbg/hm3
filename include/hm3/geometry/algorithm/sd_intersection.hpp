@@ -32,7 +32,7 @@ struct intersection_fn {
 
   template <typename T, typename U>
   static constexpr auto intersection_impl(T&& t, U&& u, num_t abs_tol,
-                                          num_t rel_tol, long)
+                                          num_t rel_tol, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<U>(u),
                                              std::forward<T>(t),
                                              associated::v_<U>, abs_tol,
@@ -40,7 +40,7 @@ struct intersection_fn {
 
   template <typename T, typename U>
   static constexpr auto intersection_impl(T&& t, U&& u, num_t abs_tol,
-                                          num_t rel_tol, int)
+                                          num_t rel_tol, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
                                              std::forward<U>(u),
                                              associated::v_<T>, abs_tol,
@@ -71,9 +71,8 @@ struct intersection_fn {
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_impl(std::forward<T>(t),
-                                                          std::forward<U>(u),
-                                                          abs_tol, rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_impl(
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, dispatch));
 };
 
 }  // namespace intersection_detail

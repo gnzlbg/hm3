@@ -17,6 +17,7 @@ Options:
   -h --help  Show this screen.
   --verbose  Verbose output.
   --apply    Applies tidy (by default it only checks the tidy).
+  --np <np>  Number of worker threads.
 
 """
 from docopt import docopt
@@ -25,8 +26,10 @@ import subprocess
 from threading import Thread
 import Queue
 import os
+import time
+import sys
 
-num_worker_threads = int(os.getenv('POOL_JOBS', 4))
+num_worker_threads = 1 #int(os.Geneva('POOL_JOBS', 4))
 
 file_extensions = ['.c', '.cpp', '.cc', '.cxx', '.c++']
 
@@ -57,6 +60,7 @@ def worker():
         q.task_done()
 
 q = Queue.Queue()
+
 for i in range(num_worker_threads):
      t = Thread(target=worker)
      t.daemon = True
@@ -69,7 +73,12 @@ def run(clang_tidy_path, file_paths, build_path, apply_tidy, verbose, supp):
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
             q.put((clang_tidy_path, p, build_path, apply_tidy, verbose, supp, results))
-    q.join()
+
+    while q.empty() is False:
+        try:
+            time.sleep(0.5)
+        except KeyboardInterrupt:
+            sys.exit(0)
     return all(results)
 
 def main():
@@ -85,7 +94,7 @@ def main():
     np = args['--np']
     if np:
         num_worker_threads = int(np);
-
+        
     files = subprocess.check_output(['git', 'ls-tree', '--full-tree', '-r', 'HEAD', project_src_path])
     file_paths = [os.path.join(project_src_path,f.split('\t')[1]) for f in files.splitlines()] 
 

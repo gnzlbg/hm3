@@ -150,7 +150,19 @@ constexpr bool overflows_on_add(UInt value, UInt offset,
 
 template <typename UInt,
           CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{}
-                            and width<UInt> == width<unsigned int>)>
+                            and width<UInt> == width<std::uint16_t>)>
+constexpr int clz(UInt n) noexcept {
+#if defined(__GCC__) || defined(__clang__)
+  return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzs(n);
+#else
+#pragma message "error compiler doesn't support clz(unsigned)"
+// TODO: provide a fall back
+#endif
+}
+
+template <typename UInt,
+          CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{}
+                            and width<UInt> == width<std::uint32_t>)>
 constexpr int clz(UInt n) noexcept {
 #if defined(__GCC__) || defined(__clang__)
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clz(n);
@@ -160,32 +172,14 @@ constexpr int clz(UInt n) noexcept {
 #endif
 }
 
-template <
- typename UInt,
- CONCEPT_REQUIRES_(
-  UnsignedIntegral<UInt>{}
-  and width<
-       UInt> == width<unsigned long> and width<unsigned long> != width<unsigned int>)>
-constexpr int clz(UInt n) noexcept {
-#if defined(__GCC__) || defined(__clang__)
-  return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzl(n);
-#else
-#pragma message "error compiler doesn't support clz(unsigned long)"
-// TODO: provide a fall back
-#endif
-}
-
-template <
- typename UInt,
- CONCEPT_REQUIRES_(
-  UnsignedIntegral<UInt>{}
-  and width<
-       UInt> == width<unsigned long long> and width<unsigned long> != width<unsigned long long>)>
+template <typename UInt,
+          CONCEPT_REQUIRES_(UnsignedIntegral<UInt>{}
+                            and width<UInt> == width<std::uint64_t>)>
 constexpr int clz(UInt n) noexcept {
 #if defined(__GCC__) || defined(__clang__)
   return n == 0 ? sizeof(n) * CHAR_BIT : __builtin_clzll(n);
 #else
-#pragma message "error compiler doesn't support clz(unsigned long long)"
+#pragma message "error compiler doesn't support clz(unsigned long)"
 // TODO: provide a fall back
 #endif
 }

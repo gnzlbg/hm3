@@ -15,16 +15,16 @@ struct element_dimension_fn {
   }
 
   template <typename T>
-  static constexpr auto get_dim(T&& t, long)
+  static constexpr auto get_dim(T&& t, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t.rank());
 
   template <typename T, typename U = associated::t_<T>>
-  static constexpr auto get_dim(T&&, int = 0)
+  static constexpr auto get_dim(T&&, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(get_dim_(U{}));
 
   template <typename T>
   constexpr auto operator()(T&& t) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(get_dim(std::forward<T>(t), 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(get_dim(std::forward<T>(t), dispatch));
 
   template <typename T>
   constexpr auto operator[](T&& t) const noexcept {

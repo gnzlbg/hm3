@@ -130,21 +130,22 @@ struct push_triangle_fn {
 struct reserve_fn {
   // try to find it via ADL
   template <typename Mesh>
-  constexpr auto /* bool */ impl(Mesh&& mesh, std::uint32_t n, int) const
+  constexpr auto /* bool */ impl(Mesh&& mesh, std::uint32_t n, preferred) const
    -> decltype(reserve(std::forward<Mesh>(mesh), n), bool()) {
     return reserve(std::forward<Mesh>(mesh), n);
   }
 
   // otherwise do nothing
   template <typename Mesh>
-  constexpr auto /* bool */ impl(Mesh&&, std::uint32_t, long) const -> bool {
+  constexpr auto /* bool */ impl(Mesh&&, std::uint32_t, fallback) const
+   -> bool {
     return true;
   }
 
   template <typename Mesh>
   constexpr auto /* bool */ operator()(Mesh&& mesh, std::uint32_t n) const
-   -> decltype(impl(std::forward<Mesh>(mesh), n, int()), bool()) {
-    return impl(std::forward<Mesh>(mesh), n, int());
+   -> decltype(impl(std::forward<Mesh>(mesh), n, dispatch), bool()) {
+    return impl(std::forward<Mesh>(mesh), n, dispatch);
   }
 };
 

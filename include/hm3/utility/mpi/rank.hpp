@@ -13,7 +13,11 @@ static constexpr auto root = rank_t{0};
 
 namespace literals {
 
-inline rank_t operator""_r(unsigned long long idx) { return rank_t{idx}; }
+inline rank_t operator""_r(
+ unsigned long long idx)  // NOLINT(google-runtime-int)
+{
+  return rank_t{idx};
+}
 
 }  // namespace literals
 

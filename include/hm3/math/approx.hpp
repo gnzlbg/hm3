@@ -80,15 +80,15 @@ struct type_with_size<4> {
   ///
   /// As base/basictypes.h doesn't compile on Windows, we cannot use
   /// uint32, uint64, and etc here.
-  using Int  = int;
-  using UInt = unsigned int;
+  using Int  = std::int32_t;
+  using UInt = std::uint32_t;
 };
 
 /// The specialization for size 8.
 template <>
 struct type_with_size<8> {
   using Int  = std::int64_t;
-  using UInt = unsigned long long;
+  using UInt = std::uint64_t;
 };
 
 /// This template class represents an IEEE floating-point number

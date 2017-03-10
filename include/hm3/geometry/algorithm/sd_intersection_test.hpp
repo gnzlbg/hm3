@@ -26,14 +26,14 @@ struct intersection_test_fn {
 
   template <typename T, typename U>
   static constexpr auto impl_select(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
-                                    long)
+                                    fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<U>(u),
                                              std::forward<T>(t), abs_tol,
                                              rel_tol));
 
   template <typename T, typename U>
   static constexpr auto impl_select(T&& t, U&& u, num_t abs_tol, num_t rel_tol,
-                                    int)
+                                    preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(std::forward<T>(t),
                                              std::forward<U>(u), abs_tol,
                                              rel_tol));
@@ -42,7 +42,7 @@ struct intersection_test_fn {
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl_select(std::forward<T>(t),
                                                     std::forward<U>(u), abs_tol,
-                                                    rel_tol, 0));
+                                                    rel_tol, dispatch));
 
   template <typename Rng>
   constexpr auto operator()(Rng&& rng, num_t abs_tol, num_t rel_tol) const

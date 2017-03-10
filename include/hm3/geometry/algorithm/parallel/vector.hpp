@@ -18,7 +18,8 @@ struct parallel_vector_fn {
   /// including other zero vectors.
   template <typename T, typename UT = uncvref_t<T>,
             CONCEPT_REQUIRES_(Vector<UT, 1>{})>
-  static constexpr auto impl(T const&, T const&, num_t, num_t, long) noexcept {
+  static constexpr auto impl(T const&, T const&, num_t, num_t,
+                             fallback) noexcept {
     return true;
   }
 
@@ -30,7 +31,7 @@ struct parallel_vector_fn {
   template <typename T, typename UT = uncvref_t<T>,
             CONCEPT_REQUIRES_(Vector<UT, 2>{} or Vector<UT, 3>{})>
   static constexpr auto impl(T const& v0, T const& v1, num_t abs_tol,
-                             num_t rel_tol, long) noexcept {
+                             num_t rel_tol, fallback) noexcept {
     return approx_number(perp_product.norm(v0, v1), 0., abs_tol, rel_tol);
   }
 
@@ -38,14 +39,15 @@ struct parallel_vector_fn {
   template <typename T, typename UT = uncvref_t<T>,
             CONCEPT_REQUIRES_(Vector<UT>{})>
   static constexpr auto impl(T const& v0, T const& v1, num_t abs_tol,
-                             num_t rel_tol, int)
+                             num_t rel_tol, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(parallel_vector(v0, v1, abs_tol,
                                                         rel_tol));
 
   template <typename T, CONCEPT_REQUIRES_(Vector<uncvref_t<T>>{})>
   constexpr auto operator()(T const& v0, T const& v1, num_t abs_tol,
                             num_t rel_tol) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(v0, v1, abs_tol, rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(impl(v0, v1, abs_tol, rel_tol,
+                                             dispatch));
 };
 
 }  // namespace parallel_vector_detail

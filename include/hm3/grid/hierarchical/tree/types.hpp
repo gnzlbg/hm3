@@ -19,7 +19,8 @@ using nidx_t = uint_t;
 /// Index of a node within a tree
 using node_idx = optional_idx<nidx_t, struct tree_node_idx_tag>;
 
-constexpr node_idx operator"" _n(unsigned long long int i) {
+constexpr node_idx operator"" _n(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return node_idx{static_cast<nidx_t>(i)};
 }
 
@@ -29,7 +30,8 @@ using sgidx_t = idx_t;
 /// Index of a sibling group within a tree
 using siblings_idx = optional_idx<sgidx_t, struct siblings_tag>;
 
-constexpr siblings_idx operator"" _sg(unsigned long long int i) {
+constexpr siblings_idx operator"" _sg(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return siblings_idx{static_cast<sgidx_t>(i)};
 }
 
@@ -39,7 +41,8 @@ using lidx_t = suint_t;
 /// Index of a level within a tree
 using level_idx = optional_idx<lidx_t, struct levels_tag>;
 
-constexpr level_idx operator"" _l(unsigned long long int i) {
+constexpr level_idx operator"" _l(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return level_idx{static_cast<lidx_t>(i)};
 }
 
