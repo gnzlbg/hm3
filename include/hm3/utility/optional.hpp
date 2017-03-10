@@ -170,7 +170,7 @@ struct optional_base {
 
 template <typename T>
 struct constexpr_optional_base {
-  bool init_;
+  bool init_{false};
   constexpr_storage_t<T> storage_;
 
   constexpr constexpr_optional_base() noexcept
@@ -248,7 +248,7 @@ class optional : private OptionalBase<T> {
   }
 
  public:
-  typedef T value_type;
+  using value_type = T;
 
   // 20.5.5.1, constructors
   constexpr optional() noexcept : OptionalBase<T>(){};
@@ -809,8 +809,8 @@ using optional_detail::make_optional;
 namespace std {
 template <typename T>
 struct hash<hm3::optional_detail::optional<T>> {
-  typedef typename hash<T>::result_type result_type;
-  typedef hm3::optional_detail::optional<T> argument_type;
+  using result_type   = typename hash<T>::result_type;
+  using argument_type = hm3::optional_detail::optional<T>;
 
   constexpr result_type operator()(argument_type const& arg) const {
     return arg ? std::hash<T>{}(*arg) : result_type{};
@@ -819,8 +819,8 @@ struct hash<hm3::optional_detail::optional<T>> {
 
 template <typename T>
 struct hash<hm3::optional_detail::optional<T&>> {
-  typedef typename hash<T>::result_type result_type;
-  typedef hm3::optional_detail::optional<T&> argument_type;
+  using result_type   = typename hash<T>::result_type;
+  using argument_type = hm3::optional_detail::optional<T&>;
 
   constexpr result_type operator()(argument_type const& arg) const {
     return arg ? std::hash<T>{}(*arg) : result_type{};

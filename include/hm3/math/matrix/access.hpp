@@ -2,10 +2,10 @@
 /// \file
 ///
 // Access to matrix data
-#include <hm3/utility/matrix/traits.hpp>
+#include <hm3/math/matrix/traits.hpp>
 
-namespace hm3 {
-namespace dense {
+namespace hm3::dense {
+
 namespace detail {
 
 /// Row-major element access
@@ -23,5 +23,5 @@ constexpr auto matrix_idx(R&& r, C&& c, MR&& no_rows, MC&&,
 }
 
 }  // namespace detail
-}  // namespace dense
-}  // namespace hm3
+
+}  // namespace hm3::dense

@@ -8,7 +8,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct FaceAccess {
+struct FaceAccess  // NOLINT(readability-identifier-naming)
+{
   template <typename T, typename UT = uncvref_t<T>,
             typename EIT = associated::face_index_t<UT>,
             typename ET  = associated::face_t<UT>>

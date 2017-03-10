@@ -34,8 +34,8 @@ struct vec : private point_vector_detail::base_t<Ad> {
   using typename base_t::const_reference;
   using typename base_t::value_type;
 
-  template <dim_t Ad_>
-  using rebind = vec<Ad_>;
+  template <dim_t OtherAd>
+  using rebind = vec<OtherAd>;
 
   constexpr vec() = default;
   constexpr vec(base_t const& s) : base_t(s) {}
@@ -59,6 +59,10 @@ struct vec : private point_vector_detail::base_t<Ad> {
   auto normalized() const noexcept { return vec<Ad>((*this)().normalized()); }
 
   operator base_t() const noexcept = delete;
+  base_t& layout() noexcept { return static_cast<base_t&>(*this); }
+  base_t const& layout() const noexcept {
+    return static_cast<base_t const&>(*this);
+  }
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

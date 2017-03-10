@@ -8,7 +8,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Ray : rc::refines<GeometryObject, rc::Regular, LineLike> {
+struct Ray  // NOLINT(readability-identifier-naming)
+ : rc::refines<GeometryObject, rc::Regular, LineLike> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(
    rc::is_true(trait::check<UT, trait::ray<ambient_dimension_v<UT>>>), t.line()

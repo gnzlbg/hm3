@@ -208,11 +208,12 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
 
   ///@} // Access
 
-  deinterleaved()                     = default;
-  deinterleaved(deinterleaved const&) = default;
-  deinterleaved& operator=(deinterleaved const&) = default;
-  deinterleaved(deinterleaved&&)                 = default;
-  deinterleaved& operator=(deinterleaved&&) = default;
+  constexpr deinterleaved()                     = default;
+  constexpr deinterleaved(deinterleaved const&) = default;
+  constexpr deinterleaved& operator=(deinterleaved const&) = default;
+  constexpr deinterleaved(deinterleaved&&)                 = default;
+  constexpr deinterleaved& operator=(deinterleaved&&) = default;
+  ~deinterleaved()                                    = default;
 
   /// Constructs a location from deinterleaved Morton coordinates \p x_ up to
   /// a level \p l.

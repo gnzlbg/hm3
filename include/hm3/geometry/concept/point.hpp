@@ -9,7 +9,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Point : rc::refines<Vertex, VertexAccess> {
+struct Point  // NOLINT(readability-identifier-naming)
+ : rc::refines<Vertex, VertexAccess> {
   template <typename T>
   auto requires_(T&& t) -> void;
 };

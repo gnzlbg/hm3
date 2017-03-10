@@ -9,7 +9,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Polygon : rc::refines<VertexAccess, EdgeAccess> {
+struct Polygon  // NOLINT(readability-identifier-naming)
+ : rc::refines<VertexAccess, EdgeAccess> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(                         //
    rc::is_true(trait::check<UT, trait::polygon<ambient_dimension_v<UT>>>),  //
@@ -30,7 +31,8 @@ using Polygon
 
 namespace concept {
 
-struct MutablePolygon : rc::refines<Polygon> {
+struct MutablePolygon  // NOLINT(readability-identifier-naming)
+ : rc::refines<Polygon> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(  //
    ((void)t.push_back_edge(t.edge(0)), 42),          //

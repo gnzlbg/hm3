@@ -33,30 +33,30 @@ struct array {  // TODO: figure out how to do EBO.
 
   std::conditional_t<(N > 0), T[N > 0 ? N : 1], array_detail::empty> elems_;
 
-  constexpr value_type* data() noexcept {
+  constexpr pointer data() noexcept {
     if
       constexpr(N == 0) { return nullptr; }
     else {
-      return elems_;
+      return static_cast<pointer>(elems_);
     }
   }
-  constexpr const value_type* data() const noexcept {
+  constexpr const_pointer data() const noexcept {
     if
       constexpr(N == 0) { return nullptr; }
     else {
-      return elems_;
+      return static_cast<const_pointer>(elems_);
     }
   }
 
-  CONCEPT_REQUIRES(N > 0)
   constexpr reference operator[](size_type n) {
     HM3_ASSERT(n < N, "index {} out-of-bounds [0, {})", n, N);
-    return *(data() + n);
+    return *(data()
+             + n);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
-  CONCEPT_REQUIRES(N > 0)
   constexpr const_reference operator[](size_type n) const {
     HM3_ASSERT(n < N, "index {} out-of-bounds [0, {})", n, N);
-    return *(data() + n);
+    return *(data()
+             + n);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
   // No explicit construct/copy/destroy for aggregate type

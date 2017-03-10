@@ -205,12 +205,14 @@ struct floating_point {
 
   /// Returns the fraction bits of this number.
   constexpr Bits fraction_bits() const noexcept {
-    return k_fraction_bit_mask & u_.bits_;
+    return k_fraction_bit_mask
+           & u_.bits_;  // NOLINT(cppcoreguidelines-pro-type-union-access)
   }
 
   /// Returns the sign bit of this number.
   constexpr Bits sign_bit() const noexcept {
-    return k_sign_bit_mask & u_.bits_;
+    return k_sign_bit_mask
+           & u_.bits_;  // NOLINT(cppcoreguidelines-pro-type-union-access)
   }
 
   /// Returns true iff this is NAN (not a number).

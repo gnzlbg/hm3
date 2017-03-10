@@ -30,19 +30,19 @@ inline int& failures() {
 
 struct approx_fn {
   template <typename T, typename U>
-  static constexpr auto impl(T&&, U&&, long) -> bool {
+  static constexpr auto impl(T&&, U&&, fallback) -> bool {
     HM3_FATAL_ERROR("Function approx not found!");
     return false;
   }
   template <typename T, typename U>
-  static constexpr auto impl(T&& t, U&& u, int)
+  static constexpr auto impl(T&& t, U&& u, preferred)
    -> decltype(geometry::approx(std::forward<T>(t), std::forward<U>(u))) {
     return geometry::approx(std::forward<T>(t), std::forward<U>(u));
   }
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u) const
-   -> decltype(impl(std::forward<T>(t), std::forward<U>(u), int(0))) {
-    return impl(std::forward<T>(t), std::forward<U>(u), 0);
+   -> decltype(impl(std::forward<T>(t), std::forward<U>(u), dispatch)) {
+    return impl(std::forward<T>(t), std::forward<U>(u), dispatch);
   }
 };
 
@@ -74,10 +74,13 @@ struct ret {
  public:
   ret(char const* filename, int lineno, char const* expr, T t)
    : t_(std::move(t)), lineno_(lineno), filename_(filename), expr_(expr) {}
-
   ~ret() {
     if (!dismissed_ && eval_(42)) { this->oops(42); }
   }
+  ret(ret const&) = default;
+  ret(ret&&)      = default;
+  ret& operator=(ret const&) = default;
+  ret& operator=(ret&&) = default;
 
   template <typename U,
             CONCEPT_REQUIRES_(!std::is_floating_point<U>{}

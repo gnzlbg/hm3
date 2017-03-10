@@ -20,8 +20,16 @@ struct sign_t {
   constexpr sign_t()              = default;
   constexpr sign_t(sign_t const&) = default;
   constexpr sign_t(sign_t&&)      = default;
-  constexpr sign_t& operator=(sign_t const&) = default;
-  constexpr sign_t& operator=(sign_t&&) = default;
+
+  constexpr sign_t& operator=(sign_t const& o) noexcept {
+    value = o.value;
+    return *this;
+  }
+  constexpr sign_t& operator=(sign_t&& o) noexcept {
+    value = o.value;
+    return *this;
+  }
+  ~sign_t() = default;
 };
 
 constexpr bool operator==(sign_t const& a, sign_t const& b) noexcept {
@@ -65,8 +73,15 @@ struct signum_t {
   constexpr signum_t()                = default;
   constexpr signum_t(signum_t const&) = default;
   constexpr signum_t(signum_t&&)      = default;
-  constexpr signum_t& operator=(signum_t const&) = default;
-  constexpr signum_t& operator=(signum_t&&) = default;
+  constexpr signum_t& operator        =(signum_t const& o) noexcept {
+    value = o.value;
+    return *this;
+  }
+  constexpr signum_t& operator=(signum_t&& o) noexcept {
+    value = o.value;
+    return *this;
+  }
+  ~signum_t() = default;
 };
 
 constexpr bool operator==(signum_t const& a, signum_t const& b) noexcept {

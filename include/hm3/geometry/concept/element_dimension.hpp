@@ -9,7 +9,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct ElementDimension : rc::refines<AmbientDimension> {
+struct ElementDimension  // NOLINT(readability-identifier-naming)
+ : rc::refines<AmbientDimension> {
   template <typename T>
   auto requires_(T&& t) -> decltype(
    rc::valid_expr(rc::convertible_to<dim_t>(element_dimension(t)),           //
@@ -22,7 +23,7 @@ struct ElementDimension : rc::refines<AmbientDimension> {
 /// Element Dimension concept.
 ///
 /// ElementDimension<T> refines:
-/// - AmbientDimension<T>.
+/// - ambient_dimension<T>.
 ///
 /// ElementDimension<T, Ad = dimension_independent,
 ///                     Ed = dimension_independent>

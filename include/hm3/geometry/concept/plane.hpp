@@ -12,7 +12,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Plane {
+struct Plane  // NOLINT(readability-identifier-naming)
+{
   template <typename T, typename UT = uncvref_t<T>,
             typename PT = associated::point_t<UT>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(

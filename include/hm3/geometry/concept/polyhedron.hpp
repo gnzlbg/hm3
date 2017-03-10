@@ -10,7 +10,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Polyhedron : rc::refines<VertexAccess, EdgeAccess, FaceAccess> {
+struct Polyhedron  // NOLINT(readability-identifier-naming)
+ : rc::refines<VertexAccess, EdgeAccess, FaceAccess> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(   //
    rc::is_true(trait::check<UT, trait::polyhedron>),  //

@@ -10,7 +10,7 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct AmbientDimension {
+struct AmbientDimension {  // NOLINT(readability-identifier-naming)
   template <typename T>
   auto requires_(T&& t) -> decltype(
    rc::valid_expr(rc::convertible_to<dim_t>(ambient_dimension(t)),

@@ -9,7 +9,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct SignedDistance {
+struct SignedDistance  // NOLINT(readability-identifier-naming)
+{
   template <typename T, typename U>
   auto requires_(T&& t, U&& u) -> decltype(rc::valid_expr(  //
    rc::is_true(trait::check<

@@ -8,7 +8,7 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct EdgeAccess {
+struct EdgeAccess {  // NOLINT(readability-identifier-naming)
   template <typename T, typename UT = uncvref_t<T>,
             typename EIT = associated::edge_index_t<UT>,
             typename ET  = associated::edge_t<UT>>

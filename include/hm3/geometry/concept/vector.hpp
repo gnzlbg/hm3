@@ -9,8 +9,9 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Vector : rc::refines<GeometryObject, rc::Regular, rc::RandomAccessRange,
-                            rc::WeaklyOrdered> {
+struct Vector  // NOLINT(readability-identifier-naming)
+ : rc::refines<GeometryObject, rc::Regular, rc::RandomAccessRange,
+               rc::WeaklyOrdered> {
   template <typename T, typename UT = uncvref_t<T>,
             typename NT = associated::num_type_t<UT>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(

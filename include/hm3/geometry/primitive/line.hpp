@@ -64,6 +64,7 @@ struct line {
   constexpr line(line&&)      = default;
   constexpr line& operator=(line const&) = default;
   constexpr line& operator=(line&&) = default;
+  ~line()                           = default;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW

@@ -9,7 +9,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct LineLike : rc::refines<GeometryObject, rc::Regular> {
+struct LineLike  // NOLINT(readability-identifier-naming)
+ : rc::refines<GeometryObject, rc::Regular> {
   template <typename T, typename UT = uncvref_t<T>,
             typename NT = associated::num_type_t<UT>,
             typename VT = associated::vector_t<UT>,  //
@@ -24,7 +25,8 @@ struct LineLike : rc::refines<GeometryObject, rc::Regular> {
    ));
 };
 
-struct Line : rc::refines<GeometryObject, rc::Regular, LineLike> {
+struct Line  // NOLINT(readability-identifier-naming)
+ : rc::refines<GeometryObject, rc::Regular, LineLike> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(
    rc::is_true(trait::check<UT, trait::line<ambient_dimension_v<UT>>>)

@@ -10,7 +10,9 @@ namespace hm3 {
 struct source_location {
   template <typename A, typename B, typename C>
   [[always_inline]] constexpr source_location(A&& func, B&& file, C&& line)
-   : function_name(func), file_name(file), line_number(line) {}
+   : function_name(static_cast<const char*>(func))
+   , file_name(static_cast<const char*>(file))
+   , line_number(line) {}
 
   const char* const function_name;
   const char* const file_name;

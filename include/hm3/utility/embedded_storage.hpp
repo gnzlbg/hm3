@@ -78,6 +78,7 @@ struct empty_storage {
   constexpr empty_storage& operator=(empty_storage const&) = default;
   constexpr empty_storage(empty_storage&&)                 = default;
   constexpr empty_storage& operator=(empty_storage&&) = default;
+  ~empty_storage()                                    = default;
 
   template <typename U, CONCEPT_REQUIRES_(ConvertibleTo<U, T>{})>
   constexpr empty_storage(std::initializer_list<U> il) noexcept {
@@ -244,13 +245,29 @@ struct non_trivial_storage {
   ///
   /// Complexity: O(1) in time and space.
   constexpr const T* data() const noexcept {
-    return reinterpret_cast<const T*>(data_);
+    return reinterpret_cast<  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+     const T*>(data_);
   }
 
   /// Direct access to the underlying storage.
   ///
   /// Complexity: O(1) in time and space.
-  constexpr T* data() noexcept { return reinterpret_cast<T*>(data_); }
+  constexpr T* data() noexcept {
+    return reinterpret_cast<  // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+     T*>(data_);
+  }
+
+  /// Pointer to one-past-the-end.
+  constexpr const T* end() const noexcept {
+    return data()
+           + size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+  }
+
+  /// Pointer to one-past-the-end.
+  constexpr T* end() noexcept {
+    return data()
+           + size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+  }
 
   /// Number of elements in the storage.
   ///
@@ -274,9 +291,9 @@ struct non_trivial_storage {
   /// Contract: the storage is not full.
   template <typename... Args, CONCEPT_REQUIRES_(Constructible<T, Args...>{})>
   void emplace_back(Args&&... args) noexcept(
-   noexcept(new (data() + size()) T(std::forward<Args>(args)...))) {
+   noexcept(new (end()) T(std::forward<Args>(args)...))) {
     HM3_ASSERT(not full(), "tried to emplace_back on full storage");
-    new (data() + size()) T(std::forward<Args>(args)...);
+    new (end()) T(std::forward<Args>(args)...);
     unsafe_set_size(size() + 1);
   }
 
@@ -286,7 +303,7 @@ struct non_trivial_storage {
   /// Contract: the storage is not empty.
   void pop_back() noexcept(std::is_nothrow_destructible<T>{}) {
     HM3_ASSERT(not empty(), "tried to pop_back from empty storage!");
-    auto ptr = data() + size() - 1;
+    auto ptr = end() - 1;
     ptr->~T();
     unsafe_set_size(size() - 1);
   }
@@ -307,10 +324,8 @@ struct non_trivial_storage {
   template <typename InputIt, CONCEPT_REQUIRES_(InputIterator<InputIt>{})>
   constexpr void unsafe_destroy(InputIt first, InputIt last) noexcept(
    std::is_nothrow_destructible<T>{}) {
-    HM3_ASSERT(first >= data() and first <= data() + size(),
-               "first is out-of-bounds");
-    HM3_ASSERT(last >= data() and last <= data() + size(),
-               "last is out-of-bounds");
+    HM3_ASSERT(first >= data() and first <= end(), "first is out-of-bounds");
+    HM3_ASSERT(last >= data() and last <= end(), "last is out-of-bounds");
     for (; first != last; ++first) { first->~T(); }
   }
 
@@ -319,7 +334,7 @@ struct non_trivial_storage {
   /// \warning: The size of the storage is not changed.
   constexpr void unsafe_destroy_all() noexcept(
    std::is_nothrow_destructible<T>{}) {
-    unsafe_destroy(data(), data() + size());
+    unsafe_destroy(data(), end());
   }
 
   constexpr non_trivial_storage()                           = default;

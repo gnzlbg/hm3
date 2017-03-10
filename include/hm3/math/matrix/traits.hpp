@@ -5,8 +5,7 @@
 #include <hm3/ext/eigen.hpp>
 #include <hm3/types.hpp>
 
-namespace hm3 {
-namespace dense {
+namespace hm3::dense {
 
 /// Dynamic dimension
 static const constexpr int_t dynamic = -1;
@@ -76,5 +75,4 @@ struct storage_type<dynamic, dynamic> {
 template <int_t MaxRows, int_t MaxCols>
 using storage_type_t = typename storage_type<MaxRows, MaxCols>::type;
 
-}  // namespace dense
-}  // namespace hm3
+}  // namespace hm3::dense

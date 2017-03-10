@@ -8,7 +8,8 @@
 namespace hm3::geometry {
 
 namespace concept {
-struct GeometryObject : rc::refines<AmbientDimension, ElementDimension> {
+struct GeometryObject  // NOLINT(readability-identifier-naming)
+ : rc::refines<AmbientDimension, ElementDimension> {
   template <typename T>
   auto requires_(T&& t) -> void;
 };

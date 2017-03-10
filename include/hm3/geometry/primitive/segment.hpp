@@ -98,6 +98,7 @@ struct segment {
   constexpr segment(segment&&)      = default;
   constexpr segment& operator=(segment const&) = default;
   constexpr segment& operator=(segment&&) = default;
+  ~segment()                              = default;
 
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
@@ -145,7 +146,7 @@ constexpr point<Ad> vertex(segment<Ad> const& s, dim_t v) noexcept {
 
 /// Number of edges in a segment (always 1).
 template <dim_t Ad>
-constexpr dim_t edge_size(segment<Ad> const) noexcept {
+constexpr dim_t edge_size(segment<Ad> const&) noexcept {
   return 1;
 }
 

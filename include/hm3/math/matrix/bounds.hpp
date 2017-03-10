@@ -1,13 +1,14 @@
 #pragma once
 /// \file
 ///
-/// Matrix bounds
+/// Matrix bounds. The template parameters specify the number of rows and cols
+/// respectively, and `dynamic` is used to specify that the bounds is not known
+/// until run-time.
+#include <hm3/math/matrix/traits.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
-#include <hm3/utility/matrix/traits.hpp>
 
-namespace hm3 {
-namespace dense {
+namespace hm3::dense {
 
 template <int_t NoRows, int_t NoCols>
 struct bounds {
@@ -24,6 +25,7 @@ struct bounds {
   constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
+  ~bounds()                             = default;
 
   constexpr bounds(int_t rs, int_t cs) {
     HM3_ASSERT(rs == no_rows(),
@@ -47,6 +49,7 @@ struct bounds<dynamic, NoCols> {
   constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
+  ~bounds()                             = default;
 
   bounds(int_t nrows, int_t ncols) : no_rows_(nrows) {
     HM3_ASSERT(
@@ -70,6 +73,7 @@ struct bounds<NoRows, dynamic> {
   constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
+  ~bounds()                             = default;
 
   bounds(int_t nrows, int_t ncols) : no_cols_(ncols) {
     HM3_ASSERT(
@@ -92,6 +96,7 @@ struct bounds<dynamic, dynamic> {
   constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
+  ~bounds()                             = default;
 
   bounds(int_t nrows, int_t ncols) : no_rows_(nrows), no_cols_(ncols) {}
 };
@@ -113,6 +118,7 @@ struct max_bounds {
   constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
+  ~bounds()                                     = default;
 
   constexpr max_bounds(int_t, int_t) {}
 };
@@ -131,6 +137,7 @@ struct max_bounds<dynamic, MaxCols> {
   constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
+  ~bounds()                                     = default;
 
   max_bounds(int_t maxrows, int_t maxcols) : max_no_rows_(maxrows) {
     HM3_ASSERT(
@@ -156,6 +163,7 @@ struct max_bounds<MaxRows, dynamic> {
   constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
+  ~bounds()                                     = default;
 
   max_bounds(int_t maxrows, int_t maxcols) : max_no_cols_(maxcols) {
     HM3_ASSERT(
@@ -178,10 +186,10 @@ struct max_bounds<dynamic, dynamic> {
   constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
+  ~bounds()                                     = default;
 
   max_bounds(int_t maxrows, int_t maxcols)
    : max_no_rows_(maxrows), max_no_cols_(maxcols) {}
 };
 
-}  // namespace dense
-}  // namespace hm3
+}  // namespace hm3::dense

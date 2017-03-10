@@ -12,8 +12,7 @@
 #include <hm3/utility/range.hpp>
 #define HM3_MATRIX_STORAGE_USE_ALIGNAS
 
-namespace hm3 {
-namespace dense {
+namespace hm3::dense {
 
 #define HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR \
   HM3_ASSERT(no_elements <= max_size(),           \
@@ -61,7 +60,9 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   using const_reference = typename data_container::const_reference;
   using value_type      = typename data_container::value_type;
 
-  /// Alignment requirement
+  // Alignment requirement, SIMD types generally require alignment to a 16byte
+  // boundary. EIGEN_MAKE_ALIGNED_OPERATOR_NEW is used to enforce this
+  // requirement for heap allocations.
   static constexpr suint_t alignment() noexcept {
     return max_size() > 1 ? 16 : 0;
   }
@@ -84,6 +85,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 
   constexpr storage(data_container const& other) : data_(other) {}
   constexpr storage(data_container&& other) : data_(std::move(other)) {}
+  ~storage() = default;
 
   constexpr storage(const uint_t no_elements) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
@@ -149,6 +151,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   storage(storage&&)      = default;
   storage& operator=(storage const&) = default;
   storage& operator=(storage&&) = default;
+  ~storage()                    = default;
 
   CONCEPT_REQUIRES(MaxRows == dynamic && MaxCols == 1)
   storage(const uint_t no_elements)
@@ -219,6 +222,7 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   constexpr storage(storage&&)      = default;
   constexpr storage& operator=(storage const&) = default;
   constexpr storage& operator=(storage&&) = default;
+  ~storage()                              = default;
 
   constexpr storage(data_container const& other) : data_(other) {}
   constexpr storage(data_container&& other) : data_(std::move(other)) {}
@@ -285,6 +289,7 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   storage(storage&&)      = default;
   storage& operator=(storage const&) = default;
   storage& operator=(storage&&) = default;
+  ~storage()                    = default;
 
   CONCEPT_REQUIRES(MaxRows == dynamic && MaxCols == 1)
   storage(const uint_t no_elements)
@@ -344,5 +349,4 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
 #pragma clang diagnostic pop
 };
 
-}  // namespace dense
-}  // namespace hm3
+}  // namespace hm3::dense

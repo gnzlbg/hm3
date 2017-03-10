@@ -8,7 +8,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct VertexAccess {
+struct VertexAccess  // NOLINT(readability-identifier-naming)
+{
   template <typename T, typename UT = uncvref_t<T>,
             typename IT = associated::vertex_index_t<UT>,
             typename PT = associated::point_t<UT>>

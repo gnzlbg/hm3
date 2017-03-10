@@ -37,6 +37,7 @@ struct polyline {
   polyline(polyline&&)      = default;
   polyline& operator=(polyline const&) = default;
   polyline& operator=(polyline&&) = default;
+  ~polyline()                     = default;
 
   template <
    typename Edges, typename ET = ranges::range_value_t<uncvref_t<Edges>>,
@@ -112,7 +113,7 @@ struct polyline {
 
   CONCEPT_REQUIRES(Resizable<PointStorage>{})
   void push_back_edge(edge_value_type const& e) {
-    if (data_.size() == 0) {
+    if (data_.empty()) {
       data_.push_back(e.x(0));
     } else {
       HM3_ASSERT(approx_point(data_[vertex_size() - 1], e.x(0)),

@@ -9,7 +9,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Polyline : rc::refines<VertexAccess, EdgeAccess> {
+struct Polyline  // NOLINT(readability-identifier-naming)
+ : rc::refines<VertexAccess, EdgeAccess> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(
    rc::is_true(trait::check<UT, trait::polyline<ambient_dimension_v<UT>>>)  //
@@ -27,7 +28,8 @@ using Polyline
 
 namespace concept {
 
-struct MutablePolyline : rc::refines<Polyline> {
+struct MutablePolyline  // NOLINT(readability-identifier-naming)
+ : rc::refines<Polyline> {
   template <typename T, typename UT = uncvref_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(  //
    ((void)t.push_back_edge(t.edge(0)), 42),          //

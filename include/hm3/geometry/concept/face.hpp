@@ -12,7 +12,7 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Face
+struct Face  // NOLINT(readability-identifier-naming)
  : rc::refines<GeometryObject, rc::Regular, VertexAccess, EdgeAccess> {
   template <typename T, typename UT = uncvref_t<T>,
             typename VIT = associated::vertex_index_t<UT>>

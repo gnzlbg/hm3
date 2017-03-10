@@ -27,7 +27,5 @@ inline auto data_type(long double) { return MPI_LONG_DOUBLE; }
 /// Chars:
 inline auto data_type(char) { return MPI_CHAR; }
 inline auto data_type(wchar_t) { return MPI_WCHAR; }
-inline auto data_type(signed char) { return MPI_SIGNED_CHAR; }
-inline auto data_type(unsigned char) { return MPI_UNSIGNED_CHAR; }
 
 }  // namespace hm3::mpi

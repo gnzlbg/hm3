@@ -266,11 +266,12 @@ struct interleaved : geometry::with_ambient_dimension<Ad> {
  public:
   ///@}  // Morton index/coordinates encoding/decoding
 
-  interleaved()                   = default;
-  interleaved(interleaved const&) = default;
-  interleaved& operator=(interleaved const&) = default;
-  interleaved(interleaved&&)                 = default;
-  interleaved& operator=(interleaved&&) = default;
+  constexpr interleaved()                   = default;
+  constexpr interleaved(interleaved const&) = default;
+  constexpr interleaved& operator=(interleaved const&) = default;
+  constexpr interleaved(interleaved&&)                 = default;
+  constexpr interleaved& operator=(interleaved&&) = default;
+  ~interleaved()                                  = default;
 
   /// Constructs a location code from a \p list of children positions in
   /// descending order from the root node.

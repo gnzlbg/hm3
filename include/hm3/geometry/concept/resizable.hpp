@@ -8,7 +8,8 @@ namespace hm3::geometry {
 
 namespace concept {
 
-struct Resizable {
+struct Resizable  // NOLINT(readability-identifier-naming)
+{
   template <typename T, typename U = ranges::range_value_t<T>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(  //
    ((void)t.push_back(std::declval<U>()), 42),       //
