@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -15,3 +16,4 @@ enum class tile_cell_type : char {
 };
 
 }  // namespace hm3::solver::fv
+#endif

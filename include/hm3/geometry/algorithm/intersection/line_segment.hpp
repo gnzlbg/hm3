@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Intersection of line with points.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/distance.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -42,7 +42,7 @@ struct intersection_test_line_segment_fn {
 }  // namespace intersection_test_line_segment_detail
 
 namespace {
-static constexpr auto const& intersection_test_line_segment
+constexpr auto const& intersection_test_line_segment
  = static_const<with_default_tolerance<
   intersection_test_line_segment_detail::intersection_test_line_segment_fn>>::
   value;
@@ -67,7 +67,7 @@ struct intersection_line_segment_fn {
 }  // namespace intersection_line_segment_detail
 
 namespace {
-static constexpr auto const& intersection_line_segment
+constexpr auto const& intersection_line_segment
  = static_const<with_default_tolerance<
   intersection_line_segment_detail::intersection_line_segment_fn>>::value;
 }  // namespace

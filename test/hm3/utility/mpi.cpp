@@ -14,8 +14,6 @@ int main(int argc, char* argv[]) {
   mpi::reactor reactor(comm);
   using namespace mpi::literals;
 
-
-
   // This test must be called with mpirun -np 2
   CHECK(comm.size() == 2);
 

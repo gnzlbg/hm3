@@ -189,7 +189,7 @@ constexpr dim_t face_size(box<3> const&) noexcept {
   return aabb_constants::face_size(3, 2);
 }
 
-polygon<3> face(box<3> const& a, dim_t fidx) noexcept {
+inline polygon<3> face(box<3> const& a, dim_t fidx) noexcept {
   return polygon<3>(make_segment_range(
    view::ints(dim_t{0}, dim_t{4}) | view::transform([&](auto&& i) {
      return vertex(a, aabb_constants::face_vertices(fidx, i));

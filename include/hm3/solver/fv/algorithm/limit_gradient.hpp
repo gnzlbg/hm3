@@ -5,9 +5,7 @@
 #include <hm3/solver/fv/limiter/none.hpp>
 #include <hm3/types.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct limit_gradient_fn {
   /// Limits the cell gradient \p cg_c with the \p limiter and the neighbor
@@ -21,9 +19,7 @@ struct limit_gradient_fn {
 };
 
 namespace {
-constexpr auto&& limit_gradient = static_const<limit_gradient_fn>::value;
+constexpr auto const& limit_gradient = static_const<limit_gradient_fn>::value;
 }  // namespace
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

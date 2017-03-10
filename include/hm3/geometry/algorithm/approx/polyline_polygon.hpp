@@ -43,16 +43,14 @@ struct approx_polygon_fn {
   }
 };
 
-}  // namespace direction_detail
+}  // namespace approx_polyline_polygon_detail
 
 namespace {
-static constexpr auto const& approx_polyline
- = static_const<with_default_tolerance<
-  approx_polyline_polygon_detail::approx_polyline_fn>>::value;
+constexpr auto const& approx_polyline = static_const<with_default_tolerance<
+ approx_polyline_polygon_detail::approx_polyline_fn>>::value;
 
-static constexpr auto const& approx_polygon
- = static_const<with_default_tolerance<
-  approx_polyline_polygon_detail::approx_polygon_fn>>::value;
+constexpr auto const& approx_polygon = static_const<with_default_tolerance<
+ approx_polyline_polygon_detail::approx_polygon_fn>>::value;
 
 }  // namespace
 

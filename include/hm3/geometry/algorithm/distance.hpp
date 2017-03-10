@@ -83,10 +83,10 @@ struct distance_fn {
     std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, 0));
 };
 
-}  // namespace detail
+}  // namespace distance_detail
 
 namespace {
-static constexpr auto const& distance
+constexpr auto const& distance
  = static_const<with_default_tolerance<distance_detail::distance_fn>>::value;
 }
 

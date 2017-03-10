@@ -33,12 +33,12 @@ struct to_eigen_order {};
 
 template <>
 struct to_eigen_order<row_major_t> {
-  static constexpr int_t value = Eigen::RowMajor;
+  static constexpr inline int_t value = Eigen::RowMajor;
 };
 
 template <>
 struct to_eigen_order<col_major_t> {
-  static constexpr int_t value = Eigen::ColMajor;
+  static constexpr inline int_t value = Eigen::ColMajor;
 };
 
 /// Select storage type:

@@ -1,3 +1,4 @@
+
 #pragma once
 /// \file
 ///
@@ -8,12 +9,7 @@
 #include <hm3/solver/fv/models/euler/state.hpp>
 #include <hm3/utility/matrix.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
-
-namespace flux {
+namespace hm3::solver::fv::euler::flux {
 
 /// Helper functions for AUSM flux computation
 namespace ausm_detail {
@@ -104,11 +100,7 @@ struct ausm_fn {
 };
 
 namespace {
-constexpr auto&& ausm = static_const<ausm_fn>::value;
+constexpr auto const& ausm = static_const<ausm_fn>::value;
 }  // namespace
 
-}  // namespace flux
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler::flux

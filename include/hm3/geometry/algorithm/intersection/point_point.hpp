@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Intersection between two points.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx/point.hpp>
 #include <hm3/geometry/fwd.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -22,7 +22,7 @@ struct intersection_test_point_point_fn {
 }  // namespace intersection_test_point_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_point_point
+constexpr auto const& intersection_test_point_point
  = static_const<with_default_tolerance<
   intersection_test_point_point_detail::intersection_test_point_point_fn>>::
   value;
@@ -44,7 +44,7 @@ struct intersection_point_point_fn {
 }  // namespace intersection_point_point_detail
 
 namespace {
-static constexpr auto const& intersection_point_point
+constexpr auto const& intersection_point_point
  = static_const<with_default_tolerance<
   intersection_point_point_detail::intersection_point_point_fn>>::value;
 }  // namespace

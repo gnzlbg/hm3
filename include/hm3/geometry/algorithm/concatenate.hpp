@@ -37,23 +37,22 @@ struct concatenate_fn {
 
   template <typename T, typename U>
   static constexpr auto concatenate_impl_(T&& t, U&& u, num_t abs_tol,
-                                          num_t rel_tol, int)
+                                          num_t rel_tol, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(concatenate_impl(std::forward<T>(t),
                                                          std::forward<U>(u),
                                                          abs_tol, rel_tol));
 
   template <typename T, typename U>
   static constexpr auto concatenate_impl_(T&& t, U&& u, num_t abs_tol,
-                                          num_t rel_tol, long)
+                                          num_t rel_tol, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(concatenate_impl(std::forward<U>(u),
                                                          std::forward<T>(t),
                                                          abs_tol, rel_tol));
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(concatenate_impl_(std::forward<T>(t),
-                                                          std::forward<U>(u),
-                                                          abs_tol, rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(concatenate_impl_(
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, dispatch));
 
   /// Direction independent concatenation (does not preserve orientation).
   template <typename T, typename U>
@@ -140,7 +139,7 @@ struct concatenate_fn {
 }  // namespace concatenate_detail
 
 namespace {
-static constexpr auto const& concatenate = static_const<
+constexpr auto const& concatenate = static_const<
  with_default_tolerance<concatenate_detail::concatenate_fn>>::value;
 }  // namespace
 

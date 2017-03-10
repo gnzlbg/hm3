@@ -33,10 +33,10 @@ struct bounding_length_box_fn {
   }
 };
 
-}  // namespace bounding length_box_detail
+}  // namespace bounding_length_box_detail
 
 namespace {
-static constexpr auto const& bounding_length_box
+constexpr auto const& bounding_length_box
  = static_const<bounding_length_box_detail::bounding_length_box_fn>::value;
 }
 

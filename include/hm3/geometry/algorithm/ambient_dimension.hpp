@@ -35,7 +35,7 @@ struct ambient_dimension_fn {
     static_assert(ad > 0 and ad <= 3, "unimplemented");
     constexpr char n[3] = {'x', 'y', 'z'};
     HM3_ASSERT(d >= 0 and d < 3, "d = {} is out-of-bounds [0, 3)", d);
-    return n[d];
+    return ranges::at(n, d);
   }
 
   template <typename T>
@@ -44,7 +44,7 @@ struct ambient_dimension_fn {
     static_assert(ad > 0 and ad <= 3, "unimplemented");
     constexpr char n[3] = {'0', '1', '2'};
     HM3_ASSERT(d >= 0 and d < 3, "d = {} is out-of-bounds [0, 3)", d);
-    string result({'e', n[d]});
+    string result({'e', ranges::at(n, d)});
     return result;
   }
 };
@@ -52,9 +52,9 @@ struct ambient_dimension_fn {
 }  // namespace ambient_dimension_detail
 
 namespace {
-static constexpr auto const& ambient_dimension
+constexpr auto const& ambient_dimension
  = static_const<ambient_dimension_detail::ambient_dimension_fn>::value;
-}
+}  // namespace
 
 template <typename T>
 using ambient_dimension_t = decltype(ambient_dimension(std::declval<T>()));

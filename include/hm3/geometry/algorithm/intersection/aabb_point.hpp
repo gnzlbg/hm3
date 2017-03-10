@@ -26,10 +26,10 @@ struct intersection_test_aabb_point_fn {
   }
 };
 
-}  // intersection_test_aabb_point_detail
+}  // namespace intersection_test_aabb_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_aabb_point
+constexpr auto const& intersection_test_aabb_point
  = static_const<with_default_tolerance<
   intersection_test_aabb_point_detail::intersection_test_aabb_point_fn>>::value;
 }
@@ -50,12 +50,12 @@ struct intersection_aabb_point_fn {
   }
 };
 
-}  // intersection_aabb_point_detail
+}  // namespace intersection_aabb_point_detail
 
 namespace {
-static constexpr auto const& intersection_aabb_point
+constexpr auto const& intersection_aabb_point
  = static_const<with_default_tolerance<
   intersection_aabb_point_detail::intersection_aabb_point_fn>>::value;
 }
 
-}  // namespace hm3::geometry::aabb_primitive
+}  // namespace hm3::geometry

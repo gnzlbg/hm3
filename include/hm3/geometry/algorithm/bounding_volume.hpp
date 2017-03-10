@@ -135,13 +135,13 @@ struct bounding_volume_fn {
 
   /// Axis-Aligned Bounding Box
   template <typename T>
-  static constexpr auto aabb_dispatch(T&& t, long)
+  static constexpr auto aabb_dispatch(T&& t, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(aabb_impl(std::forward<T>(t),
                                                   associated::v_<T>));
 
   /// Axis-Aligned Bounding Box
   template <typename T>
-  static constexpr auto aabb_dispatch(T&& t, int)
+  static constexpr auto aabb_dispatch(T&& t, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
     axis_aligned_bounding_box(std::forward<T>(t)));
 
@@ -150,7 +150,8 @@ struct bounding_volume_fn {
   /// Axis-Aligned Bounding Box
   template <typename T, CONCEPT_REQUIRES_(AmbientDimension<T>{})>
   static constexpr auto aabb(T&& t)
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(aabb_dispatch(std::forward<T>(t), 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(aabb_dispatch(std::forward<T>(t),
+                                                      dispatch));
 
   /// Square Bounding Box
   template <typename T>
@@ -182,7 +183,7 @@ struct bounding_volume_fn {
 }  // namespace bounding_volume_detail
 
 namespace {
-static constexpr auto const& bounding_volume
+constexpr auto const& bounding_volume
  = static_const<bounding_volume_detail::bounding_volume_fn>::value;
 }
 

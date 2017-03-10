@@ -30,7 +30,7 @@ struct combine_fn {
 /// If both actions are coarsen => coarsen,
 /// Otherwise => none.
 namespace {
-constexpr auto&& combine = static_const<combine_fn>::value;
+constexpr auto const& combine = static_const<combine_fn>::value;
 }  // namespace
 
 }  // namespace amr

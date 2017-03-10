@@ -41,4 +41,4 @@ struct request : tag {
   using tag::operator>;
 };
 
-}  // namespace hm3::mpiu
+}  // namespace hm3::mpi

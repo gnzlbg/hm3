@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -42,7 +43,7 @@ struct three_point_fn {
 };
 
 namespace {
-constexpr auto&& three_point = static_const<three_point_fn>::value;
+constexpr auto const& three_point = static_const<three_point_fn>::value;
 }  // namespace
 
 struct five_point_fn {
@@ -72,7 +73,8 @@ struct five_point_fn {
 };
 
 namespace {
-constexpr auto&& five_point = static_const<five_point_fn>::value;
+constexpr auto const& five_point = static_const<five_point_fn>::value;
 }  // namespace
 
 }  // namespace hm3::solver::fv::heat::flux
+#endif

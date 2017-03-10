@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -17,3 +18,4 @@ static constexpr pv_t pv{};
 }  // namespace fv
 }  // namespace solver
 }  // namespace hm3
+#endif

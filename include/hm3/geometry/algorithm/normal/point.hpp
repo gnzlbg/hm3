@@ -20,7 +20,7 @@ struct normal_point_fn {
 }  // namespace normal_point_detail
 
 namespace {
-static constexpr auto const& normal_point
+constexpr auto const& normal_point
  = static_const<normal_point_detail::normal_point_fn>::value;
 }  // namespace
 

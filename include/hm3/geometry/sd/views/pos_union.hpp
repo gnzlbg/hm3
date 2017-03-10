@@ -23,7 +23,7 @@ struct op_pos_union_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& op_pos_union
+constexpr auto const& op_pos_union
  = static_const<detail::op_pos_union_fn>::value;
 }  // namespace
 
@@ -40,8 +40,7 @@ struct pos_union_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& pos_union
- = static_const<detail::pos_union_fn>::value;
+constexpr auto const& pos_union = static_const<detail::pos_union_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry::sd

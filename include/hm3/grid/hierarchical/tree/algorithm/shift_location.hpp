@@ -42,7 +42,7 @@ struct shift_location_fn {
 };
 
 namespace {
-constexpr auto&& shift_location = static_const<shift_location_fn>::value;
+constexpr auto const& shift_location = static_const<shift_location_fn>::value;
 }  // namespace
 
 }  // namespace hm3::tree

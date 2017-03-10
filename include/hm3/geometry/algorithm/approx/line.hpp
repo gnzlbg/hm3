@@ -43,12 +43,12 @@ struct approx_line_fn {
   }
 };
 
-}  // namespace direction_detail
+}  // namespace approx_line_detail
 
 namespace {
-static constexpr auto const& approx_line = static_const<
+constexpr auto const& approx_line = static_const<
  with_default_tolerance<approx_line_detail::approx_line_fn>>::value;
-static constexpr auto const& coincidental_lines = approx_line;
+constexpr auto const& coincidental_lines = approx_line;
 }  // namespace
 
 }  // namespace hm3::geometry

@@ -25,17 +25,18 @@ namespace sd {
 // transparently down the stack.
 
 template <typename T>
-auto unwrap_impl(T&& t, int) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t());
+auto unwrap_impl(T&& t, preferred) RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(t());
 
 template <typename T>
-auto unwrap_impl(T&& t, long)
+auto unwrap_impl(T&& t, fallback)
  RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(std::forward<T>(t));
 
 /// Unwraps type t: if its an Eigen type it returns t, otherwise if its a
 /// Point/Vector it returns the Eigen3Map.
 template <typename T>
 auto unwrap(T&& t)
- RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(unwrap_impl(std::forward<T>(t), 0));
+ RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(unwrap_impl(std::forward<T>(t),
+                                                  dispatch));
 
 /// Invokes callable \p f with unwrapped arguments args
 template <typename F, typename... Args>

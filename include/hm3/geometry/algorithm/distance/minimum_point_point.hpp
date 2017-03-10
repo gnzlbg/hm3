@@ -21,7 +21,7 @@ struct minimum_distance_point_point_fn {
 }  // namespace minimum_distance_point_point_detail
 
 namespace {
-static constexpr auto const& minimum_distance_point_point = static_const<
+constexpr auto const& minimum_distance_point_point = static_const<
  minimum_distance_point_point_detail::minimum_distance_point_point_fn>::value;
 }
 

@@ -54,7 +54,7 @@ template <typename OStream, typename T>
 OStream& to_ascii(OStream& o, T const&, non_streamable const&) {
   int status;
   const char* tyname = typeid(T).name();
-  char* name         = abi::__cxa_demangle(tyname, 0, 0, &status);
+  char* name         = abi::__cxa_demangle(tyname, nullptr, nullptr, &status);
   o << "<type \"";
   if (name != nullptr) {
     o << name;

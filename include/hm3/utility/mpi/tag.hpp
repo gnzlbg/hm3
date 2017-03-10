@@ -3,6 +3,7 @@
 ///
 /// MPI tag.
 #include <hm3/ext/string_view.hpp>
+#include <hm3/types.hpp>
 
 namespace hm3::mpi {
 
@@ -40,7 +41,7 @@ struct tag {
 
 namespace literals {
 
-tag operator""_t(const char* n, std::size_t) { return tag{n}; }
+inline tag operator""_t(const char* n, std::size_t) { return tag{n}; }
 
 }  // namespace literals
 

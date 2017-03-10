@@ -168,7 +168,7 @@ struct bounding_length_fn {
 }  // namespace bounding_length_detail
 
 namespace {
-static constexpr auto const& bounding_length
+constexpr auto const& bounding_length
  = static_const<bounding_length_detail::bounding_length_fn>::value;
 }
 

@@ -38,7 +38,7 @@ struct relative_position_point_polyline_fn {
 }  // namespace relative_position_point_polyline_detail
 
 namespace {
-static constexpr auto const& relative_position_point_polyline = static_const<
+constexpr auto const& relative_position_point_polyline = static_const<
  with_default_tolerance<relative_position_point_polyline_detail::
                          relative_position_point_polyline_fn>>::value;
 }  // namespace

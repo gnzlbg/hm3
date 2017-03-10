@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Intersection of line segments.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/line_intersection_parameter/line_line.hpp>
 #include <hm3/geometry/algorithm/parallel.hpp>
 #include <hm3/geometry/concept/segment.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -99,13 +99,14 @@ inline bool test_nd(T const& a, U const& b, num_t abs_tol,
   if (!is) { return false; }
   auto t = first(is.value());
   auto s = second(is.value());
-  if (approx.leq(0., t, abs_tol, rel_tol)
-      and approx.leq(t, 1., abs_tol, rel_tol)
-      and approx.leq(0., s, abs_tol, rel_tol)
-      and approx.leq(s, 1., abs_tol, rel_tol)) {
-    return true;  // both segments intersect
-  }
-  return false;  // Case 3: not parallel and not intersect
+  // True if both segments intersect and false if: Case 3: not parallel and not
+  // intersect:
+  return approx.leq(0., t, abs_tol, rel_tol)
+         and approx.leq(t, 1., abs_tol, rel_tol)
+         and approx.leq(0., s, abs_tol, rel_tol)
+         and approx.leq(s, 1., abs_tol, rel_tol);
+
+  //
 }
 
 struct intersection_test_segment_segment_fn {
@@ -151,7 +152,7 @@ struct intersection_test_segment_segment_fn {
 }  // namespace intersection_test_segment_segment_detail
 
 namespace {
-static constexpr auto const& intersection_test_segment_segment = static_const<
+constexpr auto const& intersection_test_segment_segment = static_const<
  with_default_tolerance<intersection_test_segment_segment_detail::
                          intersection_test_segment_segment_fn>>::value;
 }
@@ -264,9 +265,9 @@ struct intersection_segment_segment_fn {
 }  // namespace intersection_segment_segment_detail
 
 namespace {
-static constexpr auto const& intersection_segment_segment
+constexpr auto const& intersection_segment_segment
  = static_const<with_default_tolerance<
   intersection_segment_segment_detail::intersection_segment_segment_fn>>::value;
 }
 
-}  // namespace hm3::geometry::segment_primitive
+}  // namespace hm3::geometry

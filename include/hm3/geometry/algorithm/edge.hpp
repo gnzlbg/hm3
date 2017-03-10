@@ -55,7 +55,7 @@ struct edge_fn {
 }  // namespace edge_detail
 
 namespace {
-static constexpr auto const& edge = static_const<edge_detail::edge_fn>::value;
+constexpr auto const& edge = static_const<edge_detail::edge_fn>::value;
 }
 
 namespace edge_detail {
@@ -69,7 +69,7 @@ struct edges_fn {
 }  // namespace edge_detail
 
 namespace {
-static constexpr auto const& edges = static_const<edge_detail::edges_fn>::value;
+constexpr auto const& edges = static_const<edge_detail::edges_fn>::value;
 }
 
 }  // namespace hm3::geometry

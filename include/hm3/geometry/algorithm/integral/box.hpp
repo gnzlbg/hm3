@@ -43,7 +43,7 @@ struct integral_box_fn {
 }  // namespace integral_box_detail
 
 namespace {
-static constexpr auto const& integral_box
+constexpr auto const& integral_box
  = static_const<integral_box_detail::integral_box_fn>::value;
 }  // namespace
 

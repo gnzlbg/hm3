@@ -9,9 +9,9 @@
 #include <chrono>
 #include <hm3/io/json.hpp>
 #include <hm3/math/core.hpp>
+#include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>
 #include <hm3/utility/range.hpp>
-#include <hm3/types.hpp>
 
 /// Enables timers
 #define HM3_ENABLE_TIMERS
@@ -27,7 +27,7 @@ using clock_t      = std::chrono::high_resolution_clock;
 using duration_t   = std::chrono::nanoseconds;
 using time_point_t = std::chrono::time_point<clock_t, duration_t>;
 
-string duration_units() { return "ns"; }
+inline string duration_units() { return "ns"; }
 
 struct state;
 struct updater;
@@ -118,7 +118,7 @@ struct state {
 
 namespace to_json {
 
-io::json gather(state const& t) {
+inline io::json gather(state const& t) {
   io::json data;
 
   auto clear_function_name = [](auto const& s) {
@@ -192,7 +192,7 @@ void top_down(io::json const& d, F&& f) {
   }
 }
 
-std::string format(io::json const& data) {
+inline std::string format(io::json const& data) {
   static constexpr std::size_t indentation_per_level = 4;
 
   // compute max indentation level and max name length:
@@ -288,12 +288,12 @@ struct registry {
 };
 
 /// Returns the timer registry
-registry& initialized() {
+inline registry& initialized() {
   static registry timers;
   return timers;
 }
 
-updater::updater(state* n) : timer_(n) {
+inline updater::updater(state* n) : timer_(n) {
   HM3_ASSERT(timer_, "cannot construct updater without a valid timer!");
   // TODO: bool result = timer_->running.exchange(true);
   bool result     = timer_->running;
@@ -314,7 +314,8 @@ updater::updater(state* n) : timer_(n) {
 
   start_ = clock_t::now();
 }
-updater::~updater() {
+
+inline updater::~updater() {
   if (!timer_) { return; }
   end_ = clock_t::now();
   HM3_ASSERT(end_ >= start_, "start time {}{} !<= end time {}{}",
@@ -343,19 +344,19 @@ updater::~updater() {
              timer_->parent->name, timer_->name, initialized().data());
 }
 
-updater::updater(updater&& other)
+inline updater::updater(updater&& other)
  : timer_(other.timer_), start_(other.start_), end_(other.end_) {
   HM3_ASSERT(other.timer_, "move construction from invalid timer {}",
              other.timer_->name);
   other.timer_ = nullptr;
 }
 
-string const& updater::name() const noexcept { return timer_->name; }
+inline string const& updater::name() const noexcept { return timer_->name; }
 
 }  // namespace detail
 
 /// Initialize timers
-void initialize() { detail::initialized(); }
+inline void initialize() { detail::initialized(); }
 
 /// Start timer
 template <typename S, typename... Ss,

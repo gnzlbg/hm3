@@ -26,7 +26,7 @@ struct advance_until_fn {
 };
 
 namespace {
-static constexpr auto&& advance_until = static_const<advance_until_fn>::value;
+constexpr auto const& advance_until = static_const<advance_until_fn>::value;
 }  // namespace
 
 }  // namespace hm3::solver::fv

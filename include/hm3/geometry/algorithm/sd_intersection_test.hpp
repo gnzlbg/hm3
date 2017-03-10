@@ -58,7 +58,7 @@ struct intersection_test_fn {
 }  // namespace intersection_test_detail
 
 namespace {
-static constexpr auto const& intersection_test = static_const<
+constexpr auto const& intersection_test = static_const<
  with_default_tolerance<intersection_test_detail::intersection_test_fn>>::value;
 }  // namespace
 

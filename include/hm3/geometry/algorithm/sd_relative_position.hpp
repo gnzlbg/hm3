@@ -3,6 +3,7 @@
 ///
 /// Relative position of a primitive w.r.t. a signed-distance field.
 #include <hm3/geometry/algorithm/sd_sign.hpp>
+#include <hm3/geometry/concept/signed_distance.hpp>
 #include <hm3/geometry/relative_position.hpp>
 #include <hm3/geometry/tolerance.hpp>
 #include <hm3/utility/fatal_error.hpp>
@@ -65,7 +66,7 @@ struct relative_position_fn {
 }  // namespace relative_position_detail
 
 namespace {
-static constexpr auto const& relative_position = static_const<
+constexpr auto const& relative_position = static_const<
  with_default_tolerance<relative_position_detail::relative_position_fn>>::value;
 }  // namespace
 

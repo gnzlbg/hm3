@@ -456,7 +456,7 @@ struct intersection_fn {
   static constexpr auto intersection_test_non_degenerate_impl(T&& t, U&& u,
                                                               num_t abs_tol,
                                                               num_t rel_tol,
-                                                              long)
+                                                              fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_non_degenerate_impl(
     std::forward<U>(u), std::forward<T>(t), associated::v_<U>,
     associated::v_<T>, abs_tol, rel_tol));
@@ -465,7 +465,7 @@ struct intersection_fn {
   static constexpr auto intersection_test_non_degenerate_impl(T&& t, U&& u,
                                                               num_t abs_tol,
                                                               num_t rel_tol,
-                                                              int)
+                                                              preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_non_degenerate_impl(
     std::forward<T>(t), std::forward<U>(u), associated::v_<T>,
     associated::v_<U>, abs_tol, rel_tol));
@@ -477,14 +477,14 @@ struct intersection_fn {
 
   template <typename T, typename U>
   static constexpr auto intersection_test_impl(T&& t, U&& u, num_t abs_tol,
-                                               num_t rel_tol, long)
+                                               num_t rel_tol, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_impl(
     std::forward<U>(u), std::forward<T>(t), associated::v_<U>,
     associated::v_<T>, abs_tol, rel_tol));
 
   template <typename T, typename U>
   static constexpr auto intersection_test_impl(T&& t, U&& u, num_t abs_tol,
-                                               num_t rel_tol, int)
+                                               num_t rel_tol, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_impl(
     std::forward<T>(t), std::forward<U>(u), associated::v_<T>,
     associated::v_<U>, abs_tol, rel_tol));
@@ -496,14 +496,14 @@ struct intersection_fn {
 
   template <typename T, typename U>
   static constexpr auto intersection_impl(T&& t, U&& u, num_t abs_tol,
-                                          num_t rel_tol, long)
+                                          num_t rel_tol, fallback)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
     intersection_impl(std::forward<U>(u), std::forward<T>(t), associated::v_<U>,
                       associated::v_<T>, abs_tol, rel_tol));
 
   template <typename T, typename U>
   static constexpr auto intersection_impl(T&& t, U&& u, num_t abs_tol,
-                                          num_t rel_tol, int)
+                                          num_t rel_tol, preferred)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(
     intersection_impl(std::forward<T>(t), std::forward<U>(u), associated::v_<T>,
                       associated::v_<U>, abs_tol, rel_tol));
@@ -516,7 +516,7 @@ struct intersection_fn {
   template <typename T, typename U>
   static constexpr auto test(T&& t, U&& u, num_t abs_tol, num_t rel_tol)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_impl(
-    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, 0));
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, hm3::dispatch));
 
   template <typename T, typename U>
   static constexpr auto test(T&& t, U&& u)
@@ -534,7 +534,7 @@ struct intersection_fn {
   static constexpr auto test_non_degenerate(T&& t, U&& u, num_t abs_tol,
                                             num_t rel_tol)
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_test_non_degenerate_impl(
-    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, 0));
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, hm3::dispatch));
 
   template <typename T, typename U>
   static constexpr auto test_non_degenerate(T&& t, U&& u)
@@ -549,9 +549,8 @@ struct intersection_fn {
 
   template <typename T, typename U>
   constexpr auto operator()(T&& t, U&& u, num_t abs_tol, num_t rel_tol) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_impl(std::forward<T>(t),
-                                                          std::forward<U>(u),
-                                                          abs_tol, rel_tol, 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(intersection_impl(
+    std::forward<T>(t), std::forward<U>(u), abs_tol, rel_tol, hm3::dispatch));
 
   ///@}  // Intersection
 };
@@ -559,7 +558,7 @@ struct intersection_fn {
 }  // namespace intersection_detail
 
 namespace {
-static constexpr auto const& intersection = static_const<
+constexpr auto const& intersection = static_const<
  with_default_tolerance<intersection_detail::intersection_fn>>::value;
 }  // namespace
 

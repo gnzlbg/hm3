@@ -27,25 +27,26 @@ struct vertex_fn {
 
   template <typename T, CONCEPT_REQUIRES_(VertexAccess<T>{}
                                           and !std::is_rvalue_reference<T>{})>
-  constexpr auto range_impl(T&& t, long) const noexcept {
+  constexpr auto range_impl(T&& t, fallback) const noexcept {
     return indices(t)
            | view::transform([&t](auto&& i) { return vertex_fn{}(t, i); });
   }
 
   template <typename T, CONCEPT_REQUIRES_(VertexAccess<T>{}
                                           and std::is_rvalue_reference<T>{})>
-  constexpr auto range_impl(T&& t, long) const noexcept {
+  constexpr auto range_impl(T&& t, fallback) const noexcept {
     return indices(t)
            | view::transform([t](auto&& i) { return vertex_fn{}(t, i); });
   }
 
   template <typename T, CONCEPT_REQUIRES_(VertexAccess<T>{})>
-  constexpr auto range_impl(T&& t, int) const
+  constexpr auto range_impl(T&& t, preferred) const
    RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(vertices(std::forward<T>(t)));
 
   template <typename T, CONCEPT_REQUIRES_(VertexAccess<T>{})>
   constexpr auto range(T&& t) const
-   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(range_impl(std::forward<T>(t), 0));
+   RANGES_DECLTYPE_AUTO_RETURN_NOEXCEPT(range_impl(std::forward<T>(t),
+                                                   dispatch));
 
   template <typename T, CONCEPT_REQUIRES_(VertexAccess<T>{})>
   static constexpr auto first(T&& t) noexcept {
@@ -64,8 +65,7 @@ struct vertex_fn {
 }  // namespace vertex_detail
 
 namespace {
-static constexpr auto const& vertex
- = static_const<vertex_detail::vertex_fn>::value;
+constexpr auto const& vertex = static_const<vertex_detail::vertex_fn>::value;
 }
 
 namespace vertex_detail {
@@ -79,7 +79,7 @@ struct vertices_fn {
 }  // namespace vertex_detail
 
 namespace {
-static constexpr auto const& vertices
+constexpr auto const& vertices
  = static_const<vertex_detail::vertices_fn>::value;
 }
 

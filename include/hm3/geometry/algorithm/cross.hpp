@@ -35,8 +35,7 @@ struct cross_fn {
 }  // namespace cross_detail
 
 namespace {
-static constexpr auto const& cross
- = static_const<cross_detail::cross_fn>::value;
+constexpr auto const& cross = static_const<cross_detail::cross_fn>::value;
 }
 
 namespace perp_product_detail {
@@ -74,7 +73,7 @@ struct perp_product_fn {
 }  // namespace perp_product_detail
 
 namespace {
-static constexpr auto const& perp_product
+constexpr auto const& perp_product
  = static_const<perp_product_detail::perp_product_fn>::value;
 }
 

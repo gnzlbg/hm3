@@ -97,7 +97,7 @@ struct intersection_polygon_fn {
       else if
         constexpr(Same<T, pg_t>{}) { unique_push_polyline(pl_t(edges(v))); }
       else {
-        static_assert(always_false<T>{}, "non-exhaustive visitor");
+        HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
       }
     };
 
@@ -152,7 +152,7 @@ struct intersection_polygon_fn {
 }  // namespace intersection_polygon_detail
 
 namespace {
-static constexpr auto const& intersection_polygon
+constexpr auto const& intersection_polygon
  = static_const<with_default_tolerance<
   intersection_polygon_detail::intersection_polygon_fn>>::value;
 }  // namespace

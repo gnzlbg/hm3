@@ -5,9 +5,7 @@
 #include <hm3/solver/fv/limiter/none.hpp>
 #include <hm3/types.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct compute_structured_gradients_fn {
   /// If the gradients are not required, do nothing
@@ -33,7 +31,7 @@ struct compute_structured_gradients_fn {
 };
 
 namespace {
-constexpr auto&& compute_structured_gradients
+constexpr auto const& compute_structured_gradients
  = static_const<compute_structured_gradients_fn>::value;
 }  // namespace
 /*
@@ -104,10 +102,8 @@ impl(s, limiter, meta::bool_<num_flux_t::requires_cell_gradients>{});
 };
 
 namespace {
-constexpr auto&& compute_structured_gradients
+constexpr auto const& compute_structured_gradients
 = static_const<compute_structured_gradients_fn>::value;
 }  // namespace
 */
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

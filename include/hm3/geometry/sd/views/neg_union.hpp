@@ -23,9 +23,9 @@ struct op_neg_union_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& op_neg_union
+constexpr auto const& op_neg_union
  = static_const<detail::op_neg_union_fn>::value;
-}  // namespace detail
+}  // namespace
 
 namespace detail {
 /// Union of the negative sides of the signed distance fields f1, ..., fn.
@@ -38,8 +38,7 @@ struct neg_union_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& neg_union
- = static_const<detail::neg_union_fn>::value;
+constexpr auto const& neg_union = static_const<detail::neg_union_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry::sd

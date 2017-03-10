@@ -2,12 +2,12 @@
 /// \file
 ///
 /// Intersection of lines.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/distance.hpp>
 #include <hm3/geometry/algorithm/line_intersection_parameter/line_line.hpp>
 #include <hm3/geometry/algorithm/parallel/line.hpp>
 #include <hm3/geometry/concept/line.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -53,11 +53,9 @@ struct intersection_test_line_line_fn {
   constexpr bool operator()(L const& a, L const& b, num_t abs_tol,
                             num_t rel_tol) const noexcept {
     if (parallel_line(a, b, abs_tol, rel_tol)) {
-      if (coincidental_lines(a, b, abs_tol, rel_tol)) { return true; }
-      return false;
+      return coincidental_lines(a, b, abs_tol, rel_tol);
     }
-    if (intersect_at_point(a, b, abs_tol, rel_tol)) { return true; }
-    return false;
+    return intersect_at_point(a, b, abs_tol, rel_tol);
   }
 };
 
@@ -90,13 +88,13 @@ struct intersection_line_line_fn {
 }  // namespace intersection_line_line_detail
 
 namespace {
-static constexpr auto const& intersection_test_line_line
+constexpr auto const& intersection_test_line_line
  = static_const<with_default_tolerance<
   intersection_line_line_detail::intersection_test_line_line_fn>>::value;
 
-static constexpr auto const& intersection_line_line
+constexpr auto const& intersection_line_line
  = static_const<with_default_tolerance<
   intersection_line_line_detail::intersection_line_line_fn>>::value;
-}
+}  // namespace
 
 }  // namespace hm3::geometry

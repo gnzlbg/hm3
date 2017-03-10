@@ -11,8 +11,8 @@ struct cell_gradients {
   using grid_t   = Grid;
   using cell_idx = typename grid_t::cell_indices_t::coordinate;
   using storage_t
-   = dense::matrix<num_t, grid_t::cells().size(), Nv * Grid::ambient_dimension(),
-                   tidx_t, vidx_t, Order>;
+   = dense::matrix<num_t, grid_t::cells().size(),
+                   Nv * Grid::ambient_dimension(), tidx_t, vidx_t, Order>;
   storage_t gradient_;
 
   auto& gradient() noexcept { return gradient_; }

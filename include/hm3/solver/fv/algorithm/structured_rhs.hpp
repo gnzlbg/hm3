@@ -3,9 +3,7 @@
 ///
 #include <hm3/solver/fv/algorithm/structured_flux.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 // template <typename State, typename NumFluxF, typename VT>
 // void compute_structured_rhs(State&& s, NumFluxF&& nf, num_t dt, VT&& vt) {
@@ -80,10 +78,8 @@ struct compute_structured_rhs_fn {
 };
 
 namespace {
-static constexpr auto&& compute_structured_rhs
+constexpr auto const& compute_structured_rhs
  = static_const<compute_structured_rhs_fn>::value;
 }
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

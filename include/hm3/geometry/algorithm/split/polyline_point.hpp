@@ -60,7 +60,7 @@ struct split_polyline_point_fn {
          else if
            constexpr(Same<T, monostate>{}) { return r_t{}; }
          else {
-           static_assert(always_false<T>{}, "non-exhaustive visitor");
+           HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
          }
        },
        ir);
@@ -73,8 +73,8 @@ struct split_polyline_point_fn {
 }  // namespace split_polyline_point_detail
 
 namespace {
-static constexpr auto const& split_polyline_point
+constexpr auto const& split_polyline_point
  = static_const<split_polyline_point_detail::split_polyline_point_fn>::value;
 }
 
-}  // namespace hm3::geometry::point_primitive
+}  // namespace hm3::geometry

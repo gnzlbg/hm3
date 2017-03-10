@@ -23,7 +23,7 @@ struct relative_position_point_segment_fn {
 }  // namespace relative_position_point_segment_detail
 
 namespace {
-static constexpr auto const& relative_position_point_segment
+constexpr auto const& relative_position_point_segment
  = static_const<with_default_tolerance<
   relative_position_point_segment_detail::relative_position_point_segment_fn>>::
   value;

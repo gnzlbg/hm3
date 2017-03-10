@@ -150,7 +150,6 @@ struct interleaved : geometry::with_ambient_dimension<Ad> {
     return l;
   }
 
-
   /// Change location to the parent of the current node.
   ///
   /// \return The position in parent of the current node.

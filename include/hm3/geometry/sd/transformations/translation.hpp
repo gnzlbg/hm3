@@ -22,7 +22,7 @@ struct translation_op_fn {
 }  // namespace translation_detail
 
 namespace {
-static constexpr auto const& translation_op
+constexpr auto const& translation_op
  = static_const<translation_detail::translation_op_fn>::value;
 }
 

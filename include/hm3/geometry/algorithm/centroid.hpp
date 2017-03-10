@@ -68,7 +68,7 @@ struct centroid_fn {
 }  // namespace centroid_detail
 
 namespace {
-static constexpr auto const& centroid
+constexpr auto const& centroid
  = static_const<centroid_detail::centroid_fn>::value;
 }  // namespace
 

@@ -45,10 +45,10 @@ struct bounding_length_polyline_fn {
   }
 };
 
-}  // namespace bounding length_polyline_detail
+}  // namespace bounding_length_polyline_detail
 
 namespace {
-static constexpr auto const& bounding_length_polyline = static_const<
+constexpr auto const& bounding_length_polyline = static_const<
  bounding_length_polyline_detail::bounding_length_polyline_fn>::value;
 }
 

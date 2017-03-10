@@ -21,4 +21,6 @@ struct state;
 template <dim_t Ad>
 using grid_client_t = ::hm3::grid::hierarchical::client::multi<Ad>;
 
-}  // namespace hm3::solver::level_set
+}  // namespace level_set
+
+}  // namespace hm3::solver

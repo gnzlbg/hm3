@@ -21,7 +21,7 @@ struct integral_vector_fn {
 }  // namespace integral_vector_detail
 
 namespace {
-static constexpr auto const& integral_vector
+constexpr auto const& integral_vector
  = static_const<integral_vector_detail::integral_vector_fn>::value;
 }  // namespace
 

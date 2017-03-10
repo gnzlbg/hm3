@@ -35,11 +35,11 @@ struct aabb_of_box_fn {
 }  // namespace aabb_of_box_detail
 
 namespace {
-static constexpr auto const& aabb_of_box
+constexpr auto const& aabb_of_box
  = static_const<aabb_of_box_detail::aabb_of_box_fn>::value;
 
-static constexpr auto const& box_of_box
+constexpr auto const& box_of_box
  = static_const<box_of_box_detail::box_of_box_fn>::value;
-}
+}  // namespace
 
 }  // namespace hm3::geometry

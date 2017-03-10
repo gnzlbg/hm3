@@ -22,7 +22,7 @@ struct integral_point_fn {
 }  // namespace integral_point_detail
 
 namespace {
-static constexpr auto const& integral_point
+constexpr auto const& integral_point
  = static_const<integral_point_detail::integral_point_fn>::value;
 }  // namespace
 

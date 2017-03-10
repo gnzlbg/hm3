@@ -41,9 +41,9 @@ struct intersection_triangle_fn {
   constexpr auto operator()(T const& tri, SDF&& sdf, num_t abs_tol,
                             num_t rel_tol) const noexcept
    -> triangle_intersection_result<T> {
-    using pl_t         = associated::polyline_t<T>;
-    using s_t          = associated::edge_t<T>;
-    using p_t          = associated::point_t<T>;
+    using pl_t = associated::polyline_t<T>;
+    using s_t  = associated::edge_t<T>;
+    using p_t  = associated::point_t<T>;
 
     static_assert(Polygon<T>{});
     static_assert(SignedDistance<uncvref_t<SDF>, p_t>{});
@@ -198,7 +198,7 @@ struct intersection_triangle_fn {
 }  // namespace intersection_triangle_detail
 
 namespace {
-static constexpr auto const& intersection_triangle
+constexpr auto const& intersection_triangle
  = static_const<with_default_tolerance<
   intersection_triangle_detail::intersection_triangle_fn>>::value;
 }  // namespace

@@ -33,7 +33,7 @@ struct concatenate_segment_segment_fn {
 }  // namespace concatenate_segment_segment_detail
 
 namespace {
-static constexpr auto const& concatenate_segment_segment
+constexpr auto const& concatenate_segment_segment
  = static_const<with_default_tolerance<
   concatenate_segment_segment_detail::concatenate_segment_segment_fn>>::value;
 }

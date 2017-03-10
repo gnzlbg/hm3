@@ -72,7 +72,7 @@ struct intersection_test_polygon_point_fn {
 }  // namespace intersection_test_polygon_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_polygon_point
+constexpr auto const& intersection_test_polygon_point
  = static_const<with_default_tolerance<
   intersection_test_polygon_point_detail::intersection_test_polygon_point_fn>>::
   value;
@@ -104,7 +104,7 @@ struct intersection_polygon_point_fn {
 }  // namespace intersection_polygon_point_detail
 
 namespace {
-static constexpr auto const& intersection_polygon_point
+constexpr auto const& intersection_polygon_point
  = static_const<with_default_tolerance<
   intersection_polygon_point_detail::intersection_polygon_point_fn>>::value;
 }  // namespace

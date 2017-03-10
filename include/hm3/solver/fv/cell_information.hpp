@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -32,3 +33,4 @@ surfaces
 };
 */
 }  // namespace hm3::solver::fv
+#endif

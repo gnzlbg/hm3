@@ -80,7 +80,7 @@ struct integral_fn {
 }  // namespace integral_detail
 
 namespace {
-static constexpr auto const& integral
+constexpr auto const& integral
  = static_const<integral_detail::integral_fn>::value;
 }  // namespace
 
@@ -95,8 +95,7 @@ struct area_fn {
 }  // namespace integral_detail
 
 namespace {
-static constexpr auto const& area
- = static_const<integral_detail::area_fn>::value;
+constexpr auto const& area = static_const<integral_detail::area_fn>::value;
 }  // namespace
 
 // namespace integral_detail {
@@ -112,8 +111,7 @@ struct volume_fn {
 }  // namespace integral_detail
 
 namespace {
-static constexpr auto const& volume
- = static_const<integral_detail::volume_fn>::value;
+constexpr auto const& volume = static_const<integral_detail::volume_fn>::value;
 }  // namespace
 
 namespace integral_detail {
@@ -127,8 +125,7 @@ struct length_fn {
 }  // namespace integral_detail
 
 namespace {
-static constexpr auto const& length
- = static_const<integral_detail::length_fn>::value;
+constexpr auto const& length = static_const<integral_detail::length_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry

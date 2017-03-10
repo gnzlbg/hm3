@@ -21,7 +21,7 @@ struct centroid_point_fn {
 }  // namespace centroid_point_detail
 
 namespace {
-static constexpr auto const& centroid_point
+constexpr auto const& centroid_point
  = static_const<centroid_point_detail::centroid_point_fn>::value;
 }
 

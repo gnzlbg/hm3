@@ -186,6 +186,7 @@ struct trivial_storage {
    = default;
   constexpr trivial_storage(trivial_storage&&) noexcept = default;
   constexpr trivial_storage& operator=(trivial_storage&&) noexcept = default;
+  ~trivial_storage()                                               = default;
 
  private:
   template <typename U, CONCEPT_REQUIRES_(ConvertibleTo<U, T>{})>
@@ -327,6 +328,7 @@ struct non_trivial_storage {
    = default;
   constexpr non_trivial_storage(non_trivial_storage&&) = default;
   constexpr non_trivial_storage& operator=(non_trivial_storage&&) = default;
+  ~non_trivial_storage()                                          = default;
 
   /// Constructor from initializer list.
   ///

@@ -4,9 +4,7 @@
 /// Restrict cell from one tile into another tile
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct restrict_fn {
   template <typename S, typename Tile, typename CIdx, typename VS>
@@ -29,9 +27,7 @@ struct restrict_fn {
 };
 
 namespace {
-static constexpr auto&& restrict = static_const<restrict_fn>::value;
+constexpr auto const& restrict = static_const<restrict_fn>::value;
 }  // namespace
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

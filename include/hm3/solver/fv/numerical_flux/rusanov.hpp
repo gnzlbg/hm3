@@ -5,11 +5,7 @@
 #include <hm3/geometry/dimension.hpp>
 #include <hm3/utility/matrix.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-
-namespace flux {
+namespace hm3::solver::fv::flux {
 
 struct rusanov_fn {
   /// Rusanov Flux
@@ -29,11 +25,7 @@ struct rusanov_fn {
 };
 
 namespace {
-constexpr auto&& rusanov = static_const<rusanov_fn>::value;
+constexpr auto const& rusanov = static_const<rusanov_fn>::value;
 }  // namespace
 
-}  // namespace flux
-
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::flux

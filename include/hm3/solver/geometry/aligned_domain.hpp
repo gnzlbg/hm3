@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -55,3 +56,4 @@ struct domain {
 };
 
 }  // namespace hm3::solver
+#endif

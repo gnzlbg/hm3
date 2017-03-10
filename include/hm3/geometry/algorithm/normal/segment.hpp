@@ -22,7 +22,7 @@ struct normal_segment_fn {
 }  // namespace normal_segment_detail
 
 namespace {
-static constexpr auto const& normal_segment
+constexpr auto const& normal_segment
  = static_const<normal_segment_detail::normal_segment_fn>::value;
 }  // namespace
 

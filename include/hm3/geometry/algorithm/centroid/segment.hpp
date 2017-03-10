@@ -22,7 +22,7 @@ struct centroid_segment_fn {
 }  // namespace centroid_segment_detail
 
 namespace {
-static constexpr auto const& centroid_segment
+constexpr auto const& centroid_segment
  = static_const<centroid_segment_detail::centroid_segment_fn>::value;
 }
 

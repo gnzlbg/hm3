@@ -51,7 +51,7 @@ struct parallel_vector_fn {
 }  // namespace parallel_vector_detail
 
 namespace {
-static constexpr auto const& parallel_vector = static_const<
+constexpr auto const& parallel_vector = static_const<
  with_default_tolerance<parallel_vector_detail::parallel_vector_fn>>::value;
 }
 

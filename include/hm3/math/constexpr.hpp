@@ -15,7 +15,7 @@ namespace hm3::math {
 /// \note Workaround until std::isnan becomes constexpr
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr bool is_nan(Float x) noexcept {
-  return __builtin_isnan(x);
+  return __builtin_isnan(x);  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 /// Is a floating point number finite?
@@ -23,7 +23,7 @@ constexpr bool is_nan(Float x) noexcept {
 /// \note Workaround until std::isfinite becomes constexpr
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr bool is_finite(Float x) noexcept {
-  return __builtin_isfinite(x);
+  return __builtin_isfinite(x);  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 /// Is a floating point number infinite?
@@ -31,7 +31,7 @@ constexpr bool is_finite(Float x) noexcept {
 /// \note Workaround until std::isinf becomes constexpr
 template <typename Float, CONCEPT_REQUIRES_(std::is_floating_point<Float>{})>
 constexpr bool is_infinite(Float x) noexcept {
-  return __builtin_isinf(x);
+  return __builtin_isinf(x);  // NOLINT(cppcoreguidelines-pro-type-vararg)
 }
 
 /// Integer floor
@@ -69,7 +69,8 @@ constexpr T const& max(T&& a, T&& b) noexcept {
 
 template <typename T, CONCEPT_REQUIRES_(std::is_rvalue_reference<T&&>{})>
 constexpr T max(T&& a, T&& b) noexcept {
-  return a > b ? std::move(a) : std::move(b);
+  return a > b ? std::move(a)   // NOLINT(misc-move-forwarding-reference)
+               : std::move(b);  // NOLINT(misc-move-forwarding-reference)
 }
 
 template <typename T, typename U, typename UT = uncvref_t<T>,

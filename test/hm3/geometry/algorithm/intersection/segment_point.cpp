@@ -38,7 +38,7 @@ void test_segment_point_intersection() {
      else if
        constexpr(Same<T, monostate>{}) { CHECK(false); }
      else {
-       static_assert(always_false<T>{}, "forgot to handle a case");
+       HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
      }
    },
    geometry::intersection(s, x0));
@@ -52,7 +52,7 @@ void test_segment_point_intersection() {
        constexpr(Same<T, monostate>{}) { CHECK(true); }
 
      else {
-       static_assert(always_false<T>{}, "forgot to handle a case");
+       HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
      }
    },
    geometry::intersection(s, o0));

@@ -18,7 +18,7 @@ struct op_difference_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& op_difference
+constexpr auto const& op_difference
  = static_const<detail::op_difference_fn>::value;
 }  // namespace
 
@@ -32,8 +32,7 @@ struct difference_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& difference
- = static_const<detail::difference_fn>::value;
+constexpr auto const& difference = static_const<detail::difference_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry::sd

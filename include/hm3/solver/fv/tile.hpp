@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -243,3 +244,4 @@ using tile_type = typename meta::_t<unwrap_variables_into_tile<
 // }  // namespace fv
 // }  // namespace solver
 // }  // namespace hm3
+#endif

@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/grid/hierarchical/generation/uniform.hpp>
@@ -191,3 +192,4 @@ void convergence_slab_analytical(mpi::env& env, TimeInt time_int,
 }
 
 }  // namespace hm3
+#endif

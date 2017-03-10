@@ -3,6 +3,7 @@
 ///
 /// Gaussian distribution
 #include <cmath>
+#include <hm3/math/constants.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <hm3/utility/range.hpp>
@@ -51,8 +52,7 @@ struct gaussian_fn {
 }  // namespace math_detail
 
 namespace {
-static constexpr auto&& gaussian
- = static_const<math_detail::gaussian_fn>::value;
+constexpr auto const& gaussian = static_const<math_detail::gaussian_fn>::value;
 }  // namespace
 
 }  // namespace hm3::math

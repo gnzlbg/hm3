@@ -31,9 +31,9 @@ struct rotate_around_origin_3d_fn {
 }  // namespace rotation_detail
 
 namespace {
-static constexpr auto const& rotate_around_origin_2d
+constexpr auto const& rotate_around_origin_2d
  = static_const<rotation_detail::rotate_around_origin_2d_fn>::value;
-static constexpr auto const& rotate_around_origin_3d
+constexpr auto const& rotate_around_origin_3d
  = static_const<rotation_detail::rotate_around_origin_3d_fn>::value;
 }  // namespace
 

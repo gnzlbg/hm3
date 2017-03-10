@@ -1,12 +1,11 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
 /// Finite-volume solver state
 #include <hm3/solver/fv/tile.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 /// Finite volume discretization state
 template <typename TileLayout, typename Physics, typename TimeIntegration,
@@ -49,6 +48,5 @@ struct state
   }
 };
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv
+#endif

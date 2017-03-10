@@ -130,7 +130,9 @@ struct physics : Lattice {
 
     for (auto&& d : l::all()) {
       num_t ei_u = 0.0;
-      for (auto&& dim : l::ambient_dimensions()) { ei_u += l::dir(d)[dim] * us[dim]; }
+      for (auto&& dim : l::ambient_dimensions()) {
+        ei_u += l::dir(d)[dim] * us[dim];
+      }
       const num_t ei_u_2 = ei_u * ei_u;
       num_t omega_i      = l::constants(d);
       f_eq[d] = rho * omega_i * (1. + ei_u * f1() + (ei_u_2)*f2() - f3);

@@ -67,7 +67,7 @@ struct concatenate_polyline_polyline_fn {
 }  // namespace concatenate_polyline_polyline_detail
 
 namespace {
-static constexpr auto const& concatenate_polyline_polyline
+constexpr auto const& concatenate_polyline_polyline
  = static_const<with_default_tolerance<
   concatenate_polyline_polyline_detail::concatenate_polyline_polyline_fn>>::
   value;

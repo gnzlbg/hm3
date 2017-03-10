@@ -51,10 +51,10 @@ struct intersection_ray_aabb_fn {
   }
 };
 
-}  // intersection_ray_aabb_detail
+}  // namespace intersection_ray_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_ray_aabb
+constexpr auto const& intersection_ray_aabb
  = static_const<intersection_ray_aabb_detail::intersection_ray_aabb_fn>::value;
 }
 
@@ -74,15 +74,16 @@ struct intersection_test_ray_aabb_fn {
     static_assert(AABB<A>{});
     static_assert(ad_v<R> == ad_v<A>);
 
-    return (bool)intersection_parameter_ray_aabb(r, a, abs_tol, rel_tol);
+    return static_cast<bool>(
+     intersection_parameter_ray_aabb(r, a, abs_tol, rel_tol));
   }
 };
 
-}  // intersection_test_ray_aabb_detail
+}  // namespace intersection_test_ray_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_test_ray_aabb = static_const<
+constexpr auto const& intersection_test_ray_aabb = static_const<
  intersection_test_ray_aabb_detail::intersection_test_ray_aabb_fn>::value;
 }
 
-}  // namespace hm3::geometry::aabb_primitive
+}  // namespace hm3::geometry

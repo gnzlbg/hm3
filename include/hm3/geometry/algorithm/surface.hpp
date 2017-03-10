@@ -94,8 +94,7 @@ struct surface_fn {
 }  // namespace surface_detail
 
 namespace {
-static constexpr auto const& surface
- = static_const<surface_detail::surface_fn>::value;
+constexpr auto const& surface = static_const<surface_detail::surface_fn>::value;
 }
 
 namespace surface_detail {
@@ -109,7 +108,7 @@ struct surfaces_fn {
 }  // namespace surface_detail
 
 namespace {
-static constexpr auto const& surfaces
+constexpr auto const& surfaces
  = static_const<surface_detail::surfaces_fn>::value;
 }
 

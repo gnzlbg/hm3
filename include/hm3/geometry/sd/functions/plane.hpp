@@ -24,8 +24,7 @@ struct plane_fn {
 }  // namespace plane_detail
 
 namespace {
-static constexpr auto const& plane
- = static_const<plane_detail::plane_fn>::value;
+constexpr auto const& plane = static_const<plane_detail::plane_fn>::value;
 }
 
 /// Oriented plane at point centroid with normal vec. Signed distance is

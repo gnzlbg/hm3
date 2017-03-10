@@ -23,8 +23,7 @@ struct sphere_fn {
 }  // namespace sphere_detail
 
 namespace {
-static constexpr auto const& sphere
- = static_const<sphere_detail::sphere_fn>::value;
+constexpr auto const& sphere = static_const<sphere_detail::sphere_fn>::value;
 }
 
 ///@}  // Sphere

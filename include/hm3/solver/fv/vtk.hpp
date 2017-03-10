@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -138,3 +139,4 @@ void ls_serialize(State const& state, Ls const& ls, string file_name,
 
 }  // namespace hm3::solver::fv::vtk
 #endif  // HM3_ENABLE_VTK
+#endif

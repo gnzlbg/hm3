@@ -2,11 +2,11 @@
 /// \file
 ///
 /// Parameter of the intersection of a point with a segment.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx/number.hpp>
 #include <hm3/geometry/algorithm/direction.hpp>
 #include <hm3/geometry/algorithm/distance/minimum_segment_point.hpp>
 #include <hm3/utility/optional.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -46,7 +46,9 @@ struct intersection_parameter_segment_point_fn {
           ;
         }
       else {
-        static_assert(always_false<Q>{}, "unknown type-paramenter Q");
+        static_assert(
+         always_false<Q>{},
+         "unknown intersection mode for segment-point intersection!");
       }
     }();
 
@@ -70,10 +72,9 @@ using intersection_parameter_segment_point_detail::on_segment_line;
 using intersection_parameter_segment_point_detail::on_segment;
 
 namespace {
-static constexpr auto const& intersection_parameter_segment_point
- = static_const<
-  with_default_tolerance<intersection_parameter_segment_point_detail::
-                          intersection_parameter_segment_point_fn>>::value;
+constexpr auto const& intersection_parameter_segment_point = static_const<
+ with_default_tolerance<intersection_parameter_segment_point_detail::
+                         intersection_parameter_segment_point_fn>>::value;
 }  // namespace
 
 }  // namespace hm3::geometry

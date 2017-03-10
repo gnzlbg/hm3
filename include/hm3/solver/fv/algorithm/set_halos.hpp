@@ -6,9 +6,7 @@
 #include <hm3/solver/fv/algorithm/project.hpp>
 #include <hm3/solver/fv/algorithm/restrict.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 /// Sets the tile halo cell values from the internal cell values
 ///
@@ -127,7 +125,7 @@ struct set_halos_fn {
 };
 
 namespace {
-static constexpr auto&& set_halos = static_const<set_halos_fn>::value;
+constexpr auto const& set_halos = static_const<set_halos_fn>::value;
 }  // namespace
 /*
 /// Set halo cells values of each tile
@@ -248,6 +246,4 @@ for (auto&& bidx : s.grid()) {
 // }
 }
 */
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

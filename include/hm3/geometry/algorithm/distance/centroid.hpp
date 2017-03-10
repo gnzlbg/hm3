@@ -20,7 +20,7 @@ struct distance_centroid_fn {
 }  // namespace distance_centroid_detail
 
 namespace {
-static constexpr auto const& distance_centroid
+constexpr auto const& distance_centroid
  = static_const<distance_centroid_detail::distance_centroid_fn>::value;
 }
 

@@ -3,6 +3,7 @@
 ///
 /// Relative position of point with respect to a plane.
 #include <hm3/geometry/algorithm/relative_position/point_plane.hpp>
+#include <hm3/geometry/concept/aabb.hpp>
 
 namespace hm3::geometry {
 
@@ -29,7 +30,7 @@ struct relative_position_aabb_plane_fn {
 }  // namespace relative_position_aabb_plane_detail
 
 namespace {
-static constexpr auto const& relative_position_aabb_plane
+constexpr auto const& relative_position_aabb_plane
  = static_const<with_default_tolerance<
   relative_position_aabb_plane_detail::relative_position_aabb_plane_fn>>::value;
 }  // namespace

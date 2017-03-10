@@ -3,8 +3,8 @@
 ///
 /// Bounding volume of a polyline or polygon.
 #include <hm3/geometry/algorithm/approx/number.hpp>
-#include <hm3/geometry/algorithm/x_min_max.hpp>
 #include <hm3/geometry/algorithm/bounding_length/aabb.hpp>
+#include <hm3/geometry/algorithm/x_min_max.hpp>
 #include <hm3/geometry/concept/polygon.hpp>
 #include <hm3/geometry/concept/polyhedron.hpp>
 #include <hm3/geometry/concept/polyline.hpp>
@@ -62,13 +62,13 @@ struct aabb_of_polyline_fn {
 }  // namespace aabb_of_polyline_detail
 
 namespace {
-static constexpr auto const& aabb_of_polyline
+constexpr auto const& aabb_of_polyline
  = static_const<aabb_of_polyline_detail::aabb_of_polyline_fn>::value;
-static constexpr auto const& aabb_of_polygon
+constexpr auto const& aabb_of_polygon
  = static_const<aabb_of_polyline_detail::aabb_of_polyline_fn>::value;
-static constexpr auto const& aabb_of_polyhedron
+constexpr auto const& aabb_of_polyhedron
  = static_const<aabb_of_polyline_detail::aabb_of_polyline_fn>::value;
-}
+}  // namespace
 
 namespace box_of_polyline_detail {
 
@@ -87,12 +87,12 @@ struct box_of_polyline_fn {
 }  // namespace box_of_polyline_detail
 
 namespace {
-static constexpr auto const& box_of_polyline
+constexpr auto const& box_of_polyline
  = static_const<box_of_polyline_detail::box_of_polyline_fn>::value;
-static constexpr auto const& box_of_polygon
+constexpr auto const& box_of_polygon
  = static_const<box_of_polyline_detail::box_of_polyline_fn>::value;
-static constexpr auto const& box_of_polyhedron
+constexpr auto const& box_of_polyhedron
  = static_const<box_of_polyline_detail::box_of_polyline_fn>::value;
-}
+}  // namespace
 
 }  // namespace hm3::geometry

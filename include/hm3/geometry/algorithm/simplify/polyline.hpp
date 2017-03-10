@@ -49,7 +49,7 @@ struct simplify_polyline_fn {
 }  // namespace simplify_polyline_detail
 
 namespace {
-static constexpr auto const& simplify_polyline
+constexpr auto const& simplify_polyline
  = static_const<simplify_polyline_detail::simplify_polyline_fn>::value;
 }
 

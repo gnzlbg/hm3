@@ -6,7 +6,7 @@
 
 namespace hm3::mpi {
 
-const char* stringify_thread_support(int thread_support) {
+constexpr const char* stringify_thread_support(int thread_support) {
   switch (thread_support) {
     case MPI_THREAD_MULTIPLE: {
       return "MPI_THREAD_MULTIPLE";

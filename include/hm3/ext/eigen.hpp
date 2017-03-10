@@ -43,7 +43,7 @@ auto begin(Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>
 auto end(Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
-  return v.data() + v.size();
+  return v.data() + v.size();  // / NOLINT()
 }
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,

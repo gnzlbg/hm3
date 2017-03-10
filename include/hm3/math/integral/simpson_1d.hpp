@@ -44,7 +44,7 @@ struct integrate_simpson_fn {
 }  // namespace math_detail
 
 namespace {
-static constexpr auto const& integrate_simpson
+constexpr auto const& integrate_simpson
  = static_const<math_detail::integrate_simpson_fn>::value;
 }  // namespace
 

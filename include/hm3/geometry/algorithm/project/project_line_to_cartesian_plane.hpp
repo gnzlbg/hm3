@@ -34,7 +34,7 @@
 // }  // namespace project_line_to_cartesian_plane_detail
 
 // namespace {
-// static constexpr auto const& project_line_to_cartesian_plane
+// constexpr auto const& project_line_to_cartesian_plane
 //  = static_const<project_line_to_cartesian_plane_detail::
 //                  project_line_to_cartesian_plane_fn>::value;
 // }

@@ -81,9 +81,9 @@ int main(int argc, char* argv[]) {
   // Loop over all time steps, moving the sphere, and adapting the grid
   int count_ = 0;
   for (auto&& t : time_steps) {
-    string root_name       = "amr_state_ts_" + std::to_string(count_);
+    string root_name = "amr_state_ts_" + std::to_string(count_);
     moving_sphere.set_centroid(sphere_center(t));
-    int iter_counter       = 0;
+    int iter_counter = 0;
     while (amr_handler.adapt(amr_action, [&]() {
       // If VTK is enabled write the state of the AMR handler at each iteration
       // to

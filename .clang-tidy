@@ -1,5 +1,5 @@
 ---
-Checks:          '-*,clang-analyzer-*,-clang-analyzer-alpha*,readability-identifier-naming,google-*,-google-build-using-namespace,-google-build-namespaces,-google-explicit-constructor,-google-readability-function-size,-google-readability-todo,-google-runtime-operator,-google-runtime-int,llvm-*,-llvm-include-order,modernize-*,readability-*,-readability-function-size,-readability-named-parameter,misc-*,-misc-noexcept-move-constructor,-misc-definitions-in-headers,-modernize-pass-by-value,-google-runtime-references'
+Checks:          '*, -clang-analyzer-alpha*,-google-build-using-namespace,-google-build-namespaces,-google-explicit-constructor,-google-readability-todo,-google-runtime-operator,-llvm-include-order,-llvm-header-guard,-misc-definitions-in-headers,-google-runtime-references,-cert-dcl59-cpp,-readability-named-parameter,-readability-else-after-return,-google-readability-namespace-comments,-llvm-namespace-comment,-misc-noexcept-move-constructor,-readability-misleading-indentation'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: true
 CheckOptions:

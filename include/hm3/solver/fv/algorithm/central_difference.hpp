@@ -7,9 +7,7 @@
 #include <hm3/solver/fv/limiter/none.hpp>
 #include <hm3/types.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct structured_central_difference_fn {
   ///
@@ -74,10 +72,8 @@ struct structured_central_difference_fn {
 };
 
 namespace {
-static constexpr auto&& structured_central_difference
+constexpr auto const& structured_central_difference
  = static_const<structured_central_difference_fn>::value;
 }
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

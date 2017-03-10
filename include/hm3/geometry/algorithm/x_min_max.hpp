@@ -23,10 +23,8 @@ struct x_max_fn {
 }  // namespace x_min_max_detail
 
 namespace {
-static constexpr auto const& x_min
- = static_const<x_min_max_detail::x_min_fn>::value;
-static constexpr auto const& x_max
- = static_const<x_min_max_detail::x_max_fn>::value;
+constexpr auto const& x_min = static_const<x_min_max_detail::x_min_fn>::value;
+constexpr auto const& x_max = static_const<x_min_max_detail::x_max_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry

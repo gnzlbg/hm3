@@ -199,7 +199,7 @@ constexpr dim_t face_size(aabb<3> const&) noexcept {
 }
 
 /// Returns the \p fidx face of the aabb \p a.
-polygon<3> face(aabb<3> const& a, dim_t fidx) noexcept {
+inline polygon<3> face(aabb<3> const& a, dim_t fidx) noexcept {
   return polygon<3>(make_segment_range(
    view::ints(dim_t{0}, dim_t{4}) | view::transform([&](auto&& i) {
      return vertex(a, aabb_constants::face_vertices(fidx, i));

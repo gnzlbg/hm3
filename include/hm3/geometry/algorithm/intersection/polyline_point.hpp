@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Intersection of polylines with points.
-#include <hm3/geometry/algorithm/intersection/segment_point.hpp>
 #include <hm3/ext/variant.hpp>
+#include <hm3/geometry/algorithm/intersection/segment_point.hpp>
 
 namespace hm3::geometry {
 
@@ -26,7 +26,7 @@ struct intersection_test_polyline_point_fn {
 }  // namespace intersection_test_polyline_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_polyline_point = static_const<
+constexpr auto const& intersection_test_polyline_point = static_const<
  with_default_tolerance<intersection_test_polyline_point_detail::
                          intersection_test_polyline_point_fn>>::value;
 }
@@ -50,7 +50,7 @@ struct intersection_polyline_point_fn {
 }  // namespace intersection_polyline_point_detail
 
 namespace {
-static constexpr auto const& intersection_polyline_point
+constexpr auto const& intersection_polyline_point
  = static_const<with_default_tolerance<
   intersection_polyline_point_detail::intersection_polyline_point_fn>>::value;
 }

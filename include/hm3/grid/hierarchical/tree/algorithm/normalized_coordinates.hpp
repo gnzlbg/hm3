@@ -45,7 +45,7 @@ struct normalized_coordinates_fn {
 };
 
 namespace {
-constexpr auto&& normalized_coordinates
+constexpr auto const& normalized_coordinates
  = static_const<normalized_coordinates_fn>::value;
 }  // namespace
 

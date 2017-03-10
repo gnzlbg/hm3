@@ -42,7 +42,7 @@ struct integrate_trapezoidal_fn {
 }  // namespace math_detail
 
 namespace {
-static constexpr auto const& integrate_trapezoidal
+constexpr auto const& integrate_trapezoidal
  = static_const<math_detail::integrate_trapezoidal_fn>::value;
 }  // namespace
 

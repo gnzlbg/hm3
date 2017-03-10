@@ -91,8 +91,8 @@ constexpr num_t signed_area_projection(P&& p) noexcept {
   }
   constexpr dim_t s0[3] = {1, 2, 0};
   constexpr dim_t s1[3] = {2, 0, 1};
-  const dim_t x0        = s0[x];
-  const dim_t x1        = s1[x];
+  const dim_t x0        = ranges::at(s0, x);
+  const dim_t x1        = ranges::at(s1, x);
 
   // compute area of the 2D projection
   num_t area = 0;
@@ -173,7 +173,7 @@ struct integral_polygon_fn {
 }  // namespace integral_polygon_detail
 
 namespace {
-static constexpr auto const& integral_polygon
+constexpr auto const& integral_polygon
  = static_const<integral_polygon_detail::integral_polygon_fn>::value;
 }  // namespace
 

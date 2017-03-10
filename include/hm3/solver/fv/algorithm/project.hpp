@@ -5,9 +5,7 @@
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/solver/fv/algorithm/central_difference.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct project_fn {
   template <typename S, typename Tile, typename CIdx, typename VS,
@@ -46,9 +44,7 @@ struct project_fn {
 };
 
 namespace {
-static constexpr auto&& project = static_const<project_fn>::value;
+constexpr auto const& project = static_const<project_fn>::value;
 }  // namespace
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

@@ -22,6 +22,11 @@ Options:
 from docopt import docopt
 import os
 import subprocess
+from threading import Thread
+import Queue
+import os
+
+num_worker_threads = int(os.getenv('POOL_JOBS', 4))
 
 file_extensions = ['.c', '.cpp', '.cc', '.cxx', '.c++']
 
@@ -45,6 +50,17 @@ def run_clang_tidy(clang_tidy, path, build_path, apply_tidy, verbose, supp, resu
 
     results.append(p.returncode == 0)
 
+def worker():
+    while True:
+        item = q.get()
+        run_clang_tidy(item[0], item[1], item[2], item[3], item[4], item[5], item[6])
+        q.task_done()
+
+q = Queue.Queue()
+for i in range(num_worker_threads):
+     t = Thread(target=worker)
+     t.daemon = True
+     t.start()
 
 def run(clang_tidy_path, file_paths, build_path, apply_tidy, verbose, supp):
     threads = []
@@ -52,9 +68,8 @@ def run(clang_tidy_path, file_paths, build_path, apply_tidy, verbose, supp):
     for p in file_paths:
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
-            threads.append(Thread(target=run_clang_tidy, args=(clang_tidy_path, p, build_path, apply_tidy, verbose, supp, results)))
-    [t.start() for t in threads]
-    [t.join() for t in threads]
+            q.put((clang_tidy_path, p, build_path, apply_tidy, verbose, supp, results))
+    q.join()
     return all(results)
 
 def main():
@@ -66,6 +81,10 @@ def main():
     verbose = args['--verbose']
 
     apply_tidy = args['--apply']
+
+    np = args['--np']
+    if np:
+        num_worker_threads = int(np);
 
     files = subprocess.check_output(['git', 'ls-tree', '--full-tree', '-r', 'HEAD', project_src_path])
     file_paths = [os.path.join(project_src_path,f.split('\t')[1]) for f in files.splitlines()] 

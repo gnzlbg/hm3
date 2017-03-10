@@ -28,7 +28,7 @@ struct direction_vector_fn {
 }  // namespace direction_vector_detail
 
 namespace {
-static constexpr auto const& direction_vector
+constexpr auto const& direction_vector
  = static_const<direction_vector_detail::direction_vector_fn>::value;
 }  // namespace
 

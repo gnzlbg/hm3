@@ -24,7 +24,7 @@ struct centroid_aabb_fn {
 }  // namespace centroid_aabb_detail
 
 namespace {
-static constexpr auto const& centroid_aabb
+constexpr auto const& centroid_aabb
  = static_const<centroid_aabb_detail::centroid_aabb_fn>::value;
 }
 

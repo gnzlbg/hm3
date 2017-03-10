@@ -3,7 +3,7 @@
 ///
 /// Split a polygon with a signed-distance field.
 #include <hm3/geometry/algorithm/is_convex.hpp>
-#include <hm3/geometry/algorithm/sd_intersection/polygon.hpp>
+#include <hm3/geometry/algorithm/sd_intersection.hpp>
 #include <hm3/geometry/algorithm/split.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 
@@ -32,10 +32,10 @@ struct split_polygon_fn {
   }
 };
 
-}  // namespace sd_split_polygon_detail
+}  // namespace split_polygon_detail
 
 namespace {
-static constexpr auto const& split_polygon = static_const<
+constexpr auto const& split_polygon = static_const<
  with_default_tolerance<split_polygon_detail::split_polygon_fn>>::value;
 }  // namespace
 

@@ -20,13 +20,14 @@ struct max_wave_speed_time_step_fn {
 };
 
 namespace {
-constexpr auto&& max_wave_speed_time_step
+constexpr auto const& max_wave_speed_time_step
  = static_const<max_wave_speed_time_step_fn>::value;
 }  // namespace
 
 /// Default time step method
 namespace {
-constexpr auto&& time_step = static_const<max_wave_speed_time_step_fn>::value;
+constexpr auto const& time_step
+ = static_const<max_wave_speed_time_step_fn>::value;
 }  // namespace
 
 }  // namespace hm3::solver::fv::advection

@@ -17,8 +17,7 @@ struct op_inverse_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& op_inverse
- = static_const<detail::op_inverse_fn>::value;
+constexpr auto const& op_inverse = static_const<detail::op_inverse_fn>::value;
 }  // namespace
 
 namespace detail {
@@ -31,7 +30,7 @@ struct invert_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& invert = static_const<detail::invert_fn>::value;
+constexpr auto const& invert = static_const<detail::invert_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry::sd

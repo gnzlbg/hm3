@@ -8,8 +8,7 @@
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/assert.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 //
 
 struct node_location_fn {
@@ -30,8 +29,7 @@ struct node_location_fn {
 };
 
 namespace {
-constexpr auto&& node_location = static_const<node_location_fn>::value;
+constexpr auto const& node_location = static_const<node_location_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

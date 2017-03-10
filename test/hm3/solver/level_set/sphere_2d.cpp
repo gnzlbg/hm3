@@ -114,8 +114,8 @@ int main(int argc, char* argv[]) {
   RANGES_FOR (auto&& t, time_steps) {
     string root_name0 = "amr_state_ls0_" + std::to_string(count_);
     // Update sphere centers
-    sphere0.set_center(sphere_center0(t));
-    sphere1.set_center(sphere_center1(t));
+    sphere0.set_centroid(sphere_center0(t));
+    sphere1.set_centroid(sphere_center1(t));
     ls0.set_node_values(sphere0);
     ls1.set_node_values(sphere1);
 

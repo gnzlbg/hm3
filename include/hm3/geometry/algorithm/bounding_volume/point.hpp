@@ -23,7 +23,7 @@ struct box_of_point_fn {
 }  // namespace box_of_point_detail
 
 namespace {
-static constexpr auto const& box_of_point
+constexpr auto const& box_of_point
  = static_const<box_of_point_detail::box_of_point_fn>::value;
 }
 
@@ -41,7 +41,7 @@ struct aabb_of_point_fn {
 }  // namespace aabb_of_point_detail
 
 namespace {
-static constexpr auto const& aabb_of_point
+constexpr auto const& aabb_of_point
  = static_const<aabb_of_point_detail::aabb_of_point_fn>::value;
 }
 

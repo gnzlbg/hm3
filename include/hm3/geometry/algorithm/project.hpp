@@ -22,7 +22,7 @@
 // }  // namespace project_detail
 
 // namespace {
-// static constexpr auto const& project
+// constexpr auto const& project
 //  = static_const<project_detail::project_fn>::value;
 // }
 

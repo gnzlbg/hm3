@@ -22,7 +22,7 @@ struct aabb_fn {
 }  // namespace aabb_detail
 
 namespace {
-static constexpr auto const& aabb = static_const<aabb_detail::aabb_fn>::value;
+constexpr auto const& aabb = static_const<aabb_detail::aabb_fn>::value;
 }
 
 template <dim_t Ad>

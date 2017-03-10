@@ -38,7 +38,7 @@ template <typename T>
 using t_ = typename geometry_type<uncvref_t<T>>::type;
 
 template <typename T>
-static constexpr auto const& v_ = t_<T>{};
+constexpr auto const& v_ = t_<T>{};
 
 }  // namespace associated
 

@@ -45,8 +45,7 @@ void test_node() {
   CHECK(bounding_length(b_t(xc, pp)) == 0.5);
 
   cartesian::node<Nd> n1(pm, pp);
-  cartesian::node<Nd> n2(centroid(b_t(pm, pp)),
-                         bounding_length(b_t(pm, pp)));
+  cartesian::node<Nd> n2(centroid(b_t(pm, pp)), bounding_length(b_t(pm, pp)));
 
   CHECK(bounding_length(n1) == bounding_length(n2));
   CHECK(volume(n1) == volume(n2));

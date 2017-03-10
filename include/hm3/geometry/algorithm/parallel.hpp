@@ -54,7 +54,7 @@ struct parallel_fn {
 }  // namespace parallel_detail
 
 namespace {
-static constexpr auto const& parallel
+constexpr auto const& parallel
  = static_const<with_default_tolerance<parallel_detail::parallel_fn>>::value;
 }  // namespace
 

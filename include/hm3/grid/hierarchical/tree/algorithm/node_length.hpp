@@ -7,8 +7,7 @@
 #include <hm3/grid/hierarchical/tree/relations/tree.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 //
 
 /// Find the index of a node at a given location
@@ -37,8 +36,7 @@ struct node_length_fn {
 };
 
 namespace {
-constexpr auto&& node_length = static_const<node_length_fn>::value;
+constexpr auto const& node_length = static_const<node_length_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

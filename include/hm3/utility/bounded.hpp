@@ -9,17 +9,17 @@
 namespace hm3 {
 
 /// A tagged type with values in range [from, to)
-template <typename T, T from, T to, typename Tag = void>
+template <typename T, T From, T To, typename Tag = void>
 struct bounded {
-  using self           = bounded<T, from, to, Tag>;
+  using self           = bounded<T, From, To, Tag>;
   using value_type     = T;
   using tag            = Tag;
   using reference_type = value_type&;
   value_type value;
 
-  constexpr bounded(T v = from) : value{std::move(v)} {
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+  constexpr bounded(T v = From) : value{std::move(v)} {
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
   }
 
   static constexpr bounded invalid() noexcept {
@@ -29,22 +29,22 @@ struct bounded {
   }
 
   constexpr value_type operator*() const noexcept {
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
     return value;
   }
   constexpr reference_type operator*() noexcept {
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
     return value;
   }
   constexpr explicit operator bool() const noexcept {
-    return value >= from and value < to;
+    return value >= From and value < To;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<T>{})
   static constexpr auto rng() noexcept {
-    return view::iota(from, to)
+    return view::iota(From, To)
            | view::transform([](T const& i) { return bounded{i}; });
   }
 
@@ -77,8 +77,8 @@ struct bounded {
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   self& operator++() noexcept {
     ++value;
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
     return (*this);
   }
 
@@ -86,8 +86,8 @@ struct bounded {
   self operator++(int)noexcept {
     self tmp(*this);
     ++value;
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
     return tmp;
   }
 
@@ -100,16 +100,16 @@ struct bounded {
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   self& operator+=(self const& other) noexcept {
     value += *other;
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
     return *this;
   }
 
   CONCEPT_REQUIRES(RandomAccessIncrementable<value_type>())
   self& operator-=(self const& other) noexcept {
     value -= *other;
-    HM3_ASSERT(value >= from and value < to,
-               "value {} is out-of-bounds [{}, {})", value, from, to);
+    HM3_ASSERT(value >= From and value < To,
+               "value {} is out-of-bounds [{}, {})", value, From, To);
     return *this;
   }
 

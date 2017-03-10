@@ -48,7 +48,7 @@ struct intersection_parameter_line_point_fn {
 }  // namespace intersection_parameter_line_point_detail
 
 namespace {
-static constexpr auto const& intersection_parameter_line_point = static_const<
+constexpr auto const& intersection_parameter_line_point = static_const<
  with_default_tolerance<intersection_parameter_line_point_detail::
                          intersection_parameter_line_point_fn>>::value;
 }  // namespace

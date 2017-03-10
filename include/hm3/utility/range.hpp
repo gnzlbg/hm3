@@ -24,7 +24,7 @@ bool operator!=(compressed_pair<T, U> const& t,
   return !(t == u);
 }
 
-}  // inline namespace v3
+}  // namespace v3
 }  // namespace ranges
 
 namespace hm3 {
@@ -172,7 +172,7 @@ struct tuple_for_each_indexed_fn {
 };
 
 namespace {
-constexpr auto&& tuple_for_each_indexed
+constexpr auto const& tuple_for_each_indexed
  = static_const<tuple_for_each_indexed_fn>::value;
 }  // namespace
 

@@ -90,12 +90,10 @@ hm3_append_flag(HM3_HAS_EIGEN_STACK_ALLOCATION_LIMIT "-DEIGEN_STACK_ALLOCATION_L
 
 if (HM3_ENABLE_MODULES)
   hm3_append_flag(HM3_HAS_MODULES -fmodules)
-  hm3_append_flag(HM3_HAS_MODULES -fmodules-ts)
-  hm3_append_flag(HM3_HAS_CXX_MODULES -fcxx-modules)
   hm3_append_flag(HM3_HAS_GMODULES -gmodules)
   hm3_append_flag(HM3_HAS_NO_IMPLICIT_MODULE_MAPS -fno-implicit-module-maps)
   hm3_append_flag(HM3_HAS_MODULE_MAP_FILE_HM3 "-fmodule-map-file=${PROJECT_SOURCE_DIR}/include/module.modulemap")
-  hm3_append_flag(HM3_HAS_MODULE_MAP_FILE_STD "-fmodule-map-file=~/pool/include/c++/v1/module.modulemap")
+  hm3_append_flag(HM3_HAS_MODULE_MAP_FILE_STD "-fmodule-map-file=/Users/gnzlbg/pool/include/c++/v1/module.modulemap")
   hm3_append_flag(HM3_HAS_MODULE_CACHE "-fmodules-cache-path=${PROJECT_BINARY_DIR}/module.cache")
 endif()
 

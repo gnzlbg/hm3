@@ -1,14 +1,11 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
 /// Zero the slopes (disables the limiter)
 #include <hm3/solver/fv/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-
-namespace limiter {
+namespace hm3::solver::fv::limiter {
 
 struct zero_fn {
   template <typename Grad,
@@ -19,10 +16,8 @@ struct zero_fn {
 };
 
 namespace {
-constexpr auto&& zero = static_const<zero_fn>::value;
+constexpr auto const& zero = static_const<zero_fn>::value;
 }  // namespace
 
-}  // namespace limiter
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::limiter
+#endif

@@ -25,8 +25,8 @@ struct Polygon : rc::refines<VertexAccess, EdgeAccess> {
 ///
 /// Refines: Edge, EdgeAccess
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Polygon = meta::and_<GeometryObject<T, Ad, 2>,
-                           rc::models<concept::Polygon, T>>;
+using Polygon
+ = meta::and_<GeometryObject<T, Ad, 2>, rc::models<concept::Polygon, T>>;
 
 namespace concept {
 
@@ -45,7 +45,6 @@ struct MutablePolygon : rc::refines<Polygon> {
 /// Refines: Polygon
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
 using MutablePolygon
- = meta::and_<GeometryObject<T, Ad, 2>,
-              rc::models<concept::MutablePolygon, T>>;
+ = meta::and_<GeometryObject<T, Ad, 2>, rc::models<concept::MutablePolygon, T>>;
 
 }  // namespace hm3::geometry

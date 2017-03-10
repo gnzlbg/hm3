@@ -63,7 +63,7 @@ struct minimum_distance_line_line_fn {
 }  // namespace minimum_distance_line_line_detail
 
 namespace {
-static constexpr auto const& minimum_distance_line_line
+constexpr auto const& minimum_distance_line_line
  = static_const<with_default_tolerance<
   minimum_distance_line_line_detail::minimum_distance_line_line_fn>>::value;
 }

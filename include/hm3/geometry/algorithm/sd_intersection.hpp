@@ -79,7 +79,7 @@ struct intersection_fn {
 }  // namespace intersection_detail
 
 namespace {
-static constexpr auto const& intersection = static_const<
+constexpr auto const& intersection = static_const<
  with_default_tolerance<intersection_detail::intersection_fn>>::value;
 }  // namespace
 

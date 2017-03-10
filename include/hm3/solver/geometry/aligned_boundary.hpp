@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -84,3 +85,4 @@ struct aligned_boundary {
 };
 
 }  // namespace hm3::solver
+#endif

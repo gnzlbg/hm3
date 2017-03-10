@@ -95,10 +95,10 @@ struct approx_vector_fn {
 }  // namespace approx_point_detail
 
 namespace {
-static constexpr auto const& approx_point = static_const<
+constexpr auto const& approx_point = static_const<
  with_default_tolerance<approx_point_detail::approx_point_fn>>::value;
 
-static constexpr auto const& approx_vector = static_const<
+constexpr auto const& approx_vector = static_const<
  with_default_tolerance<approx_point_detail::approx_vector_fn>>::value;
 
 }  // namespace

@@ -48,7 +48,7 @@ struct minimum_distance_segment_point_fn {
 }  // namespace minimum_distance_segment_point_detail
 
 namespace {
-static constexpr auto const& minimum_distance_segment_point
+constexpr auto const& minimum_distance_segment_point
  = static_const<with_default_tolerance<
   minimum_distance_segment_point_detail::minimum_distance_segment_point_fn>>::
   value;

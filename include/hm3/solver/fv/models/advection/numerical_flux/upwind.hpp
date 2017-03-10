@@ -4,12 +4,7 @@
 /// Interprets cell variables as conservative variables
 #include <hm3/utility/matrix.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace advection {
-
-namespace flux {
+namespace hm3::solver::fv::advection::flux {
 
 struct upwind_fn {
   /// Local Lax-Friedrichs Flux
@@ -26,11 +21,7 @@ struct upwind_fn {
 };
 
 namespace {
-constexpr auto&& upwind = static_const<upwind_fn>::value;
+constexpr auto const& upwind = static_const<upwind_fn>::value;
 }  // namespace
 
-}  // namespace flux
-}  // namespace advection
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::advection::flux

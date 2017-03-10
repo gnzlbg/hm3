@@ -59,8 +59,7 @@ struct normal_fn {
 }  // namespace normal_detail
 
 namespace {
-static constexpr auto const& normal
- = static_const<normal_detail::normal_fn>::value;
+constexpr auto const& normal = static_const<normal_detail::normal_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry

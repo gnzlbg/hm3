@@ -43,7 +43,7 @@ struct centroid_polyline_fn {
 }  // namespace centroid_polyline_detail
 
 namespace {
-static constexpr auto const& centroid_polyline
+constexpr auto const& centroid_polyline
  = static_const<centroid_polyline_detail::centroid_polyline_fn>::value;
 }
 

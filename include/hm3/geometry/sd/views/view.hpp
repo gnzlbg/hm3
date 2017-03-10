@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Utilities for creating views to signed-distance functions.
-#include <hm3/geometry/sd/core.hpp>
+#include <hm3/geometry/sd/signed_distance.hpp>
 
 namespace hm3::geometry::sd {
 

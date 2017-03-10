@@ -2,12 +2,12 @@
 /// \file
 ///
 /// Intersection of a segment with a polygon.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx/point.hpp>
 #include <hm3/geometry/algorithm/intersection/polygon_point.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
 #include <hm3/geometry/algorithm/is_convex.hpp>
 #include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -49,7 +49,7 @@ struct intersection_polygon_segment_fn {
          else if
            constexpr(Same<T, monostate>{}) { return; }
          else {
-           static_assert(always_false<T>{}, "non-exhaustive visitor");
+           HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
          }
        },
        r);
@@ -115,7 +115,7 @@ struct intersection_polygon_segment_fn {
 }  // namespace intersection_polygon_segment_detail
 
 namespace {
-static constexpr auto const& intersection_polygon_segment
+constexpr auto const& intersection_polygon_segment
  = static_const<with_default_tolerance<
   intersection_polygon_segment_detail::intersection_polygon_segment_fn>>::value;
 }
@@ -132,12 +132,7 @@ struct intersection_test_polygon_segment_fn {
     static_assert(ad_v<S> == ad_v<P>);
     auto ir = intersection_polygon_segment(p, s, abs_tol, rel_tol);
     return visit(
-     [](auto&& v) {
-       using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<T, monostate>{}) { return false; }
-       return true;
-     },
+     [](auto&& v) { return not Same<uncvref_t<decltype(v)>, monostate>{}; },
      ir);
   }
 };
@@ -145,9 +140,9 @@ struct intersection_test_polygon_segment_fn {
 }  // namespace intersection_test_polygon_segment_detail
 
 namespace {
-static constexpr auto const& intersection_test_polygon_segment = static_const<
+constexpr auto const& intersection_test_polygon_segment = static_const<
  with_default_tolerance<intersection_test_polygon_segment_detail::
                          intersection_test_polygon_segment_fn>>::value;
 }
 
-}  // namespace hm3::geometry::segment_primitive
+}  // namespace hm3::geometry

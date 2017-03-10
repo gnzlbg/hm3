@@ -56,7 +56,7 @@
 //            push_back_ip(v.x(1));
 //          }
 //        else {
-//          static_assert(always_false<T>{}, "non-exhaustive visitor");
+// HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
 //        }
 //      },
 //      i);

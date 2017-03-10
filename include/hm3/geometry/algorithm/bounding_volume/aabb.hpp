@@ -54,10 +54,10 @@ struct aabb_of_aabb_fn {
 }  // namespace aabb_of_aabb_detail
 
 namespace {
-static constexpr auto const& aabb_of_aabb
+constexpr auto const& aabb_of_aabb
  = static_const<aabb_of_aabb_detail::aabb_of_aabb_fn>::value;
-static constexpr auto const& box_of_aabb
+constexpr auto const& box_of_aabb
  = static_const<box_of_aabb_detail::box_of_aabb_fn>::value;
-}
+}  // namespace
 
 }  // namespace hm3::geometry

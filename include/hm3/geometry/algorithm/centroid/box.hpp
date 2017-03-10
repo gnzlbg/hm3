@@ -21,7 +21,7 @@ struct centroid_box_fn {
 }  // namespace centroid_box_detail
 
 namespace {
-static constexpr auto const& centroid_box
+constexpr auto const& centroid_box
  = static_const<centroid_box_detail::centroid_box_fn>::value;
 }
 

@@ -24,7 +24,7 @@ struct sign_fn {
 }  // namespace sign_detail
 
 namespace {
-static constexpr auto const& sign
+constexpr auto const& sign
  = static_const<with_default_tolerance<sign_detail::sign_fn>>::value;
 }  // namespace
 

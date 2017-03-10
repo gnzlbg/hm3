@@ -106,7 +106,7 @@ struct direction_fn {
 }  // namespace direction_detail
 
 namespace {
-static constexpr auto const& direction
+constexpr auto const& direction
  = static_const<direction_detail::direction_fn>::value;
 }  // namespace
 

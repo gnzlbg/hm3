@@ -6,8 +6,7 @@
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 struct node_level_fn {
   /// Level of the node \p n within the tree \p tree
@@ -53,8 +52,7 @@ struct node_level_fn {
 };
 
 namespace {
-constexpr auto&& node_level = static_const<node_level_fn>::value;
+constexpr auto const& node_level = static_const<node_level_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

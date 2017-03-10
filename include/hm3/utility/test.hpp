@@ -64,12 +64,12 @@ struct ret {
     }
     ++failures();
   }
-  void dismiss() { dismissed_ = true; }
+  void dismiss() noexcept { dismissed_ = true; }
   template <typename V = T>
-  auto eval_(int) -> decltype(!std::declval<V>()) {
+  auto eval_(int) noexcept -> decltype(!std::declval<V>()) {
     return !t_;
   }
-  bool eval_(long) { return true; }
+  bool eval_(int64_t) noexcept { return true; }
 
  public:
   ret(char const* filename, int lineno, char const* expr, T t)

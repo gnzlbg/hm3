@@ -19,10 +19,10 @@ struct approx_segment_fn {
   }
 };
 
-}  // namespace direction_detail
+}  // namespace approx_segment_detail
 
 namespace {
-static constexpr auto const& approx_segment = static_const<
+constexpr auto const& approx_segment = static_const<
  with_default_tolerance<approx_segment_detail::approx_segment_fn>>::value;
 
 }  // namespace

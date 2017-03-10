@@ -83,7 +83,7 @@ struct centroid_polygon_fn {
 }  // namespace centroid_polygon_detail
 
 namespace {
-static constexpr auto const& centroid_polygon
+constexpr auto const& centroid_polygon
  = static_const<centroid_polygon_detail::centroid_polygon_fn>::value;
 }
 

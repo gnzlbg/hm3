@@ -2,17 +2,22 @@
 /// \file
 ///
 /// Array
-#include <hm3/utility/range.hpp>
 #include <hm3/types.hpp>
+#include <hm3/utility/assert.hpp>
+#include <hm3/utility/range.hpp>
 #include <iterator>
 #include <stdexcept>
 #include <utility>
 
 namespace hm3 {
 
+namespace array_detail {
+struct empty {};
+}  // namespace array_detail
+
 /// A constexpr-friendly implementation of std::array
 template <typename T, suint_t N>
-struct array {  // NOLINT
+struct array {  // TODO: figure out how to do EBO.
   using self                   = array;
   using value_type             = T;
   using reference              = value_type&;
@@ -25,26 +30,52 @@ struct array {  // NOLINT
   using difference_type        = std::ptrdiff_t;
   using reverse_iterator       = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-  value_type elems_[N > 0 ? N : 1];  // TODO: use std::conditional_t
+
+  std::conditional_t<(N > 0), T[N > 0 ? N : 1], array_detail::empty> elems_;
+
+  constexpr value_type* data() noexcept {
+    if
+      constexpr(N == 0) { return nullptr; }
+    else {
+      return elems_;
+    }
+  }
+  constexpr const value_type* data() const noexcept {
+    if
+      constexpr(N == 0) { return nullptr; }
+    else {
+      return elems_;
+    }
+  }
+
+  CONCEPT_REQUIRES(N > 0)
+  constexpr reference operator[](size_type n) {
+    HM3_ASSERT(n < N, "index {} out-of-bounds [0, {})", n, N);
+    return *(data() + n);
+  }
+  CONCEPT_REQUIRES(N > 0)
+  constexpr const_reference operator[](size_type n) const {
+    HM3_ASSERT(n < N, "index {} out-of-bounds [0, {})", n, N);
+    return *(data() + n);
+  }
 
   // No explicit construct/copy/destroy for aggregate type
-  constexpr array() = default;
   constexpr void fill(const value_type& u) {
-    for (suint_t i = 0; i < N; ++i) { elems_[i] = u; }
+    for (suint_t i = 0; i < N; ++i) { (*this)[i] = u; }
   }
   constexpr void swap(array& a) noexcept(
    ranges::is_nothrow_swappable<T, T>::value) {
     using std::swap;
-    for (suint_t i = 0; i < N; ++i) { swap(elems_[i], a.elems_[i]); }
+    for (suint_t i = 0; i < N; ++i) { swap((*this)[i], a[i]); }
   }
   // iterators:
-  constexpr iterator begin() noexcept { return iterator(elems_); }
+  constexpr iterator begin() noexcept { return iterator(data()); }
   constexpr const_iterator begin() const noexcept {
-    return const_iterator(elems_);
+    return const_iterator(data());
   }
-  constexpr iterator end() noexcept { return iterator(elems_ + N); }
+  constexpr iterator end() noexcept { return iterator(data() + N); }
   constexpr const_iterator end() const noexcept {
-    return const_iterator(elems_ + N);
+    return const_iterator(data() + N);
   }
   reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const noexcept {
@@ -63,27 +94,23 @@ struct array {  // NOLINT
   static constexpr size_type max_size() noexcept { return N; }
   static constexpr bool empty() noexcept { return N == 0; }
   // element access:
-  constexpr reference operator[](size_type n) { return elems_[n]; }
-  constexpr const_reference operator[](size_type n) const { return elems_[n]; }
   constexpr reference at(size_type n) {
     if (n >= N) { throw std::out_of_range("array::at"); }
-    return elems_[n];
+    return (*this)[n];
   };
   constexpr const_reference at(size_type n) const {
     if (n >= N) { throw std::out_of_range("array::at"); }
-    return elems_[n];
+    return (*this)[n];
   }
-  constexpr reference front() { return elems_[0]; }
-  constexpr const_reference front() const { return elems_[0]; }
-  constexpr reference back() { return elems_[N > 0 ? N - 1 : 0]; }
-  constexpr const_reference back() const { return elems_[N > 0 ? N - 1 : 0]; }
-  constexpr value_type* data() noexcept { return elems_; }
-  constexpr const value_type* data() const noexcept { return elems_; }
+  constexpr reference front() { return (*this)[0]; }
+  constexpr const_reference front() const { return (*this)[0]; }
+  constexpr reference back() { return (*this)[N - 1]; }
+  constexpr const_reference back() const { return (*this)[N - 1]; }
 };
 
 template <class T, suint_t N>
 constexpr bool operator==(const array<T, N>& x, const array<T, N>& y) {
-  return ranges::equal(x.elems_, x.elems_ + N, y.elems_);
+  return ranges::equal(x.begin(), x.end(), y.begin());
 }
 template <class T, suint_t N>
 constexpr bool operator!=(const array<T, N>& x, const array<T, N>& y) {
@@ -119,28 +146,28 @@ constexpr bool operator>=(const array<T, N>& x, const array<T, N>& y) {
 template <suint_t I, class T, suint_t N>
 constexpr T& get(array<T, N>& a) noexcept {
   static_assert(I < N, "Index out of bounds in ranges::get<> (ranges::array)");
-  return a.elems_[I];
+  return a[I];
 }
 
 template <suint_t I, class T, suint_t N>
 constexpr const T& get(const array<T, N>& a) noexcept {
   static_assert(I < N,
                 "Index out of bounds in ranges::get<> (const ranges::array)");
-  return a.elems_[I];
+  return a[I];
 }
 
 template <suint_t I, class T, suint_t N>
 constexpr T&& get(array<T, N>&& a) noexcept {
   static_assert(I < N,
                 "Index out of bounds in ranges::get<> (ranges::array &&)");
-  return std::move(a.elems_[I]);
+  return std::move(a[I]);
 }
 
 static_assert(RandomAccessRange<array<int, 2>>{}, "");
+static_assert(sizeof(array<int, 0>) == 1, "");
 }  // namespace hm3
 
 namespace std {
-
 #ifdef HM3_COMPILER_CLANG
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmismatched-tags"

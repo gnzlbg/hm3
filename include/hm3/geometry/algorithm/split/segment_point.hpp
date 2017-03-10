@@ -39,7 +39,7 @@ struct split_segment_point_fn {
        else if
          constexpr(Same<T, monostate>{}) { return; }
        else {
-         static_assert(always_false<T>{}, "non-exhaustive visitor");
+         HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
        }
      },
      ir);
@@ -50,7 +50,7 @@ struct split_segment_point_fn {
 }  // namespace split_segment_point_detail
 
 namespace {
-static constexpr auto const& split_segment_point
+constexpr auto const& split_segment_point
  = static_const<split_segment_point_detail::split_segment_point_fn>::value;
 }
 

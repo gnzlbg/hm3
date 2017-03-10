@@ -27,9 +27,9 @@ inline float get_vertex(triangle<3> const& t, int vx, int d) {
   if (vx >= 0 and vx < 3 and d >= 0 and d < 3) { return vertex(t, vx)(d); }
   throw "error";
 }
-}
-}
-}
+}  // namespace polygon_primitive
+}  // namespace geometry
+}  // namespace hm3
 
 using namespace hm3;
 using namespace geometry;

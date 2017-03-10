@@ -894,7 +894,7 @@ struct discrete_domain : hg::with_ambient_dimension<Ad> {
   /// Bounding Box
   auto bounding_box() const noexcept { return bvh_.bounding_box(); }
 
-  discrete_domain()                         = default;
+  discrete_domain()                       = default;
   discrete_domain(discrete_domain const&) = default;
   discrete_domain(discrete_domain&&)      = default;
   discrete_domain& operator=(discrete_domain const&) = default;

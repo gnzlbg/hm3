@@ -17,13 +17,12 @@ struct edge_abs_eq_fn {
   constexpr bool operator()(T&& t, U&& u) const noexcept {
     if (approx_segment(t, u, 0., 0.)) { return true; }
     auto iu = direction_segment.invert(u);
-    if (approx_segment(t, iu, 0., 0.)) { return true; }
-    return false;
+    return approx_segment(t, iu, 0., 0.);
   }
 };
 
 namespace {
-static constexpr auto const& edge_abs_eq = static_const<edge_abs_eq_fn>::value;
+constexpr auto const& edge_abs_eq = static_const<edge_abs_eq_fn>::value;
 }
 
 /// Watertight Polyhedron.
@@ -35,9 +34,9 @@ struct polyhedron {
   using point_value_type = associated::point_t<edge_value_type>;
 
   /// The faces of the polyhedron are stored as polygons:
-  static constexpr suint_t no_inline_polygons = 8;
-  static constexpr suint_t no_inline_edges    = 14;
-  static constexpr suint_t no_inline_points   = 10;
+  static constexpr inline suint_t no_inline_polygons = 8;
+  static constexpr inline suint_t no_inline_edges    = 14;
+  static constexpr inline suint_t no_inline_points   = 10;
   using face_storage_t = small_vector<face_value_type, no_inline_polygons>;
   face_storage_t faces_;
 
@@ -278,11 +277,11 @@ struct polyhedron {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-bool operator==(polyhedron const& a, polyhedron const& b) noexcept {
+inline bool operator==(polyhedron const& a, polyhedron const& b) noexcept {
   return equal(a.faces(), b.faces());
 }
 
-bool operator!=(polyhedron const& a, polyhedron const& b) noexcept {
+inline bool operator!=(polyhedron const& a, polyhedron const& b) noexcept {
   return !(a == b);
 }
 
@@ -335,7 +334,7 @@ constexpr auto face_size(polyhedron const& p) noexcept { return p.face_size(); }
 
 /// Face \p e of the polyhedron \p p.
 
-auto face(polyhedron const& p, dim_t e) noexcept {
+inline auto face(polyhedron const& p, dim_t e) noexcept {
   HM3_ASSERT(e < p.face_size(), "");
   return p.face(e);
 }

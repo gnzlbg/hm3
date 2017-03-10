@@ -66,7 +66,7 @@ struct intersection_parameter_ray_aabb_fn {
 }  // namespace intersection_parameter_ray_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_parameter_ray_aabb
+constexpr auto const& intersection_parameter_ray_aabb
  = static_const<with_default_tolerance<
   intersection_parameter_ray_aabb_detail::intersection_parameter_ray_aabb_fn>>::
   value;

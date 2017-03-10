@@ -37,7 +37,7 @@ struct integrate_1d_fn {
 }  // namespace math_detail
 
 namespace {
-static constexpr auto const& integrate_1d
+constexpr auto const& integrate_1d
  = static_const<math_detail::integrate_1d_fn>::value;
 }  // namespace
 

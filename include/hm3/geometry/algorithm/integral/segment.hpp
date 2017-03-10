@@ -22,7 +22,8 @@ struct integral_segment_fn {
 }  // namespace integral_segment_detail
 
 namespace {
-static constexpr auto const& integral_segment
+
+constexpr auto const& integral_segment
  = static_const<integral_segment_detail::integral_segment_fn>::value;
 }  // namespace
 

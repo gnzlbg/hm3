@@ -2,7 +2,7 @@
 #include <iomanip>
 #include <iostream>
 
-void print_2d_grid() {
+inline void print_2d_grid() {
   for (int j = 13; j >= 0; --j) {
     std::cout << std::setw(3) << j << " | ";
     for (int i = 0; i < 14; ++i) {

@@ -185,7 +185,7 @@ struct binary_split_fn {
 }  // namespace split_polygon_polyline_detail
 
 namespace {
-static constexpr auto const& binary_split_polygon_polyline
+constexpr auto const& binary_split_polygon_polyline
  = static_const<split_polygon_polyline_detail::binary_split_fn>::value;
 }
 
@@ -235,8 +235,8 @@ struct split_polygon_polyline_fn {
 }  // namespace split_polygon_polyline_detail
 
 namespace {
-static constexpr auto const& split_polygon_polyline = static_const<
+constexpr auto const& split_polygon_polyline = static_const<
  split_polygon_polyline_detail::split_polygon_polyline_fn>::value;
 }
 
-}  // namespace hm3::geometry::polygon_detail
+}  // namespace hm3::geometry

@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Intersection of ray with points.
-#include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
 #include <hm3/ext/variant.hpp>
+#include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
 
 namespace hm3::geometry {
 
@@ -28,7 +28,7 @@ struct intersection_test_ray_point_fn {
 }  // namespace intersection_test_ray_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_ray_point
+constexpr auto const& intersection_test_ray_point
  = static_const<with_default_tolerance<
   intersection_test_ray_point_detail::intersection_test_ray_point_fn>>::value;
 }  // namespace
@@ -54,10 +54,9 @@ struct intersection_test_non_degenerate_ray_point_fn {
 }  // namespace intersection_test_non_degenerate_ray_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_non_degenerate_ray_point
- = static_const<with_default_tolerance<
-  intersection_test_non_degenerate_ray_point_detail::
-   intersection_test_non_degenerate_ray_point_fn>>::value;
+constexpr auto const& intersection_test_non_degenerate_ray_point = static_const<
+ with_default_tolerance<intersection_test_non_degenerate_ray_point_detail::
+                         intersection_test_non_degenerate_ray_point_fn>>::value;
 }  // namespace
 
 namespace intersection_ray_point_detail {
@@ -81,7 +80,7 @@ struct intersection_ray_point_fn {
 }  // namespace intersection_ray_point_detail
 
 namespace {
-static constexpr auto const& intersection_ray_point
+constexpr auto const& intersection_ray_point
  = static_const<with_default_tolerance<
   intersection_ray_point_detail::intersection_ray_point_fn>>::value;
 }  // namespace

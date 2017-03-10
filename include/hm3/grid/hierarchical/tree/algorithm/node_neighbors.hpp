@@ -140,7 +140,7 @@ struct node_neighbors_fn {
 };
 
 namespace {
-constexpr auto&& node_neighbors = static_const<node_neighbors_fn>::value;
+constexpr auto const& node_neighbors = static_const<node_neighbors_fn>::value;
 }  // namespace
 
 }  // namespace hm3::tree

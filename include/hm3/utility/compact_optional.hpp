@@ -21,9 +21,9 @@ struct default_tag {};
 
 template <typename T, typename NT = T, typename CREF = const T&>
 struct compact_optional_type {
-  typedef T value_type;
-  typedef NT storage_type;
-  typedef CREF reference_type;
+  using value_type     = T;
+  using storage_type   = NT;
+  using reference_type = CREF;
 
   static constexpr const value_type& access_value(const storage_type& v) {
     return v;
@@ -45,8 +45,8 @@ struct empty_scalar_value : compact_optional_type<T> {
 template <typename OT>
 struct compact_optional_from_optional
  : compact_optional_type<typename OT::value_type, OT> {
-  typedef typename OT::value_type value_type;
-  typedef OT storage_type;
+  using value_type   = typename OT::value_type;
+  using storage_type = OT;
 
   static OT empty_value() noexcept { return OT(); }
   static bool is_empty_value(const OT& v) { return !v; }

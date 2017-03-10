@@ -21,7 +21,7 @@ struct normal_line_fn {
 }  // namespace normal_line_detail
 
 namespace {
-static constexpr auto const& normal_line
+constexpr auto const& normal_line
  = static_const<normal_line_detail::normal_line_fn>::value;
 }  // namespace
 

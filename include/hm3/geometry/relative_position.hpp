@@ -40,7 +40,7 @@ OStream& to_ascii(OStream& os, relative_position_t p) {
 }
 
 /// Invert the relative position \p o.
-relative_position_t invert(relative_position_t o) {
+constexpr relative_position_t invert(relative_position_t o) noexcept {
   switch (o) {
     case inside: {
       return outside;
@@ -73,16 +73,15 @@ struct is_intersected_fn {
 };
 
 namespace {
-static constexpr auto const& is_inside = static_const<is_inside_fn>::value;
+constexpr auto const& is_inside = static_const<is_inside_fn>::value;
 }
 
 namespace {
-static constexpr auto const& is_outside = static_const<is_outside_fn>::value;
+constexpr auto const& is_outside = static_const<is_outside_fn>::value;
 }
 
 namespace {
-static constexpr auto const& is_intersected
- = static_const<is_intersected_fn>::value;
+constexpr auto const& is_intersected = static_const<is_intersected_fn>::value;
 }
 
 }  // namespace hm3::geometry

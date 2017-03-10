@@ -39,7 +39,6 @@ void test_sd_segment_intersection() {
     static_assert(AmbientDimension<sdt, Ad>{});
     static_assert(trait::check<sdt, trait::signed_distance<Ad>>);
   }
-  
 
   using r_t = decltype(sd::intersection(s, f(vs0)));
 

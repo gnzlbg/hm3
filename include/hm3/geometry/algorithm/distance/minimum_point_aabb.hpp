@@ -28,7 +28,7 @@ struct minimum_distance_point_aabb_fn {
 }  // namespace minimum_distance_point_aabb_detail
 
 namespace {
-static constexpr auto const& minimum_distance_point_aabb = static_const<
+constexpr auto const& minimum_distance_point_aabb = static_const<
  minimum_distance_point_aabb_detail::minimum_distance_point_aabb_fn>::value;
 }
 

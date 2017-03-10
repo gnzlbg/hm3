@@ -16,12 +16,17 @@ Options:
   -h --help  Show this screen.
   --verbose  Verbose output.
   --apply    Applies format (by default it only checks the format).
+  --np <np>  Number of worker threads.
 
 """
 from docopt import docopt
 import os
 import subprocess
 from threading import Thread
+import Queue
+import os
+
+num_worker_threads = int(os.getenv('POOL_JOBS', 8))
 
 file_extensions = ['.c', '.h', '.cpp', '.cc', '.cxx', 
                    '.hpp', '.hh', '.hxx', '.c++', '.h++']
@@ -50,15 +55,26 @@ def run_clang_format(clang_format, path, apply_format, verbose, results):
         if verbose: print("success!")
         results.append(True)
 
+def worker():
+    while True:
+        item = q.get()
+        run_clang_format(item[0], item[1], item[2], item[3], item[4])
+        q.task_done()
+
+q = Queue.Queue()
+for i in range(num_worker_threads):
+     t = Thread(target=worker)
+     t.daemon = True
+     t.start()
+
 def run(clang_format_path, file_paths, apply_format, verbose):
     threads = []
     results = []
     for p in file_paths:
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
-            threads.append(Thread(target=run_clang_format, args=(clang_format_path, p, apply_format, verbose, results)))
-    [t.start() for t in threads]
-    [t.join() for t in threads]
+            q.put((clang_format_path, p, apply_format, verbose, results))
+    q.join()
     return all(results)
 
 def main():
@@ -72,6 +88,10 @@ def main():
     file_paths = [os.path.join(project_src_path,f.split('\t')[1]) for f in files.splitlines()] 
 
     apply_format = args['--apply']
+
+    np = args['--np']
+    if np:
+        num_worker_threads = int(np);
 
     result = run(clang_format_path, file_paths, apply_format, verbose)
 

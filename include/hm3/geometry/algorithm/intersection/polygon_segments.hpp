@@ -34,7 +34,7 @@ struct intersection_polygon_segments_fn {
 }  // namespace intersection_polygon_segments_detail
 
 namespace {
-static constexpr auto const& intersection_polygon_segments = static_const<
+constexpr auto const& intersection_polygon_segments = static_const<
  intersection_polygon_segments_detail::intersection_polygon_segments_fn>::value;
 }
 

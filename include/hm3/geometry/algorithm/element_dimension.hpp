@@ -34,10 +34,10 @@ struct element_dimension_fn {
   /// Name of the type of the geometric element of dimension \p r.
   template <typename T>
   static constexpr const char* name(T&& t, dim_t r) noexcept {
-    dim_t Ed = get_dim(std::forward<T>(t), 0);
-    HM3_ASSERT(Ed > 0 and Ed <= 3, "unimplemented");
-    HM3_ASSERT(r >= 0 and r < Ed, "element dimension {} out of bounds [0, {})",
-               r, Ed);
+    dim_t ed = get_dim(std::forward<T>(t), 0);
+    HM3_ASSERT(ed > 0 and ed <= 3, "unimplemented");
+    HM3_ASSERT(r >= 0 and r < ed, "element dimension {} out of bounds [0, {})",
+               r, ed);
     switch (r) {
       case 3: {
         return "volume";
@@ -59,7 +59,7 @@ struct element_dimension_fn {
 }  // namespace element_dimension_detail
 
 namespace {
-static constexpr auto const& element_dimension
+constexpr auto const& element_dimension
  = static_const<element_dimension_detail::element_dimension_fn>::value;
 }
 

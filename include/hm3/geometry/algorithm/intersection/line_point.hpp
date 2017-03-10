@@ -2,8 +2,8 @@
 /// \file
 ///
 /// Intersection of line with points.
-#include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
 #include <hm3/ext/variant.hpp>
+#include <hm3/geometry/algorithm/line_intersection_parameter.hpp>
 
 namespace hm3::geometry {
 
@@ -17,15 +17,14 @@ struct intersection_test_line_point_fn {
     static_assert(Line<L>{});
     static_assert(Point<P>{});
     static_assert(ad_v<L> == ad_v<P>);
-    if (line_intersection_parameter(l, p, abs_tol, rel_tol)) { return true; }
-    return false;
+    return line_intersection_parameter(l, p, abs_tol, rel_tol);
   }
 };
 
 }  // namespace intersection_test_line_point_detail
 
 namespace {
-static constexpr auto const& intersection_test_line_point
+constexpr auto const& intersection_test_line_point
  = static_const<with_default_tolerance<
   intersection_test_line_point_detail::intersection_test_line_point_fn>>::value;
 }  // namespace
@@ -51,7 +50,7 @@ struct intersection_line_point_fn {
 }  // namespace intersection_line_point_detail
 
 namespace {
-static constexpr auto const& intersection_line_point
+constexpr auto const& intersection_line_point
  = static_const<with_default_tolerance<
   intersection_line_point_detail::intersection_line_point_fn>>::value;
 }  // namespace

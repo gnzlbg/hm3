@@ -87,7 +87,7 @@ struct type_with_size<4> {
 /// The specialization for size 8.
 template <>
 struct type_with_size<8> {
-  using Int  = long long;
+  using Int  = std::int64_t;
   using UInt = unsigned long long;
 };
 
@@ -199,7 +199,8 @@ struct floating_point {
 
   /// Returns the exponent bits of this number.
   constexpr Bits exponent_bits() const noexcept {
-    return k_exponent_bit_mask & u_.bits_;
+    return k_exponent_bit_mask
+           & u_.bits_;  // NOLINT(cppcoreguidelines-pro-type-union-access)
   }
 
   /// Returns the fraction bits of this number.
@@ -230,7 +231,9 @@ struct floating_point {
     /// a NAN must return false.
     if (is_nan() || rhs.is_nan()) { return false; }
 
-    return distance_between_sign_and_magnitude_numbers(u_.bits_, rhs.u_.bits_)
+    return distance_between_sign_and_magnitude_numbers(
+            u_.bits_,      // NOLINT(cppcoreguidelines-pro-type-union-access)
+            rhs.u_.bits_)  // NOLINT(cppcoreguidelines-pro-type-union-access)
            <= k_max_ulps;
   }
 

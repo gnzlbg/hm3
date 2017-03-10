@@ -37,7 +37,7 @@ struct direction_polyline_fn {
 }  // namespace direction_polyline_detail
 
 namespace {
-static constexpr auto const& direction_polyline
+constexpr auto const& direction_polyline
  = static_const<direction_polyline_detail::direction_polyline_fn>::value;
 }  // namespace
 

@@ -264,9 +264,9 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   static_assert(MaxRows == dynamic || MaxCols == dynamic,
                 "static MaxRows and MaxCols: use stack storage!");
 
+  using block_type = uint64_t;
   using data_container
-   = boost::dynamic_bitset<unsigned long,
-                           Eigen::aligned_allocator<unsigned long>>;
+   = boost::dynamic_bitset<block_type, Eigen::aligned_allocator<block_type>>;
   using reference       = typename data_container::reference;
   using const_reference = typename data_container::const_reference;
 

@@ -18,7 +18,7 @@ struct op_translate_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& op_translate
+constexpr auto const& op_translate
  = static_const<detail::op_translate_fn>::value;
 }  // namespace
 
@@ -34,8 +34,7 @@ struct translate_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& translate
- = static_const<detail::translate_fn>::value;
+constexpr auto const& translate = static_const<detail::translate_fn>::value;
 }  // namespace
 
 }  // namespace hm3::geometry::sd

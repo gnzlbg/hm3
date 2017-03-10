@@ -5,8 +5,7 @@
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 //
 
 struct node_or_parent_at_fn {
@@ -44,8 +43,8 @@ struct node_or_parent_at_fn {
 };
 
 namespace {
-constexpr auto&& node_or_parent_at = static_const<node_or_parent_at_fn>::value;
+constexpr auto const& node_or_parent_at
+ = static_const<node_or_parent_at_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

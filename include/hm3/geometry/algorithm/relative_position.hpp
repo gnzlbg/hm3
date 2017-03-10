@@ -88,7 +88,7 @@ struct relative_position_fn {
 }  // namespace relative_position_detail
 
 namespace {
-static constexpr auto const& relative_position = static_const<
+constexpr auto const& relative_position = static_const<
  with_default_tolerance<relative_position_detail::relative_position_fn>>::value;
 }  // namespace
 

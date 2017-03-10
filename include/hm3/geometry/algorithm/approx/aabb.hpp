@@ -23,10 +23,10 @@ struct approx_aabb_fn {
   }
 };
 
-}  // namespace direction_detail
+}  // namespace approx_aabb_detail
 
 namespace {
-static constexpr auto const& approx_aabb = static_const<
+constexpr auto const& approx_aabb = static_const<
  with_default_tolerance<approx_aabb_detail::approx_aabb_fn>>::value;
 
 }  // namespace

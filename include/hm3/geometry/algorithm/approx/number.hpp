@@ -20,10 +20,10 @@ struct approx_number_fn {
   }
 };
 
-}  // namespace direction_detail
+}  // namespace approx_number_detail
 
 namespace {
-static constexpr auto const& approx_number = static_const<
+constexpr auto const& approx_number = static_const<
  with_default_tolerance<approx_number_detail::approx_number_fn>>::value;
 }  // namespace
 

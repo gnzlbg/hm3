@@ -9,8 +9,8 @@
 #include <hm3/grid/hierarchical/tree/relations/neighbor.hpp>
 #include <hm3/grid/hierarchical/tree/types.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
+
 /// Find neighbor \p n of node at location \p loc
 ///
 /// Note: the manifold is associated to the neighbor index type
@@ -69,8 +69,7 @@ struct node_neighbor_fn {
 };
 
 namespace {
-constexpr auto&& node_neighbor = static_const<node_neighbor_fn>::value;
+constexpr auto const& node_neighbor = static_const<node_neighbor_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

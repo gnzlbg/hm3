@@ -4,8 +4,7 @@
 /// Node-to-root traversal algorithm
 #include <hm3/grid/hierarchical/tree/types.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 
 struct root_traversal_fn {
   /// Executes function \p f (node) -> bool on each node between node \p n and
@@ -31,8 +30,7 @@ struct root_traversal_fn {
 };
 
 namespace {
-constexpr auto&& root_traversal = static_const<root_traversal_fn>::value;
+constexpr auto const& root_traversal = static_const<root_traversal_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

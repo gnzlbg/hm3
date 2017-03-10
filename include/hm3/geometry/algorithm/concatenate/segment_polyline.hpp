@@ -28,7 +28,7 @@ struct concatenate_segment_polyline_fn {
 }  // namespace concatenate_segment_polyline_detail
 
 namespace {
-static constexpr auto const& concatenate_segment_polyline
+constexpr auto const& concatenate_segment_polyline
  = static_const<with_default_tolerance<
   concatenate_segment_polyline_detail::concatenate_segment_polyline_fn>>::value;
 }

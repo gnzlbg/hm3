@@ -2,10 +2,10 @@
 /// \file
 ///
 /// Linear interpolation in n spatial dimensions: two points
-#include <hm3/geometry/primitive/point.hpp>
-#include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/geometry/algorithm/bounding_length.hpp>
 #include <hm3/geometry/algorithm/direction.hpp>
+#include <hm3/geometry/primitive/point.hpp>
+#include <hm3/geometry/primitive/segment.hpp>
 #include <hm3/math/interpolation/concept.hpp>
 #include <hm3/types.hpp>
 #include <hm3/utility/assert.hpp>

@@ -36,7 +36,7 @@ struct normal_vector_fn {
 }  // namespace normal_vector_detail
 
 namespace {
-static constexpr auto const& normal_vector
+constexpr auto const& normal_vector
  = static_const<normal_vector_detail::normal_vector_fn>::value;
 }  // namespace
 

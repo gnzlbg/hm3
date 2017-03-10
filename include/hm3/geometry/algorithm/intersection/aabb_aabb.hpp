@@ -2,12 +2,12 @@
 /// \file
 ///
 /// Intersection of Axis-Aligned Bounding Boxes
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/approx/number.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
 #include <hm3/geometry/algorithm/make_aa_quad.hpp>
 #include <hm3/geometry/concept/aabb.hpp>
 #include <hm3/geometry/fwd.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -26,10 +26,10 @@ struct intersection_test_aabb_aabb_fn {
   }
 };
 
-}  // namespace namespace intersection_test_aabb_aabb_detail
+}  // namespace intersection_test_aabb_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_test_aabb_aabb
+constexpr auto const& intersection_test_aabb_aabb
  = static_const<with_default_tolerance<
   intersection_test_aabb_aabb_detail::intersection_test_aabb_aabb_fn>>::value;
 }
@@ -157,9 +157,9 @@ struct intersection_aabb_aabb_fn {
 }  // namespace intersection_aabb_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_aabb_aabb
+constexpr auto const& intersection_aabb_aabb
  = static_const<with_default_tolerance<
   intersection_aabb_aabb_detail::intersection_aabb_aabb_fn>>::value;
 }
 
-}  // namespace hm3::geometry::aabb_primitive
+}  // namespace hm3::geometry

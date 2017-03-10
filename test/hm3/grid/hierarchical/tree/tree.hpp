@@ -33,7 +33,9 @@ using namespace hm3::tree;
 /// invalid value
 static const constexpr auto i = std::numeric_limits<uint_t>::max();
 
-std::vector<uint_t> is(std::size_t n) { return std::vector<uint_t>(n, i); }
+inline std::vector<uint_t> is(std::size_t n) {
+  return std::vector<uint_t>(n, i);
+}
 
 /// Testing utility for constructing a node with named argument lists
 template <typename Tag, typename T = uint_t>
@@ -296,7 +298,8 @@ void check_node(Tree const& t, node n, Location l) {
 }
 
 template <typename Tree,
-          typename Location = location::default_location<Tree::ambient_dimension()>>
+          typename Location
+          = location::default_location<Tree::ambient_dimension()>>
 void check_root_node_invariants(Tree const& tree) {
   const auto root_idx        = 0_n;
   const auto root_parent_idx = tree.parent(root_idx);
@@ -347,7 +350,8 @@ void check_consistent_leaf_nodes(Tree const& tree) {
 }
 
 template <typename Tree,
-          typename Location = location::default_location<Tree::ambient_dimension()>>
+          typename Location
+          = location::default_location<Tree::ambient_dimension()>>
 void check_consistent_neighbors(Tree const& tree, Location = Location{}) {
   constexpr uint_t nd = Tree::ambient_dimension();
 
@@ -372,7 +376,8 @@ void check_consistent_neighbors(Tree const& tree, Location = Location{}) {
 }
 
 template <typename Tree,
-          typename Location = location::default_location<Tree::ambient_dimension()>>
+          typename Location
+          = location::default_location<Tree::ambient_dimension()>>
 void check_is_balanced(Tree const& tree, Location = Location{}) {
   for (auto n : tree.nodes()) {
     const auto loc = node_location(tree, n, Location{});
@@ -386,7 +391,8 @@ void check_is_balanced(Tree const& tree, Location = Location{}) {
 
 /// Performs all consistency checks:
 template <typename Tree,
-          typename Location = location::default_location<Tree::ambient_dimension()>>
+          typename Location
+          = location::default_location<Tree::ambient_dimension()>>
 void consistency_checks(Tree const& tree, Location = Location{}) {
   check_root_node_invariants(tree);
   check_consistent_parent_child_edges(tree);
@@ -395,7 +401,8 @@ void consistency_checks(Tree const& tree, Location = Location{}) {
 }
 
 template <typename Tree, typename ReferenceTree,
-          typename Location = location::default_location<Tree::ambient_dimension()>>
+          typename Location
+          = location::default_location<Tree::ambient_dimension()>>
 void check_tree(Tree const& tree, ReferenceTree const& tref,
                 Location l = Location{}) {
   STATIC_CHECK(Tree::ambient_dimension() == Location::ambient_dimension());

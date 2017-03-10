@@ -65,7 +65,7 @@ struct is_convex_fn {
 }  // namespace is_convex_detail
 
 namespace {
-static constexpr auto const& is_convex
+constexpr auto const& is_convex
  = static_const<with_default_tolerance<is_convex_detail::is_convex_fn>>::value;
 }  // namespace
 

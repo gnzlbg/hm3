@@ -32,7 +32,7 @@ struct is_box_fn {
 }  // namespace is_box_detail
 
 namespace {
-static constexpr auto const& is_box
+constexpr auto const& is_box
  = static_const<with_default_tolerance<is_box_detail::is_box_fn>>::value;
 }  // namespace
 

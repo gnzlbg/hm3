@@ -41,7 +41,8 @@ optional<tuple<PT, PT, PT>> get_three_non_collinear_vertices(P&& p) {
 
 struct is_planar_fn {
   /// Is a 2D polygon planar? Always.
-  template <typename P, typename UP = uncvref_t<P>, dim_t Ad = UP::ambient_dimension(),
+  template <typename P, typename UP = uncvref_t<P>,
+            dim_t Ad = UP::ambient_dimension(),
             CONCEPT_REQUIRES_(Polygon<UP, 2>{})>
   constexpr bool operator()(P&&, num_t, num_t) const noexcept {
     return true;  // a 2D polygon is always planar
@@ -75,7 +76,7 @@ struct is_planar_fn {
 
 namespace {
 
-static constexpr auto const& is_planar = static_const<
+constexpr auto const& is_planar = static_const<
  with_default_tolerance<planar_projection_detail::is_planar_fn>>::value;
 
 }  // namespace
@@ -120,7 +121,7 @@ struct planar_basis_fn {
 
 namespace {
 
-static constexpr auto const& planar_basis = static_const<
+constexpr auto const& planar_basis = static_const<
  with_default_tolerance<planar_projection_detail::planar_basis_fn>>::value;
 
 }  // namespace

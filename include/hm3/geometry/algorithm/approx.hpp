@@ -217,7 +217,7 @@ struct approx_fn {
 }  // namespace approx_detail
 
 namespace {
-static constexpr auto const& approx
+constexpr auto const& approx
  = static_const<with_default_tolerance<approx_detail::approx_fn>>::value;
 }
 

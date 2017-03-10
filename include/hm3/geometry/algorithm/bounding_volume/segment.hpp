@@ -32,7 +32,7 @@ struct aabb_of_segment_fn {
 }  // namespace aabb_of_segment_detail
 
 namespace {
-static constexpr auto const& aabb_of_segment
+constexpr auto const& aabb_of_segment
  = static_const<aabb_of_segment_detail::aabb_of_segment_fn>::value;
 }
 
@@ -52,7 +52,7 @@ struct box_of_segment_fn {
 }  // namespace box_of_segment_detail
 
 namespace {
-static constexpr auto const& box_of_segment
+constexpr auto const& box_of_segment
  = static_const<box_of_segment_detail::box_of_segment_fn>::value;
 }
 

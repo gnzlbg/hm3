@@ -50,7 +50,7 @@ struct integral_aabb_fn {
 }  // namespace integral_aabb_detail
 
 namespace {
-static constexpr auto const& integral_aabb
+constexpr auto const& integral_aabb
  = static_const<integral_aabb_detail::integral_aabb_fn>::value;
 }  // namespace
 

@@ -33,10 +33,10 @@ struct bounding_length_segment_fn {
   }
 };
 
-}  // namespace bounding length_segment_detail
+}  // namespace bounding_length_segment_detail
 
 namespace {
-static constexpr auto const& bounding_length_segment = static_const<
+constexpr auto const& bounding_length_segment = static_const<
  bounding_length_segment_detail::bounding_length_segment_fn>::value;
 }
 

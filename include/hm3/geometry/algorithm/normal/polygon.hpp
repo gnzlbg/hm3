@@ -49,7 +49,7 @@ struct normal_polygon_fn {
 }  // namespace normal_polygon_detail
 
 namespace {
-static constexpr auto const& normal_polygon
+constexpr auto const& normal_polygon
  = static_const<normal_polygon_detail::normal_polygon_fn>::value;
 }  // namespace
 

@@ -113,7 +113,7 @@ struct intersection_polygon_polyline_fn {
 }  // namespace intersection_polygon_polyline_detail
 
 namespace {
-static constexpr auto const& intersection_polygon_polyline
+constexpr auto const& intersection_polygon_polyline
  = static_const<with_default_tolerance<
   intersection_polygon_polyline_detail::intersection_polygon_polyline_fn>>::
   value;

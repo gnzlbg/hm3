@@ -18,7 +18,8 @@
 
 namespace hm3::geometry {
 
-num_t next_num(num_t value, uint_t n = 2) noexcept {
+// TODO: make constexpr
+inline num_t next_num(num_t value, uint_t n = 2) noexcept {
   if (n == 0) { return value; }
   while (n > 0) {
     value = std::nextafter(value, math::highest<num_t>);
@@ -27,7 +28,8 @@ num_t next_num(num_t value, uint_t n = 2) noexcept {
   return value;
 }
 
-num_t prev_num(num_t value, uint_t n = 2) noexcept {
+// TODO: make constexpr
+inline num_t prev_num(num_t value, uint_t n = 2) noexcept {
   if (n == 0) { return value; }
   while (n > 0) {
     value = std::nextafter(value, math::lowest<num_t>);
@@ -59,7 +61,7 @@ struct tolerance_fn {
 }  // namespace tolerance_detail
 
 namespace {
-static constexpr auto const& default_tolerance
+constexpr auto const& default_tolerance
  = static_const<tolerance_detail::tolerance_fn>::value;
 }
 

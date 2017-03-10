@@ -1,14 +1,11 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
 /// No slope limiter (slopes are always multiplied by "ones")
 #include <hm3/solver/fv/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-
-namespace limiter {
+namespace hm3::solver::fv::limiter {
 
 struct none_fn {
   template <typename Grad,
@@ -19,10 +16,8 @@ struct none_fn {
 };
 
 namespace {
-constexpr auto&& none = static_const<none_fn>::value;
+constexpr auto const& none = static_const<none_fn>::value;
 }  // namespace
 
-}  // namespace limiter
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::limiter
+#endif

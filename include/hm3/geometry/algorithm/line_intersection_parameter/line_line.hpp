@@ -92,7 +92,7 @@ struct intersection_parameter_line_line_fn {
 }  // namespace intersection_parameter_line_line_detail
 
 namespace {
-static constexpr auto const& intersection_parameter_line_line = static_const<
+constexpr auto const& intersection_parameter_line_line = static_const<
  with_default_tolerance<intersection_parameter_line_line_detail::
                          intersection_parameter_line_line_fn>>::value;
 }  // namespace

@@ -46,7 +46,7 @@ struct intersection_segment_fn {
 }  // namespace intersection_segment_detail
 
 namespace {
-static constexpr auto const& intersection_segment
+constexpr auto const& intersection_segment
  = static_const<with_default_tolerance<
   intersection_segment_detail::intersection_segment_fn>>::value;
 }  // namespace

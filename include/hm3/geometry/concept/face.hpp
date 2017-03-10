@@ -28,7 +28,6 @@ struct Face
 /// Refines: GeometryObject, Regular, EdgeAccess
 ///
 template <typename T, dim_t Ad = concept::detail::dimension_independent>
-using Face
- = meta::and_<GeometryObject<T, Ad, 2>, rc::models<concept::Face, T>>;
+using Face = meta::and_<GeometryObject<T, Ad, 2>, rc::models<concept::Face, T>>;
 
 }  // namespace hm3::geometry

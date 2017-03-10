@@ -55,7 +55,7 @@ struct face_fn {
 }  // namespace face_detail
 
 namespace {
-static constexpr auto const& face = static_const<face_detail::face_fn>::value;
+constexpr auto const& face = static_const<face_detail::face_fn>::value;
 }
 
 namespace face_detail {
@@ -69,7 +69,7 @@ struct faces_fn {
 }  // namespace face_detail
 
 namespace {
-static constexpr auto const& faces = static_const<face_detail::faces_fn>::value;
+constexpr auto const& faces = static_const<face_detail::faces_fn>::value;
 }
 
 }  // namespace hm3::geometry

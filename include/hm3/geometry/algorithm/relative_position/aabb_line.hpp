@@ -3,6 +3,7 @@
 ///
 /// Relative position of point with respect to a line.
 #include <hm3/geometry/algorithm/relative_position/point_line.hpp>
+#include <hm3/geometry/concept/aabb.hpp>
 
 namespace hm3::geometry {
 
@@ -27,7 +28,7 @@ struct relative_position_aabb_line_fn {
 }  // namespace relative_position_aabb_line_detail
 
 namespace {
-static constexpr auto const& relative_position_aabb_line
+constexpr auto const& relative_position_aabb_line
  = static_const<with_default_tolerance<
   relative_position_aabb_line_detail::relative_position_aabb_line_fn>>::value;
 }  // namespace

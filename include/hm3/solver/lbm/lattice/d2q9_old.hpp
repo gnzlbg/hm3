@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 #include <hm3/geometry/dimension.hpp>
@@ -149,3 +150,4 @@ struct d2q9 : geometry::with_ambient_dimension<2> {
 }  // namespace lbm
 }  // namespace solver
 }  // namespace hm3
+#endif

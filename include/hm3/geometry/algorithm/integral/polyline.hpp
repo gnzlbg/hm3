@@ -29,7 +29,7 @@ struct integral_polyline_fn {
 }  // namespace integral_polyline_detail
 
 namespace {
-static constexpr auto const& integral_polyline
+constexpr auto const& integral_polyline
  = static_const<integral_polyline_detail::integral_polyline_fn>::value;
 }  // namespace
 

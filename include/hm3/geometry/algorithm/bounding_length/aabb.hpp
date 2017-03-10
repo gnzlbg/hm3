@@ -53,10 +53,10 @@ struct bounding_length_aabb_fn {
   }
 };
 
-}  // namespace bounding length_aabb_detail
+}  // namespace bounding_length_aabb_detail
 
 namespace {
-static constexpr auto const& bounding_length_aabb
+constexpr auto const& bounding_length_aabb
  = static_const<bounding_length_aabb_detail::bounding_length_aabb_fn>::value;
 }
 

@@ -119,7 +119,7 @@ struct date {
 bool operator==(oracle const& a, oracle const& b) { return a.val.i == b.val.i; }
 bool operator!=(oracle const& a, oracle const& b) { return a.val.i != b.val.i; }
 
-namespace tr2 = std2::experimental;
+namespace tr2 = hm3::optional_detail;
 
 TEST(disengaged_ctor) {
   tr2::optional<int> o1;
@@ -432,7 +432,7 @@ TEST(example1) {
 };
 
 TEST(example_guard2) {
-  using std2::experimental::optional;
+  using hm3::optional;
   const optional<int> c = 4;
   int i                 = *c;  // i becomes 4
   assert(i == 4);
@@ -441,7 +441,7 @@ TEST(example_guard2) {
 };
 
 TEST(example_ref) {
-  using namespace std2::experimental;
+  using namespace hm3;
   int i = 1;
   int j = 2;
   optional<int&> ora;      // disengaged optional reference to int
@@ -481,7 +481,7 @@ TEST(example_optional_arg) {
   iii     = get_value<int>();
 
   {
-    using namespace std2::experimental;
+    using namespace hm3;
     optional<guard> grd1{in_place, "res1", 1};  // guard 1 initialized
     optional<guard> grd2;
 
@@ -497,7 +497,7 @@ std::tuple<date, date, date> get_start_mid_end() {
 void run(date const&, date const&, date const&) {}
 
 TEST(example_date) {
-  using namespace std2::experimental;
+  using namespace hm3;
   optional<date> start, mid,
    end;  // date doesn't have default ctor (no good default date)
 
@@ -505,9 +505,9 @@ TEST(example_date) {
   run(*start, *mid, *end);
 };
 
-std2::experimental::optional<char> read_next_char() { return {}; }
+hm3::optional<char> read_next_char() { return {}; }
 
-void run(std2::experimental::optional<std::string>) {}
+void run(hm3::optional<std::string>) {}
 void run(std::complex<double>) {}
 
 template <class T>
@@ -523,7 +523,7 @@ template <typename T>
 void unused(T&&) {}
 
 TEST(example_conceptual_model) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   optional<int> oi = 0;
   optional<int> oj = 1;
@@ -539,7 +539,7 @@ TEST(example_conceptual_model) {
 };
 
 TEST(example_rationale) {
-  using namespace std2::experimental;
+  using namespace hm3;
   if (optional<char> ch = read_next_char()) {
     unused(ch);
     // ...
@@ -642,13 +642,10 @@ TEST(example_rationale) {
   }
 };
 
-bool fun(std::string,
-         std2::experimental::optional<int> oi = std2::experimental::nullopt) {
-  return bool(oi);
-}
+bool fun(std::string, hm3::optional<int> oi = hm3::nullopt) { return bool(oi); }
 
 TEST(example_converting_ctor) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   assert(fun("dog", 2));
   assert(!fun("dog"));
@@ -690,7 +687,7 @@ TEST(value_or) {
 };
 
 TEST(mixed_order) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   optional<int> o_n{nullopt};
   optional<int> o0{0};
@@ -763,7 +760,7 @@ constexpr bool operator>(bad_relops a, bad_relops b) {
 }  // intentional error!
 
 TEST(bad_relops_) {
-  using namespace std2::experimental;
+  using namespace hm3;
   bad_relops a{1}, b{2};
   assert(a < b);
   assert(a > b);
@@ -784,7 +781,7 @@ TEST(bad_relops_) {
 };
 
 TEST(mixed_equality) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   assert(make_optional(0) == 0);
   assert(make_optional(1) == 1);
@@ -836,7 +833,7 @@ TEST(mixed_equality) {
 };
 
 TEST(const_propagation) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   optional<int> mmi{0};
   static_assert(std::is_same<decltype(*mmi), int&>::value, "WTF");
@@ -851,12 +848,11 @@ TEST(const_propagation) {
   static_assert(std::is_same<decltype(*cci), const int&>::value, "WTF");
 };
 
-static_assert(std::is_base_of<std::logic_error,
-                              std2::experimental::bad_optional_access>::value,
-              "");
+// static_assert(
+//  std::is_base_of<std::logic_error, hm3::bad_optional_access>::value, "");
 
 TEST(safe_value) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   try {
     optional<int> ov_n{}, ov1{1};
@@ -864,10 +860,10 @@ TEST(safe_value) {
     int& r1 = ov1.value();
     assert(r1 == 1);
 
-    try {
-      ov_n.value();
-      assert(false);
-    } catch (bad_optional_access const&) {}
+    // try {
+    //   ov_n.value();
+    //   assert(false);
+    // } catch (bad_optional_access const&) {}
 
     {  // ref variant
       int i1 = 1;
@@ -876,10 +872,10 @@ TEST(safe_value) {
       int& r2 = or1.value();
       assert(r2 == 1);
 
-      try {
-        or_n.value();
-        assert(false);
-      } catch (bad_optional_access const&) {}
+      // try {
+      //   or_n.value();
+      //   assert(false);
+      // } catch (bad_optional_access const&) {}
     }
   } catch (...) { assert(false); }
 };
@@ -912,7 +908,7 @@ TEST(optional_ref) {
 };
 
 TEST(optional_ref_const_propagation) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   int i                   = 9;
   const optional<int&> mi = i;
@@ -925,7 +921,7 @@ TEST(optional_ref_const_propagation) {
 };
 
 TEST(optional_ref_assign) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   int i              = 9;
   optional<int&> ori = i;
@@ -963,7 +959,7 @@ TEST(optional_ref_assign) {
 };
 
 TEST(optional_ref_swap) {
-  using namespace std2::experimental;
+  using namespace hm3;
   int i             = 0;
   int j             = 1;
   optional<int&> oi = i;
@@ -1033,12 +1029,12 @@ using Generic = typename generic<T>::type;
 
 template <class X>
 bool generic_fun() {
-  std2::experimental::optional<Generic<X>> op;
+  hm3::optional<Generic<X>> op;
   return bool(op);
 }
 
 TEST(optional_ref_emulation) {
-  using namespace std2::experimental;
+  using namespace hm3;
   optional<Generic<int>> oi = 1;
   assert(*oi == 1);
 
@@ -1052,7 +1048,6 @@ TEST(optional_ref_emulation) {
   assert(*ori == 4);
 };
 
-#if OPTIONAL_HAS_THIS_RVALUE_REFS == 1
 TEST(moved_on_value_or) {
   using namespace tr2;
   optional<oracle> oo{in_place};
@@ -1073,7 +1068,6 @@ TEST(moved_on_value_or) {
   assert(om);
   assert(om->moved);
 
-#if OPTIONAL_HAS_MOVE_ACCESSORS == 1
   {
     date d = optional<date>{in_place, 1}.value();
     assert(d.i);  // to silence compiler warning
@@ -1081,9 +1075,7 @@ TEST(moved_on_value_or) {
     date d2 = *optional<date>{in_place, 1};
     assert(d2.i);  // to silence compiler warning
   }
-#endif
 };
-#endif
 
 TEST(optional_ref_hashing) {
   using namespace tr2;
@@ -1136,7 +1128,7 @@ struct nasty {
 };
 
 TEST(arrow_operator) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   optional<combined> oc1{in_place, 1, 2};
   assert(oc1);
@@ -1150,7 +1142,7 @@ TEST(arrow_operator) {
 };
 
 TEST(arrow_wit_optional_ref) {
-  using namespace std2::experimental;
+  using namespace hm3;
 
   combined c{1, 2};
   optional<combined&> oc = c;
@@ -1185,7 +1177,7 @@ TEST(arrow_wit_optional_ref) {
 
 TEST(no_dangling_reference_in_value) {
   // this mostly tests compiler warnings
-  using namespace std2::experimental;
+  using namespace hm3;
   optional<int> oi{2};
   unused(oi.value());
   const optional<int> coi{3};
@@ -1209,7 +1201,7 @@ struct counted_object {
 int counted_object::counter = 0;
 
 TEST(exception_safety) {
-  using namespace std2::experimental;
+  using namespace hm3;
   try {
     optional<counted_object> oo(in_place, true);  // throw
     optional<counted_object> o1(oo);
@@ -1322,12 +1314,10 @@ static_assert(*g2 == 2, "not 2!");
 static_assert(g2 == tr2::optional<int>(2), "not 2!");
 static_assert(g2 != g0, "eq!");
 
-#if OPTIONAL_HAS_MOVE_ACCESSORS == 1
 static_assert(*tr2::optional<int>{3} == 3, "WTF!");
 static_assert(tr2::optional<int>{3}.value() == 3, "WTF!");
 static_assert(tr2::optional<int>{3}.value_or(1) == 3, "WTF!");
 static_assert(tr2::optional<int>{}.value_or(4) == 4, "WTF!");
-#endif
 
 constexpr tr2::optional<combined> gc0{tr2::in_place};
 static_assert(gc0->n == 6, "WTF!");
@@ -1354,7 +1344,7 @@ static_assert(*gorci == 1, "WTF");
 static_assert(gorci == gci, "WTF");
 
 namespace constexpr_optional_ref_and_arrow {
-using namespace std2::experimental;
+using namespace hm3;
 constexpr combined c{1, 2};
 constexpr optional<combined const&> oc = c;
 static_assert(oc, "WTF!");
@@ -1362,10 +1352,8 @@ static_assert(oc->m == 1, "WTF!");
 static_assert(oc->n == 2, "WTF!");
 }  // namespace constexpr_optional_ref_and_arrow
 
-#if OPTIONAL_HAS_CONSTEXPR_INIT_LIST
-
 namespace init_list {
-using namespace std2::experimental;
+using namespace hm3;
 
 struct const_init_lister {
   template <typename T>
@@ -1379,9 +1367,7 @@ static_assert(cil.len == 3, "WTF!");
 constexpr optional<const_init_lister> oil{in_place, {4, 5, 6, 7}};
 static_assert(oil, "WTF!");
 static_assert(oil->len == 4, "WTF!");
-}
-
-#endif  // OPTIONAL_HAS_CONSTEXPR_INIT_LIST
+}  // namespace init_list
 
 // end constexpr tests
 
@@ -1404,23 +1390,24 @@ int main() {
 
   vec v = {5, 6};
 
-  if (OPTIONAL_HAS_THIS_RVALUE_REFS) {
-    std::cout << "Optional has rvalue references for *this" << std::endl;
-  } else {
-    std::cout << "Optional doesn't have rvalue references for *this"
-              << std::endl;
-  }
-  if (OPTIONAL_HAS_CONSTEXPR_INIT_LIST) {
-    std::cout << "Optional has constexpr initializer_list" << std::endl;
-  } else {
-    std::cout << "Optional doesn't have constexpr initializer_list"
-              << std::endl;
-  }
-  if (OPTIONAL_HAS_MOVE_ACCESSORS) {
-    std::cout << "Optional has constexpr move accessors" << std::endl;
-  } else {
-    std::cout << "Optional doesn't have constexpr move accessors" << std::endl;
-  }
+  // if (OPTIONAL_HAS_THIS_RVALUE_REFS) {
+  //    std::cout << "Optional has rvalue references for *this" << std::endl;
+  // } else {
+  //   std::cout << "Optional doesn't have rvalue references for *this"
+  //             << std::endl;
+  // }
+  // if (OPTIONAL_HAS_CONSTEXPR_INIT_LIST) {
+  // std::cout << "Optional has constexpr initializer_list" << std::endl;
+  // } else {
+  //   std::cout << "Optional doesn't have constexpr initializer_list"
+  //             << std::endl;
+  // }
+  // if (OPTIONAL_HAS_MOVE_ACCESSORS) {
+  // std::cout << "Optional has constexpr move accessors" << std::endl;
+  // } else {
+  //   std::cout << "Optional doesn't have constexpr move accessors" <<
+  //   std::endl;
+  // }
 }
 
 #pragma clang diagnostic pop

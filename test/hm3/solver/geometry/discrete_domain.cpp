@@ -247,10 +247,9 @@ int main() {
 
     plg_t plg(make_segment_range(vxs));
 
-    discrete_domain<ad> mesh(geometry::edges(plg)
-                               | view::transform([](auto e) {
-                                   return bs_t{e, 1};
-                                 }));
+    discrete_domain<ad> mesh(geometry::edges(plg) | view::transform([](auto e) {
+                               return bs_t{e, 1};
+                             }));
 
     CHECK(mesh.relative_position(p_t{-2.5, 0.5}) == outside);
     CHECK(mesh.relative_position(p_t{0.5, 0.5}) == inside);
@@ -278,10 +277,9 @@ int main() {
 
     plg_t plg(make_segment_range(vxs));
 
-    discrete_domain<ad> mesh(geometry::edges(plg)
-                               | view::transform([](auto e) {
-                                   return bs_t{e, 1};
-                                 }));
+    discrete_domain<ad> mesh(geometry::edges(plg) | view::transform([](auto e) {
+                               return bs_t{e, 1};
+                             }));
 
     CHECK(mesh.relative_position(p_t{-5.5, 0.5}) == outside);
     CHECK(mesh.relative_position(p_t{0.5, 0.5}) == inside);
@@ -312,10 +310,9 @@ int main() {
 
     plg_t plg(make_segment_range(vxs));
 
-    discrete_domain<ad> mesh(geometry::edges(plg)
-                               | view::transform([](auto e) {
-                                   return bs_t{e, 1};
-                                 }));
+    discrete_domain<ad> mesh(geometry::edges(plg) | view::transform([](auto e) {
+                               return bs_t{e, 1};
+                             }));
 
     CHECK(mesh.relative_position(p_t{-8.5, 0.5}) == outside);
     CHECK(mesh.relative_position(p_t{0.5, 0.5}) == inside);
@@ -349,10 +346,9 @@ int main() {
 
     plg_t plg(make_segment_range(vxs));
 
-    discrete_domain<ad> mesh(geometry::edges(plg)
-                               | view::transform([](auto e) {
-                                   return bs_t{e, 1};
-                                 }));
+    discrete_domain<ad> mesh(geometry::edges(plg) | view::transform([](auto e) {
+                               return bs_t{e, 1};
+                             }));
 
     CHECK(mesh.relative_position(p_t{-9.5, 0.5}) == outside);
     CHECK(mesh.relative_position(p_t{0.5, 0.5}) == inside);
@@ -389,10 +385,9 @@ int main() {
 
     plg_t plg(make_segment_range(vxs));
 
-    discrete_domain<ad> mesh(geometry::edges(plg)
-                               | view::transform([](auto e) {
-                                   return bs_t{e, 1};
-                                 }));
+    discrete_domain<ad> mesh(geometry::edges(plg) | view::transform([](auto e) {
+                               return bs_t{e, 1};
+                             }));
 
     CHECK(mesh.relative_position(p_t{-9.5, 0.5}) == outside);
     CHECK(mesh.relative_position(p_t{0.5, 0.5}) == inside);
@@ -421,10 +416,9 @@ int main() {
 
     plg_t plg(make_segment_range(vxs));
 
-    discrete_domain<ad> mesh(geometry::edges(plg)
-                               | view::transform([](auto e) {
-                                   return bs_t{e, 1};
-                                 }));
+    discrete_domain<ad> mesh(geometry::edges(plg) | view::transform([](auto e) {
+                               return bs_t{e, 1};
+                             }));
 
     CHECK(mesh.relative_position(p_t{-1.5, 0.5}) == outside);
     CHECK(mesh.relative_position(p_t{0.75, 0.5}) == inside);

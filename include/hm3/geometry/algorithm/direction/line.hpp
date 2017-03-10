@@ -27,7 +27,7 @@ struct direction_line_fn {
 }  // namespace direction_line_detail
 
 namespace {
-static constexpr auto const& direction_line
+constexpr auto const& direction_line
  = static_const<direction_line_detail::direction_line_fn>::value;
 }  // namespace
 

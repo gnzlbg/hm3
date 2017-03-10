@@ -23,7 +23,7 @@ struct direction_aabb_box_fn {
 }  // namespace direction_aabb_box_detail
 
 namespace {
-static constexpr auto const& direction_aabb_box
+constexpr auto const& direction_aabb_box
  = static_const<direction_aabb_box_detail::direction_aabb_box_fn>::value;
 }  // namespace
 

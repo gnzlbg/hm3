@@ -1,6 +1,7 @@
 
 
-// /// Rotates the signed-distance field to be evaluated on the point \p by around
+// /// Rotates the signed-distance field to be evaluated on the point \p by
+// around
 // /// the axis \p axis by \p angle radians.
 // ///
 // /// The rotation trasformation is: x_transformed = A * x;

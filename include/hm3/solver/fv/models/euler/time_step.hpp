@@ -5,10 +5,7 @@
 #include <hm3/solver/fv/models/euler/state.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-namespace euler {
+namespace hm3::solver::fv::euler {
 
 struct max_wave_speed_time_step_fn {
   template <typename V, typename S>
@@ -24,16 +21,14 @@ struct max_wave_speed_time_step_fn {
 };
 
 namespace {
-constexpr auto&& max_wave_speed_time_step
+constexpr auto const& max_wave_speed_time_step
  = static_const<max_wave_speed_time_step_fn>::value;
 }  // namespace
 
 /// Default time step method
 namespace {
-constexpr auto&& time_step = static_const<max_wave_speed_time_step_fn>::value;
+constexpr auto const& time_step
+ = static_const<max_wave_speed_time_step_fn>::value;
 }  // namespace
 
-}  // namespace euler
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::euler

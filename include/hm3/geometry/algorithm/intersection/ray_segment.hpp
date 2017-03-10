@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Intersection of ray with points.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/distance.hpp>
 #include <hm3/geometry/algorithm/intersection/segment_segment.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -41,7 +41,7 @@ struct intersection_test_ray_segment_fn {
 }  // namespace intersection_test_ray_segment_detail
 
 namespace {
-static constexpr auto const& intersection_test_ray_segment
+constexpr auto const& intersection_test_ray_segment
  = static_const<with_default_tolerance<
   intersection_test_ray_segment_detail::intersection_test_ray_segment_fn>>::
   value;
@@ -66,7 +66,7 @@ struct intersection_ray_segment_fn {
 }  // namespace intersection_ray_segment_detail
 
 namespace {
-static constexpr auto const& intersection_ray_segment
+constexpr auto const& intersection_ray_segment
  = static_const<with_default_tolerance<
   intersection_ray_segment_detail::intersection_ray_segment_fn>>::value;
 }  // namespace
@@ -115,7 +115,7 @@ struct intersection_test_non_degenerate_ray_segment_fn {
 }  // namespace intersection_test_non_degenerate_ray_segment_detail
 
 namespace {
-static constexpr auto const& intersection_test_non_degenerate_ray_segment
+constexpr auto const& intersection_test_non_degenerate_ray_segment
  = static_const<with_default_tolerance<
   intersection_test_non_degenerate_ray_segment_detail::
    intersection_test_non_degenerate_ray_segment_fn>>::value;

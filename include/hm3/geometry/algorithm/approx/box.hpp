@@ -24,10 +24,10 @@ struct approx_box_fn {
   }
 };
 
-}  // namespace direction_detail
+}  // namespace approx_box_detail
 
 namespace {
-static constexpr auto const& approx_box = static_const<
+constexpr auto const& approx_box = static_const<
  with_default_tolerance<approx_box_detail::approx_box_fn>>::value;
 
 }  // namespace

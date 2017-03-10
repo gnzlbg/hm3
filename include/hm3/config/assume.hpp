@@ -7,4 +7,4 @@
 #define HM3_ASSUME(cond)                  \
   do {                                    \
     if (!(cond)) __builtin_unreachable(); \
-  } while (0)
+  } while (false)

@@ -23,7 +23,7 @@ struct op_intersection_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& op_intersection
+constexpr auto const& op_intersection
  = static_const<detail::op_intersection_fn>::value;
 }  // namespace
 
@@ -37,7 +37,7 @@ struct pos_intersection_fn {
 }  // namespace detail
 
 namespace {
-static constexpr auto const& pos_intersection
+constexpr auto const& pos_intersection
  = static_const<detail::pos_intersection_fn>::value;
 }  // namespace
 

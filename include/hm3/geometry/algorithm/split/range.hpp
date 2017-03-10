@@ -51,7 +51,7 @@ struct split_range_fn {
 }  // namespace split_range_detail
 
 namespace {
-static constexpr auto const& split_range
+constexpr auto const& split_range
  = static_const<split_range_detail::split_range_fn>::value;
 }
 

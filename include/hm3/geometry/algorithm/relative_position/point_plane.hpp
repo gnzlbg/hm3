@@ -31,7 +31,7 @@ struct relative_position_point_plane_fn {
 }  // namespace relative_position_point_plane_detail
 
 namespace {
-static constexpr auto const& relative_position_point_plane
+constexpr auto const& relative_position_point_plane
  = static_const<with_default_tolerance<
   relative_position_point_plane_detail::relative_position_point_plane_fn>>::
   value;

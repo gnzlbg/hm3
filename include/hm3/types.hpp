@@ -54,21 +54,28 @@ using idx_t  = int_t;
 using sidx_t = sint_t;
 ///@}  // Index types
 
-constexpr int_t operator"" _i(unsigned long long int i) {
+constexpr int_t operator"" _i(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return static_cast<int_t>(i);
 }
 
-constexpr uint_t operator"" _u(unsigned long long int i) {
+constexpr uint_t operator"" _u(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return static_cast<uint_t>(i);
 }
 
-constexpr suint_t operator"" _su(unsigned long long int i) {
+constexpr suint_t operator"" _su(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return static_cast<suint_t>(i);
 }
 
-constexpr std::size_t operator"" _z(unsigned long long int t) { return t; }
+constexpr std::size_t operator"" _z(
+ unsigned long long int t) {  // NOLINT(google-runtime-int)
+  return t;
+}
 
-constexpr dim_t operator"" _d(unsigned long long int i) {
+constexpr dim_t operator"" _d(
+ unsigned long long int i) {  // NOLINT(google-runtime-int)
   return static_cast<dim_t>(i);
 }
 
@@ -83,5 +90,7 @@ static constexpr dim_vt<Ad> dim_v{};
 struct fallback {};
 
 struct preferred : fallback {};
+
+static constexpr inline preferred dispatch{};
 
 }  // namespace hm3

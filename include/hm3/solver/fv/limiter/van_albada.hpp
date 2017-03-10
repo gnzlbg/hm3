@@ -1,3 +1,4 @@
+#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -7,11 +8,7 @@
 ///
 #include <hm3/solver/fv/state.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
-
-namespace limiter {
+namespace hm3::solver::fv::limiter {
 
 struct van_albada_fn {
   template <typename Grad,
@@ -28,10 +25,8 @@ struct van_albada_fn {
 };
 
 namespace {
-constexpr auto&& van_albada = static_const<van_albada_fn>::value;
+constexpr auto const& van_albada = static_const<van_albada_fn>::value;
 }  // namespace
 
-}  // namespace limiter
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv::limiter
+#endif

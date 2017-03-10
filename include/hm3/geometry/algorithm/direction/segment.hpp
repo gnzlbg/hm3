@@ -29,7 +29,7 @@ struct direction_segment_fn {
 }  // namespace direction_segment_detail
 
 namespace {
-static constexpr auto const& direction_segment
+constexpr auto const& direction_segment
  = static_const<direction_segment_detail::direction_segment_fn>::value;
 }  // namespace
 

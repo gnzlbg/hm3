@@ -27,7 +27,7 @@ struct parallel_plane_fn {
 }  // namespace parallel_plane_detail
 
 namespace {
-static constexpr auto const& parallel_plane = static_const<
+constexpr auto const& parallel_plane = static_const<
  with_default_tolerance<parallel_plane_detail::parallel_plane_fn>>::value;
 }
 

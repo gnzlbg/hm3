@@ -20,7 +20,7 @@ struct time_step_fn {
 
 /// Default time step method
 namespace {
-constexpr auto&& time_step = static_const<time_step_fn>::value;
+constexpr auto const& time_step = static_const<time_step_fn>::value;
 }  // namespace
 
 }  // namespace hm3::solver::fv::heat

@@ -25,7 +25,7 @@ struct simplify_fn {
 }  // namespace simplify_detail
 
 namespace {
-static constexpr auto const& simplify
+constexpr auto const& simplify
  = static_const<simplify_detail::simplify_fn>::value;
 }  // namespace
 

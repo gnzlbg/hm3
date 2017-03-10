@@ -44,7 +44,7 @@ struct split_fn {
 }  // namespace split_detail
 
 namespace {
-static constexpr auto const& split
+constexpr auto const& split
  = static_const<with_default_tolerance<split_detail::split_fn>>::value;
 }  // namespace
 

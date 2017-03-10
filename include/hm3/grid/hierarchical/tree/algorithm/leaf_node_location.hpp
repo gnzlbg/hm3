@@ -11,8 +11,7 @@
 #include <hm3/grid/hierarchical/tree/types.hpp>
 #include <hm3/utility/assert.hpp>
 
-namespace hm3 {
-namespace tree {
+namespace hm3::tree {
 //
 
 struct leaf_node_location_fn {
@@ -64,9 +63,8 @@ struct leaf_node_location_fn {
 };
 
 namespace {
-constexpr auto&& leaf_node_location
+constexpr auto const& leaf_node_location
  = static_const<leaf_node_location_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

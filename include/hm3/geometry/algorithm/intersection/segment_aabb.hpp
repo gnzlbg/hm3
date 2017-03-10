@@ -2,9 +2,9 @@
 /// \file
 ///
 /// Intersection of line segments with aabbs.
+#include <hm3/ext/variant.hpp>
 #include <hm3/geometry/algorithm/direction/segment.hpp>
 #include <hm3/geometry/algorithm/intersection/ray_aabb.hpp>
-#include <hm3/ext/variant.hpp>
 
 namespace hm3::geometry {
 
@@ -68,7 +68,7 @@ struct intersection_segment_aabb_fn {
 }  // namespace intersection_segment_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_segment_aabb
+constexpr auto const& intersection_segment_aabb
  = static_const<with_default_tolerance<
   intersection_segment_aabb_detail::intersection_segment_aabb_fn>>::value;
 }
@@ -101,7 +101,7 @@ struct intersection_test_segment_aabb_fn {
 }  // namespace intersection_test_segment_aabb_detail
 
 namespace {
-static constexpr auto const& intersection_test_segment_aabb
+constexpr auto const& intersection_test_segment_aabb
  = static_const<with_default_tolerance<
   intersection_test_segment_aabb_detail::intersection_test_segment_aabb_fn>>::
   value;

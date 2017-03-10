@@ -45,7 +45,7 @@ struct compute_time_step_fn {
 };
 
 namespace {
-static constexpr auto&& compute_time_step
+constexpr auto const& compute_time_step
  = static_const<compute_time_step_fn>::value;
 }
 
