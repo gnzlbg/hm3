@@ -62,7 +62,7 @@ struct intersection_polygon_polyline_fn {
            else if
              constexpr(Same<T, monostate>{}) {}
            else {
-             static_assert(always_false<T>{}, "non-exhaustive visitor");
+             HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
            }
          },
          i);

@@ -109,16 +109,30 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   constexpr iterator begin() noexcept { return data(); }
   constexpr const_iterator begin() const noexcept { return data(); }
-  constexpr iterator end() noexcept { return data() + size(); }
-  constexpr const_iterator end() const noexcept { return data() + size(); }
-
-  reverse_iterator rbegin() noexcept { return reverse_iterator(end() - 1); }
-  const_reverse_iterator rbegin() const noexcept {
-    return const_reverse_iterator(end() - 1);
+  constexpr iterator end() noexcept {
+    return data()
+           + size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
-  reverse_iterator rend() noexcept { return reverse_iterator(data() - 1); }
+  constexpr const_iterator end() const noexcept {
+    return data()
+           + size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+  }
+
+  reverse_iterator rbegin() noexcept {
+    return reverse_iterator(
+     end() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+  }
+  const_reverse_iterator rbegin() const noexcept {
+    return const_reverse_iterator(
+     end() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+  }
+  reverse_iterator rend() noexcept {
+    return reverse_iterator(
+     data() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+  }
   const_reverse_iterator rend() const noexcept {
-    return const_reverse_iterator(data() - 1);
+    return const_reverse_iterator(
+     data() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
   constexpr const_iterator cbegin() noexcept { return begin(); }
@@ -161,11 +175,13 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   constexpr reference operator[](size_type pos) noexcept {
     HM3_ASSERT(pos < size(), "index {} ouf-of-bounds [0, {})", pos, size());
-    return *(begin() + pos);
+    return *(begin()
+             + pos);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   };
   constexpr const_reference operator[](size_type pos) const noexcept {
     HM3_ASSERT(pos < size(), "index {} ouf-of-bounds [0, {})", pos, size());
-    return *(begin() + pos);
+    return *(begin()
+             + pos);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
   constexpr reference at(size_type pos) {
@@ -195,11 +211,11 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   constexpr reference back() noexcept {
     HM3_ASSERT(not empty(), "calling back on an empty vector");
-    return *(end() - 1);
+    return *rbegin();
   }
   constexpr const_reference back() const noexcept {
     HM3_ASSERT(not empty(), "calling back on an empty vector");
-    return *(end() - 1);
+    return *rbegin();
   }
 
   ///@} // Element access
@@ -241,7 +257,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
     HM3_ASSERT(not full(), "tried emplace on full fixed_capacity_vector!");
     assert_iterator_in_range(position);
     value_type a(std::forward<Args>(args)...);
-    return move_insert(position, &a, &a + 1);
+    return move_insert(
+     position, &a,
+     &a + 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
   CONCEPT_REQUIRES(CopyConstructible<T>{})
   constexpr iterator insert(
@@ -257,7 +275,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
    noexcept(move_insert(position, &x, &x + 1))) {
     HM3_ASSERT(not full(), "tried insert on full fixed_capacity_vector!");
     assert_iterator_in_range(position);
-    return move_insert(position, &x, &x + 1);
+    return move_insert(
+     position, &x,
+     &x + 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
   CONCEPT_REQUIRES(CopyConstructible<T>{})
