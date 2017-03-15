@@ -49,10 +49,11 @@ struct unstructured_grid {
     auto bounds          = geometry::bounding_volume.aabb(grid.bounding_box());
     num_t bounds_vtk[6]  = {0.0};  // vtk works only in 3D...
     for (auto d : ambient_dimension[grid]) {
-      bounds_vtk[d]     = geometry::x_min(bounds)(d);
-      bounds_vtk[d + 3] = geometry::x_max(bounds)(d);
+      bounds_vtk[d] = geometry::x_min(bounds)(d);
+      bounds_vtk[d] = geometry::x_max(bounds)(d);
     }
-    unique_inserter->InitPointInsertion(points, bounds_vtk);
+    unique_inserter->InitPointInsertion(points,
+                                        static_cast<num_t*>(bounds_vtk));
 
     /// Create a temporary cell:
     log("Generating vtk grid...");

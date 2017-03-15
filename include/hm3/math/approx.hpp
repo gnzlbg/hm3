@@ -8,6 +8,8 @@
 #include <hm3/utility/range.hpp>
 #include <type_traits>
 
+/// TODO: rewrite using memcpy instead of an union for type punning
+
 namespace hm3::math {
 
 namespace math_detail {
@@ -242,8 +244,8 @@ struct floating_point {
  private:
   /// The data type used to store the actual floating-point number.
   union floating_point_union {
-    constexpr floating_point_union(RawType val) : value_{val} {}
-    constexpr floating_point_union(Bits bits) : bits_{bits} {}
+    explicit constexpr floating_point_union(RawType val) : value_{val} {}
+    explicit constexpr floating_point_union(Bits bits) : bits_{bits} {}
     RawType value_;  ///< The raw floating-point number.
     Bits bits_;      ///< The bits that represent the number.
   };

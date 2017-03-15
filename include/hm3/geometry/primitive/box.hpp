@@ -27,7 +27,7 @@ struct box {
 
  private:
   point_t centroid_;
-  num_t length_;
+  num_t length_{};
 
  public:
   box()                     = default;
@@ -35,6 +35,7 @@ struct box {
   constexpr box(box&&)      = default;
   constexpr box& operator=(box const&) = default;
   constexpr box& operator=(box&&) = default;
+  ~box()                          = default;
 
   /// Box from \p x_centroid and \p x_length.
   constexpr box(point_t x_centroid, num_t length)
@@ -47,13 +48,15 @@ struct box {
   }
 
   /// Box from AABB \p b that is already a box (e.g. with all equal sides).
-  constexpr box(aabb_t const& b)
+  explicit constexpr box(  // NOLINT(cppcoreguidelines-pro-type-member-init)
+   aabb_t const& b)
    : box(centroid_aabb(b), bounding_length_aabb(b, 0)) {
     HM3_ASSERT(is_box(b), "AABB not a Box: {}", b);
   }
 
   /// Box from \p x_min and \p x_max.
-  constexpr box(point_t const& x_min, point_t const& x_max)
+  constexpr box(  // NOLINT(cppcoreguidelines-pro-type-member-init)
+   point_t const& x_min, point_t const& x_max)
    : box(aabb_t(x_min, x_max)) {
     HM3_ASSERT(is_box(*this),
                "the points min: {} and max: {} do not span a box", x_min,
@@ -69,7 +72,8 @@ struct box {
 
  public:
   /// Box from centroid \p x_c and \p lengths.
-  constexpr box(point_t const& x_c, vector_t const& lengths)
+  constexpr box(  // NOLINT(cppcoreguidelines-pro-type-member-init)
+   point_t const& x_c, vector_t const& lengths)
    : box(from_centroid_and_lengths_(x_c, lengths)) {}
 
   /// Unit box.
@@ -160,11 +164,11 @@ constexpr point<Ad> vertex(box<Ad> const& s, dim_t v) noexcept {
 }
 
 /// Vertices of the box \p s.
-template <dim_t Ad, dim_t nvxs = vertex_size(box<Ad>{})>
-constexpr const array<point<Ad>, nvxs> vertices(box<Ad> const& s) noexcept {
-  array<point<Ad>, nvxs> vxs;
+template <dim_t Ad, dim_t Nvxs = vertex_size(box<Ad>{})>
+constexpr const array<point<Ad>, Nvxs> vertices(box<Ad> const& s) noexcept {
+  array<point<Ad>, Nvxs> vxs;
   const auto half_length = 0.5 * s.length();
-  for (suint_t c = 0; c < nvxs; ++c) {
+  for (suint_t c = 0; c < Nvxs; ++c) {
     const auto x_p = aabb_constants::relative_vertex_position<Ad>(c);
     vxs[c]         = s.centroid()().array() + half_length * x_p().array();
   }

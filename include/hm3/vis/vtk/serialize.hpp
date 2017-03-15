@@ -43,8 +43,8 @@ using SerializableToVTK
  = rc::models<concepts::serializable_to_vtk, ranges::uncvref_t<T>>;
 
 template <typename Source, CONCEPT_REQUIRES_(SerializableToVTK<Source>{})>
-void serialize(Source const& s, string file_name_, log::serial log) {
-  string file_name = file_name_ + ".vtu";
+void serialize(Source const& s, string file_name, log::serial log) {
+  file_name += ".vtu";
 
   vis::vtk::unstructured_grid vtk_grid;
   vtk_grid.log = log;  // TODO: log repetition

@@ -62,6 +62,7 @@ struct some : some_variant_t<Ad> {
   some(some&&)      = default;
   some& operator=(some const&) = default;
   some& operator=(some&&) = default;
+  ~some()                 = default;
 
   /// Converts from any point into some's point type
   template <typename P, CONCEPT_REQUIRES_(Point<uncvref_t<P>>{})>
@@ -138,7 +139,7 @@ struct some : some_variant_t<Ad> {
 
   /// Convert from a supported type:
   template <typename T>
-  some(T t) : base_t(self::from(t)) {}
+  explicit some(T t) : base_t(self::from(t)) {}
 
   template <typename T>
   some& operator=(T t) {

@@ -7,7 +7,7 @@
 
 namespace hm3 {
 
-template <typename T, typename Tag, T value = math::highest<T>>
-using optional_idx = compact_optional<empty_scalar_value<T, value>, Tag>;
+template <typename T, typename Tag, T Value = math::highest<T>>
+using optional_idx = compact_optional<empty_scalar_value<T, Value>, Tag>;
 
 }  // namespace hm3

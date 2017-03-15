@@ -15,6 +15,8 @@
 #include <type_traits>
 #include <utility>
 
+// clang-tidy off
+
 namespace hm3 {
 
 namespace optional_detail {
@@ -93,7 +95,7 @@ constexpr struct in_place_t {
 // 20.5.7, Disengaged state indicator
 struct nullopt_t {
   struct init {};
-  constexpr nullopt_t(init) noexcept {}
+  constexpr nullopt_t(init) noexcept {}  // NOLINT
 };
 constexpr nullopt_t nullopt{nullopt_t::init{}};
 
@@ -111,13 +113,18 @@ union storage_t {
   unsigned char dummy_;
   T value_;
 
-  constexpr storage_t(trivial_init_t) noexcept : dummy_(){};
+  constexpr storage_t(trivial_init_t) noexcept : dummy_(){};  // NOLINT
 
   template <typename... Args>
-  constexpr storage_t(Args&&... args)
+  constexpr storage_t(Args&&... args)  // NOLINT
    : value_(constexpr_forward<Args>(args)...) {}
 
-  ~storage_t(){};
+  constexpr storage_t(storage_t const&) = default;
+  constexpr storage_t(storage_t&&)      = default;
+  constexpr storage_t& operator=(storage_t const&) = default;
+  constexpr storage_t& operator=(storage_t&&) = default;
+
+  ~storage_t() {}  // NOLINT(modernize-use-equals-default)
 };
 
 template <typename T>
@@ -125,11 +132,18 @@ union constexpr_storage_t {
   unsigned char dummy_;
   T value_;
 
-  constexpr constexpr_storage_t(trivial_init_t) noexcept : dummy_(){};
+  constexpr constexpr_storage_t(trivial_init_t) noexcept  // NOLINT
+   : dummy_(){};
 
   template <typename... Args>
-  constexpr constexpr_storage_t(Args&&... args)
+  constexpr constexpr_storage_t(Args&&... args)  // NOLINT
    : value_(constexpr_forward<Args>(args)...) {}
+
+  constexpr constexpr_storage_t(constexpr_storage_t const&) = default;
+  constexpr constexpr_storage_t(constexpr_storage_t&&)      = default;
+  constexpr constexpr_storage_t& operator=(constexpr_storage_t const&)
+   = default;
+  constexpr constexpr_storage_t& operator=(constexpr_storage_t&&) = default;
 
   ~constexpr_storage_t() = default;
 };
@@ -162,6 +176,11 @@ struct optional_base {
   explicit optional_base(in_place_t, std::initializer_list<U> il,
                          Args&&... args)
    : init_(true), storage_(il, std::forward<Args>(args)...) {}
+
+  constexpr optional_base(optional_base const&) = default;
+  constexpr optional_base(optional_base&&)      = default;
+  constexpr optional_base& operator=(optional_base const&) = default;
+  constexpr optional_base& operator=(optional_base&&) = default;
 
   ~optional_base() {
     if (init_) {
@@ -201,6 +220,12 @@ struct constexpr_optional_base {
                                              Args&&... args)
    : init_(true), storage_(il, std::forward<Args>(args)...) {}
 
+  constexpr constexpr_optional_base(constexpr_optional_base const&) = default;
+  constexpr constexpr_optional_base(constexpr_optional_base&&)      = default;
+  constexpr constexpr_optional_base& operator=(constexpr_optional_base const&)
+   = default;
+  constexpr constexpr_optional_base& operator=(constexpr_optional_base&&)
+   = default;
   ~constexpr_optional_base() = default;
 };
 
@@ -269,7 +294,7 @@ class optional : private OptionalBase<T> {
 
   // 20.5.5.1, constructors
   constexpr optional() noexcept : OptionalBase<T>(){};
-  constexpr optional(nullopt_t) noexcept : OptionalBase<T>(){};
+  constexpr optional(nullopt_t) noexcept : OptionalBase<T>(){};  // NOLINT
 
   optional(const optional& rhs) : OptionalBase<T>(only_set_initialized, false) {
     if (rhs.initialized()) {
@@ -286,9 +311,9 @@ class optional : private OptionalBase<T> {
     }
   }
 
-  constexpr optional(const T& v) : OptionalBase<T>(v) {}
+  constexpr optional(const T& v) : OptionalBase<T>(v) {}  // NOLINT
 
-  constexpr optional(T&& v) : OptionalBase<T>(constexpr_move(v)) {}
+  constexpr optional(T&& v) : OptionalBase<T>(constexpr_move(v)) {}  // NOLINT
 
   template <typename... Args>
   constexpr explicit optional(in_place_t, Args&&... args)
@@ -335,9 +360,9 @@ class optional : private OptionalBase<T> {
   }
 
   template <typename U>
-  auto operator=(U&& v)
-   -> std::enable_if_t<std::is_same<std::remove_reference_t<U>, T>{},
-                       optional&> {
+  auto operator=(  // NOLINT(cppcoreguidelines-c-copy-assignment-signature)
+   U&& v) -> std::enable_if_t<std::is_same<std::remove_reference_t<U>, T>{},
+                              optional&> {
     if (initialized()) {
       contained_val() = std::forward<U>(v);
     } else {
@@ -432,7 +457,7 @@ class optional : private OptionalBase<T> {
 };
 
 template <typename T>
-class optional<T&> {
+class optional<T&> {  // NOLINT(cppcoreguidelines-special-member-functions)
   static_assert(!std::is_same<T, nullopt_t>{}, "bad T");
   static_assert(!std::is_same<T, in_place_t>{}, "bad T");
   T* ref_;
@@ -441,9 +466,9 @@ class optional<T&> {
   // 20.5.5.1, construction/destruction
   constexpr optional() noexcept : ref_(nullptr) {}
 
-  constexpr optional(nullopt_t) noexcept : ref_(nullptr) {}
+  constexpr optional(nullopt_t) noexcept : ref_(nullptr) {}  // NOLINT
 
-  constexpr optional(T& v) noexcept : ref_(static_addressof(v)) {}
+  constexpr optional(T& v) noexcept : ref_(static_addressof(v)) {}  // NOLINT
 
   optional(T&&) = delete;
 
@@ -458,20 +483,10 @@ class optional<T&> {
   ~optional() = default;
 
   // 20.5.5.2, mutation
-  optional& operator=(nullopt_t) noexcept {
+  optional& operator=(nullopt_t) noexcept {  // NOLINT
     ref_ = nullptr;
     return *this;
   }
-
-  // optional& operator=(const optional& rhs) noexcept {
-  // ref_ = rhs.ref_;
-  // return *this;
-  // }
-
-  // optional& operator=(optional&& rhs) noexcept {
-  // ref_ = rhs.ref_;
-  // return *this;
-  // }
 
   template <typename U>
   auto operator=(U&& rhs) noexcept ->  // NOLINT
@@ -844,3 +859,5 @@ struct hash<hm3::optional_detail::optional<T&>> {
   }
 };
 }  // namespace std
+
+// clang-tidy on

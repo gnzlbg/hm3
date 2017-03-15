@@ -110,8 +110,11 @@ using ::fmt::MemoryWriter;
 
 template <typename Output, typename FmtString, typename... Args>
 void print(Output&& o, FmtString&& s, Args&&... args) {
-  ::fmt::print(std::forward<Output>(o), std::forward<FmtString>(s),
-               wrap(std::forward<Args>(args))...);
+  ::fmt::print(
+   std::forward<Output>(o),
+   std::forward<  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+    FmtString>(s),
+   wrap(std::forward<Args>(args))...);
 }
 
 }  // namespace detail

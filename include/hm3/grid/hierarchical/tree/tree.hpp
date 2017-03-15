@@ -498,7 +498,7 @@ struct tree : geometry::with_ambient_dimension<Ad> {
 
   /// Creates a tree with capacity for at least \p cap nodes and initializes it
   /// with a root node
-  tree(node_idx node_capacity)
+  explicit tree(node_idx node_capacity)
    : sg_capacity_(no_sibling_groups(node_capacity))
    , parents_(std::make_unique<node_idx[]>(*sibling_group_capacity()))
    , first_children_(std::make_unique<node_idx[]>(*capacity())) {
@@ -509,6 +509,9 @@ struct tree : geometry::with_ambient_dimension<Ad> {
   }
 
   tree(tree&& other) = default;
+  tree& operator=(tree&& other) = default;
+  tree& operator=(tree const& other) = default;
+  ~tree()                            = default;
 
   tree(tree const& other, node_idx new_node_capacity = node_idx{})
    : tree(new_node_capacity ? new_node_capacity : other.capacity()) {
@@ -532,14 +535,14 @@ struct tree : geometry::with_ambient_dimension<Ad> {
     }
   }
 
-  tree& operator=(tree other) {
-    ranges::swap(sg_capacity_, other.sg_capacity_);
-    ranges::swap(parents_, other.parents_);
-    ranges::swap(first_children_, other.first_children_);
-    ranges::swap(size_, other.size_);
-    ranges::swap(first_free_sibling_group_, other.first_free_sibling_group_);
-    return *this;
-  }
+  // tree& operator=(tree other) {
+  //   ranges::swap(sg_capacity_, other.sg_capacity_);
+  //   ranges::swap(parents_, other.parents_);
+  //   ranges::swap(first_children_, other.first_children_);
+  //   ranges::swap(size_, other.size_);
+  //   ranges::swap(first_free_sibling_group_, other.first_free_sibling_group_);
+  //   return *this;
+  // }
 };
 
 /// Graph equality

@@ -73,31 +73,31 @@ auto make_ptr() -> vtkSmartPointer<uncvref_t<T>> {
 template <typename T>
 struct array {};
 template <>
-struct array<char> {
+struct array<char> {  // NOLINT(google-runtime-int)
   using type = vtkCharArray;
 };
 template <>
-struct array<int> {
+struct array<int> {  // NOLINT(google-runtime-int)
   using type = vtkIntArray;
 };
 template <>
-struct array<long> {
+struct array<long> {  // NOLINT(google-runtime-int)
   using type = vtkLongArray;
 };
 template <>
-struct array<long long> {
+struct array<long long> {  // NOLINT(google-runtime-int)
   using type = vtkLongLongArray;
 };
 template <>
-struct array<unsigned int> {
+struct array<unsigned int> {  // NOLINT(google-runtime-int)
   using type = vtkUnsignedIntArray;
 };
 template <>
-struct array<unsigned long> {
+struct array<unsigned long> {  // NOLINT(google-runtime-int)
   using type = vtkUnsignedLongArray;
 };
 template <>
-struct array<unsigned long long> {
+struct array<unsigned long long> {  // NOLINT(google-runtime-int)
   using type = vtkUnsignedLongLongArray;
 };
 template <>
@@ -262,18 +262,18 @@ void write_vertex_based_cell(G&& g, TmpCells& tmp_cells,
 
   tmp_cell->GetPointIds()->Reset();
   // Append vertices to the point set, and store the corner ids:
-  for (auto&& cIdx : geometry::vertex.indices(g)) {
+  for (auto&& cidx : geometry::vertex.indices(g)) {
     vtkIdType id;
-    auto corner_vtk = to_vtk_point(cell_vertices[cIdx]);
+    auto corner_vtk = to_vtk_point(cell_vertices[cidx]);
     unique_inserter->InsertUniquePoint(corner_vtk.data(), id);
-    // TODO: this is faster: tmp_cell->GetPointIds()->SetId(cIdx, id);
+    // TODO: this is faster: tmp_cell->GetPointIds()->SetId(cidx, id);
     //
     // Maybe instead of just doing Reset above, we should get size(vertices())
     // and initialize the cell points, so that we can use SetId
     //
     // The InsertId function does bound checks, so we might want to use
     // that in Debug mode anyways:
-    tmp_cell->GetPointIds()->InsertId(cIdx, id);
+    tmp_cell->GetPointIds()->InsertId(cidx, id);
   }
   // Insert the cell:
   cells->InsertNextCell(tmp_cell->GetPointIds());

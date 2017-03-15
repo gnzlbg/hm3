@@ -77,7 +77,7 @@ struct file {
 
   string dir_path_ = "";
 
-  hm3::log::serial log_ = string{"file_log"};
+  hm3::log::serial log_{"file_log"};
 
  public:
   /// Does the file have a dependency?

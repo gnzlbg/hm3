@@ -4,8 +4,8 @@
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/utility/test.hpp>
 
-using namespace hm3;
-using namespace geometry;
+using namespace hm3;       // NOLINT(google-global-names-in-headers)
+using namespace geometry;  // NOLINT(google-global-names-in-headers)
 
 template <typename A>  //
 void test_unit_aabb() {
@@ -55,7 +55,7 @@ void test_unit_aabb() {
   auto pm = p_t::constant(.5);
 
   // constructors:
-  aabb_t a;
+  aabb_t a{};
   aabb_t b(pz, po);
   aabb_t c = aabb_t(pm, vo);
   aabb_t e = aabb_t::unit();

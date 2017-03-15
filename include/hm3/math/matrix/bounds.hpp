@@ -86,7 +86,8 @@ struct bounds<NoRows, dynamic> {
 };
 
 template <>
-struct bounds<dynamic, dynamic> {
+struct bounds<dynamic,  // NOLINT(cppcoreguidelines-special-member-functions)
+              dynamic> {
   uint_t no_rows_ = 0;
   uint_t no_cols_ = 0;
   constexpr auto no_rows() const noexcept { return no_rows_; }
@@ -98,7 +99,7 @@ struct bounds<dynamic, dynamic> {
   constexpr bounds(bounds&&)      = default;
   constexpr bounds& operator=(bounds const&) = default;
   constexpr bounds& operator=(bounds&&) = default;
-  // TODO: ~bounds() = default;
+  // ~bounds() = default; // TODO: clang-tidy bug?
 
   constexpr bounds(int_t nrows, int_t ncols)
    : no_rows_(nrows), no_cols_(ncols) {}
@@ -181,7 +182,8 @@ struct max_bounds<MaxRows, dynamic> {
 };
 
 template <>
-struct max_bounds<dynamic, dynamic> {
+struct max_bounds<  // NOLINT(cppcoreguidelines-special-member-functions)
+ dynamic, dynamic> {
   uint_t max_no_rows_ = 0;
   uint_t max_no_cols_ = 0;
   constexpr auto max_no_rows() const noexcept { return max_no_rows_; }
@@ -195,7 +197,7 @@ struct max_bounds<dynamic, dynamic> {
   constexpr max_bounds(max_bounds&&)      = default;
   constexpr max_bounds& operator=(max_bounds const&) = default;
   constexpr max_bounds& operator=(max_bounds&&) = default;
-  //  ~max_bounds()                                 = default;
+  //  ~max_bounds()  = default; // TODO: clang-tidy bug?
 
   constexpr max_bounds(int_t maxrows, int_t maxcols)
    : max_no_rows_(maxrows), max_no_cols_(maxcols) {}

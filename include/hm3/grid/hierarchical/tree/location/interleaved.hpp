@@ -282,13 +282,14 @@ struct interleaved : geometry::with_ambient_dimension<Ad> {
   /// Constructs a location code from a range of children positions in
   /// descending order from the root node.
   template <typename Rng, CONCEPT_REQUIRES_(Range<Rng>())>
-  interleaved(Rng&& positions_in_parent) : interleaved() {
+  explicit interleaved(Rng&& positions_in_parent) : interleaved() {
     for (auto&& p : positions_in_parent) { push(p); }
   }
 
   /// Constructs a location from deinterleaved Morton coordinates \p x_ up to
   /// a level \p l.
-  interleaved(morton_x_t xs, level_idx l = max_level()) : value(encode(xs, l)) {
+  explicit interleaved(morton_x_t xs, level_idx l = max_level())
+   : value(encode(xs, l)) {
     HM3_ASSERT(l <= max_level(), "level {} out-of-bounds [1, {}]", l,
                max_level());
   }
@@ -300,7 +301,7 @@ struct interleaved : geometry::with_ambient_dimension<Ad> {
   /// stored up to the maximum level that can be stored within the location
   /// code.
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>
-  interleaved(array<U, Ad> x_, level_idx l = max_level()) {
+  explicit interleaved(array<U, Ad> x_, level_idx l = max_level()) {
     HM3_ASSERT(l <= max_level(), "level {} out-of-bounds [1, {}]", l,
                max_level());
 

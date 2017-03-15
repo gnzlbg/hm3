@@ -43,7 +43,8 @@ auto begin(Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>
 auto end(Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
-  return v.data() + v.size();  // / NOLINT()
+  return v.data()
+         + v.size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
@@ -57,7 +58,8 @@ template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>
 auto end(
  const Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
-  return v.data() + v.size();
+  return v.data()
+         + v.size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
@@ -71,7 +73,8 @@ template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>
 auto cend(
  const Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
-  return v.data() + v.size();
+  return v.data()
+         + v.size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
@@ -85,7 +88,8 @@ template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>
 auto range_end(
  Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
-  return v.data() + v.size();
+  return v.data()
+         + v.size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
@@ -99,7 +103,8 @@ template <typename Scalar, int Rows, int Cols, int Options, int MaxRows,
           int MaxCols>
 auto range_end(
  const Matrix<Scalar, Rows, Cols, Options, MaxRows, MaxCols>& v) noexcept {
-  return v.data() + v.size();
+  return v.data()
+         + v.size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
 }
 
 }  // namespace Eigen

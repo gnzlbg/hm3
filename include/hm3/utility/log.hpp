@@ -9,6 +9,7 @@
 
 namespace hm3 {
 
+/// Logging utilities.
 namespace log {
 
 using file_sink_t    = spdlog::sinks::simple_file_sink_st;
@@ -55,7 +56,7 @@ struct serial {
  private:
   logger_ptr console_logger_;
   logger_ptr file_logger_;
-  bool console_output_;
+  bool console_output_{};
 
  public:
   serial()                    = default;
@@ -63,8 +64,9 @@ struct serial {
   serial(serial&&)            = default;
   serial& operator=(serial const&) = default;
   serial& operator=(serial&&) = default;
+  ~serial()                   = default;
 
-  serial(string const& name, bool enable_console = false)
+  explicit serial(string const& name, bool enable_console = false)
    : console_logger_{console_logger(name)}
    , file_logger_{file_logger(name)}
    , console_output_{enable_console} {
@@ -79,8 +81,14 @@ struct serial {
   template <typename... Args>
   void operator()(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
-    if (console_output_) { console_logger_->info(ascii_fmt::wrap(args)...); }
-    file_logger_->info(ascii_fmt::wrap(std::forward<Args>(args))...);
+    if (console_output_) {
+      console_logger_->info(
+       ascii_fmt::  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+       wrap(args)...);
+    }
+    file_logger_->info(
+     ascii_fmt::  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+     wrap(std::forward<Args>(args))...);
   }
 
   bool initialized() const noexcept { return console_logger_ and file_logger_; }
@@ -96,26 +104,38 @@ struct serial {
   template <typename... Args>
   void debug(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
-    if (console_output_) { console_logger_->debug(args...); }
-    file_logger_->debug(ascii_fmt::wrap(std::forward<Args>(args))...);
+    if (console_output_) {
+      console_logger_
+       ->debug(  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+        args...);
+    }
+    file_logger_->debug(
+     ascii_fmt::  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+     wrap(std::forward<Args>(args))...);
   }
 
   template <typename... Args>
   void error(Args&&... args) const {
     HM3_ASSERT(initialized(), "Trying to use an uninitialized log");
-    if (console_output_) { console_logger_->error(args...); }
-    file_logger_->error(ascii_fmt::wrap(std::forward<Args>(args))...);
+    if (console_output_) {
+      console_logger_
+       ->error(  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+        args...);
+    }
+    file_logger_->error(
+     ascii_fmt::  // NOLINT(cppcoreguidelines-pro-bounds-array-to-pointer-decay)
+     wrap(std::forward<Args>(args))...);
   }
 };
 
 struct console {
   serial& log_;
-  console(serial& log) : log_(log) { log_.console_output(true); }
+  explicit console(serial& log) : log_(log) { log_.console_output(true); }
   ~console() { log_.console_output(false); }
   console(console&) = default;
-  console& operator=(console&) = default;
+  console& operator=(console&) = delete;
   console(console&&)           = default;
-  console& operator=(console&&) = default;
+  console& operator=(console&&) = delete;
 };
 
 }  // namespace log

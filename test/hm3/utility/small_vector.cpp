@@ -101,16 +101,16 @@ void libcxx_tests() {
   };
 
   {  // contiguous
-    typedef int T;
-    typedef small_vector<T, 3> C;
-    auto e = C();
+    using T = int;
+    using C = small_vector<T, 3>;
+    auto e  = C();
     CHECK(e.empty());
     test_contiguous(e);
     test_contiguous(C(3, 5));
   }
   {  // default construct element
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     C c(1);
     CHECK(c.back() == 0);
     CHECK(c.front() == 0);
@@ -118,8 +118,8 @@ void libcxx_tests() {
   }
 
   {  // iterator
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     C c;
     C::iterator i = c.begin();
     C::iterator j = c.end();
@@ -127,8 +127,8 @@ void libcxx_tests() {
     CHECK(i == j);
   }
   {  // const iterator
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     const C c{};
     C::const_iterator i = c.begin();
     C::const_iterator j = c.end();
@@ -136,8 +136,8 @@ void libcxx_tests() {
     CHECK(i == j);
   }
   {  // cbegin/cend
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     C c;
     C::const_iterator i = c.cbegin();
     C::const_iterator j = c.cend();
@@ -146,8 +146,8 @@ void libcxx_tests() {
     CHECK(i == c.end());
   }
   {  // iterator constructor
-    typedef int T;
-    typedef small_vector<T, 10> C;
+    using T     = int;
+    using C     = small_vector<T, 10>;
     const T t[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     C c(std::begin(t), std::end(t));
     CHECK(std::equal(std::begin(t), std::end(t), std::begin(c), std::end(c)));
@@ -160,7 +160,7 @@ void libcxx_tests() {
     CHECK(std::distance(std::begin(c), std::end(c)) == 10);
   }
   {  // N3644 testing
-    typedef small_vector<int, 10> C;
+    using C = small_vector<int, 10>;
     C::iterator ii1{}, ii2{};
     C::iterator ii4 = ii1;
     C::const_iterator cii{};
@@ -201,7 +201,7 @@ void libcxx_tests() {
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
-    for (int i = 0; i != 10; ++i) CHECK(a[i] == 5);
+    for (int i = 0; i != 10; ++i) { CHECK(a[i] == 5); }
     a.resize(5);
     CHECK(a.size() == std::size_t(5));
 
@@ -209,7 +209,7 @@ void libcxx_tests() {
     test_contiguous(a);
     a.resize(9);
     CHECK(a[4] == 5);
-    for (int i = 5; i != 9; ++i) CHECK(a[i] == 0);
+    for (int i = 5; i != 9; ++i) { CHECK(a[i] == 0); }
     CHECK(a.size() == std::size_t(9));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
@@ -220,7 +220,7 @@ void libcxx_tests() {
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
     a.resize(5, 2);
-    for (int i = 0; i != 5; ++i) CHECK(a[i] == 5);
+    for (int i = 0; i != 5; ++i) { CHECK(a[i] == 5); }
     test_contiguous(a);
   }
   {  // resize move-only
@@ -243,21 +243,21 @@ void libcxx_tests() {
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
-    for (int i = 0; i != 10; ++i) CHECK(a[i] == 0);
+    for (int i = 0; i != 10; ++i) { CHECK(a[i] == 0); }
     a.resize(5);
     CHECK(a.size() == std::size_t(5));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
-    for (int i = 0; i != 5; ++i) CHECK(a[i] == 0);
+    for (int i = 0; i != 5; ++i) { CHECK(a[i] == 0); }
     a.resize(9, 5);
-    for (int i = 0; i != 5; ++i) CHECK(a[i] == 0);
-    for (int i = 5; i != 9; ++i) CHECK(a[i] == 5);
+    for (int i = 0; i != 5; ++i) { CHECK(a[i] == 0); }
+    for (int i = 5; i != 9; ++i) { CHECK(a[i] == 5); }
     CHECK(a.size() == std::size_t(9));
     CHECK(a.capacity() == std::size_t(10));
     test_contiguous(a);
     a.resize(10, 3);
-    for (int i = 0; i != 5; ++i) CHECK(a[i] == 0);
-    for (int i = 5; i != 9; ++i) CHECK(a[i] == 5);
+    for (int i = 0; i != 5; ++i) { CHECK(a[i] == 0); }
+    for (int i = 5; i != 9; ++i) { CHECK(a[i] == 5); }
     CHECK(a[9] == 3);
     CHECK(a.size() == std::size_t(10));
     CHECK(a.capacity() == std::size_t(10));
@@ -634,7 +634,7 @@ CHECK(v.size() == 100_u + N);
 CHECK(i == v.begin() + 10);
 std::size_t j;
 for (j = 0; j < 10; ++j) CHECK(v[j] == 0);
-for (std::size_t k = 0; k < N; ++j, ++k) CHECK(v[j] == a[k]);
+for (std::size_t k = 0; k < N; ++j, ++k) CHECK(v[j] == ranges::at(a, k));
 for (; j < 105; ++j) CHECK(v[j] == 0);
 }
 {
@@ -779,15 +779,15 @@ int main() {
   };
 
   {  // contiguous
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     test_contiguous(C());
     test_contiguous(C(3, 5));
   }
 
   {  // default construct element
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     C c(1);
     CHECK(back(c) == 0);
     CHECK(front(c) == 0);
@@ -795,8 +795,8 @@ int main() {
   }
 
   {  // iterator
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     C c;
     C::iterator i = begin(c);
     C::iterator j = end(c);
@@ -804,8 +804,8 @@ int main() {
     CHECK(i == j);
   }
   {  // const iterator
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     const C c{};
     C::const_iterator i = begin(c);
     C::const_iterator j = end(c);
@@ -813,8 +813,8 @@ int main() {
     CHECK(i == j);
   }
   {  // cbegin/cend
-    typedef int T;
-    typedef small_vector<T, 3> C;
+    using T = int;
+    using C = small_vector<T, 3>;
     C c;
     C::const_iterator i = cbegin(c);
     C::const_iterator j = cend(c);
@@ -823,8 +823,8 @@ int main() {
     CHECK(i == end(c));
   }
   {  // range constructor
-    typedef int T;
-    typedef small_vector<T, 10> C;
+    using T     = int;
+    using C     = small_vector<T, 10>;
     const T t[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     C c(t);
     test::check_equal(t, c);
@@ -837,8 +837,8 @@ int main() {
     CHECK(ranges::distance(c) == 10);
   }
   {  // iterator constructor
-    typedef int T;
-    typedef small_vector<T, 10> C;
+    using T     = int;
+    using C     = small_vector<T, 10>;
     const T t[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     C c(begin(t), end(t));
     test::check_equal(t, c);
@@ -851,7 +851,7 @@ int main() {
     CHECK(ranges::distance(c) == 10);
   }
   {  // N3644 testing
-    typedef small_vector<int, 10> C;
+    using C = small_vector<int, 10>;
     C::iterator ii1{}, ii2{};
     C::iterator ii4 = ii1;
     C::const_iterator cii{};
@@ -989,7 +989,7 @@ int main() {
     CHECK(b.size() == 0_u);
     b = std::move(a);
     CHECK(b.size() == 3_u);
-    CHECK(a.size() == 3_u);
+    CHECK(a.size() == 3_u);  // NOLINT(misc-use-after-move)
   }
 
   {  // move construct
@@ -998,7 +998,7 @@ int main() {
     CHECK(a.size() == 3_u);
     small_vector<MoveOnly, 3> b(std::move(a));
     CHECK(b.size() == 3_u);
-    CHECK(a.size() == 3_u);
+    CHECK(a.size() == 3_u);  // NOLINT(misc-use-after-move)
   }
 
   {  // old tests

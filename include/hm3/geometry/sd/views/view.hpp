@@ -14,7 +14,7 @@ struct view_state : signed_distance<Ad> {
   std::tuple<SDFunctions...> sdfs;
 
   template <typename SDOp, typename... SDFs>
-  view_state(SDOp&& o, SDFs&&... fs)
+  explicit view_state(SDOp&& o, SDFs&&... fs)
    : op(std::forward<SDOp>(o)), sdfs(std::forward<SDFs>(fs)...) {}
 
   template <typename Point>
@@ -32,16 +32,20 @@ template <typename SDOperator, typename SDFunction, typename... SDFunctions>
 auto view(SDOperator&& op, SDFunction& sdf, SDFunctions&... sdfs)
  -> detail::view_state<ad_v<SDFunction>, SDOperator, SDFunction,
                        SDFunctions...> {
-  return {std::forward<SDOperator>(op), std::forward<SDFunction>(sdf),
-          std::forward<SDFunctions>(sdfs)...};
+  return detail::view_state<ad_v<SDFunction>, SDOperator, SDFunction,
+                            SDFunctions...>{std::forward<SDOperator>(op),
+                                            std::forward<SDFunction>(sdf),
+                                            std::forward<SDFunctions>(sdfs)...};
 }
 
 template <typename SDOperator, typename SDFunction, typename... SDFunctions>
 auto view(SDOperator&& op, SDFunction const& sdf, SDFunctions const&... sdfs)
  -> detail::view_state<ad_v<SDFunction>, SDOperator, SDFunction,
                        SDFunctions...> {
-  return {std::forward<SDOperator>(op), std::forward<SDFunction>(sdf),
-          std::forward<SDFunctions>(sdfs)...};
+  return detail::view_state<ad_v<SDFunction>, SDOperator, SDFunction,
+                            SDFunctions...>{std::forward<SDOperator>(op),
+                                            std::forward<SDFunction>(sdf),
+                                            std::forward<SDFunctions>(sdfs)...};
 }
 
 }  // namespace hm3::geometry::sd

@@ -36,7 +36,7 @@ struct point : private point_vector_detail::base_t<Ad> {
   using typename base_t::value_type;
 
   constexpr point() = default;
-  constexpr point(base_t const& s) : base_t(s) {}
+  explicit constexpr point(base_t const& s) : base_t(s) {}
   constexpr static point constant(num_t v) noexcept {
     return point{base_t::constant(v)};
   }
@@ -51,11 +51,13 @@ struct point : private point_vector_detail::base_t<Ad> {
   template <typename Rng, typename It = range_iterator_t<Rng>,
             CONCEPT_REQUIRES_(
              Range<Rng>{} and std::is_same<iterator_value_t<It>, point<Ad>>{})>
-  constexpr point(Rng&& rng) : point{*ranges::begin(rng)} {
+  explicit constexpr point(Rng&& rng) : point{*ranges::begin(rng)} {
     HM3_ASSERT(ranges::distance(rng) == 1, "?");
   }
 
-  operator base_t() const noexcept = delete;
+  // TODO: clang-tidy bug
+  operator base_t() const noexcept  // NOLINT(google-explicit-constructor)
+   = delete;
 
   base_t& layout() noexcept { return static_cast<base_t&>(*this); }
   base_t const& layout() const noexcept {

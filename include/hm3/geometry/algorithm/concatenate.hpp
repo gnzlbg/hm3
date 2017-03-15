@@ -115,9 +115,10 @@ struct concatenate_fn {
       for (suint_t i = 0; i < result.size(); ++i) {
         for (suint_t j = i + 1; j < result.size(); ++j) {
           if (i == j) { continue; }
-          auto c = direction_independent(result[i], result[j]);
+          auto c = direction_independent(ranges::at(result, i),
+                                         ranges::at(result, j));
           if (not c) { continue; }
-          result[i] = c.value();
+          ranges::at(result, i) = c.value();
           result.erase(ranges::begin(result) + j);
           done = false;
         }

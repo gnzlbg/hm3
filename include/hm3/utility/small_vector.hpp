@@ -112,10 +112,14 @@ struct small_vector {
   ///@{
 
   constexpr reference operator[](size_type pos) noexcept {
-    return match_nc([pos](auto&& c) -> reference { return c[pos]; });
+    HM3_ASSERT(pos < size(), "index {} is out-of-bounds [0, {})", pos, size());
+    return match_nc(
+     [pos](auto&& c) -> reference { return ranges::at(c, pos); });
   }
   constexpr const_reference operator[](size_type pos) const noexcept {
-    return match_c([pos](auto&& c) -> const_reference { return c[pos]; });
+    HM3_ASSERT(pos < size(), "index {} is out-of-bounds [0, {})", pos, size());
+    return match_c(
+     [pos](auto&& c) -> const_reference { return ranges::at(c, pos); });
   }
 
   constexpr reference at(size_type pos) {
@@ -456,7 +460,7 @@ struct small_vector {
 
   /// Initializes vector with \p n default-constructed elements.
   CONCEPT_REQUIRES(CopyConstructible<T>{} or MoveConstructible<T>{})
-  constexpr small_vector(size_type n) noexcept(noexcept(resize(n))) {
+  explicit constexpr small_vector(size_type n) noexcept(noexcept(resize(n))) {
     HM3_ASSERT(n <= capacity(),
                "tried to initialize small vector of capacity "
                "{} with {} elements",
@@ -514,7 +518,7 @@ struct small_vector {
    = meta::strict_and<InputRange<Rng>, ConvertibleTo<range_value_t<Rng>, T>>;
 
   template <typename Rng, CONCEPT_REQUIRES_(RangeAssignable<Rng>{})>
-  constexpr small_vector(Rng&& rng) {
+  explicit constexpr small_vector(Rng&& rng) {
     insert(begin(), ranges::begin(rng), ranges::end(rng));
   }
 

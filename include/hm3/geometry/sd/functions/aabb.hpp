@@ -31,7 +31,7 @@ struct aabb_at_origin : signed_distance<Ad> {
 
   constexpr aabb_at_origin() = default;
   template <typename V>
-  constexpr aabb_at_origin(V lengths) noexcept
+  explicit constexpr aabb_at_origin(V lengths) noexcept
    : lengths_(std::move(lengths())) {
     static_assert(Vector<V>{});
     HM3_ASSERT(

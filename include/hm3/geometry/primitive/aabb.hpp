@@ -38,6 +38,7 @@ struct aabb {
   constexpr aabb(aabb&&)      = default;
   constexpr aabb& operator=(aabb const&) = default;
   constexpr aabb& operator=(aabb&&) = default;
+  ~aabb()                           = default;
 
   /// AABB from \p x_min and \p x_max.
   constexpr aabb(point_t const& x_min, point_t const& x_max)
@@ -163,13 +164,13 @@ constexpr point<Ad> vertex(aabb<Ad> const& s, dim_t v) noexcept {
 }
 
 /// Vertices of the AABB \p s.
-template <dim_t Ad, dim_t nvxs = vertex_size(aabb<Ad>{})>
-constexpr const array<point<Ad>, nvxs> vertices(aabb<Ad> const& s) noexcept {
-  array<point<Ad>, nvxs> vxs;
+template <dim_t Ad, dim_t Nvxs = vertex_size(aabb<Ad>{})>
+constexpr const array<point<Ad>, Nvxs> vertices(aabb<Ad> const& s) noexcept {
+  array<point<Ad>, Nvxs> vxs{};
   auto ls                 = bounding_length_aabb.all(s);
   const auto half_lengths = 0.5 * ls();
   const auto x_c          = centroid_aabb(s);
-  for (suint_t c = 0; c < nvxs; ++c) {
+  for (suint_t c = 0; c < Nvxs; ++c) {
     const auto x_p = aabb_constants::relative_vertex_position<Ad>(c);
     vxs[c]         = x_c().array() + half_lengths.array() * x_p().array();
   }

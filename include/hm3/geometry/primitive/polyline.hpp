@@ -43,7 +43,7 @@ struct polyline {
    typename Edges, typename ET = ranges::range_value_t<uncvref_t<Edges>>,
    CONCEPT_REQUIRES_(Range<Edges>{} and Constructible<edge_value_type, ET>{}
                      and Resizable<PointStorage>{})>
-  polyline(Edges&& es) noexcept {
+  explicit polyline(Edges&& es) noexcept {
     auto no_edges = ranges::distance(es);
     reserve(no_edges);
     for (auto&& e : es) { push_back_edge(e); }
@@ -53,7 +53,7 @@ struct polyline {
    typename Edges, typename ET = ranges::range_value_t<uncvref_t<Edges>>,
    CONCEPT_REQUIRES_(Range<Edges>{} and Constructible<edge_value_type, ET>{}
                      and not Resizable<PointStorage>{})>
-  polyline(Edges&& es) noexcept {
+  explicit polyline(Edges&& es) noexcept {
     auto no_edges = ranges::distance(es);
     HM3_ASSERT(
      no_edges + 1 == ranges::size(data_),

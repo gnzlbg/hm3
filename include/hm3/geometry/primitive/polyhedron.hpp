@@ -45,7 +45,7 @@ struct polyhedron {
   constexpr auto const& face(dim_t i) const noexcept {
     HM3_ASSERT(i < face_size(), "face idx: {} is out-of-bounds [0, {})", i,
                face_size());
-    return faces_[i];
+    return ranges::at(faces_, i);
   }
 
   auto edges() const noexcept {
@@ -75,6 +75,7 @@ struct polyhedron {
   polyhedron(polyhedron&&)      = default;
   polyhedron& operator=(polyhedron const&) = default;
   polyhedron& operator=(polyhedron&&) = default;
+  ~polyhedron()                       = default;
 
   constexpr auto reserve(suint_t no_faces) noexcept {
     faces_.reserve(no_faces);
@@ -98,8 +99,14 @@ struct polyhedron {
     auto end() const noexcept { return data_.end(); }
     auto size() const noexcept { return data_.size(); }
 
-    auto& operator[](int i) noexcept { return data_[i]; }
-    auto const& operator[](int i) const noexcept { return data_[i]; }
+    auto& operator[](uint_t i) noexcept {
+      HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
+      return ranges::at(data_, i);
+    }
+    auto const& operator[](uint_t i) const noexcept {
+      HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
+      return ranges::at(data_, i);
+    }
 
     template <typename OStream>
     friend OStream& operator<<(OStream& os,
@@ -169,8 +176,14 @@ struct polyhedron {
     auto end() const noexcept { return data_.end(); }
     auto size() const noexcept { return data_.size(); }
 
-    auto& operator[](int i) noexcept { return data_[i]; }
-    auto const& operator[](int i) const noexcept { return data_[i]; }
+    auto& operator[](uint_t i) noexcept {
+      HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
+      return ranges::at(data_, i);
+    }
+    auto const& operator[](uint_t i) const noexcept {
+      HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
+      return ranges::at(data_, i);
+    }
 
     template <typename OStream>
     friend OStream& operator<<(OStream& os,
@@ -258,7 +271,7 @@ struct polyhedron {
   template <
    typename Faces, typename FT = ranges::range_value_t<uncvref_t<Faces>>,
    CONCEPT_REQUIRES_(Range<Faces>{} and Constructible<face_value_type, FT>{})>
-  polyhedron(Faces&& fs) noexcept {
+  explicit polyhedron(Faces&& fs) noexcept {
     for (auto&& f : fs) { faces_.push_back(f); }
     assert_invariants(HM3_AT_);
   }

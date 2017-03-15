@@ -218,7 +218,8 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
   /// Constructs a location from deinterleaved Morton coordinates \p x_ up to
   /// a level \p l.
   template <typename U, CONCEPT_REQUIRES_(std::is_floating_point<U>{})>
-  deinterleaved(array<U, Ad> x, level_idx l = max_level()) : level_(l) {
+  explicit deinterleaved(array<U, Ad> x, level_idx l = max_level())
+   : level_(l) {
     HM3_ASSERT(l <= max_level(), "");
 
     for (auto&& d : ambient_dimensions()) {
@@ -243,7 +244,7 @@ struct deinterleaved : geometry::with_ambient_dimension<Ad> {
   /// Constructs a location code from a range of children positions in
   /// descending order from the root node.
   template <typename Rng, CONCEPT_REQUIRES_(Range<Rng>())>
-  deinterleaved(Rng&& ps) {
+  explicit deinterleaved(Rng&& ps) {
     reset_bits();
     for (auto&& p : ps) { push(p); }
   }

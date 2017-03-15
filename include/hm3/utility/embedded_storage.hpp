@@ -147,7 +147,7 @@ struct trivial_storage {
                               and ranges::Assignable<value_type&, T>{})>
   constexpr void emplace_back(Args&&... args) noexcept {
     HM3_ASSERT(not full(), "tried to emplace_back on full storage!");
-    data_[size()] = T(std::forward<Args>(args)...);
+    ranges::at(data_, size()) = T(std::forward<Args>(args)...);
     unsafe_set_size(size() + 1);
   }
 
@@ -199,7 +199,7 @@ struct trivial_storage {
                il.size(), capacity());
     std::remove_const_t<data_t> d_{};
     for (std::size_t i = 0, e = il.size(); i < e; ++i) {
-      d_[i] = il.begin()[i];
+      ranges::at(d_, i) = ranges::at(il, i);
     }
     return d_;
   }
@@ -350,12 +350,14 @@ struct non_trivial_storage {
   /// Contract: `il.size() <= capacity()`.
   template <typename U, CONCEPT_REQUIRES_(ConvertibleTo<U, T>{})>
   constexpr non_trivial_storage(std::initializer_list<U> il) noexcept(
-   noexcept(emplace_back(il.begin()[0]))) {
+   noexcept(emplace_back(ranges::at(il, 0)))) {
     HM3_ASSERT(il.size() <= capacity(),
                "trying to construct storage from an initializer_list whose "
                "size (= {}) exceed the storage capacity (= {}})",
                il.size(), capacity());
-    for (std::size_t i = 0; i < il.size(); ++i) { emplace_back(il.begin()[i]); }
+    for (std::size_t i = 0; i < il.size(); ++i) {
+      emplace_back(ranges::at(il, i));
+    }
   }
 };
 

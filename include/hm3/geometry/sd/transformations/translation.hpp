@@ -34,7 +34,7 @@ struct translation : Sd {
   translation() = default;
 
   template <typename P, typename... Args>
-  translation(P xc, Args&&... args)
+  explicit translation(P xc, Args&&... args)
    : Sd(std::forward<Args>(args)...), point_(std::move(xc())) {
     static_assert(Point<P, ad_v<Sd>>());
   }

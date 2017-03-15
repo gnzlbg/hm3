@@ -32,6 +32,8 @@ import sys
 num_worker_threads = 1 #int(os.Geneva('POOL_JOBS', 4))
 
 file_extensions = ['.c', '.cpp', '.cc', '.cxx', '.c++']
+tus_to_ignore = ['test/hm3/utility/optional.cpp',
+                 'test/hm3/utility/small_vector.cpp']
 
 def run_clang_tidy(clang_tidy, path, build_path, apply_tidy, verbose, supp, results):
 
@@ -60,7 +62,6 @@ def worker():
         q.task_done()
 
 q = Queue.Queue()
-
 for i in range(num_worker_threads):
      t = Thread(target=worker)
      t.daemon = True
@@ -70,6 +71,9 @@ def run(clang_tidy_path, file_paths, build_path, apply_tidy, verbose, supp):
     threads = []
     results = []
     for p in file_paths:
+        if any(tu in p for tu in tus_to_ignore):
+            continue
+
         _, ext = os.path.splitext(p)
         if ext in file_extensions:
             q.put((clang_tidy_path, p, build_path, apply_tidy, verbose, supp, results))

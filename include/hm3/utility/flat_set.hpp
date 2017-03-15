@@ -117,7 +117,7 @@ struct flat_set : private Vector, Compare {
   constexpr flat_set& operator=(flat_set const& other) = default;
   constexpr flat_set& operator=(flat_set&& other) = default;
 
-  constexpr explicit flat_set(Vector&& vec)
+  explicit constexpr flat_set(Vector&& vec)
    : flat_set(Compare(), std::move(vec)) {}
 
   template <class InputIt>
@@ -145,7 +145,7 @@ struct flat_set : private Vector, Compare {
             CONCEPT_REQUIRES_(
              insertable_range<Rng>{}
              and not Same<uncvref_t<Rng>, std::initializer_list<value_type>>{})>
-  constexpr flat_set(Rng&& rng, const Compare& comp = Compare())
+  explicit constexpr flat_set(Rng&& rng, const Compare& comp = Compare())
    : flat_set(ranges::begin(rng), ranges::end(rng), comp) {}
 
   ///@}  Constructors / Assignment

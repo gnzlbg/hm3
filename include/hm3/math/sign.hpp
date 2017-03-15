@@ -4,32 +4,31 @@
 /// Sign and signum.
 #include <cmath>
 #include <hm3/math/constexpr.hpp>
+#include <hm3/utility/array.hpp>
 
 namespace hm3::math {
 
 /// Sign type (negative or positive)
-struct sign_t {
+struct sign_t {  // NOLINT(cppcoreguidelines-special-member-functions)
   enum class type : sint_t { negative = -1, positive = 1 };
   static constexpr type negative() { return type::negative; };
   static constexpr type positive() { return type::positive; };
   type value{};
 
-  operator type() const noexcept { return value; }
-  constexpr sign_t(type t) noexcept : value{t} {};
+  operator type() const noexcept  // NOLINT(google-explicit-constructor)
+  {
+    return value;
+  }
+  constexpr sign_t(type t) noexcept  // NOLINT(google-explicit-constructor)
+   : value{t} {};
 
   constexpr sign_t()              = default;
   constexpr sign_t(sign_t const&) = default;
   constexpr sign_t(sign_t&&)      = default;
 
-  constexpr sign_t& operator=(sign_t const& o) noexcept {
-    value = o.value;
-    return *this;
-  }
-  constexpr sign_t& operator=(sign_t&& o) noexcept {
-    value = o.value;
-    return *this;
-  }
-  ~sign_t() = default;
+  constexpr sign_t& operator=(sign_t const& o) = default;
+  constexpr sign_t& operator=(sign_t&& o) = default;
+  // ~sign_t() = default; // TODO: clang-tidy bug?
 };
 
 constexpr bool operator==(sign_t const& a, sign_t const& b) noexcept {
@@ -56,7 +55,7 @@ OStream& operator<<(OStream& os, sign_t const& v) {
 }
 
 /// Signum type (negative, zero, or positive)
-struct signum_t {
+struct signum_t {  // NOLINT(cppcoreguidelines-special-member-functions)
   enum class type : sint_t {
     negative = static_cast<sint_t>(sign_t::type::negative),
     zero     = 0,
@@ -67,21 +66,19 @@ struct signum_t {
   static constexpr signum_t zero() { return type::zero; };
   type value{};
 
-  operator type() const noexcept { return value; }
-  constexpr signum_t(type t) noexcept : value{t} {};
+  operator type() const noexcept  // NOLINT(google-explicit-constructor)
+  {
+    return value;
+  }
+  constexpr signum_t(type t) noexcept  // NOLINT(google-explicit-constructor)
+   : value{t} {};
 
   constexpr signum_t()                = default;
   constexpr signum_t(signum_t const&) = default;
   constexpr signum_t(signum_t&&)      = default;
-  constexpr signum_t& operator        =(signum_t const& o) noexcept {
-    value = o.value;
-    return *this;
-  }
-  constexpr signum_t& operator=(signum_t&& o) noexcept {
-    value = o.value;
-    return *this;
-  }
-  ~signum_t() = default;
+  constexpr signum_t& operator=(signum_t const&) = default;
+  constexpr signum_t& operator=(signum_t&&) = default;
+  //~signum_t() = default; // TODO: clang-tidy bug?
 };
 
 constexpr bool operator==(signum_t const& a, signum_t const& b) noexcept {

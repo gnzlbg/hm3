@@ -83,11 +83,12 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   constexpr storage& operator=(storage const&) = default;
   constexpr storage& operator=(storage&&) = default;
 
-  constexpr storage(data_container const& other) : data_(other) {}
-  constexpr storage(data_container&& other) : data_(std::move(other)) {}
+  explicit constexpr storage(data_container const& other) : data_(other) {}
+  explicit constexpr storage(data_container&& other)
+   : data_(std::move(other)) {}
   ~storage() = default;
 
-  constexpr storage(const uint_t no_elements) {
+  explicit constexpr storage(const uint_t no_elements) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
   }
 
@@ -154,7 +155,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   ~storage()                    = default;
 
   CONCEPT_REQUIRES(MaxRows == dynamic && MaxCols == 1)
-  storage(const uint_t no_elements)
+  explicit storage(const uint_t no_elements)
    : max_bounds(no_elements, 1), data_(max_size()) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
   }
@@ -224,10 +225,11 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   constexpr storage& operator=(storage&&) = default;
   ~storage()                              = default;
 
-  constexpr storage(data_container const& other) : data_(other) {}
-  constexpr storage(data_container&& other) : data_(std::move(other)) {}
+  explicit constexpr storage(data_container const& other) : data_(other) {}
+  explicit constexpr storage(data_container&& other)
+   : data_(std::move(other)) {}
 
-  constexpr storage(const uint_t no_elements) {
+  explicit constexpr storage(const uint_t no_elements) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
   }
 
@@ -292,7 +294,7 @@ struct storage<bit, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
   ~storage()                    = default;
 
   CONCEPT_REQUIRES(MaxRows == dynamic && MaxCols == 1)
-  storage(const uint_t no_elements)
+  explicit storage(const uint_t no_elements)
    : max_bounds(no_elements, 1), data_(max_size()) {
     HM3_MATRIX_ASSERT_NO_ELEMENTS_CONSTRUCTOR;
     reset();

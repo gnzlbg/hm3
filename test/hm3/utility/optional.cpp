@@ -15,6 +15,7 @@
 #include <complex>
 #include <functional>
 #include <hm3/utility/optional.hpp>
+#include <hm3/utility/test.hpp>
 #include <iostream>
 #include <vector>
 
@@ -123,94 +124,94 @@ namespace tr2 = hm3::optional_detail;
 
 TEST(disengaged_ctor) {
   tr2::optional<int> o1;
-  assert(!o1);
+  CHECK(!o1);
 
   tr2::optional<int> o2 = tr2::nullopt;
-  assert(!o2);
+  CHECK(!o2);
 
   tr2::optional<int> o3 = o2;
-  assert(!o3);
+  CHECK(!o3);
 
-  assert(o1 == tr2::nullopt);
-  assert(o1 == tr2::optional<int>{});
-  assert(!o1);
-  assert(!bool(o1));
+  CHECK(o1 == tr2::nullopt);
+  CHECK(o1 == tr2::optional<int>{});
+  CHECK(!o1);
+  CHECK(!bool(o1));
 
-  assert(o2 == tr2::nullopt);
-  assert(o2 == tr2::optional<int>{});
-  assert(!o2);
-  assert(!bool(o2));
+  CHECK(o2 == tr2::nullopt);
+  CHECK(o2 == tr2::optional<int>{});
+  CHECK(!o2);
+  CHECK(!bool(o2));
 
-  assert(o3 == tr2::nullopt);
-  assert(o3 == tr2::optional<int>{});
-  assert(!o3);
-  assert(!bool(o3));
+  CHECK(o3 == tr2::nullopt);
+  CHECK(o3 == tr2::optional<int>{});
+  CHECK(!o3);
+  CHECK(!bool(o3));
 
-  assert(o1 == o2);
-  assert(o2 == o1);
-  assert(o1 == o3);
-  assert(o3 == o1);
-  assert(o2 == o3);
-  assert(o3 == o2);
+  CHECK(o1 == o2);
+  CHECK(o2 == o1);
+  CHECK(o1 == o3);
+  CHECK(o3 == o1);
+  CHECK(o2 == o3);
+  CHECK(o3 == o2);
 };
 
 TEST(value_ctor) {
   oracle_val v;
   tr2::optional<oracle> oo1(v);
-  assert(oo1 != tr2::nullopt);
-  assert(oo1 != tr2::optional<oracle>{});
-  assert(oo1 == tr2::optional<oracle>{v});
-  assert(!!oo1);
-  assert(bool(oo1));
-  // NA: assert (oo1->s == s_value_copy_constructed);
-  assert(oo1->s == s_move_constructed);
-  assert(v.s == s_value_constructed);
+  CHECK(oo1 != tr2::nullopt);
+  CHECK(oo1 != tr2::optional<oracle>{});
+  CHECK(oo1 == tr2::optional<oracle>{v});
+  CHECK(!!oo1);
+  CHECK(bool(oo1));
+  // NA: CHECK (oo1->s == s_value_copy_constructed);
+  CHECK(oo1->s == s_move_constructed);
+  CHECK(v.s == s_value_constructed);
 
   tr2::optional<oracle> oo2(std::move(v));  // NOLINT
-  assert(oo2 != tr2::nullopt);
-  assert(oo2 != tr2::optional<oracle>{});
-  assert(oo2 == oo1);
-  assert(!!oo2);
-  assert(bool(oo2));
-  // NA: assert (oo2->s == s_value_move_constructed);
-  assert(oo2->s == s_move_constructed);
-  assert(v.s == s_moved_from);
+  CHECK(oo2 != tr2::nullopt);
+  CHECK(oo2 != tr2::optional<oracle>{});
+  CHECK(oo2 == oo1);
+  CHECK(!!oo2);
+  CHECK(bool(oo2));
+  // NA: CHECK (oo2->s == s_value_move_constructed);
+  CHECK(oo2->s == s_move_constructed);
+  CHECK(v.s == s_moved_from);
 
   {
     oracle_val v;
     tr2::optional<oracle> oo1{tr2::in_place, v};
-    assert(oo1 != tr2::nullopt);
-    assert(oo1 != tr2::optional<oracle>{});
-    assert(oo1 == tr2::optional<oracle>{v});
-    assert(!!oo1);
-    assert(bool(oo1));
-    assert(oo1->s == s_value_copy_constructed);
-    assert(v.s == s_value_constructed);
+    CHECK(oo1 != tr2::nullopt);
+    CHECK(oo1 != tr2::optional<oracle>{});
+    CHECK(oo1 == tr2::optional<oracle>{v});
+    CHECK(!!oo1);
+    CHECK(bool(oo1));
+    CHECK(oo1->s == s_value_copy_constructed);
+    CHECK(v.s == s_value_constructed);
 
     tr2::optional<oracle> oo2{tr2::in_place, std::move(v)};  // NOLINT
-    assert(oo2 != tr2::nullopt);
-    assert(oo2 != tr2::optional<oracle>{});
-    assert(oo2 == oo1);
-    assert(!!oo2);
-    assert(bool(oo2));
-    assert(oo2->s == s_value_move_constructed);
-    assert(v.s == s_moved_from);
+    CHECK(oo2 != tr2::nullopt);
+    CHECK(oo2 != tr2::optional<oracle>{});
+    CHECK(oo2 == oo1);
+    CHECK(!!oo2);
+    CHECK(bool(oo2));
+    CHECK(oo2->s == s_value_move_constructed);
+    CHECK(v.s == s_moved_from);
   }
 };
 
 TEST(assignment) {
   tr2::optional<int> oi;
   oi = tr2::optional<int>{1};
-  assert(*oi == 1);
+  CHECK(*oi == 1);
 
   oi = tr2::nullopt;
-  assert(!oi);
+  CHECK(!oi);
 
   oi = 2;
-  assert(*oi == 2);
+  CHECK(*oi == 2);
 
   oi = {};
-  assert(!oi);
+  CHECK(!oi);
 };
 
 template <class T>
@@ -234,96 +235,96 @@ struct move_awaree {
 TEST(moved_from_state) {
   // first, test mock:
   move_awaree<int> i{1}, j{2};
-  assert(i.val == 1);
-  assert(!i.moved);
-  assert(j.val == 2);
-  assert(!j.moved);
+  CHECK(i.val == 1);
+  CHECK(!i.moved);
+  CHECK(j.val == 2);
+  CHECK(!j.moved);
 
   move_awaree<int> k = std::move(i);
-  assert(k.val == 1);
-  assert(!k.moved);
-  assert(i.val == 1);
-  assert(i.moved);
+  CHECK(k.val == 1);
+  CHECK(!k.moved);
+  CHECK(i.val == 1);
+  CHECK(i.moved);
 
   k = std::move(j);
-  assert(k.val == 2);
-  assert(!k.moved);
-  assert(j.val == 2);
-  assert(j.moved);
+  CHECK(k.val == 2);
+  CHECK(!k.moved);
+  CHECK(j.val == 2);
+  CHECK(j.moved);
 
   // now, test optional
   tr2::optional<move_awaree<int>> oi{1}, oj{2};
   assert(oi);
-  assert(!oi->moved);
+  CHECK(!oi->moved);
   assert(oj);
-  assert(!oj->moved);
+  CHECK(!oj->moved);
 
   tr2::optional<move_awaree<int>> ok = std::move(oi);
   assert(ok);
-  assert(!ok->moved);
+  CHECK(!ok->moved);
   assert(oi);
-  assert(oi->moved);
+  CHECK(oi->moved);
 
   ok = std::move(oj);
   assert(ok);
-  assert(!ok->moved);
+  CHECK(!ok->moved);
   assert(oj);
-  assert(oj->moved);
+  CHECK(oj->moved);
 };
 
 TEST(copy_move_ctor_optional_int) {
   tr2::optional<int> oi;
   tr2::optional<int> oj = oi;
 
-  assert(!oj);
-  assert(oj == oi);
-  assert(oj == tr2::nullopt);
-  assert(!bool(oj));
+  CHECK(!oj);
+  CHECK(oj == oi);
+  CHECK(oj == tr2::nullopt);
+  CHECK(!bool(oj));
 
   oi                    = 1;
   tr2::optional<int> ok = oi;
-  assert(!!ok);
-  assert(bool(ok));
-  assert(ok == oi);
-  assert(ok != oj);
-  assert(*ok == 1);
+  CHECK(!!ok);
+  CHECK(bool(ok));
+  CHECK(ok == oi);
+  CHECK(ok != oj);
+  CHECK(*ok == 1);
 
   tr2::optional<int> ol = std::move(oi);
-  assert(!!ol);
-  assert(bool(ol));
-  assert(ol == oi);
-  assert(ol != oj);
-  assert(*ol == 1);
+  CHECK(!!ol);
+  CHECK(bool(ol));
+  CHECK(ol == oi);
+  CHECK(ol != oj);
+  CHECK(*ol == 1);
 };
 
 TEST(optional_optional) {
   tr2::optional<tr2::optional<int>> oi1 = tr2::nullopt;
-  assert(oi1 == tr2::nullopt);
-  assert(!oi1);
+  CHECK(oi1 == tr2::nullopt);
+  CHECK(!oi1);
 
   {
     tr2::optional<tr2::optional<int>> oi2{tr2::in_place};
-    assert(oi2 != tr2::nullopt);
-    assert(bool(oi2));
-    assert(*oi2 == tr2::nullopt);
-    // assert (!(*oi2));
+    CHECK(oi2 != tr2::nullopt);
+    CHECK(bool(oi2));
+    CHECK(*oi2 == tr2::nullopt);
+    // CHECK (!(*oi2));
     // std::cout << typeid(**oi2).name() << std::endl;
   }
 
   {
     tr2::optional<tr2::optional<int>> oi2{tr2::in_place, tr2::nullopt};
-    assert(oi2 != tr2::nullopt);
-    assert(bool(oi2));
-    assert(*oi2 == tr2::nullopt);
-    assert(!*oi2);
+    CHECK(oi2 != tr2::nullopt);
+    CHECK(bool(oi2));
+    CHECK(*oi2 == tr2::nullopt);
+    CHECK(!*oi2);
   }
 
   {
     tr2::optional<tr2::optional<int>> oi2{tr2::optional<int>{}};
-    assert(oi2 != tr2::nullopt);
-    assert(bool(oi2));
-    assert(*oi2 == tr2::nullopt);
-    assert(!*oi2);
+    CHECK(oi2 != tr2::nullopt);
+    CHECK(bool(oi2));
+    CHECK(*oi2 == tr2::nullopt);
+    CHECK(!*oi2);
   }
 
   tr2::optional<int> oi;
@@ -340,24 +341,24 @@ TEST(example_guard) {
   optional<guard> oga;  // guard is non-copyable (and non-moveable)
   optional<guard> ogb(in_place,
                       "res1");  // initialzes the contained value with "res1"
-  assert(bool(ogb));
-  assert(ogb->val == "res1");
+  CHECK(bool(ogb));
+  CHECK(ogb->val == "res1");
 
   optional<guard> ogc(in_place);  // default-constructs the contained value
-  assert(bool(ogc));
-  assert(ogc->val == "");
+  CHECK(bool(ogc));
+  CHECK(ogc->val == "");
 
   oga.emplace("res1");  // initialzes the contained value with "res1"
-  assert(bool(oga));
-  assert(oga->val == "res1");
+  CHECK(bool(oga));
+  CHECK(oga->val == "res1");
 
   oga.emplace();  // destroys the contained value and
                   // default-constructs the new one
-  assert(bool(oga));
-  assert(oga->val == "");
+  CHECK(bool(oga));
+  CHECK(oga->val == "");
 
   oga = nullopt;  // OK: make disengaged the optional guard
-  assert(!(oga));
+  CHECK(!(oga));
   // FAILS: ogb = {};                          // ERROR: guard is not Moveable
 };
 
@@ -372,44 +373,44 @@ TEST(example1) {
   oi               = oj;       // assign disengaged object
   optional<int> ok = oj;       // ok is disengaged
 
-  if (oi) { assert(false); }             // 'if oi is engaged...'
+  if (oi) { CHECK(false); }              // 'if oi is engaged...'
   if (!oi) { static_assert(true, ""); }  // 'if oi is disengaged...'
 
-  if (oi != nullopt) { assert(false); }            // 'if oi is engaged...'
+  if (oi != nullopt) { CHECK(false); }             // 'if oi is engaged...'
   if (oi == nullopt) { static_assert(true, ""); }  // 'if oi is disengaged...'
 
-  assert(oi == ok);  // two disengaged optionals compare equal
+  CHECK(oi == ok);  // two disengaged optionals compare equal
 
   ///////////////////////////////////////////////////////////////////////////
   optional<int> ol{1};  // ol is engaged; its contained value is 1
   ok = 2;               // ok becomes engaged; its contained value is 2
   oj = ol;              // oj becomes engaged; its contained value is 1
 
-  assert(oi != ol);  // disengaged != engaged
-  assert(ok != ol);  // different contained values
-  assert(oj == ol);  // same contained value
-  assert(oi < ol);   // disengaged < engaged
-  assert(ol < ok);   // less by contained value
+  CHECK(oi != ol);  // disengaged != engaged
+  CHECK(ok != ol);  // different contained values
+  CHECK(oj == ol);  // same contained value
+  CHECK(oi < ol);   // disengaged < engaged
+  CHECK(ol < ok);   // less by contained value
 
   /////////////////////////////////////////////////////////////////////////////
   optional<int> om{1};    // om is engaged; its contained value is 1
   optional<int> on = om;  // on is engaged; its contained value is 1
   om               = 2;   // om is engaged; its contained value is 2
-  assert(on != om);       // on still contains 3. They are not pointers
+  CHECK(on != om);        // on still contains 3. They are not pointers
 
   /////////////////////////////////////////////////////////////////////////////
   int i = *ol;  // i obtains the value contained in ol
-  assert(i == 1);
+  CHECK(i == 1);
   *ol = 9;  // the object contained in ol becomes 9
-  assert(*ol == 9);
-  assert(ol == make_optional(9));
+  CHECK(*ol == 9);
+  CHECK(ol == make_optional(9));
 
   ///////////////////////////////////
   int p            = 1;
   optional<int> op = p;
-  assert(*op == 1);
+  CHECK(*op == 1);
   p = 2;
-  assert(*op == 1);  // value contained in op is separated from p
+  CHECK(*op == 1);  // value contained in op is separated from p
 
   ////////////////////////////////
   if (ol) {
@@ -435,7 +436,7 @@ TEST(example_guard2) {
   using hm3::optional;
   const optional<int> c = 4;
   int i                 = *c;  // i becomes 4
-  assert(i == 4);
+  CHECK(i == 4);
   // FAILS: *c = i;                            // ERROR: cannot assign to const
   // int&
 };
@@ -588,43 +589,43 @@ TEST(example_rationale) {
 
   /////////////////////////////////////
   ////tr2::optional<std::vector<int>> ov2 = {2, 3};
-  ////assert (bool(ov2));
-  ////assert ((*ov2)[1] == 3);
+  ////CHECK (bool(ov2));
+  ////CHECK ((*ov2)[1] == 3);
   ////
   ////////////////////////////////
   ////std::vector<int> v = {1, 2, 4, 8};
   ////optional<std::vector<int>> ov = {1, 2, 4, 8};
 
-  ////assert (v == *ov);
+  ////CHECK (v == *ov);
   ////
   ////ov = {1, 2, 4, 8};
 
   ////std::allocator<int> a;
   ////optional<std::vector<int>> ou { in_place, {1, 2, 4, 8}, a };
 
-  ////assert (ou == ov);
+  ////CHECK (ou == ov);
 
   //////////////////////////////
   // inconvenient syntax:
   {
     tr2::optional<std::vector<int>> ov2{tr2::in_place, {2, 3}};
 
-    assert(bool(ov2));
-    assert((*ov2)[1] == 3);
+    CHECK(bool(ov2));
+    CHECK((*ov2)[1] == 3);
 
     ////////////////////////////
 
     std::vector<int> v = {1, 2, 4, 8};
     optional<std::vector<int>> ov{tr2::in_place, {1, 2, 4, 8}};
 
-    assert(v == *ov);
+    CHECK(v == *ov);
 
     ov.emplace({1, 2, 4, 8});
     /*
           std::allocator<int> a;
           optional<std::vector<int>> ou { in_place, {1, 2, 4, 8}, a };
 
-          assert (ou == ov);
+          CHECK (ou == ov);
     */
   }
 
@@ -647,9 +648,9 @@ bool fun(std::string, hm3::optional<int> oi = hm3::nullopt) { return bool(oi); }
 TEST(example_converting_ctor) {
   using namespace hm3;
 
-  assert(fun("dog", 2));
-  assert(!fun("dog"));
-  assert(!fun("dog", nullopt));  // just to be explicit
+  CHECK(fun("dog", 2));
+  CHECK(!fun("dog"));
+  CHECK(!fun("dog", nullopt));  // just to be explicit
 };
 
 TEST(bad_comparison) {
@@ -665,25 +666,25 @@ TEST(bad_comparison) {
 ////TEST(perfect_ctor)
 ////{
 ////  //tr2::optional<std::string> ois = "OS";
-////  assert (*ois == "OS");
+////  CHECK (*ois == "OS");
 ////
 ////  // FAILS: tr2::optional<explicit_str> oes = "OS";
 ////  tr2::optional<explicit_str> oes{"OS"};
-////  assert (oes->s == "OS");
+////  CHECK (oes->s == "OS");
 ////};
 
 TEST(value_or) {
   tr2::optional<int> oi = 1;
   int i                 = oi.value_or(0);
-  assert(i == 1);
+  CHECK(i == 1);
 
   oi = tr2::nullopt;
-  assert(oi.value_or(3) == 3);
+  CHECK(oi.value_or(3) == 3);
 
   tr2::optional<std::string> os{"AAA"};
-  assert(os.value_or("BBB") == "AAA");
+  CHECK(os.value_or("BBB") == "AAA");
   os = {};
-  assert(os.value_or("BBB") == "BBB");
+  CHECK(os.value_or("BBB") == "BBB");
 };
 
 TEST(mixed_order) {
@@ -693,61 +694,61 @@ TEST(mixed_order) {
   optional<int> o0{0};
   optional<int> o1{1};
 
-  assert((o_n < 0));
-  assert((o_n < 1));
-  assert(!(o0 < 0));
-  assert((o0 < 1));
-  assert(!(o1 < 0));
-  assert(!(o1 < 1));
+  CHECK((o_n < 0));
+  CHECK((o_n < 1));
+  CHECK(!(o0 < 0));
+  CHECK((o0 < 1));
+  CHECK(!(o1 < 0));
+  CHECK(!(o1 < 1));
 
-  assert(!(o_n >= 0));
-  assert(!(o_n >= 1));
-  assert((o0 >= 0));
-  assert(!(o0 >= 1));
-  assert((o1 >= 0));
-  assert((o1 >= 1));
+  CHECK(!(o_n >= 0));
+  CHECK(!(o_n >= 1));
+  CHECK((o0 >= 0));
+  CHECK(!(o0 >= 1));
+  CHECK((o1 >= 0));
+  CHECK((o1 >= 1));
 
-  assert(!(o_n > 0));
-  assert(!(o_n > 1));
-  assert(!(o0 > 0));
-  assert(!(o0 > 1));
-  assert((o1 > 0));
-  assert(!(o1 > 1));
+  CHECK(!(o_n > 0));
+  CHECK(!(o_n > 1));
+  CHECK(!(o0 > 0));
+  CHECK(!(o0 > 1));
+  CHECK((o1 > 0));
+  CHECK(!(o1 > 1));
 
-  assert((o_n <= 0));
-  assert((o_n <= 1));
-  assert((o0 <= 0));
-  assert((o0 <= 1));
-  assert(!(o1 <= 0));
-  assert((o1 <= 1));
+  CHECK((o_n <= 0));
+  CHECK((o_n <= 1));
+  CHECK((o0 <= 0));
+  CHECK((o0 <= 1));
+  CHECK(!(o1 <= 0));
+  CHECK((o1 <= 1));
 
-  assert((0 > o_n));
-  assert((1 > o_n));
-  assert(!(0 > o0));
-  assert((1 > o0));
-  assert(!(0 > o1));
-  assert(!(1 > o1));
+  CHECK((0 > o_n));
+  CHECK((1 > o_n));
+  CHECK(!(0 > o0));
+  CHECK((1 > o0));
+  CHECK(!(0 > o1));
+  CHECK(!(1 > o1));
 
-  assert(!(0 <= o_n));
-  assert(!(1 <= o_n));
-  assert((0 <= o0));
-  assert(!(1 <= o0));
-  assert((0 <= o1));
-  assert((1 <= o1));
+  CHECK(!(0 <= o_n));
+  CHECK(!(1 <= o_n));
+  CHECK((0 <= o0));
+  CHECK(!(1 <= o0));
+  CHECK((0 <= o1));
+  CHECK((1 <= o1));
 
-  assert(!(0 < o_n));
-  assert(!(1 < o_n));
-  assert(!(0 < o0));
-  assert(!(1 < o0));
-  assert((0 < o1));
-  assert(!(1 < o1));
+  CHECK(!(0 < o_n));
+  CHECK(!(1 < o_n));
+  CHECK(!(0 < o0));
+  CHECK(!(1 < o0));
+  CHECK((0 < o1));
+  CHECK(!(1 < o1));
 
-  assert((0 >= o_n));
-  assert((1 >= o_n));
-  assert((0 >= o0));
-  assert((1 >= o0));
-  assert(!(0 >= o1));
-  assert((1 >= o1));
+  CHECK((0 >= o_n));
+  CHECK((1 >= o_n));
+  CHECK((0 >= o0));
+  CHECK((1 >= o0));
+  CHECK(!(0 >= o1));
+  CHECK((1 >= o1));
 };
 
 struct bad_relops {
@@ -762,74 +763,74 @@ constexpr bool operator>(bad_relops a, bad_relops b) {
 TEST(bad_relops_) {
   using namespace hm3;
   bad_relops a{1}, b{2};
-  assert(a < b);
-  assert(a > b);
+  CHECK(a < b);
+  CHECK(a > b);
 
   optional<bad_relops> oa = a, ob = b;
-  assert(oa < ob);
-  assert(!(oa > ob));
+  CHECK(oa < ob);
+  CHECK(!(oa > ob));
 
-  assert(oa < b);
-  assert(oa > b);
+  CHECK(oa < b);
+  CHECK(oa > b);
 
   optional<bad_relops&> ra = a, rb = b;
-  assert(ra < rb);
-  assert(!(ra > rb));
+  CHECK(ra < rb);
+  CHECK(!(ra > rb));
 
-  assert(ra < b);
-  assert(ra > b);
+  CHECK(ra < b);
+  CHECK(ra > b);
 };
 
 TEST(mixed_equality) {
   using namespace hm3;
 
-  assert(make_optional(0) == 0);
-  assert(make_optional(1) == 1);
-  assert(make_optional(0) != 1);
-  assert(make_optional(1) != 0);
+  CHECK(make_optional(0) == 0);
+  CHECK(make_optional(1) == 1);
+  CHECK(make_optional(0) != 1);
+  CHECK(make_optional(1) != 0);
 
   optional<int> o_n{nullopt};
   optional<int> o0{0};
   optional<int> o1{1};
 
-  assert(o0 == 0);
-  assert(0 == o0);
-  assert(o1 == 1);
-  assert(1 == o1);
-  assert(o1 != 0);
-  assert(0 != o1);
-  assert(o0 != 1);
-  assert(1 != o0);
+  CHECK(o0 == 0);
+  CHECK(0 == o0);
+  CHECK(o1 == 1);
+  CHECK(1 == o1);
+  CHECK(o1 != 0);
+  CHECK(0 != o1);
+  CHECK(o0 != 1);
+  CHECK(1 != o0);
 
-  assert(1 != o_n);
-  assert(0 != o_n);
-  assert(o_n != 1);
-  assert(o_n != 0);
-  assert(!(1 == o_n));
-  assert(!(0 == o_n));
-  assert(!(o_n == 1));
-  assert(!(o_n == 0));
+  CHECK(1 != o_n);
+  CHECK(0 != o_n);
+  CHECK(o_n != 1);
+  CHECK(o_n != 0);
+  CHECK(!(1 == o_n));
+  CHECK(!(0 == o_n));
+  CHECK(!(o_n == 1));
+  CHECK(!(o_n == 0));
 
   std::string cat{"cat"}, dog{"dog"};
   optional<std::string> o_nil{}, o_dog{"dog"}, o_cat{"cat"};
 
-  assert(o_cat == cat);
-  assert(cat == o_cat);
-  assert(o_dog == dog);
-  assert(dog == o_dog);
-  assert(o_dog != cat);
-  assert(cat != o_dog);
-  assert(o_cat != dog);
-  assert(dog != o_cat);
+  CHECK(o_cat == cat);
+  CHECK(cat == o_cat);
+  CHECK(o_dog == dog);
+  CHECK(dog == o_dog);
+  CHECK(o_dog != cat);
+  CHECK(cat != o_dog);
+  CHECK(o_cat != dog);
+  CHECK(dog != o_cat);
 
-  assert(dog != o_nil);
-  assert(cat != o_nil);
-  assert(o_nil != dog);
-  assert(o_nil != cat);
-  assert(!(dog == o_nil));
-  assert(!(cat == o_nil));
-  assert(!(o_nil == dog));
-  assert(!(o_nil == cat));
+  CHECK(dog != o_nil);
+  CHECK(cat != o_nil);
+  CHECK(o_nil != dog);
+  CHECK(o_nil != cat);
+  CHECK(!(dog == o_nil));
+  CHECK(!(cat == o_nil));
+  CHECK(!(o_nil == dog));
+  CHECK(!(o_nil == cat));
 };
 
 TEST(const_propagation) {
@@ -858,11 +859,11 @@ TEST(safe_value) {
     optional<int> ov_n{}, ov1{1};
 
     int& r1 = ov1.value();
-    assert(r1 == 1);
+    CHECK(r1 == 1);
 
     // try {
     //   ov_n.value();
-    //   assert(false);
+    //   CHECK(false);
     // } catch (bad_optional_access const&) {}
 
     {  // ref variant
@@ -870,14 +871,14 @@ TEST(safe_value) {
       optional<int&> or_n{}, or1{i1};
 
       int& r2 = or1.value();
-      assert(r2 == 1);
+      CHECK(r2 == 1);
 
       // try {
       //   or_n.value();
-      //   assert(false);
+      //   CHECK(false);
       // } catch (bad_optional_access const&) {}
     }
-  } catch (...) { assert(false); }
+  } catch (...) { CHECK(false); }
 };
 
 TEST(optional_ref) {
@@ -886,25 +887,25 @@ TEST(optional_ref) {
   // FAILS: optional<nullopt_t&> on;
   int i = 8;
   optional<int&> ori;
-  assert(!ori);
+  CHECK(!ori);
   ori.emplace(i);
-  assert(bool(ori));
-  assert(*ori == 8);
-  assert(&*ori == &i);
+  CHECK(bool(ori));
+  CHECK(*ori == 8);
+  CHECK(&*ori == &i);
   *ori = 9;
-  assert(i == 9);
+  CHECK(i == 9);
 
   // FAILS: int& ir = ori.value_or(i);
   int ii = ori.value_or(i);
-  assert(ii == 9);
+  CHECK(ii == 9);
   ii = 7;
-  assert(*ori == 9);
+  CHECK(*ori == 9);
 
   int j     = 22;
   auto&& oj = make_optional(std::ref(j));
   *oj       = 23;
-  assert(&*oj == &j);
-  assert(j == 23);
+  CHECK(&*oj == &j);
+  CHECK(j == 23);
 };
 
 TEST(optional_ref_const_propagation) {
@@ -936,26 +937,26 @@ TEST(optional_ref_assign) {
 
   optional<int&> orj = j;
 
-  assert(ori);
-  assert(*ori == 1);
-  assert(ori == orj);
-  assert(i == 9);
+  CHECK(ori);
+  CHECK(*ori == 1);
+  CHECK(ori == orj);
+  CHECK(i == 9);
 
   *ori = 2;
-  assert(*ori == 2);
-  assert(ori == 2);
-  assert(2 == ori);
-  assert(ori != 3);
+  CHECK(*ori == 2);
+  CHECK(ori == 2);
+  CHECK(2 == ori);
+  CHECK(ori != 3);
 
-  assert(ori == orj);
-  assert(j == 2);
-  assert(i == 9);
+  CHECK(ori == orj);
+  CHECK(j == 2);
+  CHECK(i == 9);
 
   ori = {};
-  assert(!ori);
-  assert(ori != orj);
-  assert(j == 2);
-  assert(i == 9);
+  CHECK(!ori);
+  CHECK(ori != orj);
+  CHECK(j == 2);
+  CHECK(i == 9);
 };
 
 TEST(optional_ref_swap) {
@@ -965,12 +966,12 @@ TEST(optional_ref_swap) {
   optional<int&> oi = i;
   optional<int&> oj = j;
 
-  assert(&*oi == &i);
-  assert(&*oj == &j);
+  CHECK(&*oi == &i);
+  CHECK(&*oj == &j);
 
   swap(oi, oj);
-  assert(&*oi == &j);
-  assert(&*oj == &i);
+  CHECK(&*oi == &j);
+  CHECK(&*oj == &i);
 };
 
 TEST(optional_initialization) {
@@ -995,22 +996,22 @@ TEST(optional_hashing) {
   std::hash<string> hs;
   std::hash<optional<string>> hos;
 
-  assert(hi(0) == hoi(optional<int>{0}));
-  assert(hi(1) == hoi(optional<int>{1}));
-  assert(hi(3198) == hoi(optional<int>{3198}));
+  CHECK(hi(0) == hoi(optional<int>{0}));
+  CHECK(hi(1) == hoi(optional<int>{1}));
+  CHECK(hi(3198) == hoi(optional<int>{3198}));
 
-  assert(hs("") == hos(optional<string>{""}));
-  assert(hs("0") == hos(optional<string>{"0"}));
-  assert(hs("Qa1#") == hos(optional<string>{"Qa1#"}));
+  CHECK(hs("") == hos(optional<string>{""}));
+  CHECK(hs("0") == hos(optional<string>{"0"}));
+  CHECK(hs("Qa1#") == hos(optional<string>{"Qa1#"}));
 
   std::unordered_set<optional<string>> set;
-  assert(set.find({"Qa1#"}) == set.end());
+  CHECK(set.find({"Qa1#"}) == set.end());
 
   set.insert({"0"});
-  assert(set.find({"Qa1#"}) == set.end());
+  CHECK(set.find({"Qa1#"}) == set.end());
 
   set.insert({"Qa1#"});
-  assert(set.find({"Qa1#"}) != set.end());
+  CHECK(set.find({"Qa1#"}) != set.end());
 };
 
 // optional_ref_emulation
@@ -1036,44 +1037,44 @@ bool generic_fun() {
 TEST(optional_ref_emulation) {
   using namespace hm3;
   optional<Generic<int>> oi = 1;
-  assert(*oi == 1);
+  CHECK(*oi == 1);
 
   int i = 8;
   int j = 4;
   optional<Generic<int&>> ori{i};
-  assert(*ori == 8);
-  assert((void*)&*ori != (void*)&i);  // !DIFFERENT THAN optional<T&>
+  CHECK(*ori == 8);
+  CHECK((void*)&*ori != (void*)&i);  // !DIFFERENT THAN optional<T&>
 
   *ori = j;
-  assert(*ori == 4);
+  CHECK(*ori == 4);
 };
 
 TEST(moved_on_value_or) {
   using namespace tr2;
   optional<oracle> oo{in_place};
 
-  assert(oo);
-  assert(oo->s == s_default_constructed);
+  CHECK(oo);
+  CHECK(oo->s == s_default_constructed);
 
   oracle o = std::move(oo).value_or(oracle{oracle_val{}});
-  assert(oo);
-  assert(oo->s == s_moved_from);
-  assert(o.s == s_move_constructed);
+  CHECK(oo);
+  CHECK(oo->s == s_moved_from);
+  CHECK(o.s == s_move_constructed);
 
   optional<move_awaree<int>> om{in_place, 1};
   assert(om);
-  assert(!om->moved);
+  CHECK(!om->moved);
 
   /*move_awaree<int> m =*/std::move(om).value_or(move_awaree<int>{1});
   assert(om);
-  assert(om->moved);
+  CHECK(om->moved);
 
   {
     date d = optional<date>{in_place, 1}.value();
-    assert(d.i);  // to silence compiler warning
+    CHECK(d.i);  // to silence compiler warning
 
     date d2 = *optional<date>{in_place, 1};
-    assert(d2.i);  // to silence compiler warning
+    CHECK(d2.i);  // to silence compiler warning
   }
 };
 
@@ -1088,24 +1089,24 @@ TEST(optional_ref_hashing) {
 
   int i0 = 0;
   int i1 = 1;
-  assert(hi(0) == hoi(optional<int&>{i0}));
-  assert(hi(1) == hoi(optional<int&>{i1}));
+  CHECK(hi(0) == hoi(optional<int&>{i0}));
+  CHECK(hi(1) == hoi(optional<int&>{i1}));
 
   string s;
   string s0{"0"};
   string s_cat{"CAT"};
-  assert(hs("") == hos(optional<string&>{s}));
-  assert(hs("0") == hos(optional<string&>{s0}));
-  assert(hs("CAT") == hos(optional<string&>{s_cat}));
+  CHECK(hs("") == hos(optional<string&>{s}));
+  CHECK(hs("0") == hos(optional<string&>{s0}));
+  CHECK(hs("CAT") == hos(optional<string&>{s_cat}));
 
   std::unordered_set<optional<string&>> set;
-  assert(set.find({s_cat}) == set.end());
+  CHECK(set.find({s_cat}) == set.end());
 
   set.insert({s0});
-  assert(set.find({s_cat}) == set.end());
+  CHECK(set.find({s_cat}) == set.end());
 
   set.insert({s_cat});
-  assert(set.find({s_cat}) != set.end());
+  CHECK(set.find({s_cat}) != set.end());
 };
 
 struct combined {
@@ -1131,14 +1132,14 @@ TEST(arrow_operator) {
   using namespace hm3;
 
   optional<combined> oc1{in_place, 1, 2};
-  assert(oc1);
-  assert(oc1->m == 1);
-  assert(oc1->n == 2);
+  CHECK(oc1);
+  CHECK(oc1->m == 1);
+  CHECK(oc1->n == 2);
 
   optional<nasty> on{in_place, 1, 2};
-  assert(on);
-  assert(on->m == 1);
-  assert(on->n == 2);
+  CHECK(on);
+  CHECK(on->m == 1);
+  CHECK(on->n == 2);
 };
 
 TEST(arrow_wit_optional_ref) {
@@ -1146,33 +1147,33 @@ TEST(arrow_wit_optional_ref) {
 
   combined c{1, 2};
   optional<combined&> oc = c;
-  assert(oc);
-  assert(oc->m == 1);
-  assert(oc->n == 2);
+  CHECK(oc);
+  CHECK(oc->m == 1);
+  CHECK(oc->n == 2);
 
   nasty n{1, 2};
   nasty m{3, 4};
   nasty p{5, 6};
 
   optional<nasty&> on{n};
-  assert(on);
-  assert(on->m == 1);
-  assert(on->n == 2);
+  CHECK(on);
+  CHECK(on->m == 1);
+  CHECK(on->n == 2);
 
   on = {m};
-  assert(on);
-  assert(on->m == 3);
-  assert(on->n == 4);
+  CHECK(on);
+  CHECK(on->m == 3);
+  CHECK(on->n == 4);
 
   on.emplace(p);
-  assert(on);
-  assert(on->m == 5);
-  assert(on->n == 6);
+  CHECK(on);
+  CHECK(on->m == 5);
+  CHECK(on->n == 6);
 
   optional<nasty&> om{in_place, n};
-  assert(om);
-  assert(om->m == 1);
-  assert(om->n == 2);
+  CHECK(om);
+  CHECK(om->m == 1);
+  CHECK(om->n == 2);
 };
 
 TEST(no_dangling_reference_in_value) {
@@ -1208,7 +1209,7 @@ TEST(exception_safety) {
   } catch (...) {
     //
   }
-  assert(counted_object::counter == 0);
+  CHECK(counted_object::counter == 0);
 
   try {
     optional<counted_object> oo(in_place, true);  // throw
@@ -1216,7 +1217,7 @@ TEST(exception_safety) {
   } catch (...) {
     //
   }
-  assert(counted_object::counter == 0);
+  CHECK(counted_object::counter == 0);
 };
 
 //// constexpr tests
@@ -1384,9 +1385,9 @@ struct vec {
 
 int main() {
   tr2::optional<int> oi = 1;
-  assert(bool(oi));
+  CHECK(bool(oi));
   oi.operator=({});
-  assert(!oi);
+  CHECK(!oi);
 
   vec v = {5, 6};
 

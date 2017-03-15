@@ -30,6 +30,7 @@ struct polygon : private polyline<Ad, PointStorage> {
   polygon(polygon&&)      = default;
   polygon& operator=(polygon const&) = default;
   polygon& operator=(polygon&&) = default;
+  ~polygon()                    = default;
 
   using polyline_t::edge_size;
   using polyline_t::edge;
@@ -77,7 +78,7 @@ struct polygon : private polyline<Ad, PointStorage> {
   template <
    typename Edges, typename ET = ranges::range_value_t<uncvref_t<Edges>>,
    CONCEPT_REQUIRES_(Range<Edges>{} and Constructible<edge_value_type, ET>{})>
-  polygon(Edges&& es) noexcept : polyline_t(std::forward<Edges>(es)) {
+  explicit polygon(Edges&& es) noexcept : polyline_t(std::forward<Edges>(es)) {
     assert_invariants(HM3_AT_);
     correct_last_point();
   }

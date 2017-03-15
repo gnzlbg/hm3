@@ -38,7 +38,7 @@ struct vec : private point_vector_detail::base_t<Ad> {
   using rebind = vec<OtherAd>;
 
   constexpr vec() = default;
-  constexpr vec(base_t const& s) : base_t(s) {}
+  explicit constexpr vec(base_t const& s) : base_t(s) {}
   constexpr static vec constant(num_t v) noexcept {
     return vec{base_t::constant(v)};
   }
@@ -52,13 +52,16 @@ struct vec : private point_vector_detail::base_t<Ad> {
   template <typename Rng, typename It = range_iterator_t<Rng>,
             CONCEPT_REQUIRES_(
              Range<Rng>{} and std::is_same<iterator_value_t<It>, vec<Ad>>{})>
-  constexpr vec(Rng&& rng) : vec{*begin(rng)} {
+  explicit constexpr vec(Rng&& rng) : vec{*begin(rng)} {
     HM3_ASSERT(ranges::distance(rng) == 1, "?");
   }
 
   auto normalized() const noexcept { return vec<Ad>((*this)().normalized()); }
 
-  operator base_t() const noexcept = delete;
+  // TODO: clang-tidy bug
+  operator base_t() const noexcept  // NOLINT(google-explicit-constructor)
+   = delete;
+
   base_t& layout() noexcept { return static_cast<base_t&>(*this); }
   base_t const& layout() const noexcept {
     return static_cast<base_t const&>(*this);

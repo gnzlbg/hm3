@@ -82,12 +82,14 @@ class compact_optional_base {
    noexcept(storage_type(N::empty_value())))
    : value_(N::empty_value()) {}
 
-  constexpr compact_optional_base(const value_type& v)
+  constexpr compact_optional_base(  // NOLINT(google-explicit-constructor)
+   const value_type& v)
    : value_(N::store_value(v)) {
     HM3_ASSERT(has_value(), "");
   }
 
-  constexpr compact_optional_base(value_type&& v)
+  constexpr compact_optional_base(  // NOLINT(google-explicit-constructor)
+   value_type&& v)
    : value_(N::store_value(std::move(v))) {
     HM3_ASSERT(has_value(), "");
   }

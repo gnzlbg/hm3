@@ -82,8 +82,8 @@ struct intersection_triangle_fn {
 
       // These cases are disambiguated by evaluating the sdf at the edge
       // centroids:
-      array<num_t, 3> centroid_sd;
-      array<signum_t, 3> centroid_sg;
+      array<num_t, 3> centroid_sd{};
+      array<signum_t, 3> centroid_sg{};
       for (auto eidx : edge.indices(tri)) {
         auto s            = edge(tri, eidx);
         auto sc           = centroid(s);
@@ -118,7 +118,7 @@ struct intersection_triangle_fn {
         case 1: {
           // One edge is intersected, that edge and the other vertex are the
           // boundary. Add the segment:
-          s_t s;
+          s_t s{};
           for (auto eidx : edge.indices(tri)) {
             if (centroid_sg[eidx] == signum_t::zero()) {
               s = edge(tri, eidx);

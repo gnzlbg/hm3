@@ -20,7 +20,7 @@ struct signed_distance_function : signed_distance<Ad> {
   ref_t<F> f_;
 
   template <typename U>
-  signed_distance_function(U&& u) : f_(std::forward<U>(u)) {}
+  explicit signed_distance_function(U&& u) : f_(std::forward<U>(u)) {}
 
   template <typename P>
   constexpr num_t operator()(P&& p) const noexcept {

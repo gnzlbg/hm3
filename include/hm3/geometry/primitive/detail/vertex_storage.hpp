@@ -53,7 +53,7 @@ struct vertex_storage : Storage {
   using vertex_type = typename Storage::value_type;
   using storage_t   = Storage;
 
-  using storage_t::storage_t;
+  using storage_t::storage_t;  // NOLINT(modernize-use-equals-default)
   using storage_t::operator=;
   using storage_t::size;
   using storage_t::empty;
@@ -98,7 +98,7 @@ struct vertex_storage : Storage {
    typename Vertices,
    CONCEPT_REQUIRES_(multi_pass_insertable<Vertices>{}
                      and PushBackable<storage_t, range_value_t<Vertices>>{})>
-  constexpr vertex_storage& operator=(Vertices&& vs) noexcept /*TODO*/ {
+  constexpr vertex_storage& operator=(Vertices&& vs) noexcept {
     auto no_vertices = ranges::distance(vs);
     HM3_ASSERT(no_vertices <= max_size(),
                "number of vertices {} exceeds max_size {}!\n\nvertices:\n\n{}",
@@ -127,7 +127,7 @@ struct vertex_storage : Storage {
 
   template <typename Vertices,
             CONCEPT_REQUIRES_(multi_pass_insertable<Vertices>{})>
-  constexpr vertex_storage(Vertices&& vs) noexcept /*TODO*/ {
+  explicit constexpr vertex_storage(Vertices&& vs) noexcept /*TODO*/ {
     (*this) = std::forward<Vertices>(vs);
   }
 

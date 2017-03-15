@@ -44,11 +44,11 @@ struct origin_rotation : Sd {
   meta::if_c<ad_v<Sd> == 2, num_t, vec<3>> origin_rotation_angles_{};
 
   template <typename... Args, CONCEPT_REQUIRES_(ad_v<Sd> == 2)>
-  origin_rotation(num_t angle, Args&&... args)
+  explicit origin_rotation(num_t angle, Args&&... args)
    : Sd(std::forward<Args>(args)...), origin_rotation_angles_(angle) {}
 
   template <typename V, typename... Args, CONCEPT_REQUIRES_(ad_v<Sd> == 2)>
-  origin_rotation(V angles, Args&&... args)
+  explicit origin_rotation(V angles, Args&&... args)
    : Sd(std::forward<Args>(args)...)
    , origin_rotation_angles_(std::move(angles())) {
     static_assert(Vector<V>{});

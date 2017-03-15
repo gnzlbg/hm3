@@ -73,7 +73,7 @@ using ranges::iterator_reference_t;
 using ranges::Same;
 
 template <typename U, typename V>
-static constexpr bool UCVSame = Same<uncvref_t<U>, uncvref_t<V>>{};
+using UCVSame = Same<uncvref_t<U>, uncvref_t<V>>;
 
 using ranges::Range;
 using ranges::InputRange;

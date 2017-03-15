@@ -17,7 +17,7 @@ struct bounded {
   using reference_type = value_type&;
   value_type value;
 
-  constexpr bounded(T v = From) : value{std::move(v)} {
+  constexpr bounded(T v = From) : value{std::move(v)} {  // NOLINT
     HM3_ASSERT(value >= From and value < To,
                "value {} is out-of-bounds [{}, {})", value, From, To);
   }

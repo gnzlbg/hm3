@@ -69,7 +69,7 @@ struct segment {
   template <typename Rng, typename VT = ranges::range_value_t<uncvref_t<Rng>>,
             CONCEPT_REQUIRES_(Range<Rng>{} and !Same<VT, segment<Ad>>{}
                               and Same<point_value_type, VT>{})>
-  constexpr segment(Rng&& rng) noexcept {
+  explicit constexpr segment(Rng&& rng) noexcept {
     HM3_ASSERT(ranges::size(rng) == 2, "");
     auto it = ranges::begin(rng);
     xs_[0]  = *it;
@@ -91,7 +91,9 @@ struct segment {
                p, dir);
   }
 
-  constexpr segment(data_t d) : xs_(std::move(d)) { assert_valid(HM3_AT_); }
+  explicit constexpr segment(data_t d) : xs_(std::move(d)) {
+    assert_valid(HM3_AT_);
+  }
 
   constexpr segment()               = default;
   constexpr segment(segment const&) = default;

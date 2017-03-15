@@ -189,7 +189,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
       throw std::out_of_range(
        "cannot access fixed_capacity_vector element at pos >= size");
     }
-    return (*this)[pos];
+    return ranges::at(*this, pos);
   }
 
   constexpr const_reference at(size_type pos) const {
@@ -197,7 +197,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
       throw std::out_of_range(
        "cannot access fixed_capacity_vector element at pos >= size");
     }
-    return (*this)[pos];
+    return ranges::at(*this, pos);
   }
 
   constexpr reference front() noexcept {
@@ -466,8 +466,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   /// Copy constructor.
   CONCEPT_REQUIRES(CopyConstructible<value_type>{})
-  constexpr fixed_capacity_vector(fixed_capacity_vector const& other) noexcept(
-   noexcept(insert(begin(), ranges::begin(other), ranges::end(other)))) {
+  constexpr fixed_capacity_vector  // NOLINT(google-explicit-constructor)
+   (fixed_capacity_vector const& other) noexcept(
+    noexcept(insert(begin(), ranges::begin(other), ranges::end(other)))) {
     // nothin to assert: size of other cannot exceed capacity because both
     // vectors have the same type
     insert(begin(), ranges::begin(other), ranges::end(other));
@@ -475,8 +476,9 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   /// Move constructor.
   CONCEPT_REQUIRES(MoveConstructible<value_type>{})
-  constexpr fixed_capacity_vector(fixed_capacity_vector&& other) noexcept(
-   noexcept(move_insert(begin(), ranges::begin(other), ranges::end(other)))) {
+  constexpr fixed_capacity_vector  // NOLINT(google-explicit-constructor)
+   (fixed_capacity_vector&& other) noexcept(
+    noexcept(move_insert(begin(), ranges::begin(other), ranges::end(other)))) {
     // nothin to assert: size of other cannot exceed capacity because both
     // vectors have the same type
     move_insert(begin(), ranges::begin(other), ranges::end(other));
@@ -511,7 +513,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   /// Initializes vector with \p n default-constructed elements.
   CONCEPT_REQUIRES(CopyConstructible<T>{} or MoveConstructible<T>{})
-  constexpr fixed_capacity_vector(size_type n) noexcept(
+  explicit constexpr fixed_capacity_vector(size_type n) noexcept(
    noexcept(emplace_n(n))) {
     HM3_ASSERT(n <= capacity(),
                "tried to initialize inline vector of capacity "
@@ -589,7 +591,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
 
   /// Range constructor.
   template <typename Rng, CONCEPT_REQUIRES_(RangeAssignable<Rng>{})>
-  constexpr fixed_capacity_vector(Rng&& rng) noexcept(
+  explicit constexpr fixed_capacity_vector(Rng&& rng) noexcept(
    noexcept(range_assign(std::forward<Rng>(rng)))) {
     range_assign(std::forward<Rng>(rng));
   }
