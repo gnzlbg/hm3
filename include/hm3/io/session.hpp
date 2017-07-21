@@ -6,8 +6,7 @@
 #include <hm3/io/file_system.hpp>
 #include <type_traits>
 
-namespace hm3 {
-namespace io {
+namespace hm3::io {
 
 struct create_t {};
 struct restart_t {};
@@ -234,7 +233,7 @@ struct session {
   /// Get the file group
   file_group operator[](string const& file_group_name) {
     if (!has(file_group_name)) {
-      std::cerr << std::setw(2) << data_ << std::endl;
+      ascii_fmt::err("\n{}\n\n", data_);
       HM3_FATAL_ERROR(
        "entry \"{}\" is not registered in the io::session \"{}\"\n\n"
        "io::session dump:\n",
@@ -312,5 +311,4 @@ struct session {
   inline bool operator==(session const& other) { return data_ == other.data_; }
 };
 
-}  // namespace io
-}  // namespace hm3
+}  // namespace hm3::io

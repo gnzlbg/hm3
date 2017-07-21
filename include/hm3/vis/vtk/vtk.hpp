@@ -178,11 +178,9 @@ constexpr auto cell_type(T&&) {
 
 template <typename T, CONCEPT_REQUIRES_(geometry::Polygon<uncvref_t<T>>{})>
 constexpr auto cell_type(T&&) {
-  if
-    constexpr(geometry::AABB<T, 2>{} or geometry::Box<T, 2>{}) {
-      return quad{};
-    }
-  else {
+  if constexpr (geometry::AABB<T, 2>{} or geometry::Box<T, 2>{}) {
+    return quad{};
+  } else {
     return polygon{};
   }
 }
@@ -194,11 +192,9 @@ constexpr auto cell_type(T&&) {
 
 template <typename T, CONCEPT_REQUIRES_(geometry::Polyhedron<uncvref_t<T>>{})>
 constexpr auto cell_type(T&&) {
-  if
-    constexpr(geometry::AABB<T, 3>{} or geometry::Box<T, 3>{}) {
-      return hexahedron{};
-    }
-  else {
+  if constexpr (geometry::AABB<T, 3>{} or geometry::Box<T, 3>{}) {
+    return hexahedron{};
+  } else {
     return polyhedron{};
   }
 }

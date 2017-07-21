@@ -13,7 +13,7 @@ namespace hm3::solver::lbm::lattice {
 ///
 ///  6   2   5     SW  S  SE
 ///
-struct d2q9 : geometry::with_ambient_dimension<2> {
+struct d2q9 : ::hm3::geometry::with_ambient_dimension<2> {
   static constexpr suint_t size() noexcept { return 9; }
   static auto all() noexcept { return view::iota(suint_t{0}, size()); }
   /*

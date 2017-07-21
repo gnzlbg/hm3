@@ -99,7 +99,7 @@ struct storage<T, StorageContainer, NoRows, NoCols, MaxRows, MaxCols,
  private:
   template <std::size_t... Is>
   constexpr storage(std::index_sequence<Is...>, std::initializer_list<T> v)
-   : data_{{ranges::at(v, Is)...}} {}
+   : data_{{ranges::index(v, Is)...}} {}
 
  public:
   constexpr storage(std::initializer_list<T> v)

@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -61,8 +62,8 @@ struct structured_central_difference_fn {
     t.cells().for_each_internal(
      [&](auto c) {
        for (auto d : ambient_dimensions(t)) {
-         auto c_m = c.offset(d, -1);
-         auto c_p = c.offset(d, +1);
+         auto c_m         = c.offset(d, -1);
+         auto c_p         = c.offset(d, +1);
          t.gradient(c, d) = limit_gradient(
           limiter, t.gradient(c_m, d), t.gradient(c, d), t.gradient(c_p, d));
        }
@@ -77,3 +78,4 @@ constexpr auto const& structured_central_difference
 }
 
 }  // namespace hm3::solver::fv
+#endif

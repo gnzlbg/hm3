@@ -27,18 +27,16 @@ struct split_segment_point_fn {
     visit(
      [&](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<T, P>{}) {
-           if (approx_point(s.x(0), p) or approx_point(s.x(1), p)) {
-             result.push_back(s);
-             return;
-           }
-           result.push_back(S(s.x(0), p));
-           result.push_back(S(p, s.x(1)));
+       if constexpr (Same<T, P>{}) {
+         if (approx_point(s.x(0), p) or approx_point(s.x(1), p)) {
+           result.push_back(s);
+           return;
          }
-       else if
-         constexpr(Same<T, monostate>{}) { return; }
-       else {
+         result.push_back(S(s.x(0), p));
+         result.push_back(S(p, s.x(1)));
+       } else if constexpr (Same<T, monostate>{}) {
+         return;
+       } else {
          HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
        }
      },

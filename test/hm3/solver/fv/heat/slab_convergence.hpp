@@ -27,7 +27,7 @@ struct slab_boundary_conditions {
         } else if (x_hc(0) > 1.) {
           to(b, h_c)(0) = right;
         } else {  // neumann
-          auto i_c = b.cells().closest_internal_cell(h_c);
+          auto i_c      = b.cells().closest_internal_cell(h_c);
           to(b, h_c)(0) = b.variables(i_c)(0);
         }
       });
@@ -161,7 +161,7 @@ void convergence_slab_analytical(mpi::env& env, TimeInt time_int,
   using namespace solver;
   num_t thermal_diffusivity = 1.5;
   num_t initial_temperature = 20.;
-  auto initial_condition = [=](num_t) { return initial_temperature; };
+  auto initial_condition    = [=](num_t) { return initial_temperature; };
 
   /// Boundary conditions
   num_t temperature_left  = 0.0;

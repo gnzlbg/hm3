@@ -17,7 +17,7 @@ struct NeumannBoundaryConditions {
   constexpr void apply(State& s, To&& to) {
     for (auto&& b : s.blocks()) {
       b.for_each_halo([&](auto&& h_c) {
-        auto i_c = b.closest_internal_cell(h_c);
+        auto i_c   = b.closest_internal_cell(h_c);
         to(b, h_c) = b.variables(i_c);
       });
     }

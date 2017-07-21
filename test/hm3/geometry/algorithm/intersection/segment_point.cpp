@@ -33,11 +33,11 @@ void test_segment_point_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, p_t>{}) { CHECK(i == x0); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, p_t>{}) {
+       CHECK(i == x0);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
      }
    },
@@ -46,10 +46,11 @@ void test_segment_point_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(true); }
+     if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(true);
+     }
 
      else {
        HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);

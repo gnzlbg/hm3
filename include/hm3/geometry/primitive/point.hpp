@@ -15,7 +15,7 @@ namespace point_primitive {
 /// Point.
 ///
 /// \tparam Ad Ambient dimension.
-template <dim_t Ad>  //
+template <dim_t Ad>
 struct point : private point_vector_detail::base_t<Ad> {
   using geometry_type = trait::point<Ad>;
   using vector_t      = vec<Ad>;
@@ -36,7 +36,10 @@ struct point : private point_vector_detail::base_t<Ad> {
   using typename base_t::value_type;
 
   constexpr point() = default;
-  explicit constexpr point(base_t const& s) : base_t(s) {}
+  constexpr point(base_t const& s)
+   : base_t(s) {}  // NOLINT(google-explicit-constructor)
+  constexpr point(base_t&& b)
+   : base_t(std::move(b)) {}  // NOLINT(google-explicit-constructor)
   constexpr static point constant(num_t v) noexcept {
     return point{base_t::constant(v)};
   }
@@ -144,5 +147,14 @@ constexpr VT as_v(P p) noexcept {
   static_assert(Same<VT, associated::vector_t<P>>{});
   return VT(p.layout());
 }
+
+namespace associated::customization {
+
+template <dim_t Ad>
+struct edge<::hm3::geometry::point<Ad>> {
+  using type = ::hm3::geometry::segment<Ad, ::hm3::geometry::point<Ad>>;
+};
+
+}  // namespace associated::customization
 
 }  // namespace hm3::geometry

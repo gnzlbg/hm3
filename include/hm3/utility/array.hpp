@@ -34,16 +34,16 @@ struct array {  // TODO: figure out how to do EBO.
   std::conditional_t<(N > 0), T[N > 0 ? N : 1], array_detail::empty> elems_;
 
   constexpr pointer data() noexcept {
-    if
-      constexpr(N == 0) { return nullptr; }
-    else {
+    if constexpr (N == 0) {
+      return nullptr;
+    } else {
       return static_cast<pointer>(elems_);
     }
   }
   constexpr const_pointer data() const noexcept {
-    if
-      constexpr(N == 0) { return nullptr; }
-    else {
+    if constexpr (N == 0) {
+      return nullptr;
+    } else {
       return static_cast<const_pointer>(elems_);
     }
   }
@@ -64,10 +64,10 @@ struct array {  // TODO: figure out how to do EBO.
     for (suint_t i = 0; i < N; ++i) { (*this)[i] = u; }
   }
   constexpr void swap(array& a) noexcept(
-   ranges::is_nothrow_swappable<T, T>::value) {
+   ranges::is_nothrow_swappable<T>::value) {
     using std::swap;
     for (suint_t i = 0; i < N; ++i) {
-      swap(ranges::at(*this, i), ranges::at(a, i));
+      swap(ranges::index(*this, i), ranges::index(a, i));
     }
   }
   // iterators:
@@ -98,27 +98,27 @@ struct array {  // TODO: figure out how to do EBO.
   // element access:
   constexpr reference at(size_type n) {
     if (n >= N) { throw std::out_of_range("array::at"); }
-    return ranges::at(*this, n);
+    return ranges::index(*this, n);
   };
   constexpr const_reference at(size_type n) const {
     if (n >= N) { throw std::out_of_range("array::at"); }
-    return ranges::at(*this, n);
+    return ranges::index(*this, n);
   }
   constexpr reference front() {
     HM3_ASSERT(size() > 0, "calling front on empty array!");
-    return ranges::at(*this, 0);
+    return ranges::index(*this, 0);
   }
   constexpr const_reference front() const {
     HM3_ASSERT(size() > 0, "calling front on empty array!");
-    return ranges::at(*this, 0);
+    return ranges::index(*this, 0);
   }
   constexpr reference back() {
     HM3_ASSERT(size() > 0, "calling back on empty array!");
-    return ranges::at(*this, N - 1);
+    return ranges::index(*this, N - 1);
   }
   constexpr const_reference back() const {
     HM3_ASSERT(size() > 0, "calling back on empty array!");
-    return ranges::at(*this, N - 1);
+    return ranges::index(*this, N - 1);
   }
 };
 
@@ -160,21 +160,21 @@ constexpr bool operator>=(const array<T, N>& x, const array<T, N>& y) {
 template <suint_t I, class T, suint_t N>
 constexpr T& get(array<T, N>& a) noexcept {
   static_assert(I < N, "Index out of bounds in ranges::get<> (ranges::array)");
-  return ranges::at(a, I);
+  return ranges::index(a, I);
 }
 
 template <suint_t I, class T, suint_t N>
 constexpr const T& get(const array<T, N>& a) noexcept {
   static_assert(I < N,
                 "Index out of bounds in ranges::get<> (const ranges::array)");
-  return ranges::at(a, I);
+  return ranges::index(a, I);
 }
 
 template <suint_t I, class T, suint_t N>
 constexpr T&& get(array<T, N>&& a) noexcept {
   static_assert(I < N,
                 "Index out of bounds in ranges::get<> (ranges::array &&)");
-  return std::move(ranges::at(a, I));
+  return std::move(ranges::index(a, I));
 }
 
 static_assert(RandomAccessRange<array<int, 2>>{}, "");

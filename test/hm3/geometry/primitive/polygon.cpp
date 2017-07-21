@@ -2,6 +2,7 @@
 #include <hm3/geometry/primitive/aabb.hpp>
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
+#include <hm3/geometry/primitive/ray.hpp>
 #include <hm3/utility/test.hpp>
 #include <iomanip>
 
@@ -74,13 +75,12 @@ void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
   }
 
   // check vertex order
-  if
-    constexpr(Ad == 2) {
-      auto order_should
-       = counter_clockwise ? vertex_order_t::ccw : vertex_order_t::cw;
-      CHECK(vertex_order(p) == order_should);
-      if (!random_poly_test) { CHECK(vertex_order(p) == order_should); }
-    }
+  if constexpr (Ad == 2) {
+    auto order_should
+     = counter_clockwise ? vertex_order_t::ccw : vertex_order_t::cw;
+    CHECK(vertex_order(p) == order_should);
+    if (!random_poly_test) { CHECK(vertex_order(p) == order_should); }
+  }
 
   // check boundary
   CHECK(integral.boundary(p) == boundary_);
@@ -91,10 +91,8 @@ void test_poly(Poly const& p, Vertices&& vertices_, bool counter_clockwise,
   // just means that the normal points in the opposite direction.
 
   // check area
-  if
-    constexpr(Ad == 2) { CHECK(integral.volume(p) == area_); }
-  if
-    constexpr(Ad == 3) { CHECK(integral.surface(p) == area_); }
+  if constexpr (Ad == 2) { CHECK(integral.volume(p) == area_); }
+  if constexpr (Ad == 3) { CHECK(integral.surface(p) == area_); }
 
   // check centroid
   CHECK(centroid(p) == centroid_);
@@ -165,8 +163,8 @@ void test_2d_quad() {
 
 template <typename Poly>
 void test_2d_tri() {
-  using p2d = point<2>;
   using t2d = Poly;
+  using p2d = associated::point_t<t2d>;
 
   {  // 2D ccw triangle (0):
     p2d vs[]    = {{1.0, 0.0}, {0.0, 1.0}, {0.0, 0.0}};
@@ -222,6 +220,15 @@ void test_2d_tri() {
 
     t2d t(make_edges(vs));
     test_poly<2>(t, vs, false, xc, a, b, aabbox, n);
+  }
+
+  {  // test: correct last point
+    p2d vs1[] = {{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}, {1.e-13, 1.e-13}};
+    t2d t1(make_open_segment_range(vs1));
+
+    p2d vs2[] = {{0.0, 0.0}, {0.0, 1.0}, {1.0, 0.0}};
+    t2d t2(make_edges(vs2));
+    CHECK(t1 == t2);
   }
 }
 
@@ -334,14 +341,17 @@ int main() {
   {  // 2D quad tests
     test_2d_quad<polygon<2>>();
     test_2d_quad<quad<2>>();
+    test_2d_quad<edge_polygon<2>>();
   }
   {  // 2D tri tests
     test_2d_tri<polygon<2>>();
     test_2d_tri<triangle<2>>();
+    test_2d_tri<edge_polygon<2>>();
   }
   {  // 3D tri tests
     test_3d_tri<polygon<3>>();
     test_3d_tri<triangle<3>>();
+    test_3d_tri<edge_polygon<3>>();
   }
 
   using p2d = point<2>;
@@ -389,6 +399,22 @@ int main() {
                  p2d{0.0, 1.0}};
     bp5 p1(make_edges(ps1));
     CHECK(!is_convex(p1));
+  }
+  {  // test relative position
+    p2d vs[] = {{1.0, 0.0}, {0.0, 1.0}, {0.0, 0.0}};
+    polygon<2> t(make_edges(vs));
+
+    using rp = relative_position_t;
+    p2d p0{-0.1, 0.5};  // out
+    p2d p1{0.1, 0.5};   // in
+    p2d p2{0.6, 0.6};   // out
+    p2d p3{1.0, 0.0};   // inter
+    p2d p4{0.5, 0.0};   // inter
+    CHECK(relative_position(p0, t) == rp::outside);
+    CHECK(relative_position(p1, t) == rp::inside);
+    CHECK(relative_position(p2, t) == rp::outside);
+    CHECK(relative_position(p3, t) == rp::intersected);
+    CHECK(relative_position(p4, t) == rp::intersected);
   }
   return test::result();
 }

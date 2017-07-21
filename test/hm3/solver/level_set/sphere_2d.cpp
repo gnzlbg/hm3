@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
   //.Make level set state for solvers 0 and 1:
   auto solver_node_capacity = hierarchical::grid_node_idx{
    tree::no_nodes_at_uniform_level(nd, max_grid_level)};
-  auto ls0 = solver::level_set::state<nd>{g, 0_g, solver_node_capacity, s};
-  auto ls1 = solver::level_set::state<nd>{g, 1_g, solver_node_capacity, s};
+  auto ls0 = solver::level_set::state<nd>{g, 0_g, solver_node_capacity};
+  auto ls1 = solver::level_set::state<nd>{g, 1_g, solver_node_capacity};
 
   /// Initial solver 0 grid:
   solver::initialize_grid(g, ls0, [&](auto&& n) {
@@ -97,8 +97,8 @@ int main(int argc, char* argv[]) {
   /// Generate some time steps
   auto no_time_steps = 4;
   auto time_steps    = view::generate([]() mutable {
-                      static num_t next = 0.;
-                      auto r            = next;
+                      static num_t next= 0.;
+                      auto r= next;
                       next += 1. / 4. * math::pi;
                       return r;
                     })

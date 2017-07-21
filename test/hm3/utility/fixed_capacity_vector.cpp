@@ -137,6 +137,17 @@ void libcxx_tests() {
       if (*(c.begin() + i) != *(std::addressof(*c.begin()) + i)) {
         CHECK(false);
       }
+      if (*(c.rbegin() + i) != *(std::addressof(*c.rbegin()) - i)) {
+        CHECK(false);
+      }
+    }
+    CHECK((c.begin() + c.size()) == c.end());
+    CHECK((c.rbegin() + c.size()) == c.rend());
+    if (not c.empty()) {
+      CHECK(std::addressof(*(c.begin())) == std::addressof(c.front()));
+      CHECK(std::addressof(*(c.end() - 1)) == std::addressof(c.back()));
+      CHECK(std::addressof(*(c.rbegin())) == std::addressof(c.back()));
+      CHECK(std::addressof(*(c.rend() - 1)) == std::addressof(c.front()));
     }
   };
 
@@ -152,6 +163,8 @@ void libcxx_tests() {
     typedef int T;
     typedef fixed_capacity_vector<T, 3> C;
     C c(1);
+    CHECK(c.size() == 1);
+    CHECK(not c.empty() == 1);
     CHECK(c.back() == 0);
     CHECK(c.front() == 0);
     CHECK(c[0] == 0);

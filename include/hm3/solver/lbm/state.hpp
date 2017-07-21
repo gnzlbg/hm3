@@ -1,42 +1,36 @@
-#ifdef FIXED
 #pragma once
 /// \file
 ///
 /// Lattice-Boltzmann solver state
-#include <hm3/solver/lbm/block.hpp>
-#include <hm3/solver/utility/hierarchical_block_structured_grid.hpp>
+#include <hm3/solver/lbm/tile.hpp>
+#include <hm3/solver/utility/base.hpp>
+#include <hm3/solver/utility/tiled_hierarchical_grid.hpp>
 
 namespace hm3::solver::lbm {
 
-template <typename Physics>
-using block_t_ = block<Physics::ambient_dimension(), Physics::size(), 128, 0>;
-
-template <typename Physics>
-struct state : hierarchical_block_structured_grid<block_t_<Physics>> {
-  using block_t   = block_t_<Physics>;
-  using hbsg      = hierarchical_block_structured_grid<block_t>;
-  using self      = state<Physics>;
-  using grid_t    = typename hbsg::grid_t;
-  using block_idx = typename hbsg::block_idx;
+template <typename Physics, dim_t Nic = 12>
+struct state : tiled_hierarchical_grid<tile<Physics, Nic>>, base {
+  using tile_t        = tile<Physics, Nic>;
+  using grid_client_t = tiled_hierarchical_grid<tile_t>;
+  using self          = state<Physics>;
+  using tile_idx_t    = typename grid_client_t::tile_idx_t;
+  using grid_t        = typename grid_client_t::grid_t;
 
   Physics physics;
 
-  state(grid_t& g, grid_idx gidx, block_idx block_capacity, Physics p)
-   : hbsg(g, gidx, block_capacity), physics(p) {}
+  state(grid_t& g, grid_idx gidx, tile_idx_t tile_capacity, Physics p)
+   : grid_client_t(g, gidx, tile_capacity)
+   , base(g.client().session(), gidx, *this, this->tree())
+   , physics(p) {}
 
-  // void refine(block_idx bidx) {
-  //   hbsg::refine(bidx, project_parent_to_children);
-  // }
-  // void coarsen(block_idx bidx) {
-  //   hbsg::coarsen(bidx, restrict_children_to_parent);
-  // }
-
-  decltype(auto) nodes0(cell_idx c, uint_t d) const noexcept {
-    return (this->block(this->block_i(c))).nodes0(this->block_cell_idx(c), d);
+  decltype(auto) distributions0(cell_idx_t c, uint_t d) const noexcept {
+    return (this->tile(this->tile_idx(c)))
+     .distribution0(this->tile_local_cell_idx(c), d);
   }
 
-  decltype(auto) nodes1(cell_idx c, uint_t d) const noexcept {
-    return (this->block(this->block_i(c))).nodes1(this->block_cell_idx(c), d);
+  decltype(auto) distributions1(cell_idx_t c, uint_t d) const noexcept {
+    return (this->tile(this->tile_idx(c)))
+     .distribution1(this->tile_local_cell_idx(c), d);
   }
 
   friend bool operator==(self const&, self const&) noexcept { return false; }
@@ -46,5 +40,9 @@ struct state : hierarchical_block_structured_grid<block_t_<Physics>> {
   }
 };
 
+template <typename Physics, dim_t N>
+string type(state<Physics, N> const&) {
+  return "lbm_" + Physics::name();
+}
+
 }  // namespace hm3::solver::lbm
-#endif

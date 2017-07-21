@@ -70,6 +70,8 @@ struct multi : adaptor::multi<single<Ad>> {
                     "grid::hierarchical::cartesian::multi",
                     type_, name_);
   }
+
+  io::client& client() { return io_; }
 };
 
 template <dim_t Ad>

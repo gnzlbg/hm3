@@ -45,18 +45,18 @@ struct is_convex_fn {
 
   template <typename P, CONCEPT_REQUIRES_(Polygon<P, 2>{})>
   constexpr bool operator()(P&& p) const noexcept {
-    if
-      constexpr(AABB<P, 2>{}) { return true; }
-    else {
+    if constexpr (AABB<P, 2>{}) {
+      return true;
+    } else {
       return is_convex_2d(std::forward<P>(p));
     }
   }
 
   template <typename P, CONCEPT_REQUIRES_(Polygon<P, 3>{})>
   constexpr bool operator()(P&& p) const noexcept {
-    if
-      constexpr(AABB<P, 2>{}) { return true; }
-    else {
+    if constexpr (AABB<P, 2>{}) {
+      return true;
+    } else {
       return is_convex_3d(std::forward<P>(p));
     }
   }

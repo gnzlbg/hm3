@@ -51,7 +51,7 @@ struct isentropic_vortex {
                            - ((gamma - 1.) * std::pow(beta, 2.) * f1)
                               / (16. * gamma * std::pow(pi, 2.))),
                           1. / (gamma - 1.));
-    p::p(pv) = std::pow(p::rho(pv), gamma);
+    p::p(pv)   = std::pow(p::rho(pv), gamma);
     return p::to_cv(pv, gamma);
   }
 };

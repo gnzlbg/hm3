@@ -18,7 +18,7 @@ static constexpr not_normalized_t not_normalized{};
 /// Line (unbounded)
 ///
 /// \tparam Ad Number of spatial dimensions.
-template <dim_t Ad, typename PointT>  //
+template <dim_t Ad, typename PointT>
 struct line {
   using geometry_type = trait::line<Ad>;
   using point_t       = PointT;

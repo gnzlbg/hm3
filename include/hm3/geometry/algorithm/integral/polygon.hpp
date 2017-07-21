@@ -91,8 +91,8 @@ constexpr num_t signed_area_projection(P&& p) noexcept {
   }
   constexpr dim_t s0[3] = {1, 2, 0};
   constexpr dim_t s1[3] = {2, 0, 1};
-  const dim_t x0        = ranges::at(s0, x);
-  const dim_t x1        = ranges::at(s1, x);
+  const dim_t x0        = ranges::index(s0, x);
+  const dim_t x1        = ranges::index(s1, x);
 
   // compute area of the 2D projection
   num_t area = 0;

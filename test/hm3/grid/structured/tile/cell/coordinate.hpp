@@ -3,22 +3,22 @@
 namespace hm3 {
 
 template <typename I, typename X>
-void coordinate_tests(I index, suint_t length, const X x) {
+void coordinate_tests(I i, suint_t length, const X x) {
   using namespace grid::structured;
   {
     X a;
     CHECK(!a);
   }
-  X y(index);
-  CHECK(y.idx() == index);
-  CHECK(I(y) == index);
+  X y(i);
+  CHECK(y.idx() == i);
+  CHECK(I(y) == i);
   CHECK(x == y);
   CHECK(!(x != y));
   CHECK(x <= y);
   CHECK(x >= y);
 
-  if (index < length - 1) {
-    X z(++index);
+  if (i < length - 1) {
+    X z(++i);
     CHECK(x != z);
     CHECK(!(x == z));
     CHECK(x < z);

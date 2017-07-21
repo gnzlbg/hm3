@@ -17,7 +17,7 @@ struct serializable : with_ambient_dimension<ad_v<State>> {
 
   using vtk_cell_idx = node_idx;
 
-  auto geometry(node_idx c) const noexcept { return s.bounding_box(c); }
+  auto geometry(node_idx c) const noexcept { return s.bounding_aabb(c); }
 
   auto nodes() const noexcept { return s.node_ids(); }
 

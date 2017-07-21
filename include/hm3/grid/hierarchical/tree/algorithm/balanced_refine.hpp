@@ -6,9 +6,7 @@
 #include <hm3/grid/hierarchical/tree/algorithm/node_neighbors.hpp>
 #include <hm3/grid/hierarchical/tree/concepts.hpp>
 
-namespace hm3 {
-namespace tree {
-//
+namespace hm3::tree {
 
 struct balanced_refine_fn {
   struct projection_fn {
@@ -23,14 +21,16 @@ struct balanced_refine_fn {
   /// \param p [in] A projection from the parent to its newly refined children
   ///               (useful for projecting data from the parent to its children)
   template <typename Tree, typename Projection = projection_fn>
-  auto operator()(Tree& tree, node_idx n, Projection&& p = Projection{}) const
-   noexcept {
-    if (!tree.is_leaf(n)) { return decltype(tree.refine(n)){}; }
+  [[nodiscard]] auto operator()(Tree& tree, node_idx n,
+                                Projection&& p = Projection{}) const noexcept {
+    using r_t = decltype(tree.refine(n));
+    if (!tree.is_leaf(n)) { return r_t{}; }
     auto l = node_level(tree, n);
     for (auto&& neighbor : node_neighbors(tree, n)) {
       auto neighbor_level = node_level(tree, neighbor);
       if (neighbor_level == l - 1 and tree.is_leaf(neighbor)) {
-        (*this)(tree, neighbor, p);
+        auto neighbor_children = (*this)(tree, neighbor, p);
+        if (not neighbor_children) { return r_t{}; }
       }
     }
     auto children = tree.refine(n);
@@ -43,5 +43,4 @@ namespace {
 auto&& balanced_refine = static_const<balanced_refine_fn>::value;
 }  // namespace
 
-}  // namespace tree
-}  // namespace hm3
+}  // namespace hm3::tree

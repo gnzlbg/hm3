@@ -15,13 +15,13 @@ struct Vertex  // NOLINT(readability-identifier-naming)
             typename NT = associated::num_type_t<UT>>
   auto requires_(T&& t) -> decltype(rc::valid_expr(
    rc::is_true(trait::check<UT, trait::point<ambient_dimension_v<UT>>>),
-   rc::convertible_to<NT>(t(dim_t{0})),         //
-   rc::convertible_to<NT>(t[dim_t{0}]),         //
-   rc::convertible_to<UT>(UT::unit(dim_t{0})),  //
-   rc::convertible_to<UT>(UT::constant(NT{})),  //
-   rc::convertible_to<UT>(UT::zero()),          //
-   rc::convertible_to<UT>(UT::ones()),          //
-   rc::convertible_to<NT>(*ranges::begin(t))    //
+   rc::convertible_to<NT>(t(dim_t{0})),  //
+   rc::convertible_to<NT>(t[dim_t{0}])   //,         //
+   // rc::convertible_to<UT>(UT::unit(dim_t{0})),  //
+   // rc::convertible_to<UT>(UT::constant(NT{})),  //
+   // rc::convertible_to<UT>(UT::zero()),          //
+   // rc::convertible_to<UT>(UT::ones()),          //
+   // rc::convertible_to<NT>(*ranges::begin(t))    //
    ));
 };
 

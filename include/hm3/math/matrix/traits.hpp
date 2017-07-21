@@ -41,38 +41,43 @@ struct to_eigen_order<col_major_t> {
 };
 
 /// Select storage type:
-//  if MaxRows != dynamic && MaxCols != dynamic
+//  if MaxRows != dynamic && MaxCols != dynamic && heap_only == false
 //  => stack storage
-template <int_t MaxRows, int_t MaxCols>
+template <int_t MaxRows, int_t MaxCols, bool heap_only>
 struct storage_type {
   using type = stack_storage;
+};
+
+template <int_t MaxRows, int_t MaxCols>
+struct storage_type<MaxRows, MaxCols, true> {
+  using type = dynamic_storage;
 };
 
 /// Select storage type:
 //  if MaxRows == dynamic
 //  => dynamic storage
-template <int_t MaxCols>
-struct storage_type<dynamic, MaxCols> {
+template <int_t MaxCols, bool heap_only>
+struct storage_type<dynamic, MaxCols, heap_only> {
   using type = dynamic_storage;
 };
 
 /// Select storage type:
 //  if MaxCols == dynamic
 //  => dynamic storage
-template <int_t MaxRows>
-struct storage_type<MaxRows, dynamic> {
+template <int_t MaxRows, bool heap_only>
+struct storage_type<MaxRows, dynamic, heap_only> {
   using type = dynamic_storage;
 };
 
 /// Select storage type:
 //  if MaxRows == dynamic && MaxCols == dynamic
 //  => dynamic storage
-template <>
-struct storage_type<dynamic, dynamic> {
+template <bool heap_only>
+struct storage_type<dynamic, dynamic, heap_only> {
   using type = dynamic_storage;
 };
 
-template <int_t MaxRows, int_t MaxCols>
-using storage_type_t = typename storage_type<MaxRows, MaxCols>::type;
+template <int_t MaxRows, int_t MaxCols, bool heap_only>
+using storage_type_t = typename storage_type<MaxRows, MaxCols, heap_only>::type;
 
 }  // namespace hm3::dense

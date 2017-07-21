@@ -36,16 +36,12 @@ struct intersection_parameter_segment_point_fn {
     static_assert(ad_v<S> == ad_v<P>);
     constexpr auto ad = ambient_dimension(P{});
     const num_t dist  = [&]() {
-      if
-        constexpr(Same<Q, on_segment_line_t>{}) {
-          return minimum_distance_line_point(s.line(), p);
-        }
-      else if
-        constexpr(Same<Q, on_segment_t>{}) {
-          return minimum_distance_segment_point(s, p, abs_tol, rel_tol);
-          ;
-        }
-      else {
+      if constexpr (Same<Q, on_segment_line_t>{}) {
+        return minimum_distance_line_point(s.line(), p);
+      } else if constexpr (Same<Q, on_segment_t>{}) {
+        return minimum_distance_segment_point(s, p, abs_tol, rel_tol);
+        ;
+      } else {
         static_assert(
          always_false<Q>{},
          "unknown intersection mode for segment-point intersection!");

@@ -1,4 +1,5 @@
 #pragma once
+#define HM3_USE_EDGE_BASED_POLYLINE
 /// \file
 ///
 /// Primitive forward declarations.
@@ -47,7 +48,7 @@ struct ray;
 using ray_primitive::ray;
 
 namespace segment_primitive {
-template <dim_t Ad>
+template <dim_t Ad, typename PT = point<Ad>>
 struct segment;
 }  // namespace segment_primitive
 using segment_primitive::segment;
@@ -58,17 +59,29 @@ struct polyline;
 }  // namespace polyline_primitive
 using polyline_primitive::polyline;
 
+template <dim_t Ad>
+using edge_polyline = polyline<Ad, small_vector<segment<Ad>, 4>>;
+
 namespace polygon_primitive {
 template <dim_t Ad, typename Storage = small_vector<point<Ad>, 5>>
 struct polygon;
 }  // namespace polygon_primitive
 using polygon_primitive::polygon;
 
+template <dim_t Ad>
+using edge_polygon = polygon<Ad, small_vector<segment<Ad>, 4>>;
+
 namespace plane_primitive {
 template <dim_t Ad>
 struct plane;
 }  // namespace plane_primitive
 using plane_primitive::plane;
+
+namespace polyhedron_primitive {
+template <typename FaceType = polygon<3>>
+struct polyhedron;
+}  // namespace polyhedron_primitive
+using polyhedron_primitive::polyhedron;
 
 ///@}  // Fundamental geometric primitives
 

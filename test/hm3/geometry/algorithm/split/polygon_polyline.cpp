@@ -296,7 +296,7 @@ void test_polygon_polyline_split() {
   {
     auto pg2_vxs = {p_t{0., 0.2083333333333334}, p_t{0., 0.}, p_t{1., 0.},
                     p_t{1., 0.2083333333333333}, p_t{0.5, 0.25}};
-    auto pg2 = pg_t(make_segment_range(pg2_vxs));
+    auto pg2     = pg_t(make_segment_range(pg2_vxs));
 
     auto tpl_vxs = {p_t{-.1, .2}, p_t{.5, .25}, p_t{1.1, .2}};
     auto tpl     = pl_t(make_open_segment_range(tpl_vxs));

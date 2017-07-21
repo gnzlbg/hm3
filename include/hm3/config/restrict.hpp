@@ -19,7 +19,7 @@
 
 #ifdef HM3_DISABLE_RESTRICT_MACRO
 #define HM3_RESTRICT  // Disables restrict
-#else  // Otherwise, enable restrict (depends on compiler):
+#else                 // Otherwise, enable restrict (depends on compiler):
 
 // For each compiler
 #if defined(HM3_COMPILER_GCC) || defined(HM3_COMPILER_CLANG)

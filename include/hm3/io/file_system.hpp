@@ -2,6 +2,8 @@
 /// \file
 ///
 /// File system utilities.
+///
+/// TODO: should be replaced with <filesystem>.
 #include <fstream>
 #include <hm3/config/system.hpp>
 #include <hm3/types.hpp>
@@ -100,11 +102,32 @@ inline string extension(string const& file_name) {
   return split_extension(file_name).second;
 }
 
-inline string read_whole(string const& file_name, const mpi::comm& comm) {
+inline std::ifstream open_input_stream(string const& file_name,
+                                       const mpi::comm& comm) {
   if (!exists(file_name, comm)) {
     HM3_FATAL_ERROR("file name \"{}\" does not exist!", file_name);
   }
-  std::ifstream t(file_name);
+  std::ifstream stream(file_name);
+  if (not stream.is_open()) {
+    HM3_FATAL_ERROR("file stream to file \"{}\" cannot be opened!", file_name);
+  }
+  return stream;
+}
+
+inline std::ofstream open_output_stream(string const& file_name,
+                                        const mpi::comm& comm) {
+  if (exists(file_name, comm)) {
+    HM3_FATAL_ERROR("file name \"{}\" already exist!", file_name);
+  }
+  std::ofstream stream(file_name);
+  if (not stream.is_open()) {
+    HM3_FATAL_ERROR("file stream to file \"{}\" cannot be opened!", file_name);
+  }
+  return stream;
+}
+
+inline string read_whole(string const& file_name, const mpi::comm& comm) {
+  auto t = open_input_stream(file_name, comm);
   std::string str;
 
   t.seekg(0, std::ios::end);

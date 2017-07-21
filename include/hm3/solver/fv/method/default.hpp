@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -8,19 +9,17 @@
 #include <hm3/solver/fv/algorithm/structured_rhs.hpp>
 #include <hm3/solver/fv/tile/cell_gradients.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct grad_method {
   struct tile_variables {
     template <typename Grid, typename Physics, typename TimeInt,
               typename NumFlux, typename Order = dense::col_major_t>
     using invoke
-     = std::conditional_t<NumFlux::requires_cell_gradients,
+     = std::conditional_t<NumFlux::requires_cell_gradients,               //
                           meta::list<                                     //
                            cell_gradients<Grid, Physics::nvars(), Order>  //
-                           >,
+                           >,                                             //
                           meta::list<>>;
   };
 
@@ -141,6 +140,5 @@ struct cut_cell_grad_method {
 
 using default_method = grad_method;
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv
+#endif

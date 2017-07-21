@@ -2,6 +2,7 @@
 /// \file
 ///
 /// ASCII OStream writer.
+#include <hm3/ext/string_view.hpp>
 #include <hm3/ext/variant.hpp>
 #include <hm3/utility/compact_optional.hpp>
 #include <hm3/utility/fmt.hpp>
@@ -12,13 +13,35 @@ namespace hm3::ascii_fmt {
 
 namespace utility_detail {
 
-template <typename OStream, typename Rng, CONCEPT_REQUIRES_(Range<Rng>{})>
+template <typename OStream, typename Rng,
+          CONCEPT_REQUIRES_(Range<Rng>{} and ranges::SizedRange<Rng>()
+                            and should_wrap<Rng>)>
 constexpr OStream& range_to_ascii_impl(OStream& os, Rng&& rng) {
   os << "[";
   auto len = ranges::size(rng);
   for (std::size_t i = 0; i != len; ++i) {
-    to_ascii(os, ranges::at(rng, i));
+    to_ascii(os, ranges::index(rng, i));
     if (i != len - 1) { os << ","; }
+  }
+  os << "]";
+  return os;
+}
+
+template <typename OStream, typename Rng,
+          CONCEPT_REQUIRES_(Range<Rng>{} and !ranges::SizedRange<Rng>()
+                            and should_wrap<Rng>)>
+constexpr OStream& range_to_ascii_impl(OStream& os, Rng&& rng) {
+  os << "[";
+  auto b = ranges::begin(rng);
+  auto e = ranges::end(rng);
+  if (b != e) {
+    to_ascii(os, *b);
+    ++b;
+  }
+  while (b != e) {
+    os << ",";
+    to_ascii(os, *b);
+    ++b;
   }
   os << "]";
   return os;
@@ -74,10 +97,11 @@ constexpr OStream& to_ascii_impl(OStream& os, monostate const&) {
 template <typename OStream, typename T>
 constexpr OStream& to_ascii_impl(OStream& os, T* const& t) {
   if (t == nullptr) {
-    os << "-";
+    os << "nullptr";
   } else {
-    os << "ptr: ";
+    os << "&" << t << " (v: ";
     to_ascii(os, *t);
+    os << ")";
   }
   return os;
 }

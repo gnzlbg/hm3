@@ -74,7 +74,7 @@ struct multi : TreeGrid {
   ///
   /// If p has children, this just return the children.
   /// Otherwise, it refines the node within the tree.
-  auto refine(tree_node_idx n) noexcept {
+  [[nodiscard]] auto refine(tree_node_idx n) noexcept {
     assert_node_in_use(n, HM3_AT_);
     if (TreeGrid::is_leaf(n)) {
       auto c = tree::balanced_refine(static_cast<TreeGrid&>(*this), n);
@@ -97,7 +97,7 @@ struct multi : TreeGrid {
     assert_grid_in_bounds(g, HM3_AT_);
     HM3_ASSERT(node(n, g), "node(node: {}, grid: {}) is already invalid", n, g);
     node(n, g) = grid_node_idx{};
-    auto p = TreeGrid::parent(n);
+    auto p     = TreeGrid::parent(n);
     if (TreeGrid::is_leaf(n) and !TreeGrid::is_root(n)) {
       if (ranges::all_of(TreeGrid::siblings(n), [&](tree_node_idx m) {
             return ranges::all_of(grid_nodes(m),

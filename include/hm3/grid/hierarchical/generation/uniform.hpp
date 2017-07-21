@@ -5,7 +5,6 @@
 #include <hm3/grid/hierarchical/generation/generic.hpp>
 #include <hm3/grid/hierarchical/tree/algorithm/node_level.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
-#include <hm3/math/core.hpp>
 
 namespace hm3::grid::hierarchical::generation {
 
@@ -19,7 +18,13 @@ struct uniform_fn {
        return tree.nodes() | tree.leaf()
               | tree::node_level.filter(tree, level++);
      },
-     [&](auto n) { tree.refine(n); },
+     [&](auto n) {
+       if (not tree.refine(n)) {
+         HM3_FATAL_ERROR(
+          "cannot refine node {} | tree size: {} | tree capacity: {}", n,
+          tree.size(), tree.capacity());
+       }
+     },
      [&](auto) { return (level == target_level + 1_l) ? false : true; },
      []() { /* sort the grid ? */ });
   }

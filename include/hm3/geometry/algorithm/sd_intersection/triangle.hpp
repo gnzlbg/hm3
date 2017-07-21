@@ -108,7 +108,7 @@ struct intersection_triangle_fn {
           fixed_capacity_vector<pl_t, 2> segments;
           for (auto eidx : edge.indices(tri)) {
             if (centroid_sg[eidx] == signum_t::zero()) {
-              segments.push_back(edges(edge(tri, eidx)));
+              segments.push_back(pl_t(edges(edge(tri, eidx))));
             }
           }
           HM3_ASSERT(segments.size() == 2, "");

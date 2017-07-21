@@ -361,7 +361,7 @@ struct tree : geometry::with_ambient_dimension<Ad> {
   ///
   /// \pre !is_free(p) && is_leaf(p)
   /// \post !is_free(p) && !is_leaf(p)
-  siblings_idx refine(node_idx p) noexcept {
+  [[nodiscard]] siblings_idx refine(node_idx p) noexcept {
     HM3_ASSERT(!is_free(p), "node {}: is free and cannot be refined", *p);
     HM3_ASSERT(is_leaf(p), "node {}: is not a leaf and cannot be refined", *p);
     if (size() == capacity()) { return siblings_idx{}; }

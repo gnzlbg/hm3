@@ -114,12 +114,12 @@ struct small_vector {
   constexpr reference operator[](size_type pos) noexcept {
     HM3_ASSERT(pos < size(), "index {} is out-of-bounds [0, {})", pos, size());
     return match_nc(
-     [pos](auto&& c) -> reference { return ranges::at(c, pos); });
+     [pos](auto&& c) -> reference { return ranges::index(c, pos); });
   }
   constexpr const_reference operator[](size_type pos) const noexcept {
     HM3_ASSERT(pos < size(), "index {} is out-of-bounds [0, {})", pos, size());
     return match_c(
-     [pos](auto&& c) -> const_reference { return ranges::at(c, pos); });
+     [pos](auto&& c) -> const_reference { return ranges::index(c, pos); });
   }
 
   constexpr reference at(size_type pos) {
@@ -319,17 +319,15 @@ struct small_vector {
     // If using the embedded storage, and the iterator is a ForwardIterator,
     // precompute the distance and then forward to the underlying container
     // insert method:
-    if
-      constexpr(ForwardIterator<InputIt>{}) {
-        size_type n = ranges::distance(first, last);
-        // if the vector switches from embedded to fallback storage, position
-        // might point to the wrong memory:
-        position = valid_grow_by(n, position);
-        return match_nc([&position, &first, &last](auto&& c) -> iterator {
-          return as_ptr(c, c.insert(as_it(c, position), first, last));
-        });
-      }
-    else {
+    if constexpr (ForwardIterator<InputIt>{}) {
+      size_type n = ranges::distance(first, last);
+      // if the vector switches from embedded to fallback storage, position
+      // might point to the wrong memory:
+      position = valid_grow_by(n, position);
+      return match_nc([&position, &first, &last](auto&& c) -> iterator {
+        return as_ptr(c, c.insert(as_it(c, position), first, last));
+      });
+    } else {
       static_assert(InputIterator<InputIt>{}, "");
       // insert returns an iterator to the first element inserted, cache it:
       const auto first_pos_idx = position - begin();
@@ -483,13 +481,12 @@ struct small_vector {
   /// Initialize vector from range [first, last).
   template <class InputIt, CONCEPT_REQUIRES_(InputIterator<InputIt>{})>
   constexpr small_vector(InputIt first, InputIt last) {
-    if
-      constexpr(RandomAccessIterator<InputIt>{}) {
-        HM3_ASSERT(last - first <= difference_type(capacity()),
-                   "tried to initialize small_vector with capacity {}, with a "
-                   "range with {} elements",
-                   capacity(), last - first);
-      }
+    if constexpr (RandomAccessIterator<InputIt>{}) {
+      HM3_ASSERT(last - first <= difference_type(capacity()),
+                 "tried to initialize small_vector with capacity {}, with a "
+                 "range with {} elements",
+                 capacity(), last - first);
+    }
     insert(begin(), first, last);
   }
 
@@ -501,13 +498,12 @@ struct small_vector {
   template <class InputIt, CONCEPT_REQUIRES_(InputIterator<InputIt>{})>
   constexpr void assign(InputIt first, InputIt last) noexcept(
    noexcept(clear()) and noexcept(insert(begin(), first, last))) {
-    if
-      constexpr(RandomAccessIterator<InputIt>{}) {
-        HM3_ASSERT(last - first <= capacity(),
-                   "tried to initialize small_vector with capacity {}, with a "
-                   "range with {} elements",
-                   capacity(), last - first);
-      }
+    if constexpr (RandomAccessIterator<InputIt>{}) {
+      HM3_ASSERT(last - first <= capacity(),
+                 "tried to initialize small_vector with capacity {}, with a "
+                 "range with {} elements",
+                 capacity(), last - first);
+    }
     clear();
     insert(begin(), first, last);
   }

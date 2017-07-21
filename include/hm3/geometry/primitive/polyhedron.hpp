@@ -4,6 +4,7 @@
 /// A watertight polyhedron.
 #include <hm3/geometry/algorithm/approx/segment.hpp>
 #include <hm3/geometry/algorithm/direction/segment.hpp>
+#include <hm3/geometry/primitive/fwd.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/utility/small_vector.hpp>
 
@@ -11,7 +12,9 @@ namespace hm3::geometry {
 
 namespace polyhedron_primitive {
 
-/// Are two edges "absolutely" equal:
+/// Are two edges "absolutely" equal (in a direction independent way).
+///
+/// An edge [a, b] is absolutely equal with itself and its inverse [b, a].
 struct edge_abs_eq_fn {
   template <typename T, typename U>
   constexpr bool operator()(T&& t, U&& u) const noexcept {
@@ -26,30 +29,56 @@ constexpr auto const& edge_abs_eq = static_const<edge_abs_eq_fn>::value;
 }
 
 /// Watertight Polyhedron.
+template <typename FaceType>
 struct polyhedron {
-  using geometry_type = trait::polyhedron;
+  static_assert(
+   Polygon<FaceType>{},
+   "The type of the polyhedron faces must model the Polygon concept.");
 
-  using face_value_type  = polygon<3>;
+  using geometry_type    = trait::polyhedron;
+  using face_value_type  = FaceType;
   using edge_value_type  = associated::edge_t<face_value_type>;
   using point_value_type = associated::point_t<edge_value_type>;
 
-  /// The faces of the polyhedron are stored as polygons:
+  /// Constants for the small polyhedron optimization
   static constexpr inline suint_t no_inline_polygons = 8;
   static constexpr inline suint_t no_inline_edges    = 14;
   static constexpr inline suint_t no_inline_points   = 10;
+
+  /// \name Faces
+  ///@{
+
+  /// The faces of the polyhedron are stored as a sequece of polygons:
   using face_storage_t = small_vector<face_value_type, no_inline_polygons>;
   face_storage_t faces_;
 
+  /// Number of faces in the polyhedron.
   constexpr dim_t face_size() const noexcept { return faces_.size(); }
+  /// Range of all faces in the polyhedron.
   constexpr auto const& faces() const noexcept { return faces_; }
+  /// Face \p i of the polyhedron.
   constexpr auto const& face(dim_t i) const noexcept {
     HM3_ASSERT(i < face_size(), "face idx: {} is out-of-bounds [0, {})", i,
                face_size());
-    return ranges::at(faces_, i);
+    return ranges::index(faces_, i);
   }
 
-  auto edges() const noexcept {
-    small_vector<edge_value_type, no_inline_edges> edges_;
+  /// Reserves storage for \p no_faces.
+  constexpr auto reserve(suint_t no_faces) noexcept {
+    faces_.reserve(no_faces);
+  }
+
+  ///@}  // Faces
+
+  /// \name Edges
+  ///@{
+
+  using edge_storage_t = small_vector<edge_value_type, no_inline_edges>;
+
+  /// Generates a polyhedron edges from its faces.
+  edge_storage_t generate_edges() const noexcept {
+    // TODO: check that the polyhedron is water-tight
+    edge_storage_t edges_;
     auto upb = [&](auto&& v) { unique_push_back(edges_, v, edge_abs_eq); };
     for (auto&& f : faces()) {
       for (auto&& e : geometry::edges(f)) { upb(e); }
@@ -57,10 +86,25 @@ struct polyhedron {
     return edges_;
   }
 
+  /// Range of edges in the polyhedron.
+  ///
+  /// TODO: performance issue: this should be cached somehow
+  auto edges() const noexcept { return generate_edges(); }
+  /// Number of edges in the polyhedron.
+  ///
+  /// TODO: performance issue: this should also be cached somehow.
   auto edge_size() const noexcept { return edges().size(); }
 
-  auto vertices() const noexcept {
-    small_vector<point_value_type, no_inline_points> points_;
+  ///@}  // Edges
+
+  /// \name Vertices
+  ///@{
+
+  using point_storage_t = small_vector<point_value_type, no_inline_points>;
+
+  /// Generates the polyhedron vertices from its faces.
+  point_storage_t generate_vertices() const noexcept {
+    point_storage_t points_;
     auto upb = [&](auto&& v) { unique_push_back(points_, v, approx_point); };
     for (auto&& f : faces()) {
       for (auto&& p : geometry::vertices(f)) { upb(p); }
@@ -68,18 +112,17 @@ struct polyhedron {
     return points_;
   }
 
+  /// Range of vertices in the polyhedron.
+  ///
+  /// TODO: performance issue: this should be cached somehow.
+  auto vertices() const noexcept { return generate_vertices(); }
+
+  /// Number of vertices in the polyhedron.
+  ///
+  /// TODO: performance issue: this should be cached somehow.
   auto vertex_size() const noexcept { return vertices().size(); }
 
-  polyhedron()                  = default;
-  polyhedron(polyhedron const&) = default;
-  polyhedron(polyhedron&&)      = default;
-  polyhedron& operator=(polyhedron const&) = default;
-  polyhedron& operator=(polyhedron&&) = default;
-  ~polyhedron()                       = default;
-
-  constexpr auto reserve(suint_t no_faces) noexcept {
-    faces_.reserve(no_faces);
-  }
+  ///@}  // Vertices
 
   /// Construct the face-vertex adjancency matrix of the polyhedron, that is,
   /// for each "global" face, which are the "global"" vertex indices.
@@ -101,13 +144,14 @@ struct polyhedron {
 
     auto& operator[](uint_t i) noexcept {
       HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
-      return ranges::at(data_, i);
+      return ranges::index(data_, i);
     }
     auto const& operator[](uint_t i) const noexcept {
       HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
-      return ranges::at(data_, i);
+      return ranges::index(data_, i);
     }
 
+    // TODO: replace with ascii_fmt
     template <typename OStream>
     friend OStream& operator<<(OStream& os,
                                face_vertex_adjacency_t const& t) noexcept {
@@ -124,7 +168,9 @@ struct polyhedron {
     }
   };
 
-  auto face_vertex_adjacency_matrix() const noexcept {
+  /// Builds the face_vertex_adjacency_matrix of a polyhedron.
+  std::pair<point_storage_t, face_vertex_adjacency_t>
+   face_vertex_adjacency_matrix() const noexcept {
     /// Get the global vertices:
     auto vs = vertices();
 
@@ -178,11 +224,11 @@ struct polyhedron {
 
     auto& operator[](uint_t i) noexcept {
       HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
-      return ranges::at(data_, i);
+      return ranges::index(data_, i);
     }
     auto const& operator[](uint_t i) const noexcept {
       HM3_ASSERT(i < size(), "index {} is out-of-bounds [0, {})", i, size());
-      return ranges::at(data_, i);
+      return ranges::index(data_, i);
     }
 
     template <typename OStream>
@@ -268,6 +314,16 @@ struct polyhedron {
                   at, *this, edge_adjacency);
   }
 
+  /// \name Constructors/Assignment/Destructor
+  ///@{
+
+  polyhedron()                  = default;
+  polyhedron(polyhedron const&) = default;
+  polyhedron(polyhedron&&)      = default;
+  polyhedron& operator=(polyhedron const&) = default;
+  polyhedron& operator=(polyhedron&&) = default;
+  ~polyhedron()                       = default;
+
   template <
    typename Faces, typename FT = ranges::range_value_t<uncvref_t<Faces>>,
    CONCEPT_REQUIRES_(Range<Faces>{} and Constructible<face_value_type, FT>{})>
@@ -286,15 +342,19 @@ struct polyhedron {
     return (*this);
   }
 
+  ///@} // Constructors/Assignment/Destructor
+
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-inline bool operator==(polyhedron const& a, polyhedron const& b) noexcept {
+template <typename FT>
+bool operator==(polyhedron<FT> const& a, polyhedron<FT> const& b) noexcept {
   return equal(a.faces(), b.faces());
 }
 
-inline bool operator!=(polyhedron const& a, polyhedron const& b) noexcept {
+template <typename FT>
+bool operator!=(polyhedron<FT> const& a, polyhedron<FT> const& b) noexcept {
   return !(a == b);
 }
 
@@ -302,13 +362,14 @@ inline bool operator!=(polyhedron const& a, polyhedron const& b) noexcept {
 ///@{
 
 /// Number of vertices of the polyhedron \p p.
-constexpr auto vertex_size(polyhedron const& p) noexcept {
+template <typename FT>
+constexpr auto vertex_size(polyhedron<FT> const& p) noexcept {
   return p.vertex_size();
 }
 
 /// Vertex \p i of the polyhedron \p p.
-
-constexpr auto vertex(polyhedron const& p, dim_t i) noexcept {
+template <typename FT>
+constexpr auto vertex(polyhedron<FT> const& p, dim_t i) noexcept {
   HM3_ASSERT(i < p.vertex_size(), "");
   /// TODO: overload vertices
   // HM3_ASSERT(false,
@@ -323,12 +384,14 @@ constexpr auto vertex(polyhedron const& p, dim_t i) noexcept {
 ///@{
 
 /// Number of edges in the polyhedron \p p.
-
-constexpr auto edge_size(polyhedron const& p) noexcept { return p.edge_size(); }
+template <typename FT>
+constexpr auto edge_size(polyhedron<FT> const& p) noexcept {
+  return p.edge_size();
+}
 
 /// Edge \p e of the polyhedron \p p.
-
-constexpr auto edge(polyhedron const& p, dim_t e) noexcept {
+template <typename FT>
+constexpr auto edge(polyhedron<FT> const& p, dim_t e) noexcept {
   HM3_ASSERT(e < p.edge_size(), "");
   /// TODO: overload edges
   // HM3_ASSERT(false,
@@ -342,12 +405,14 @@ constexpr auto edge(polyhedron const& p, dim_t e) noexcept {
 ///@{
 
 /// Number of faces in the polyhedron \p p.
-
-constexpr auto face_size(polyhedron const& p) noexcept { return p.face_size(); }
+template <typename FT>
+constexpr auto face_size(polyhedron<FT> const& p) noexcept {
+  return p.face_size();
+}
 
 /// Face \p e of the polyhedron \p p.
-
-inline auto face(polyhedron const& p, dim_t e) noexcept {
+template <typename FT>
+auto face(polyhedron<FT> const& p, dim_t e) noexcept {
   HM3_ASSERT(e < p.face_size(), "");
   return p.face(e);
 }

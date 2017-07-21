@@ -6,9 +6,7 @@
 #include <hm3/solver/fv/tile/rhs.hpp>
 #include <hm3/types.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 struct euler_forward {
   /// \name Time integration state
@@ -18,7 +16,7 @@ struct euler_forward {
   struct tile_variables {
     template <typename Grid, typename Physics,
               typename Order = dense::col_major_t>
-    using invoke             = meta::list<            //
+    using invoke = meta::list<                        //
      right_hand_side<Grid, Physics::nvars(), Order>,  //
      left_hand_side<Grid, Physics::nvars(), Order>    //
      >;
@@ -77,6 +75,4 @@ struct euler_forward {
   }
 };
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

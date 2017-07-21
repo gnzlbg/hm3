@@ -13,7 +13,7 @@ struct ref_t {
    = meta::if_c<std::is_rvalue_reference_v<T>, std::remove_reference_t<T>, T>;
   using reference
    = meta::if_c<std::is_rvalue_reference_v<T>, std::remove_reference_t<T>&, T>;
-  using const_reference = meta::if_c<std::is_rvalue_reference_v<T>,
+  using const_reference  = meta::if_c<std::is_rvalue_reference_v<T>,
                                      std::remove_reference_t<T> const&, T>;
   using rvalue_reference = meta::if_c<std::is_rvalue_reference_v<T>, T, T>;
 

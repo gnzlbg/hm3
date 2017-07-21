@@ -50,6 +50,21 @@ int main() {
     CHECK(!intersection.test(a, p_t{1.1, 0.6}));
 
     // relative position:
+    {
+      using rp = relative_position_t;
+      p_t p0{-0.1, 0.25};  // out
+      p_t p1{0.1, 0.25};   // in
+      p_t p2{0.5, 0.6};    // out
+      p_t p3{0.5, 0.4};    // in
+      p_t p4{0.5, 0.0};    // inter
+      p_t p5{1.0, 0.0};    // inter
+      CHECK(relative_position(p0, a) == rp::outside);
+      CHECK(relative_position(p1, a) == rp::inside);
+      CHECK(relative_position(p2, a) == rp::outside);
+      CHECK(relative_position(p3, a) == rp::inside);
+      CHECK(relative_position(p4, a) == rp::intersected);
+      CHECK(relative_position(p5, a) == rp::intersected);
+    }
 
     // volume:
     CHECK(volume(a) == 0.5);

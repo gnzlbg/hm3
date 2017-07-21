@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -83,3 +84,4 @@ constexpr auto const& compute_structured_rhs
 }
 
 }  // namespace hm3::solver::fv
+#endif

@@ -101,12 +101,14 @@ constexpr pair<dim_t, dim_t> edge_vertices(dim_t edge_idx,
     case 2: {
       dim_t first[4] = {0, 1, 2, 3};
       dim_t last[4]  = {1, 2, 3, 0};
-      return make_pair(ranges::at(first, edge_idx), ranges::at(last, edge_idx));
+      return make_pair(ranges::index(first, edge_idx),
+                       ranges::index(last, edge_idx));
     }
     case 3: {
       dim_t first[12] = {0, 1, 3, 2, 0, 1, 0, 3, 4, 5, 4, 7};
       dim_t last[12]  = {4, 5, 7, 6, 3, 2, 1, 2, 7, 6, 5, 6};
-      return make_pair(ranges::at(first, edge_idx), ranges::at(last, edge_idx));
+      return make_pair(ranges::index(first, edge_idx),
+                       ranges::index(last, edge_idx));
     }
     default: { HM3_FATAL_ERROR("unknown dimension {}", ambient_dimensions); }
   }
@@ -125,7 +127,7 @@ constexpr dim_t face_vertices(dim_t fidx, dim_t vidx) noexcept {
    {7, 6, 5, 4}   // face 5 +z
   };
 
-  return ranges::at(ranges::at(face_vertices_, fidx), vidx);
+  return ranges::index(ranges::index(face_vertices_, fidx), vidx);
 }
 
 }  // namespace aabb_constants
@@ -159,7 +161,7 @@ struct face_idx_to_face_neighbor {
   CONCEPT_REQUIRES(Ad == 2)
   static constexpr face_neighbor_index neighbor_idx(suint_t face_idx) noexcept {
     constexpr array<suint_t, 4> neighbor_ids{{2, 1, 3, 0}};
-    return face_neighbor_ids{}(ranges::at(neighbor_ids, face_idx));
+    return face_neighbor_ids{}(ranges::index(neighbor_ids, face_idx));
   }
 
   // CONCEPT_REQUIRES(Ad == 3)

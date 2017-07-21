@@ -1,4 +1,3 @@
-#ifdef FIXED
 #pragma once
 /// \file
 ///
@@ -8,35 +7,31 @@
 #include <hm3/geometry/primitive/box.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
 #include <hm3/solver/lbm/state.hpp>
-#include <hm3/vis/vtk/geometry.hpp>
 #include <hm3/vis/vtk/serialize.hpp>
 
 namespace hm3::solver::lbm::vtk {
 
-template <typename State, typename Solid>
-struct serializable
- : geometry::with_ambient_dimension<State::ambient_dimension()> {
+template <typename State>
+struct serializable : hg::with_ambient_dimension<State::ambient_dimension()> {
   State const& s;
-  Solid const& solid;
-  using block_idx = grid_node_idx;
-  block_idx idx   = block_idx{};
+  using tile_idx = grid_node_idx;
+  tile_idx idx   = tile_idx{};
 
-  using vtk_cell_idx        = cell_idx;
-  static constexpr dim_t Ad = State::ambient_dimension();
+  using vtk_cell_idx = cell_idx_t;
 
-  auto geometry(cell_idx c) const noexcept { return s.geometry(c); }
+  auto geometry(cell_idx_t c) const noexcept { return s.geometry(c); }
 
   auto nodes() const noexcept {
-    return s.all_cells() | view::filter([&](cell_idx c) {
+    return s.all_cells() | view::filter([&](cell_idx_t c) {
              if (!idx) {
                return s.is_internal(c);
              } else {
-               return s.is_in_block(c, idx);
+               return s.is_in_tile(c, idx);
              }
            });
   }
 
-  auto bounding_box() const noexcept { return s.grid.tree().bounding_box(); }
+  auto bounding_box() const noexcept { return s.tree().bounding_box(); }
 
   template <typename F>
   auto for_each_cell(F&& f) const noexcept {
@@ -46,61 +41,54 @@ struct serializable
 
   template <typename CellData>
   void load(CellData&& cell_data) const {
-    cell_data.load("cell_idx", [&](cell_idx n, auto&&) {
+    cell_data.load("cell_idx", [&](cell_idx_t n, auto&&) {
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
-    cell_data.load("block_idx", [&](cell_idx c, auto&&) {
-      auto n = s.block_i(c);
+    cell_data.load("tile_idx", [&](cell_idx_t c, auto&&) {
+      auto n = s.tile_idx(c);
       return n ? static_cast<int_t>(*n) : int_t{-1};
     });
-    cell_data.load("block_cell_idx", [&](cell_idx c, auto&&) {
-      auto n = s.block_cell_idx(c);
+    cell_data.load("tile_local_cell_idx", [&](cell_idx_t c, auto&&) {
+      auto n = *s.tile_local_cell_idx(c);
       return n;  // ? static_cast<int_t>(*n) : int_t{-1};
-    });
-    cell_data.load("solid", [&](cell_idx c, auto&&) {
-      auto n   = s.block_cell_idx(c);
-      auto&& b = s.block(s.block_i(c));
-      return int_t{
-       solid(s, b, b.from(n))};  // ? static_cast<int_t>(*n) : int_t{-1};
     });
 
     if (idx) {
-      cell_data.load("is_internal", [&](cell_idx c, auto&&) {
+      cell_data.load("is_internal", [&](cell_idx_t c, auto&&) {
         return static_cast<int_t>(s.is_internal(c));
       });
     }
     s.physics.load(s, cell_data);
   }
 
-  serializable(State const& s_, Solid const& sol, block_idx b = block_idx{})
-   : s(s_), solid(sol), idx{b} {}
+  serializable(State const& s_, tile_idx b = tile_idx{}) : s(s_), idx{b} {}
 };
 
-template <typename Ls, typename State, typename Solid>
-struct ls_serializable : serializable<State, Solid> {
-  using self = ls_serializable<Ls, State, Solid>;
-  using base = serializable<State, Solid>;
+template <typename Ls, typename State>
+struct ls_serializable : serializable<State> {
+  using self = ls_serializable<Ls, State>;
+  using base = serializable<State>;
   using base::s;
   using base::idx;
-  using block_idx           = typename base::block_idx;
+  using tile_idx            = typename base::tile_idx;
   static constexpr dim_t Ad = State::ambient_dimension();
   Ls const& ls;
-  using vtk_cell_idx = cell_idx;
+  using vtk_cell_idx = cell_idx_t;
 
-  vis::vtk::geometry_t<Ad> geometry(cell_idx c) const noexcept {
+  vis::vtk::geometry_t<Ad> geometry(cell_idx_t c) const noexcept {
     auto g = s.geometry(c);
     if (!ls.is_cut(g)) { return g; }
     return std::get<0>(intersect(g, ls));
   }
 
   auto nodes() const noexcept {
-    return s.all_cells() | view::filter([&](cell_idx c) {
+    return s.all_cells() | view::filter([&](cell_idx_t c) {
              if (!idx) {
                return s.is_internal(c)
                       and (ls.is_inside(s.geometry(c))
                            or ls.is_cut(s.geometry(c)));
              } else {
-               return s.is_in_block(c, idx);
+               return s.is_in_tile(c, idx);
              }
            });
   }
@@ -111,38 +99,35 @@ struct ls_serializable : serializable<State, Solid> {
     return f;
   }
 
-  ls_serializable(Ls const& l, State const& s_, Solid const& sol,
-                  block_idx b = block_idx{})
-   : serializable<State, Solid>(s_, b, sol), ls(l) {}
+  ls_serializable(Ls const& l, State const& s_, tile_idx b = tile_idx{})
+   : serializable<State>(s_, b), ls(l) {}
 };
 
-template <typename State, typename Solid>
-void serialize(State const& state, Solid const& solid, string file_name,
-               uint_t time_step, grid_node_idx b = grid_node_idx{}) {
+template <typename State>
+void serialize(State const& state, string file_name, uint_t time_step,
+               grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
-  hm3::log::serial log("fv-serialization-to-vtk");
+  hm3::log::serial log("lbm-serialization-to-vtk");
 
-  if (b) { file_name += "_block_" + to_string(b); }
+  if (b) { file_name += "_tile_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
-  serializable<State, Solid> s(state, solid, b);
+  serializable<State> s(state, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 
-template <typename State, typename Solid, typename Ls>
-void ls_serialize(State const& state, Solid const& solid, Ls const& ls,
-                  string file_name, uint_t time_step,
-                  grid_node_idx b = grid_node_idx{}) {
+template <typename State, typename Ls>
+void ls_serialize(State const& state, Ls const& ls, string file_name,
+                  uint_t time_step, grid_node_idx b = grid_node_idx{}) {
   using std::to_string;
-  hm3::log::serial log("fv-serialization-to-vtk");
+  hm3::log::serial log("lbm-serialization-to-vtk");
 
-  if (b) { file_name += "_block_" + to_string(b); }
+  if (b) { file_name += "_tile_" + to_string(b); }
   file_name += "_" + to_string(time_step);
 
-  ls_serializable<Ls, State, Solid> s(ls, state, solid, b);
+  ls_serializable<Ls, State> s(ls, state, b);
   ::hm3::vis::vtk::serialize(s, file_name, log);
 }
 
 }  // namespace hm3::solver::lbm::vtk
 #endif  // HM3_ENABLE_VTK
-#endif

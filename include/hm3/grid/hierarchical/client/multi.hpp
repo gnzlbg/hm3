@@ -191,7 +191,7 @@ struct multi : geometry::with_ambient_dimension<Ad> {
 
  private:
   /// Returns the position of a free grid node
-  grid_node_idx free_node() const noexcept {
+  [[nodiscard]] grid_node_idx free_node() const noexcept {
     // auto i = is_free_.find_next(hint);
     auto i = is_free_.find_first();
     return i == is_free_.npos() ? grid_node_idx{} : grid_node_idx{i};
@@ -284,6 +284,10 @@ struct multi : geometry::with_ambient_dimension<Ad> {
   /// Push grid node into solver nodes and get solver node
   grid_node_idx push(tree_node_idx n) {
     auto sn = free_node();
+    if (not sn) {
+      HM3_FATAL_ERROR("no free nodes available | size: {} | capacity: {}",
+                      size(), capacity());
+    }
     HM3_ASSERT(is_free(sn), "node {} of grid {} is not free", sn, idx());
     if (sn >= capacity()) {
       /// TODO: this should probably throw to allow writing a checkpoint

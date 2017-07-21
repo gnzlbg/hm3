@@ -2,7 +2,7 @@
 /// \file
 ///
 /// Rusanov's numerical flux
-#include <hm3/geometry/dimension.hpp>
+#include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/utility/matrix.hpp>
 
 namespace hm3::solver::fv::flux {

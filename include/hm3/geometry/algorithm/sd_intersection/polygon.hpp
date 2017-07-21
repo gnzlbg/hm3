@@ -81,22 +81,20 @@ struct intersection_polygon_fn {
     // result:q
     auto append_tri_intersection = [&](auto&& v) {
       using T = uncvref_t<decltype(v)>;
-      if
-        constexpr(Same<T, monostate>{}) { return; }
-      else if
-        constexpr(Same<T, p_t>{}) { unique_push_point(v); }
-      else if
-        constexpr(Same<T, e_t>{}) { unique_push_polyline(pl_t(edges(v))); }
-      else if
-        constexpr(Same<T, pl_t>{}) { unique_push_polyline(v); }
-      else if
-        constexpr(Same<T, pair<p_t, e_t>>{}) {
-          unique_push_point(first(v));
-          unique_push_polyline(pl_t(edges(second(v))));
-        }
-      else if
-        constexpr(Same<T, pg_t>{}) { unique_push_polyline(pl_t(edges(v))); }
-      else {
+      if constexpr (Same<T, monostate>{}) {
+        return;
+      } else if constexpr (Same<T, p_t>{}) {
+        unique_push_point(v);
+      } else if constexpr (Same<T, e_t>{}) {
+        unique_push_polyline(pl_t(edges(v)));
+      } else if constexpr (Same<T, pl_t>{}) {
+        unique_push_polyline(v);
+      } else if constexpr (Same<T, pair<p_t, e_t>>{}) {
+        unique_push_point(first(v));
+        unique_push_polyline(pl_t(edges(second(v))));
+      } else if constexpr (Same<T, pg_t>{}) {
+        unique_push_polyline(pl_t(edges(v)));
+      } else {
         HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
       }
     };

@@ -8,7 +8,6 @@ using namespace hm3;
 template <typename FS>
 void check_concepts() {
   static_assert(ranges::Swappable<FS&>{});
-  static_assert(ranges::Assignable<FS, FS>{});
   static_assert(ranges::Assignable<FS&, FS&>{});
   static_assert(ranges::Assignable<FS&, FS&&>{});
   static_assert(MoveConstructible<FS>{});
@@ -42,7 +41,23 @@ void has(S&& s, T&& t, bool result) {
 }
 
 template <typename FS>
+void test_set_read() {
+  FS s = {3, 5, 2, 4, 7, 1};
+
+  test::check_equal(s, {1, 2, 3, 4, 5, 7});
+
+  CHECK(s.size() == 6_u);
+  CHECK(not s.empty());
+
+  has(s, 4, true);
+  has(s, 6, false);
+
+  CHECK((s.find(4) - ranges::begin(s)) == 3);
+}
+
+template <typename FS>
 void test_set() {
+  test_set_read<FS>();
   check_concepts<FS>();
 
   FS s = {3, 5, 2, 4, 7, 1};
@@ -136,6 +151,8 @@ void test_set() {
 int main() {
   test_set<flat_set<int>>();
   test_set<small_flat_set<int, 10>>();
+
+  test_set_read<flat_set<const int>>();
 
   return test::result();
 }

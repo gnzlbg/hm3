@@ -5,9 +5,7 @@
 #include <hm3/solver/types.hpp>
 #include <hm3/solver/utility/tile.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 template <typename Grid, vidx_t Nv, typename Order = dense::col_major_t>
 struct right_hand_side {
@@ -35,6 +33,4 @@ struct right_hand_side {
   void reinitialize() {}
 };
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

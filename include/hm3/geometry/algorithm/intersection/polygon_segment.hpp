@@ -39,16 +39,14 @@ struct intersection_polygon_segment_fn {
       visit(
        [&](auto&& i) {
          using T = uncvref_t<decltype(i)>;
-         if
-           constexpr(Same<T, PT>{}) { push_point(i); }
-         else if
-           constexpr(Same<T, e_t>{}) {
-             push_point(i.x(0));
-             push_point(i.x(1));
-           }
-         else if
-           constexpr(Same<T, monostate>{}) { return; }
-         else {
+         if constexpr (Same<T, PT>{}) {
+           push_point(i);
+         } else if constexpr (Same<T, e_t>{}) {
+           push_point(i.x(0));
+           push_point(i.x(1));
+         } else if constexpr (Same<T, monostate>{}) {
+           return;
+         } else {
            HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
          }
        },
@@ -76,7 +74,7 @@ struct intersection_polygon_segment_fn {
       }
       case 1: {  // segment interescts a single point
         if (!p0_inside and !p1_inside) { return points[0]; }
-        PT lp = p0_inside ? s.x(0) : s.x(1);
+        auto lp = p0_inside ? s.x(0) : s.x(1);
         // the segment can be either outside, s.t. the result is the single
         // point:
         if (equal_points(lp, points[0])) { return points[0]; }

@@ -52,16 +52,14 @@ struct intersection_polygon_polyline_fn {
         visit(
          [&](auto&& v) {
            using T = uncvref_t<decltype(v)>;
-           if
-             constexpr(Point<T>{}) { push_back_ip(v); }  // O(N_ip)
-           else if
-             constexpr(Segment<T>{}) {
-               push_back_ip(v.x(0));  // O(N_ip)
-               push_back_ip(v.x(1));  // O(N_ip)
-             }
-           else if
-             constexpr(Same<T, monostate>{}) {}
-           else {
+           if constexpr (Point<T>{}) {
+             push_back_ip(v);
+           }  // O(N_ip)
+           else if constexpr (Segment<T>{}) {
+             push_back_ip(v.x(0));  // O(N_ip)
+             push_back_ip(v.x(1));  // O(N_ip)
+           } else if constexpr (Same<T, monostate>{}) {
+           } else {
              HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
            }
          },

@@ -1,3 +1,92 @@
+#include <hm3/grid/hierarchical/cartesian/serialization/single_vtk.hpp>
+#include <hm3/grid/hierarchical/generation/uniform.hpp>
+#include <hm3/grid/hierarchical/grid.hpp>
+#include <hm3/solver/geometry/domain/discrete.hpp>
+#include <hm3/solver/lbm/lattice/d2q9.hpp>
+#include <hm3/solver/lbm/physics/ns.hpp>
+#include <hm3/solver/lbm/state.hpp>
+#include <hm3/solver/lbm/vtk.hpp>
+#include <hm3/solver/utility/initialize_grid.hpp>
+
+using namespace hm3;
+using solver::geometry::discrete_domain;
+using solver::geometry::boundary_surface;
+
+int main() {
+  hm3::io::session s(hm3::io::create_t{}, "lbm_test3", mpi::comm::world());
+
+  // Setup geometry:
+  constexpr dim_t ad = 2;
+  using p_t          = geometry::point<ad>;
+  using s_t          = geometry::segment<ad>;
+  using b_t          = geometry::box<ad>;
+
+  num_t domain_height = 10.0;
+  num_t domain_left   = -15.;
+  num_t domain_right  = 20.;
+
+  p_t x_llc{domain_left, -0.5 * domain_height};
+  p_t x_ulc{domain_left, +0.5 * domain_height};
+  p_t x_lrc{domain_right, -0.5 * domain_height};
+  p_t x_urc{domain_right, +0.5 * domain_height};
+
+  s_t inflow_segment{x_llc, x_ulc};
+  s_t outflow_segment{x_lrc, x_urc};
+
+  s_t top_segment{x_ulc, x_urc};
+  s_t bottom_segment{x_llc, x_lrc};
+
+  b_t box{p_t::constant(0.0), 1.};
+
+  // Setup computational domain:
+  using bs_t       = solver::geometry::boundary_surface<ad>;
+  auto bc_surfaces = [](auto&& es, suint_t i) {
+    return geometry::edges(es)
+           | view::transform([i](auto&& s) { return bs_t(s, i); });
+  };
+
+  auto inflow_bs  = bc_surfaces(inflow_segment, 0);
+  auto outflow_bs = bc_surfaces(outflow_segment, 1);
+  auto top_bs     = bc_surfaces(top_segment, 2);
+  auto bottom_bs  = bc_surfaces(bottom_segment, 3);
+  auto box_bs     = bc_surfaces(box, 4);
+
+  solver::geometry::discrete_domain<ad> domain(
+   view::concat(inflow_bs, outflow_bs, top_bs, bottom_bs, box_bs));
+
+#ifdef HM3_ENABLE_VTK
+  solver::geometry::vtk::serialize(domain, "lbm_test3_discrete_domain");
+#endif
+
+  // Generate space grid:
+  uint_t node_capacity         = 100000;
+  constexpr suint_t no_solvers = 1;
+  hierarchical::cm<ad> grid(s, node_capacity, no_solvers,
+                            domain.bounding_box());
+
+  solver::geometry::uniform_refine(grid, domain, tree::level_idx{6});
+
+#ifdef HM3_ENABLE_VTK
+  grid::hierarchical::cartesian::vtk::serialize(grid, "lbm_test3_grid");
+#endif
+
+  // Create solver:
+  using lattice_t = solver::lbm::lattice::d2q9;
+  using physics_t = solver::lbm::ns::physics<lattice_t>;
+  using state_t   = solver::lbm::state<physics_t>;
+
+  physics_t physics;
+  uint_t solver_tile_capacity = 10000;
+  state_t lbm_solver(grid, solver::grid_idx{0}, solver_tile_capacity, physics);
+  solver::initialize_leaf_grid_domain(grid, lbm_solver, domain);
+
+#ifdef HM3_ENABLE_VTK
+  solver::lbm::vtk::serialize(lbm_solver, "lbm_test3_solver_init_domain", 0);
+#endif
+
+  return 0;
+}
+
 #ifdef FIXED
 
 #include <hm3/geometry/intersect.hpp>
@@ -476,6 +565,4 @@ int main() {
   // lbm::advance(lbm_s, bcs, 100);
   return 0;
 }
-#else
-int main() { return 0; }
 #endif

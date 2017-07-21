@@ -24,11 +24,11 @@ void test_line_point_intersection() {
     visit(
      [&p](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<T, monostate>()) { CHECK(false); }
-       else if
-         constexpr(Same<T, p_t>{}) { CHECK(v == p); }
-       else {
+       if constexpr (Same<T, monostate>()) {
+         CHECK(false);
+       } else if constexpr (Same<T, p_t>{}) {
+         CHECK(v == p);
+       } else {
          static_assert(always_false<T>{}, "non-exhaustive variant");
        }
      },
@@ -43,11 +43,11 @@ void test_line_point_intersection() {
       visit(
        [](auto&& v) {
          using T = uncvref_t<decltype(v)>;
-         if
-           constexpr(Same<T, monostate>()) { CHECK(true); }
-         else if
-           constexpr(Same<T, p_t>{}) { CHECK(false); }
-         else {
+         if constexpr (Same<T, monostate>()) {
+           CHECK(true);
+         } else if constexpr (Same<T, p_t>{}) {
+           CHECK(false);
+         } else {
            static_assert(always_false<T>{}, "non-exhaustive variant");
          }
        },

@@ -131,13 +131,11 @@ struct approx_fn {
 
   template <typename T, typename U>
   static constexpr auto eq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol) {
-    if
-      constexpr(std::is_floating_point<uncvref_t<T>>{}
-                and std::is_floating_point<uncvref_t<U>>{}) {
-        return approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
-                             rel_tol);
-      }
-    else {
+    if constexpr (std::is_floating_point<uncvref_t<T>>{}
+                  and std::is_floating_point<uncvref_t<U>>{}) {
+      return approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                           rel_tol);
+    } else {
       static_assert(UCVSame<T, U>{}, "T and U must be equal");
       return default_eq(std::forward<T>(t), std::forward<U>(u), abs_tol,
                         rel_tol, associated::v_<T>);
@@ -146,14 +144,12 @@ struct approx_fn {
 
   template <typename T, typename U>
   static constexpr auto leq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol) {
-    if
-      constexpr(std::is_floating_point<uncvref_t<T>>{}
-                and std::is_floating_point<uncvref_t<U>>{}) {
-        return t <= u
-               or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
-                                rel_tol);
-      }
-    else {
+    if constexpr (std::is_floating_point<uncvref_t<T>>{}
+                  and std::is_floating_point<uncvref_t<U>>{}) {
+      return t <= u
+             or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                              rel_tol);
+    } else {
       static_assert(UCVSame<T, U>{}, "T and U must be equal");
       return default_leq(std::forward<T>(t), std::forward<U>(u), abs_tol,
                          rel_tol, associated::v_<T>);
@@ -162,14 +158,12 @@ struct approx_fn {
 
   template <typename T, typename U>
   static constexpr auto geq_impl(T&& t, U&& u, num_t abs_tol, num_t rel_tol) {
-    if
-      constexpr(std::is_floating_point<uncvref_t<T>>{}
-                and std::is_floating_point<uncvref_t<U>>{}) {
-        return t >= u
-               or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
-                                rel_tol);
-      }
-    else {
+    if constexpr (std::is_floating_point<uncvref_t<T>>{}
+                  and std::is_floating_point<uncvref_t<U>>{}) {
+      return t >= u
+             or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
+                              rel_tol);
+    } else {
       static_assert(UCVSame<T, U>{}, "T and U must be equal");
       return default_geq(std::forward<T>(t), std::forward<U>(u), abs_tol,
                          rel_tol, associated::v_<T>);

@@ -18,13 +18,13 @@ void test_intersection(S const& s0, S const& s1, R&& r) {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, s_t>{}) { ir = direction.invert(i); }
-     else if
-       constexpr(Same<T, p_t>{}) { ir = i; }
-     else if
-       constexpr(Same<T, monostate>{}) { ir = i; }
-     else {
+     if constexpr (Same<T, s_t>{}) {
+       ir = direction.invert(i);
+     } else if constexpr (Same<T, p_t>{}) {
+       ir = i;
+     } else if constexpr (Same<T, monostate>{}) {
+       ir = i;
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
@@ -35,11 +35,11 @@ void test_intersection(S const& s0, S const& s1, R&& r) {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
      bool expected;
-     if
-       constexpr(Same<T, monostate>{}) { expected = false; }
-     else if
-       constexpr(Same<T, p_t>{} or Same<T, s_t>{}) { expected = true; }
-     else {
+     if constexpr (Same<T, monostate>{}) {
+       expected = false;
+     } else if constexpr (Same<T, p_t>{} or Same<T, s_t>{}) {
+       expected = true;
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
 
@@ -61,13 +61,12 @@ void test_intersection(S const& s0, S const& s1, R&& r) {
   // note: in 2D and 3D the direction of the resulting segments depends on the
   // argument order
   //
-  if
-    constexpr(Ad == 1) {
-      CHECK(intersection(s0, s1) == intersection(s1, s0));
-      CHECK(intersection(s0i, s1) == intersection(s1, s0i));
-      CHECK(intersection(s0, s1i) == intersection(s1i, s0));
-      CHECK(intersection(s0i, s1i) == intersection(s1i, s0i));
-    }
+  if constexpr (Ad == 1) {
+    CHECK(intersection(s0, s1) == intersection(s1, s0));
+    CHECK(intersection(s0i, s1) == intersection(s1, s0i));
+    CHECK(intersection(s0, s1i) == intersection(s1i, s0));
+    CHECK(intersection(s0i, s1i) == intersection(s1i, s0i));
+  }
 
   CHECK(intersection(s0, s1) == r);
   if (intersection(s0i, s1) == r) {

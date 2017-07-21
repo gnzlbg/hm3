@@ -1,14 +1,11 @@
 #pragma once
 /// \file
 ///
-/// Dynamic vertex storage
+/// Generic storage: adapts fixed, small, normal vectors and std::arrays, as a
+/// conditionally pushbackable, popbackable, and/or reservable container.
 #include <hm3/utility/range.hpp>
-#include <iostream>
 
-namespace hm3::geometry {
-
-/// Implementation detail of vertices storage
-namespace vertex_storage_detail {
+namespace hm3::geometry::detail {
 
 namespace concepts {
 
@@ -49,9 +46,9 @@ template <typename T>
 using Reservable = rc::models<concepts::Reservable, uncvref_t<T>>;
 
 template <typename Storage>
-struct vertex_storage : Storage {
-  using vertex_type = typename Storage::value_type;
-  using storage_t   = Storage;
+struct generic_storage : Storage {
+  using element_type = ranges::value_type_t<Storage>;
+  using storage_t    = Storage;
 
   using storage_t::storage_t;  // NOLINT(modernize-use-equals-default)
   using storage_t::operator=;
@@ -79,7 +76,7 @@ struct vertex_storage : Storage {
   }
 
   template <typename... Args,
-            CONCEPT_REQUIRES_(PushBackable<storage_t, vertex_type>{})>
+            CONCEPT_REQUIRES_(PushBackable<storage_t, element_type>{})>
   constexpr auto insert(Args&&... args) {
     return static_cast<storage_t*>(this)->insert(std::forward<Args>(args)...);
   }
@@ -90,53 +87,52 @@ struct vertex_storage : Storage {
   template <typename R>
   using multi_pass_insertable
    = meta::and_<Range<R>, meta::not_<ranges::SinglePass<R>>,
-                meta::not_<ConvertibleTo<R, vertex_storage>>,
-                Constructible<vertex_type, ranges::range_reference_t<R>>>;
+                meta::not_<ConvertibleTo<R, generic_storage>>,
+                Constructible<element_type, ranges::range_reference_t<R>>>;
 
  public:
   template <
-   typename Vertices,
-   CONCEPT_REQUIRES_(multi_pass_insertable<Vertices>{}
-                     and PushBackable<storage_t, range_value_t<Vertices>>{})>
-  constexpr vertex_storage& operator=(Vertices&& vs) noexcept {
-    auto no_vertices = ranges::distance(vs);
-    HM3_ASSERT(no_vertices <= max_size(),
-               "number of vertices {} exceeds max_size {}!\n\nvertices:\n\n{}",
-               no_vertices, this->max_size() /*, view::all(vs) */);
+   typename Elements,
+   CONCEPT_REQUIRES_(multi_pass_insertable<Elements>{}
+                     and PushBackable<storage_t, range_value_t<Elements>>{})>
+  constexpr generic_storage& operator=(Elements&& vs) noexcept {
+    auto no_elements = ranges::distance(vs);
+    HM3_ASSERT(no_elements <= max_size(),
+               "number of elements {} exceeds max_size {}!\n\nelements:\n\n{}",
+               no_elements, this->max_size() /*, view::all(vs) */);
     this->clear();
-    reserve(no_vertices);
-    for (auto&& v : std::forward<Vertices>(vs)) { this->push_back(v); }
+    reserve(no_elements);
+    for (auto&& v : std::forward<Elements>(vs)) { this->push_back(v); }
     return (*this);
   }
 
-  template <typename Vertices,
+  template <typename Elements,
             CONCEPT_REQUIRES_(
-             multi_pass_insertable<Vertices>{}
-             and not PushBackable<storage_t, range_value_t<Vertices>>{})>
-  constexpr vertex_storage& operator=(Vertices&& vs) noexcept /*TODO*/ {
-    auto no_vertices = ranges::distance(vs);
-    HM3_ASSERT(no_vertices == size(),
-               "number of vertices {} != fixed-size "
-               "number of vertices in storage "
-               "{}!\n\nvertices:\n\n{}",
-               no_vertices, this->size() /*, view::all(vs) */);
+             multi_pass_insertable<Elements>{}
+             and not PushBackable<storage_t, range_value_t<Elements>>{})>
+  constexpr generic_storage& operator=(Elements&& vs) noexcept /*TODO*/ {
+    auto no_elements = ranges::distance(vs);
+    HM3_ASSERT(no_elements == size(),
+               "number of elements {} != fixed-size "
+               "number of elements in storage "
+               "{}!\n\nelements:\n\n{}",
+               no_elements, this->size() /*, view::all(vs) */);
 
     ranges::copy(vs, this->begin());
     return (*this);
   }
 
-  template <typename Vertices,
-            CONCEPT_REQUIRES_(multi_pass_insertable<Vertices>{})>
-  explicit constexpr vertex_storage(Vertices&& vs) noexcept /*TODO*/ {
-    (*this) = std::forward<Vertices>(vs);
+  template <typename Elements,
+            CONCEPT_REQUIRES_(multi_pass_insertable<Elements>{})>
+  explicit constexpr generic_storage(Elements&& vs) noexcept /*TODO*/ {
+    (*this) = std::forward<Elements>(vs);
   }
 
-  storage_t const& vertices() const & {
+  storage_t const& elements() const & {
     return static_cast<storage_t const&>(*this);
   }
-  storage_t& vertices() & { return static_cast<storage_t&>(*this); }
-  storage_t vertices() && { return static_cast<storage_t&&>(*this); }
+  storage_t& elements() & { return static_cast<storage_t&>(*this); }
+  storage_t elements() && { return static_cast<storage_t&&>(*this); }
 };
 
-}  // namespace vertex_storage_detail
-}  // namespace hm3::geometry
+}  // namespace hm3::geometry::detail

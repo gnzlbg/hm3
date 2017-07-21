@@ -67,7 +67,7 @@ struct test_3d_2 {
     if (i <= 23) { return geometry::point<3>::unit(1); }
     return geometry::point<3>::unit(2);
   }
-  using opt_i = std2::experimental::optional<suint_t>;
+  using opt_i = hm3::optional<suint_t>;
 
   static auto lr(suint_t i) {
     return hm3::array<hm3::array<opt_i, 2>, 36>{{

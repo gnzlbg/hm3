@@ -34,8 +34,8 @@ struct some_types<2> {
 
 template <>
 struct some_types<3> {
-  using type
-   = meta::list<point<3>, polyline<3>, polygon<3>, polyhedron, aabb<3>, box<3>>;
+  using type = meta::list<point<3>, polyline<3>, polygon<3>, polyhedron<>,
+                          aabb<3>, box<3>>;
 };
 
 template <dim_t Ad>

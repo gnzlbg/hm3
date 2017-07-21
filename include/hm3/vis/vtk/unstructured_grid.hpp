@@ -26,8 +26,7 @@ struct unstructured_grid {
     static constexpr auto ad = geometry::ambient_dimension_v<grid_t>;
     using geometry::ambient_dimension;
     using geometry::vertices;
-    auto geometry
-     = [&](auto&& n) -> geometry_t<ad> { return grid.geometry(n); };
+    auto geometry = [&](auto&& n) { return geometry_t<ad>(grid.geometry(n)); };
 
     using grid_cell_t   = decltype(geometry(*begin(nodes)));
     const auto no_cells = ranges::distance(use_copy_if_single_pass(nodes));
@@ -52,8 +51,8 @@ struct unstructured_grid {
       bounds_vtk[d] = geometry::x_min(bounds)(d);
       bounds_vtk[d] = geometry::x_max(bounds)(d);
     }
-    unique_inserter->InitPointInsertion(points,
-                                        static_cast<num_t*>(bounds_vtk));
+    unique_inserter->InitPointInsertion(points, static_cast<num_t*>(bounds_vtk),
+                                        approx_no_unique_vertices);
 
     /// Create a temporary cell:
     log("Generating vtk grid...");
@@ -70,17 +69,13 @@ struct unstructured_grid {
        [&](auto&& g) {
          using g_t             = decltype(g);
          using cell_write_type = cell_write_type_t<g_t>;
-         if
-           constexpr(Same<cell_write_type, vertex_based_cell>{}) {
-             write_vertex_based_cell(g, tmp_cells, unique_inserter, cells,
-                                     cell_types);
-           }
-         else if
-           constexpr(Same<cell_write_type, face_based_cell>{}) {
-             write_face_based_cell(g, tmp_cells, unique_inserter, cells,
+         if constexpr (Same<cell_write_type, vertex_based_cell>{}) {
+           write_vertex_based_cell(g, tmp_cells, unique_inserter, cells,
                                    cell_types);
-           }
-         else {
+         } else if constexpr (Same<cell_write_type, face_based_cell>{}) {
+           write_face_based_cell(g, tmp_cells, unique_inserter, cells,
+                                 cell_types);
+         } else {
            static_assert(
             always_false<g_t>{},
             "unknown vtk cell write type (vertex-based or face-based)");

@@ -25,13 +25,13 @@ void test_line_line_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
 
-     if
-       constexpr(Same<T, l_t>{}) { CHECK(i == l0); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, l_t>{}) {
+       CHECK(i == l0);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },
@@ -51,13 +51,13 @@ void test_line_line_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
 
-     if
-       constexpr(Same<T, l_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(true); }
-     else {
+     if constexpr (Same<T, l_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(true);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },
@@ -73,13 +73,13 @@ void test_line_line_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
 
-     if
-       constexpr(Same<T, l_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(i == o0); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, l_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(i == o0);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },
@@ -94,13 +94,13 @@ void test_line_line_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
 
-     if
-       constexpr(Same<T, l_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(i == o1); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, l_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(i == o1);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },
@@ -123,13 +123,13 @@ void test_line_line_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
 
-     if
-       constexpr(Same<T, l_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(i == i05); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, l_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(i == i05);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },
@@ -145,13 +145,13 @@ void test_line_line_intersection() {
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
 
-     if
-       constexpr(Same<T, l_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(true); }
-     else {
+     if constexpr (Same<T, l_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(true);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive visitor");
      }
    },

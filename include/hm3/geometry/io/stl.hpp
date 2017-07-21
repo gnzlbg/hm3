@@ -8,468 +8,488 @@
 /// (See accompanying file LICENSE.md or copy at
 /// http://boost.org/LICENSE_1_0.txt)
 ///
-#define BOOST_RESULT_OF_USE_DECLTYPE
-#define BOOST_SPIRIT_USE_PHOENIX_V3
-#define BOOST_NO_AUTO_PTR
+#include <hm3/geometry/algorithm/approx/number.hpp>
+#include <hm3/io/file_system.hpp>
+#include <hm3/utility/string_parsing.hpp>
 
-#include <hm3/utility/range.hpp>
-#include <string>
-#include <type_traits>
+namespace hm3::geometry::io {
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdocumentation"
-#pragma clang diagnostic ignored "-Wdeprecated"
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#pragma clang diagnostic ignored "-Wshadow"
-#include <boost/spirit/include/karma.hpp>
-#include <boost/spirit/include/phoenix.hpp>
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/support_multi_pass.hpp>
-#pragma clang diagnostic pop
-
+/// STereoLithography I/O
 namespace stl {
 
-using hm3::uncvref_t;
+/// Vector type:
+using vec_t = array<float, 3>;
 
-struct ascii_t {};
-static constexpr ascii_t ascii{};
+/// STL triangle layout for serialization.
+///
+/// \note STL format works with 32-bit floating-point numbers only.
+struct triangle {
+  char data_[50];
 
-struct binary_t {};
-static constexpr binary_t binary{};
+  vec_t& normal() { return *reinterpret_cast<vec_t*>(data_); };
+  vec_t const& normal() const { return const_cast<triangle&>(*this).normal(); };
+  array<vec_t, 3>& vertices() {
+    return *reinterpret_cast<array<vec_t, 3>*>(data_ + 12);
+  }
+  array<vec_t, 3> const& vertices() const {
+    return const_cast<triangle&>(*this).vertices();
+  }
+  std::uint16_t& attribute() {
+    return *reinterpret_cast<std::uint16_t*>(data_ + 48);
+  };
+  std::uint16_t const& attribute() const {
+    return const_cast<triangle&>(*this).attribute();
+  }
 
-inline namespace v1 {
-namespace utility {
+  triangle()                = default;
+  triangle(triangle const&) = default;
+  triangle(triangle&&)      = default;
+  triangle& operator=(triangle const&) = default;
+  triangle& operator=(triangle&&) = default;
 
-template <class T>
-struct static_const {
-  static constexpr T value{};
-};
-
-template <class T>
-constexpr T static_const<T>::value;
-
-}  // namespace utility
-
-/// \name Customization points
-///@{
-
-namespace customization {
-
-/// Specialize this type trait to allow discovering the associated triangle type
-/// of a mesh automatically (it can be still manually specified on the parsers).
-template <typename Mesh>
-struct triangle_type {
-  using type = typename Mesh::triangle_type;
-};
-
-template <typename Mesh>
-using triangle_t = typename triangle_type<Mesh>::type;
-
-/// How to set a triangle normal vector component
-struct set_normal_fn {
-  template <typename Tri>
-  constexpr auto /* bool */ operator()(Tri&& tri, int component,
-                                       float value) const
-   -> decltype(set_normal(std::forward<Tri>(tri), component, value), bool()) {
-    return set_normal(std::forward<Tri>(tri), component, value);
+  triangle(vec_t n, array<vec_t, 3> vxs, std::uint16_t a = 0) {
+    normal()    = n;
+    vertices()  = vxs;
+    attribute() = a;
   }
 };
 
-/// How to set a triangle normal vector component
-struct get_normal_fn {
-  template <typename Tri>
-  constexpr auto operator()(Tri const& tri, int component) const
-   -> decltype(get_normal(tri, component), float()) {
-    return get_normal(tri, component);
-  }
-};
+template <typename OStream>
+OStream& operator<<(OStream& os, triangle const& t) {
+  os << "{ stl::triangle | n: " << view::all(t.normal())
+     << ", vx[0]: " << view::all(t.vertices()[0])  //
+     << ", vx[1]: " << view::all(t.vertices()[1])  //
+     << ", vx[2]: " << view::all(t.vertices()[2])  //
+     << "}";
+  return os;
+}
 
-/// How to set a triangle vertex component
-struct set_vertex_fn {
-  template <typename Tri>
-  constexpr auto /* bool */ operator()(Tri&& tri, int vertex, int component,
-                                       float value) const
-   -> decltype(set_vertex(std::forward<Tri>(tri), vertex, component, value),
-               bool()) {
-    return set_vertex(std::forward<Tri>(tri), vertex, component, value);
-  }
-};
+inline bool operator==(triangle const& a, triangle const& b) noexcept {
+  num_t rel_float_tol = 1e-7;
+  num_t abs_float_tol = 1e-6;
 
-/// How to get a triangle vertex component
-struct get_vertex_fn {
-  template <typename Tri>
-  constexpr auto /* bool */ operator()(Tri const& tri, int vertex,
-                                       int component) const
-   -> decltype(get_vertex(tri, vertex, component), float()) {
-    return get_vertex(tri, vertex, component);
-  }
-};
-
-/// How to set the mesh name
-struct set_mesh_name_fn {
-  template <typename Mesh, typename String>
-  constexpr auto /* bool */ operator()(Mesh&& mesh, String&& name) const
-   -> decltype(set_mesh_name(std::forward<Mesh>(mesh),
-                             std::forward<String>(name)),
-               bool()) {
-    return set_mesh_name(std::forward<Mesh>(mesh), std::forward<String>(name));
-  }
-};
-
-/// How to append a triangle to the mesh
-struct push_triangle_fn {
-  template <typename Mesh, typename Tri>
-  constexpr auto /* bool */ operator()(Mesh&& mesh, Tri&& tri) const
-   -> decltype(push_triangle(std::forward<Mesh>(mesh), std::forward<Tri>(tri)),
-               bool()) {
-    return push_triangle(std::forward<Mesh>(mesh), std::forward<Tri>(tri));
-  }
-};
-
-/// Reserve memory for a number of triangles
-struct reserve_fn {
-  // try to find it via ADL
-  template <typename Mesh>
-  constexpr auto /* bool */ impl(Mesh&& mesh, std::uint32_t n, preferred) const
-   -> decltype(reserve(std::forward<Mesh>(mesh), n), bool()) {
-    return reserve(std::forward<Mesh>(mesh), n);
-  }
-
-  // otherwise do nothing
-  template <typename Mesh>
-  constexpr auto /* bool */ impl(Mesh&&, std::uint32_t, fallback) const
-   -> bool {
-    return true;
-  }
-
-  template <typename Mesh>
-  constexpr auto /* bool */ operator()(Mesh&& mesh, std::uint32_t n) const
-   -> decltype(impl(std::forward<Mesh>(mesh), n, dispatch), bool()) {
-    return impl(std::forward<Mesh>(mesh), n, dispatch);
-  }
-};
-
-}  // namespace customization
-
-namespace {
-constexpr auto const& set_normal
- = utility::static_const<customization::set_normal_fn>::value;
-constexpr auto const& set_vertex
- = utility::static_const<customization::set_vertex_fn>::value;
-constexpr auto const& set_mesh_name
- = utility::static_const<customization::set_mesh_name_fn>::value;
-constexpr auto const& push_triangle
- = utility::static_const<customization::push_triangle_fn>::value;
-constexpr auto const& reserve
- = utility::static_const<customization::reserve_fn>::value;
-constexpr auto const& get_normal
- = utility::static_const<customization::get_normal_fn>::value;
-constexpr auto const& get_vertex
- = utility::static_const<customization::get_vertex_fn>::value;
-
-}  // namespace
-
-///@}  // Customization points
-
-namespace ph = boost::phoenix;
-namespace qi = boost::spirit::qi;
-namespace ka = boost::spirit::karma;
-
-namespace ascii_parser {
-
-/// Parses a single STL triangle
-template <typename It, typename Tri>
-struct triangle
- : qi::grammar<It, Tri(), qi::blank_type, qi::locals<size_t, size_t>> {
-  triangle() : triangle::base_type(start, "stl_ascii_triangle") {
-    auto&& d_ = qi::float_;
-    using qi::repeat;
-    using qi::lit;
-    using qi::eps;
-    using qi::eol;
-    using qi::on_error;
-    using qi::fail;
-    using qi::_val;
-    using qi::_1;
-    using qi::_2;
-    using qi::_3;
-    using qi::_4;
-    using qi::_pass;
-    using qi::_a;  // d-th component
-    using qi::_b;  // vertex index
-
-    using boost::phoenix::construct;
-    using boost::phoenix::val;
-
-    auto facet_normal = boost::proto::deep_copy(
-     eps[_a = 0]
-     >> (lit("facet normal")
-         > repeat(
-            3)[d_[_pass = ph::bind(set_normal, _val, _a, _1)] > eps[_a += 1]]
-         > eol));
-
-    auto vertex = boost::proto::deep_copy(
-     (eps[_a = 0] > lit("vertex"))
-     > repeat(
-        3)[d_[_pass = ph::bind(set_vertex, _val, _b, _a, _1)] > eps[_a += 1]]
-     > eps[_b += 1] > eol);
-
-    auto vertices = boost::proto::deep_copy(eps[_b = 0] > repeat(3)[vertex]);
-
-    start = facet_normal > lit("outer loop") > eol > vertices > lit("endloop")
-            > eol > lit("endfacet");
-
-    start.name("triangle");
-
-    on_error<fail>(
-     start,
-     std::cout << val("Error! Expecting ") << _4 << val(" here: \"")
-               << construct<std::string>(_3, _2)  // iterators to error-pos, end
-               << val("\"") << std::endl);
-  }
-  qi::rule<It, Tri(), qi::blank_type, qi::locals<size_t, size_t>> start;
-};
-
-/// Parses a STL mesh
-template <typename It, typename Mesh,
-          typename Tri = customization::triangle_t<Mesh>>
-struct mesh : qi::grammar<It, Mesh(), qi::blank_type, qi::locals<std::string>> {
-  mesh() : mesh::base_type(start) {
-    using qi::lit;
-    using qi::eol;
-    using qi::on_error;
-    using qi::fail;
-    using qi::_val;  // mesh
-    using qi::_1;    // tri
-    using qi::_2;
-    using qi::_3;
-    using qi::_4;
-    using qi::_a;  // mesh name
-    using qi::_pass;
-    using qi::char_;
-    using qi::eps;
-
-    using boost::phoenix::construct;
-    using boost::phoenix::val;
-
-    auto header = boost::proto::deep_copy(
-     lit("solid") >> +(char_ - eol)[_a += _1] >> eol
-     >> eps[_pass = ph::bind(set_mesh_name, _val, _a)]);
-    // auto footer = boost::proto::deep_copy(lit("endsolid " + _a));
-    auto footer = lit("endsolid");
-
-    auto push_tri = boost::proto::deep_copy(
-     tri_parser[_pass = ph::bind(push_triangle, _val, _1)] >> eol);
-
-    start = header >> +(push_tri) > footer;
-
-    start.name("stl");
-
-    on_error<fail>(
-     start,
-     std::cout << val("Error! Expecting ") << _4 << val(" here: \"")
-               << construct<std::string>(_3, _2)  // iterators to error-pos, end
-               << val("\"") << std::endl);
-  }
-  qi::rule<It, Mesh(), qi::blank_type, qi::locals<std::string>> start;
-  triangle<It, Tri> tri_parser;
-};
-
-}  // namespace ascii_parser
-
-namespace ascii_generator {
-
-/// Parses a single STL triangle
-template <typename It, typename Tri>
-struct triangle : ka::grammar<It, Tri(), ka::locals<std::size_t, std::size_t>> {
-  template <typename Num>
-  struct float_policy : ka::real_policies<Num> {
-    using base = ka::real_policies<Num>;
-    static int floatfield(Num) { return base::fmtflags::scientific; }
-    static bool force_sign(Num) { return true; }
-    static bool trailing_zeros(Num) { return true; }
-    static unsigned precision(Num) { return 16; }
+  auto eq = [&](auto&& i, auto&& j) {
+    return approx_number(num_t{i}, num_t{j}, abs_float_tol, rel_float_tol);
   };
 
-  template <typename Num>
-  using num_t = ka::real_generator<Num, float_policy<Num>>;
+  return ranges::equal(a.normal(), b.normal(), eq)
+         && ranges::equal(
+             a.vertices(), b.vertices(),
+             [&](auto&& vi, auto&& vj) { return ranges::equal(vi, vj, eq); });
+}
+inline bool operator!=(triangle const& a, triangle const& b) noexcept {
+  return !(a == b);
+}
 
-  triangle() : triangle::base_type(start) {
-    auto&& d_ = num_t<double>();
-    using ka::repeat;
-    using ka::lit;
-    using ka::char_;
-    using ka::eps;
-    using ka::eol;
-    using ka::_val;
-    using ka::_1;
-    using ka::_a;  // d-th component
-    using ka::_b;  // vertex index
+namespace concept {
 
-    auto facet_normal = boost::proto::deep_copy(
-     eps[_a = 0] << (lit("facet normal") << repeat(
-                      3)[ka::space << d_[_1 = ph::bind(get_normal, _val, _a)]
-                                   << eps[_a += 1]])
-                 << eol);
-
-    auto vertex = boost::proto::deep_copy(
-     eps[_a = 0] << lit("        vertex")
-                 << repeat(
-                     3)[ka::space << d_[_1 = ph::bind(get_vertex, _val, _b, _a)]
-                                  << eps[_a += 1]]
-                 << eps[_b += 1] << eol);
-    auto vertices = boost::proto::deep_copy(eps[_b = 0] << repeat(3)[vertex]);
-
-    start = facet_normal << lit("    outer loop") << eol << vertices
-                         << lit("    endloop") << eol
-                         << lit("endfacet");  // facet_normal << vertices;
-  }
-  ka::rule<It, Tri(), ka::locals<std::size_t, std::size_t>> start;
+struct BulkWritable {
+  template <typename T>
+  static auto requires_(T&& t) -> decltype(  //
+   rc::valid_expr(                           //
+    ranges::size(t),                         //
+    (triangle const*)((T &&) t).data()       //
+    )                                        //
+  );
 };
 
-}  // namespace ascii_generator
-
-namespace binary_parser {
-
-/// Parses a single STL triangle
-template <typename It, typename Tri>
-struct triangle : qi::grammar<It, Tri(), qi::locals<size_t, size_t>> {
-  triangle() : triangle::base_type(start) {
-    auto&& f_ = qi::bin_float;
-    using qi::repeat;
-    using qi::lit;
-    using qi::eps;
-    using qi::eol;
-    using qi::_val;
-    using qi::_1;
-    using qi::_pass;
-    using qi::_a;  // d-th component
-    using qi::_b;  // vertex index
-
-    auto normal = boost::proto::deep_copy(
-     eps[_a = 0]
-     >> repeat(
-         3)[f_[_pass = ph::bind(set_normal, _val, _a, _1)] >> eps[_a += 1]]);
-
-    auto vertex = boost::proto::deep_copy(
-     eps[_a = 0]
-     >> repeat(
-         3)[f_[_pass = ph::bind(set_vertex, _val, _b, _a, _1)] >> eps[_a += 1]]
-     >> eps[_b += 1]);
-
-    auto vertices = boost::proto::deep_copy(eps[_b = 0] >> repeat(3)[vertex]);
-
-    start = normal >> vertices;
-  }
-  qi::rule<It, Tri(), qi::locals<size_t, size_t>> start;
+struct BulkReadable {
+  template <typename T>
+  static auto requires_(T&& t) -> decltype(          //
+   rc::valid_expr(                                   //
+    ((void)(((T &&) t).resize(std::size_t{})), 42),  //
+    ((void)((triangle*)((T &&) t).data()), 42)       //
+    )                                                //
+  );
 };
 
-/// Parses a STL mesh
-template <typename It, typename Mesh,
-          typename Tri = customization::triangle_t<Mesh>>
-struct mesh : qi::grammar<It, Mesh(), qi::blank_type, qi::locals<unsigned>> {
-  mesh() : mesh::base_type(start) {
-    using qi::repeat;
-
-    using qi::byte_;
-    using qi::uint_;
-    using qi::dword;
-    using qi::eps;
-    using qi::_val;  // mesh
-    using qi::_1;    // tri
-    using qi::_a;    // number of triangles
-    using qi::_pass;
-    using qi::char_;
-
-    auto header = boost::proto::deep_copy(repeat(80)[byte_] >> dword[_a = _1]
-                                          >> eps[ph::bind(reserve, _val, _a)]);
-    auto push_tri = boost::proto::deep_copy(
-     tri_parser[_pass = ph::bind(push_triangle, _val, _1)]);
-    start = header >> +(push_tri);
-    // start = header;
-  }
-  qi::rule<It, Mesh(), qi::blank_type, qi::locals<unsigned>> start;
-  triangle<It, Tri> tri_parser;
+struct SingleWritable {
+  template <typename T>
+  static auto requires_(T&& t) -> decltype(          //
+   rc::valid_expr(                                   //
+    ranges::begin(t),                                //
+    ranges::end(t),                                  //
+    rc::is_true(Same<range_value_t<T>, triangle>{})  //
+    )                                                //
+  );
 };
 
-}  // namespace binary_parser
+struct SingleReadable {
+  template <typename T>
+  static auto requires_(T&& t) -> decltype(          //
+   rc::valid_expr(                                   //
+    ((void)(((T &&) t).push_back(triangle{})), 42),  //
+    ((void)(((T &&) t).reserve(std::size_t{})), 42)  //
+    )                                                //
+  );
+};
 
-/// Parses an ASCII STL mesh in range [\p f, \p l) into the Mesh \p m
-template <typename InputIt, typename Mesh>
-bool parse_mesh(InputIt f, InputIt l, Mesh& m, ascii_t) {
-  using mesh_type = uncvref_t<Mesh>;
-  return qi::phrase_parse(f, l, ascii_parser::mesh<InputIt, mesh_type>{},
-                          qi::blank, m);
+}  // namespace concept
+
+/// T can be written in bulk to a file
+template <typename T>
+using BulkWritable = rc::models<concept::BulkWritable, T>;
+
+/// T can be read in bulk from a file
+template <typename T>
+using BulkReadable = rc::models<concept::BulkReadable, T>;
+
+/// T can be written a triangle at a time to a file
+template <typename T>
+using SingleWritable = rc::models<concept::SingleWritable, T>;
+
+/// T can be read a triangle at a time from a file
+template <typename T>
+using SingleReadable = rc::models<concept::SingleReadable, T>;
+
+/// STL ASCII I/O
+namespace ascii {
+
+using namespace parsing;
+
+/// range-v3 stopped supporting front on InputRanges
+template <typename Rng, CONCEPT_REQUIRES_(InputRange<Rng>{})>
+auto front_(Rng&& rng) {
+  HM3_ASSERT(!ranges::empty(rng), "The range is empty!");
+  return *ranges::begin(rng);
+};
+
+/// Parses an ascii STL triangle from \p lines.
+///
+/// The STL ASCII format for a triangle is:
+///
+///     facet normal nx ny nz
+///       outer loop
+///         vertex v0x v0y v0z
+///         vertex v1x v1y v1z
+///         vertex v2x v2y v2z
+///       endloop
+///     endfacet
+///
+template <typename Lines>
+[[nodiscard]] optional<triangle> parse_triangle(Lines&& lines_) {
+  auto lines
+   = ranges::make_iterator_range(ranges::begin(lines_), ranges::end(lines_));
+  if (ranges::empty(lines)) { return {}; }
+
+  triangle tri;
+  string line_chars = front_(lines);  // TODO: string_view
+
+  auto fail = [&](string expected) {
+    throw parsing::failure{
+     "parsing ASCII STL triangle",  // context
+     expected,                      // expected
+     string(line_chars)             // actual
+    };
+  };
+
+  auto parse_vec = [&](auto&& name, auto& out) {
+    if (auto result = parse_named_array<vec_t>(name, trim(line_chars))) {
+      out = result.value();
+    } else {
+      fail(string(name) + " vx vy vz");
+    }
+  };
+
+  auto next_line = [&]() {
+    if (not try_increment(lines)) {
+      fail("another line (but buffer is empty)");
+    }
+    line_chars = front_(lines);
+  };
+
+  // First line: facet normal nx ny nz
+  // On failure return nothing (not parsing a triangle).
+  try {
+    parse_vec("facet normal", tri.normal());
+  } catch (parsing::failure const&) { return {}; }
+
+  // Success: from now on parsing a triangle, parsing errors are hard errors:
+
+  // If that succeeds, we are parsing
+  try {
+    // Second line: 'outer loop'
+    next_line();
+    if ("outer loop"_sv != trim(line_chars)
+        and "outerloop"_sv != trim(line_chars)) {
+      fail("outer loop/outerloop");
+    }
+
+    // Third-Fifth lines: vertex vx vy vz
+    for (auto&& i : view::indices(3)) {
+      next_line();
+      parse_vec("vertex", tri.vertices()[i]);
+    }
+
+    // Sixth line: endloop
+    next_line();
+    if ("endloop"_sv != trim(line_chars)) { fail("endloop"); }
+
+    // Seventh line: endfacet
+    next_line();
+    if ("endfacet"_sv != trim(line_chars)) { fail("endfacet"); }
+
+  } catch (parsing::failure const& f) {
+    string buf_;
+
+    while (not ranges::empty(lines)) {
+      buf_ += *lines.begin() + '\n';
+      ++lines.begin();
+    }
+    HM3_FATAL_ERROR("{}\n\nbuffer:\n{}", f, buf_);
+  }
+  return tri;
 }
 
-/// Parses an ASCII STL InputRange \p rng into the Mesh \p m
-template <typename InputRange, typename Mesh>
-bool parse_mesh(InputRange& rng, Mesh& m, ascii_t) {
-  using std::begin;
-  using std::end;
-  return parse_mesh(begin(rng), end(rng), m, ascii);
+/// Reads \p lines into the triangle \p tris
+///
+/// Returns the solid name ("" if empty) if parsing succeeds.
+///
+/// If parsing fails, returns nothing, and the state of \p tris is unspecified.
+/// (it might be that some triangles have been updated to it)
+///
+template <typename Lines, typename Tris>
+[[nodiscard]] optional<string> read(Lines&& lines_, Tris& tris) {
+  static_assert(SingleReadable<Tris&&>(), "tris does not model SingleReadable");
+  auto lines
+   = ranges::make_iterator_range(ranges::begin(lines_), ranges::end(lines_));
+  if (ranges::empty(lines)) { return {}; }
+  optional<string> solid_name;
+
+  // File header: solid [name] \n (where name is optional)
+  string line_chars = front_(lines);  // string_view ?
+  if (auto name = remove_prefix("solid", trim(line_chars))) {
+    solid_name = string(trim(name.value()));
+  } else {
+    return {};
+  }
+
+  // File body: parse the triangles
+  while (try_increment(lines)) {
+    if (auto next_tri = parse_triangle(lines)) {
+      tris.push_back(next_tri.value());
+    } else {
+      break;
+    }
+  }
+
+  // File footer: endsolid [name] \n (where name must match the header name)
+  line_chars = front_(lines);
+  if (auto name = remove_prefix("endsolid", trim(line_chars))) {
+    if (solid_name.value() != trim(name.value())) {
+      ascii_fmt::out("[warning] stl::ascii::read: solid names do not match! "
+                     "header: \"{}\", footer: \"{}\"\n",
+                     solid_name, trim(name.value()));
+    }
+  } else {
+    return {};
+  }
+
+  return solid_name;
 }
 
-/// Parses an ASCII STL triangle in range [\p f, \p l) into the Triangle \p t
-template <typename InputIt, typename Triangle>
-bool parse_triangle(InputIt f, InputIt l, Triangle& t, ascii_t) {
-  using triangle = uncvref_t<Triangle>;
-  return qi::phrase_parse(f, l, ascii_parser::triangle<InputIt, triangle>{},
-                          qi::blank, t);
+template <typename Stream>
+void write_triangle_normal(triangle const& t, Stream& buf) {
+  buf << "  facet normal " << t.normal()[0] << " " << t.normal()[1] << " "
+      << t.normal()[2] << "\n";
 }
 
-/// Parses an ASCII STL triangle from an InputRange \p rng into the Triangle \p
-/// t
-template <typename InputRange, typename Triangle>
-bool parse_triangle(InputRange& rng, Triangle& t, ascii_t) {
-  using std::begin;
-  using std::end;
-  return parse_triangle(begin(rng), end(rng), t, ascii);
+template <typename Stream>
+void write_triangle_vertex(triangle const& t, suint_t vidx, Stream& buf) {
+  HM3_ASSERT(vidx < 3, "vertex index {} out-of-bounds [0, 3)", vidx);
+  buf << "      vertex " << t.vertices()[vidx][0] << " "
+      << t.vertices()[vidx][1] << " " << t.vertices()[vidx][2] << "\n";
 }
 
-/// Parses an Binary STL triangle in range [\p f, \p l) into the Triangle \p t
-template <typename InputIt, typename Triangle>
-bool parse_triangle(InputIt f, InputIt l, Triangle& t, binary_t) {
-  using triangle = uncvref_t<Triangle>;
-  using iterator_value_type =
-   typename std::iterator_traits<InputIt>::value_type;
-  static_assert(std::is_same<iterator_value_type, char>{},
-                "stl binary parsers require a range of bytes (chars)");
-  return qi::phrase_parse(f, l, binary_parser::triangle<InputIt, triangle>{},
-                          qi::blank, t);
+template <typename Stream>
+void write_triangle(triangle const& t, Stream& buf) {
+  write_triangle_normal(t, buf);
+  buf << "    outerloop\n";
+  for (auto&& v : view::indices(3)) { write_triangle_vertex(t, v, buf); }
+  buf << "    endloop\n  endfacet\n";
 }
 
-/// Parses a Binary STL mesh in range [\p f, \p l) into the Mesh \p m
-template <typename InputIt, typename Mesh>
-bool parse_mesh(InputIt f, InputIt l, Mesh& m, binary_t) {
-  using iterator_value_type =
-   typename std::iterator_traits<InputIt>::value_type;
-  static_assert(std::is_same<iterator_value_type, char>{},
-                "stl binary parsers require a range of bytes (chars)");
-
-  using mesh_type = uncvref_t<Mesh>;
-  return qi::phrase_parse(f, l, binary_parser::mesh<InputIt, mesh_type>{},
-                          qi::blank, m);
+template <typename Tris, typename Stream>
+auto write(Stream& buf, Tris&& tris, string_view solid_name = string_view{}) {
+  static_assert(SingleWritable<Tris&&>(), "tris does not model SingleWritable");
+  buf << "solid " << solid_name << "\n";
+  for (auto&& t : tris) { write_triangle(t, buf); }
+  buf << "endsolid " << solid_name;
 }
 
-/// Write a triangle \p t into an OutputIt \p out in ASCII format
-template <typename OutputIt, typename Triangle>
-std::pair<OutputIt, bool> write_triangle(OutputIt& out, Triangle& t, ascii_t) {
-  using triangle = uncvref_t<Triangle>;
-  ascii_generator::triangle<OutputIt, triangle> g{};
-  auto b = ka::generate(out, g, t);
-  return {out, b};
+}  // namespace ascii
+
+/// STL Binary I/O
+namespace binary {
+
+struct bulk_t {};
+static constexpr bulk_t bulk;
+
+struct single_t {};
+static constexpr single_t single;
+
+/// Returns the size in bytes of a binary STL file containing \p no_triangles.
+constexpr std::size_t file_size(std::size_t no_triangles) {
+  // header + no_triangles * 50bytes + attribute
+  static_assert(sizeof(triangle) == 50, "");
+  return 80 + 4 + no_triangles * sizeof(triangle);
 }
 
-/// Write a triangle \p t into an OutputRange \p rng in ASCII format
-// template <typename OutputRange, typename Triangle>
-// auto write_triangle(OutputRange& rng, Triangle const& t, ascii_t)
-//  -> decltype(std::begin(rng), std::end(rng), bool()) {
-//   using std::begin;
-//   using std::end;
-//   auto r = write_triangle(begin(rng), t, ascii);
-//   return r.second;
-// }
+/// Parses a binary STL file from \p stream.
+///
+/// Read type:
+/// - bulk: all triangles are read directly into \p tris.
+/// - single: each triangle is read individually and push_back'ed to \p tris.
+///
+/// The STL binary format is:
+///
+/// std::uint8_t[80] – Header (80 bytes)
+/// std::uint32_t – Number of triangles (4 bytes)
+/// foreach triangle (52 bytes)
+///     float[3]      – Normal vector (12 bytes)
+///     float[3]      – Vertex 1 (12 bytes)
+///     float[3]      – Vertex 2 (12 bytes)
+///     float[3]      – Vertex 3 (12 bytes)
+///     std::uint16_t – Attribute (2 bytes)
+/// end
+///
+template <typename Stream, typename Tris, typename ReadType>
+void read(Stream& stream, Tris& tris, ReadType) {
+  // Skip header and read number of triangles:
+  stream.seekg(80, std::ios_base::beg);
+  std::uint32_t no_triangles;
+  stream.read(reinterpret_cast<char*>(&no_triangles), 4);
 
-}  // namespace v1
+  // Check the number of bytes in the file:
+  std::uint32_t file_should_byte_size = file_size(no_triangles);
+  stream.seekg(0, std::ios_base::end);
+  const auto file_byte_size = stream.tellg();
+  if (file_byte_size != file_should_byte_size) {
+    HM3_FATAL_ERROR(
+     "Reading STL binary file: the file has {} bytes but should have {} bytes",
+     file_byte_size, file_should_byte_size);
+  }
+
+  // Read all triangles:
+  stream.seekg(80 + 4, std::ios_base::beg);
+
+  if constexpr (Same<ReadType, bulk_t>{}) {
+    // Reads all triangles of the file in one go:
+    static_assert(BulkReadable<Tris&>(), "tris does not model BulkReadable");
+    tris.resize(no_triangles);
+    stream.read(reinterpret_cast<char*>(tris.data()),
+                no_triangles * sizeof(triangle));
+  } else if constexpr (Same<ReadType, single_t>{}) {
+    static_assert(SingleReadable<Tris&>(),
+                  "tris does not model SingleReadable");
+    tris.reserve(no_triangles);
+    // Read each triangle individually:
+    while (no_triangles != 0) {
+      triangle tri;
+      stream.read(reinterpret_cast<char*>(&tri), sizeof(triangle));
+      tris.push_back(tri);
+      --no_triangles;
+    }
+  } else {
+    static_assert(always_false<ReadType>{}, "unknown ReadType");
+  }
+}
+
+/// Writes \p tris to the output \p stream in bulk.
+///
+/// See `read` for the specification of the binary STL format.
+template <typename Stream, typename Tris>
+void write(Stream& stream, Tris&& tris, bulk_t) {
+  static_assert(BulkWritable<Tris&&>(), "tris does not model BulkWritable");
+  char header[80] = {' '};
+  stream.write(header, sizeof(header));
+  std::uint32_t no_tris = ranges::size(tris);
+  stream.write(reinterpret_cast<char*>(&no_tris), sizeof(no_tris));
+
+  stream.write(reinterpret_cast<char*>(tris.data()),
+               sizeof(triangle) * no_tris);
+}
+
+/// Writes \p tris to the output \p stream one-by-one.
+///
+/// See `read` for the specification of the binary STL format.
+template <typename Stream, typename Tris>
+void write(Stream& stream, Tris&& tris, single_t) {
+  static_assert(SingleWritable<Tris&&>(), "tris does not model SingleWritable");
+  char header[80] = {' '};
+  stream.write(header, sizeof(header));
+  std::uint32_t no_tris = 0;  // correct once we know the #of triangles
+  stream.write(reinterpret_cast<char*>(&no_tris), sizeof(no_tris));
+
+  for (triangle t : tris) {
+    stream.write(reinterpret_cast<char*>(&t), sizeof(t));
+    ++no_tris;
+  }
+
+  stream.seekp(80, std::ios_base::beg);
+  stream.write(reinterpret_cast<char*>(&no_tris), sizeof(no_tris));
+}
+
+template <typename Stream, typename Tris>
+void read(Stream& s, Tris& tris) {
+  if constexpr (BulkReadable<Tris&>()) {
+    read(s, tris, binary::bulk);
+  } else if constexpr (SingleReadable<Tris&>()) {
+    read(s, tris, binary::single);
+  } else {
+    static_assert(always_false<Tris>(),
+                  "tris does not model BulkReadable or SingleReadable");
+  }
+}
+
+template <typename Stream, typename Tris>
+void write(Stream& s, Tris&& tris) {
+  if constexpr (BulkWritable<Tris&&>()) {
+    write(s, tris, binary::bulk);
+  } else if constexpr (SingleWritable<Tris&&>()) {
+    write(s, tris, binary::single);
+  } else {
+    static_assert(always_false<Tris>(),
+                  "tris does not model BulkWritable or SingleWritable");
+  }
+}
+
+}  // namespace binary
+
+struct ascii_format_t {};
+struct binary_format_t {};
+
+static constexpr ascii_format_t ascii_format{};
+static constexpr binary_format_t binary_format{};
+
+template <typename Format, typename Tris>
+void write(Format, string filepath, Tris&& tris, mpi::comm const& comm) {
+  static_assert(SingleWritable<Tris&>() or BulkWritable<Tris&>());
+  auto file_stream = fs::open_output_stream(filepath, comm);
+  if constexpr (Same<Format, ascii_format_t>()) {
+    ascii::write(file_stream, std::forward<Tris>(tris));
+  } else if constexpr (Same<Format, binary_format_t>()) {
+    binary::write(file_stream, std::forward<Tris>(tris));
+  } else {
+    static_assert(always_false<Format>(), "unknown format (ascii/binary)");
+  }
+}
+
+template <typename Format, typename Tris>
+void read(Format, string filepath, Tris& tris, mpi::comm const& comm) {
+  static_assert(SingleReadable<Tris&>() or BulkReadable<Tris&>());
+  auto file_stream = fs::open_input_stream(filepath, comm);
+  if constexpr (Same<Format, ascii_format_t>()) {
+    if (not ascii::read(ranges::getlines(file_stream), tris)) {
+      HM3_FATAL_ERROR("failed to parse ascii STL file \"{}\"\n", filepath);
+    }
+  } else if constexpr (Same<Format, binary_format_t>()) {
+    binary::read(file_stream, tris);
+  } else {
+    static_assert(always_false<Format>(), "unknown format (ascii/binary)");
+  }
+}
+
 }  // namespace stl
+
+}  // namespace hm3::geometry::io

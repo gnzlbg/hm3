@@ -167,8 +167,8 @@ int main() {
    {// 1D
 
     constexpr auto p1 = p1t{-1.0};
-  constexpr auto p2   = p1t{1.0};
-  constexpr auto p3   = p1t{0.0};
+  constexpr auto p2 = p1t{1.0};
+  constexpr auto p3 = p1t{0.0};
 
   CHECK(distance.centroid(p1, p2) == 2.);
   CHECK(distance.centroid(p2, p1) == 2.);
@@ -199,7 +199,7 @@ int main() {
 }
 
 {  // single element bug
-  using p_t = p1t;
+  using p_t                      = p1t;
   optional<pair<num_t, num_t>> o = make_pair(3.5, 2.5);
   p_t p{first(o.value())};
   CHECK(p(0) == 3.5);

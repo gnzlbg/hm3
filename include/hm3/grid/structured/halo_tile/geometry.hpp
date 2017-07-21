@@ -12,8 +12,10 @@ namespace hm3::grid::structured::halo_tile {
 template <dim_t Ad, tidx_t Nic, tidx_t Nhl>
 struct cell_geometry : geometry::box<Ad>,
                        cell::indices<Ad, Nic, Nhl>::coordinate {
-  using box_t        = geometry::box<Ad>;
-  using coordinate_t = typename cell::indices<Ad, Nic, Nhl>::coordinate;
+  using box_t         = geometry::box<Ad>;
+  using coordinate_t  = typename cell::indices<Ad, Nic, Nhl>::coordinate;
+  using geometry_type = typename box_t::geometry_type;
+
   cell_geometry(box_t s, coordinate_t x)
    : box_t{std::move(s)}, coordinate_t(std::move(x)) {}
   explicit operator box_t() const noexcept {
@@ -23,6 +25,8 @@ struct cell_geometry : geometry::box<Ad>,
     return static_cast<coordinate_t const&>(*this);
   }
 };
+
+static_assert(geometry::Box<cell_geometry<2, 2, 2>>{});  // TODO: remove
 
 /// Box structured halo tile spatial information
 ///

@@ -24,15 +24,16 @@ template <typename T,                    /// value type
           typename Order = col_major_t,  /// memory layout (col/row-major-order)
           int_t MaxRows  = NoRows,       /// max #of rows (number/dynamic)
           int_t MaxCols  = NoCols,       /// max #of columns (number/dynamic)
+          bool heap_only = false,        /// Use only the heap
           template <class> class Vector  /// container type
-          = default_vector               /// default
+          = default_vector               /// default container type
           >
 struct matrix : bounds<NoRows, NoCols>,
                 storage<T, Vector, NoRows, NoCols, MaxRows, MaxCols,
-                        storage_type_t<MaxRows, MaxCols>> {
+                        storage_type_t<MaxRows, MaxCols, heap_only>> {
   using storage = storage<T, Vector, NoRows, NoCols, MaxRows, MaxCols,
-                          storage_type_t<MaxRows, MaxCols>>;
-  using bounds = bounds<NoRows, NoCols>;
+                          storage_type_t<MaxRows, MaxCols, heap_only>>;
+  using bounds  = bounds<NoRows, NoCols>;
 
   // Either: NoRows is not dynamic and MaxRows equals NoRows
   static_assert(((NoRows != dynamic) && (NoRows == MaxRows))
@@ -318,80 +319,80 @@ struct matrix : bounds<NoRows, NoCols>,
 #pragma clang diagnostic pop
 };
 
-template <
- typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
- typename ColIdx = idx_t, typename Order = col_major_t, int_t MaxRows = NoRows,
- int_t MaxCols = NoCols, template <class> class Vector,
- typename M
- = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows, MaxCols, Vector>,
- CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
+template <typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
+          typename ColIdx = idx_t, typename Order = col_major_t,
+          int_t MaxRows = NoRows, int_t MaxCols = NoCols,
+          bool heap_only = false, template <class> class Vector,
+          typename M = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
+                              MaxCols, heap_only, Vector>,
+          CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
 constexpr auto begin(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
-                            MaxCols, Vector>& m) noexcept {
+                            MaxCols, heap_only, Vector>& m) noexcept {
   return ranges::begin(m.data_);
 }
 
-template <
- typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
- typename ColIdx = idx_t, typename Order = col_major_t, int_t MaxRows = NoRows,
- int_t MaxCols = NoCols, template <class> class Vector,
- typename M
- = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows, MaxCols, Vector>,
- CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
+template <typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
+          typename ColIdx = idx_t, typename Order = col_major_t,
+          int_t MaxRows = NoRows, int_t MaxCols = NoCols,
+          bool heap_only = false, template <class> class Vector,
+          typename M = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
+                              MaxCols, heap_only, Vector>,
+          CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
 constexpr auto end(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
-                          MaxCols, Vector>& m) noexcept {
+                          MaxCols, heap_only, Vector>& m) noexcept {
   return ranges::begin(m.data_) + m.size();
 }
 
-template <
- typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
- typename ColIdx = idx_t, typename Order = col_major_t, int_t MaxRows = NoRows,
- int_t MaxCols = NoCols, template <class> class Vector,
- typename M
- = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows, MaxCols, Vector>,
- CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
+template <typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
+          typename ColIdx = idx_t, typename Order = col_major_t,
+          int_t MaxRows = NoRows, int_t MaxCols = NoCols,
+          bool heap_only = false, template <class> class Vector,
+          typename M = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
+                              MaxCols, heap_only, Vector>,
+          CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
 constexpr auto begin(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
-                            MaxCols, Vector> const& m) noexcept {
+                            MaxCols, heap_only, Vector> const& m) noexcept {
   return ranges::begin(m.data_);
 }
 
-template <
- typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
- typename ColIdx = idx_t, typename Order = col_major_t, int_t MaxRows = NoRows,
- int_t MaxCols = NoCols, template <class> class Vector,
- typename M
- = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows, MaxCols, Vector>,
- CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
+template <typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
+          typename ColIdx = idx_t, typename Order = col_major_t,
+          int_t MaxRows = NoRows, int_t MaxCols = NoCols,
+          bool heap_only = false, template <class> class Vector,
+          typename M = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
+                              MaxCols, heap_only, Vector>,
+          CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
 constexpr auto end(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
-                          MaxCols, Vector> const& m) noexcept {
+                          MaxCols, heap_only, Vector> const& m) noexcept {
   return ranges::begin(m.data_) + m.size();
 }
 
-template <
- typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
- typename ColIdx = idx_t, typename Order = col_major_t, int_t MaxRows = NoRows,
- int_t MaxCols = NoCols, template <class> class Vector,
- typename M
- = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows, MaxCols, Vector>,
- CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
+template <typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
+          typename ColIdx = idx_t, typename Order = col_major_t,
+          int_t MaxRows = NoRows, int_t MaxCols = NoCols,
+          bool heap_only = false, template <class> class Vector,
+          typename M = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
+                              MaxCols, heap_only, Vector>,
+          CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
 constexpr auto cbegin(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
-                             MaxCols, Vector> const& m) noexcept {
+                             MaxCols, heap_only, Vector> const& m) noexcept {
   return m.data_.cbegin();
 }
 
-template <
- typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
- typename ColIdx = idx_t, typename Order = col_major_t, int_t MaxRows = NoRows,
- int_t MaxCols = NoCols, template <class> class Vector,
- typename M
- = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows, MaxCols, Vector>,
- CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
+template <typename T, int_t NoRows, int_t NoCols, typename RowIdx = idx_t,
+          typename ColIdx = idx_t, typename Order = col_major_t,
+          int_t MaxRows = NoRows, int_t MaxCols = NoCols,
+          bool heap_only = false, template <class> class Vector,
+          typename M = matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
+                              MaxCols, heap_only, Vector>,
+          CONCEPT_REQUIRES_(M::is_vector() && !M::is_bit())>
 constexpr auto cend(matrix<T, NoRows, NoCols, RowIdx, ColIdx, Order, MaxRows,
-                           MaxCols, Vector> const& m) noexcept {
+                           MaxCols, heap_only, Vector> const& m) noexcept {
   return m.data_.cbegin() + m.size();
 }
 
 template <typename T, int_t NoRows, typename RowIdx = idx_t,
-          int_t MaxRows                 = NoRows,
+          int_t MaxRows = NoRows, bool heap_only = false,
           template <class> class Vector = default_vector>
 using vector = matrix<T, NoRows, 1, RowIdx, RowIdx, col_major_t, MaxRows, 1>;
 

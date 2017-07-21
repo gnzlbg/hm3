@@ -59,7 +59,7 @@ struct neumann_boundary_conditions {
   constexpr void apply(State& s, To&& to) {
     for (auto&& b : s.tiles()) {
       b.cells().for_each_halo([&](auto&& h_c) {
-        auto i_c = b.closest_internal_cell(h_c);
+        auto i_c   = b.closest_internal_cell(h_c);
         to(b, h_c) = b.variables(i_c);
       });
     }
@@ -76,7 +76,7 @@ struct dirichlet_boundary_conditions {
         if (x_hc(0) < 0. || x_hc(0) > 1.) {
           to(b, h_c)(0) = val;
         } else {
-          auto i_c = b.cells().closest_internal_cell(h_c);
+          auto i_c      = b.cells().closest_internal_cell(h_c);
           to(b, h_c)(0) = b.variables(i_c)(0);
         }
       });
@@ -97,7 +97,7 @@ struct slab_boundary_conditions {
         } else if (x_hc(0) > 1.) {
           to(b, h_c)(0) = right;
         } else {  // neumann
-          auto i_c = b.cells().closest_internal_cell(h_c);
+          auto i_c      = b.cells().closest_internal_cell(h_c);
           to(b, h_c)(0) = b.variables(i_c)(0);
         }
       });
@@ -115,7 +115,7 @@ struct dirichlet_boundary_conditionsQ {
         if (x_hc(0) < 0. || x_hc(0) > 1.) {
           to(b, h_c)(0) = val;
         } else {
-          auto i_c = b.cells().closest_internal_cell(h_c);
+          auto i_c      = b.cells().closest_internal_cell(h_c);
           to(b, h_c)(0) = b.variables(i_c)(0);
         }
       });

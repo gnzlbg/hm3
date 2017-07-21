@@ -22,27 +22,30 @@ using opaque_idx = compact_optional<empty_scalar_value<int_t, -1>, struct tag>;
 /// Vector, dynamic storage, dynamic size, col-major order:
 /// static noCols == 1, rows == dynamic
 template struct dense::matrix<num_t, dense::dynamic, 1, int_t, int_t,
-                              dense::col_major_t, dense::dynamic, 1,
+                              dense::col_major_t, dense::dynamic, 1, false,
                               dense::default_vector>;
 template struct dense::matrix<num_t, dense::dynamic, 1, opaque_idx, opaque_idx,
-                              dense::col_major_t, dense::dynamic, 1,
+                              dense::col_major_t, dense::dynamic, 1, false,
                               dense::default_vector>;
 
 /// Vector, static storage, static size, col-major order:
 /// noCols == 1 (static), noRows (static)
 template struct dense::matrix<num_t, 10, 1, int_t, int_t, dense::col_major_t,
-                              10, 1, dense::default_vector>;
+                              10, 1, false, dense::default_vector>;
 
 template struct dense::matrix<num_t, 10, 1, opaque_idx, opaque_idx,
-                              dense::col_major_t, 10, 1, dense::default_vector>;
+                              dense::col_major_t, 10, 1, false,
+                              dense::default_vector>;
 
 /// Vector, static storage, dynamic size, col-major order:
 /// noRows == dynamic, noCols == 1 (static), maxRows (static)
 template struct dense::matrix<num_t, dense::dynamic, 1, int_t, int_t,
-                              dense::col_major_t, 10, 1, dense::default_vector>;
+                              dense::col_major_t, 10, 1, false,
+                              dense::default_vector>;
 
 template struct dense::matrix<num_t, dense::dynamic, 1, opaque_idx, opaque_idx,
-                              dense::col_major_t, 10, 1, dense::default_vector>;
+                              dense::col_major_t, 10, 1, false,
+                              dense::default_vector>;
 
 ////////////////////////////////////////////////////////////////////////////////
 /// Explicit instantiations for matrix:
@@ -50,33 +53,33 @@ template struct dense::matrix<num_t, dense::dynamic, 1, opaque_idx, opaque_idx,
 /// Fully dynamic col/row order matrix
 template struct dense::matrix<num_t, dense::dynamic, dense::dynamic, int_t,
                               int_t, dense::col_major_t, dense::dynamic,
-                              dense::dynamic, dense::default_vector>;
+                              dense::dynamic, false, dense::default_vector>;
 template struct dense::matrix<num_t, dense::dynamic, dense::dynamic, opaque_idx,
                               opaque_idx, dense::row_major_t, dense::dynamic,
-                              dense::dynamic, dense::default_vector>;
+                              dense::dynamic, false, dense::default_vector>;
 
 /// Fully static col/row matrix
 template struct dense::matrix<num_t,
 
                               10, 20, int_t, int_t, dense::col_major_t, 10, 20,
-                              dense::default_vector>;
+                              false, dense::default_vector>;
 template struct dense::matrix<num_t, 10, 20, opaque_idx, opaque_idx,
-                              dense::row_major_t, 10, 20,
+                              dense::row_major_t, 10, 20, false,
                               dense::default_vector>;
 
 /// Dynamic with static rows/cols
 template struct dense::matrix<num_t, dense::dynamic, 20, int_t, int_t,
-                              dense::col_major_t, dense::dynamic, 20,
+                              dense::col_major_t, dense::dynamic, 20, false,
                               dense::default_vector>;
 template struct dense::matrix<num_t, dense::dynamic, 20, opaque_idx, opaque_idx,
-                              dense::row_major_t, dense::dynamic, 20,
+                              dense::row_major_t, dense::dynamic, 20, false,
                               dense::default_vector>;
 
 template struct dense::matrix<num_t, 10, dense::dynamic, int_t, int_t,
-                              dense::col_major_t, 10, dense::dynamic,
+                              dense::col_major_t, 10, dense::dynamic, false,
                               dense::default_vector>;
 template struct dense::matrix<num_t, 10, dense::dynamic, opaque_idx, opaque_idx,
-                              dense::row_major_t, 10, dense::dynamic,
+                              dense::row_major_t, 10, dense::dynamic, false,
                               dense::default_vector>;
 
 /// TODO: explicit instantiations for partially dynamic matrices

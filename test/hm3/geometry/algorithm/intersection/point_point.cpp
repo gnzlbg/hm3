@@ -18,11 +18,11 @@ void test_point_point_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, p_t>{}) { CHECK(i == a); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, p_t>{}) {
+       CHECK(i == a);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "forgot to handle a case");
      }
    },
@@ -31,10 +31,11 @@ void test_point_point_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(true); }
+     if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(true);
+     }
 
      else {
        static_assert(always_false<T>{}, "forgot to handle a case");

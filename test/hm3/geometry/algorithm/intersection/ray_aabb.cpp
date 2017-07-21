@@ -7,39 +7,37 @@
 using namespace hm3;
 using namespace geometry;
 
-#define CHECK_S(ACTUAL, SHOULD)                        \
+#define CHECK_S(ACTUAL, SHOULD)                          \
+  visit(                                                 \
+   [&](auto&& a_) {                                      \
+     if constexpr (Segment<uncvref_t<decltype(a_)>>{}) { \
+       CHECK(a_ == (SHOULD));                            \
+     } else {                                            \
+       CHECK(false);                                     \
+     }                                                   \
+   },                                                    \
+   (ACTUAL))
+
+#define CHECK_P(ACTUAL, SHOULD)                        \
   visit(                                               \
    [&](auto&& a_) {                                    \
-     if                                                \
-       constexpr(Segment<uncvref_t<decltype(a_)>>{}) { \
-         CHECK(a_ == (SHOULD));                        \
-       }                                               \
-     else {                                            \
+     if constexpr (Point<uncvref_t<decltype(a_)>>{}) { \
+       CHECK(a_ == (SHOULD));                          \
+     } else {                                          \
        CHECK(false);                                   \
      }                                                 \
    },                                                  \
    (ACTUAL))
 
-#define CHECK_P(ACTUAL, SHOULD)                                               \
-  visit(                                                                      \
-   [&](auto&& a_) {                                                           \
-     if                                                                       \
-       constexpr(Point<uncvref_t<decltype(a_)>>{}) { CHECK(a_ == (SHOULD)); } \
-     else {                                                                   \
-       CHECK(false);                                                          \
-     }                                                                        \
-   },                                                                         \
-   (ACTUAL))
-
-#define CHECK_M(ACTUAL)                                                       \
-  visit(                                                                      \
-   [&](auto&& a_) {                                                           \
-     if                                                                       \
-       constexpr(Same<uncvref_t<decltype(a_)>, monostate>{}) { CHECK(true); } \
-     else {                                                                   \
-       CHECK(false);                                                          \
-     }                                                                        \
-   },                                                                         \
+#define CHECK_M(ACTUAL)                                          \
+  visit(                                                         \
+   [&](auto&& a_) {                                              \
+     if constexpr (Same<uncvref_t<decltype(a_)>, monostate>{}) { \
+       CHECK(true);                                              \
+     } else {                                                    \
+       CHECK(false);                                             \
+     }                                                           \
+   },                                                            \
    (ACTUAL))
 
 template <dim_t Ad>  //
@@ -167,22 +165,20 @@ void test_ray_segment_intersection() {
   }
 
   // On aabb edge centroids
-  if
-    constexpr(Ad > 1) {
-      for (auto&& e : edges(a)) {
-        auto r = r_t(centroid(e), v_t::unit(0));
-        CHECK(intersection.test(r, a));
-      }
+  if constexpr (Ad > 1) {
+    for (auto&& e : edges(a)) {
+      auto r = r_t(centroid(e), v_t::unit(0));
+      CHECK(intersection.test(r, a));
     }
+  }
 
   // On aabb surface centroids
-  if
-    constexpr(Ad > 2) {
-      for (auto&& f : faces(a)) {
-        auto r = r_t(centroid(f), v_t::unit(0));
-        CHECK(intersection.test(r, a));
-      }
+  if constexpr (Ad > 2) {
+    for (auto&& f : faces(a)) {
+      auto r = r_t(centroid(f), v_t::unit(0));
+      CHECK(intersection.test(r, a));
     }
+  }
 
   // On
 }

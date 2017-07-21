@@ -82,7 +82,7 @@ struct NeumannBoundaryConditions {
   constexpr void apply(State& s, To&& to) {
     for (auto&& b : s.blocks()) {
       b.for_each_halo([&](auto&& h_c) {
-        auto i_c = b.closest_internal_cell(h_c);
+        auto i_c   = b.closest_internal_cell(h_c);
         to(b, h_c) = b.variables(i_c);
       });
     }
@@ -249,7 +249,7 @@ template <uint_t Nd, typename var_v = typename test_state<Nd>::var_v>
 void check_lax_friedrichs_flux(fv::euler::physics<Nd> p, test_state<Nd> l,
                                test_state<Nd> r
                                //, std::array<var_v, Nd> result
-                               ) {
+) {
   auto cv = p.cv();
   auto pv = p.pv();
 

@@ -3,6 +3,7 @@
 ///
 ///
 #include <hm3/geometry/primitive/box.hpp>
+#include <hm3/solver/geometry/types.hpp>
 #include <hm3/solver/types.hpp>
 
 namespace hm3::solver {
@@ -23,7 +24,7 @@ auto call_as(T&& t, F&& f) -> std::enable_if_t<(sizeof...(Bs) > 0), void> {
 template <typename BoxGrid, typename... Vars>
 struct tile : BoxGrid, Vars... {
   using grid_t = BoxGrid;
-  using bbox_t = geometry::box<BoxGrid::ambient_dimension()>;
+  using bbox_t = hg::box<BoxGrid::ambient_dimension()>;
   /// Data
   ///
   /// \note The rest of the data is stored in base clases (see Vars...).
@@ -40,10 +41,9 @@ struct tile : BoxGrid, Vars... {
     this->geometry().set_internal_bounding_box(bbox);
     length = this->geometry().tile_internal_length();
     level  = level;
-    HM3_ASSERT(
-     geometry::approx(this->geometry().tile_internal_bounding_box(), bbox),
-     "internal bounding box: {}, new bounding box: {}",
-     this->geometry().tile_internal_bounding_box(), bbox);
+    HM3_ASSERT(hg::approx(this->geometry().tile_internal_bounding_box(), bbox),
+               "internal bounding box: {}, new bounding box: {}",
+               this->geometry().tile_internal_bounding_box(), bbox);
     HM3_ASSERT(*level_ >= 0, "negative tile level {}", level_);
     HM3_ASSERT(length > 0., "zero tile length in tile with bbox: {}", bbox);
 
@@ -57,8 +57,6 @@ struct tile : BoxGrid, Vars... {
     length = 0.;
     level  = level_idx{};
     call_as<Vars...>(*this, [](auto&& b) { b.clear(); });
-    // auto il = {(static_cast<void (tile::*)()>(&Vars::clear))...};
-    // for (auto&& c : il) this->*c();
   }
 
   tile() = default;

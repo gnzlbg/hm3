@@ -249,7 +249,7 @@ class optional : private OptionalBase<T> {
     return static_addressof(
      OptionalBase<T>::storage_
       .value_  // NOLINT(cppcoreguidelines - pro - type - union - access)
-     );
+    );
   }
 
   constexpr const T& contained_val() const & {
@@ -261,7 +261,7 @@ class optional : private OptionalBase<T> {
     return std::move(
      OptionalBase<T>::storage_
       .value_  // NOLINT(cppcoreguidelines - pro - type - union - access)
-     );
+    );
   }
   constexpr T& contained_val() & {
     return OptionalBase<T>::storage_
@@ -484,7 +484,7 @@ class optional<T&> {  // NOLINT(cppcoreguidelines-special-member-functions)
 
   // 20.5.5.2, mutation
   optional& operator=(nullopt_t) noexcept {  // NOLINT
-    ref_ = nullptr;
+    ref_            = nullptr;
     return *this;
   }
 
@@ -496,7 +496,7 @@ class optional<T&> {  // NOLINT(cppcoreguidelines-special-member-functions)
   }
 
   template <typename U>
-  auto operator=(U&& rhs) noexcept
+  auto operator                   =(U&& rhs) noexcept
    -> std::enable_if_t<!std::is_same<std::decay_t<U>, optional<T&>>{},
                        optional&> = delete;
 

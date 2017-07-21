@@ -47,6 +47,7 @@ hm3_pkg(json "" "")
 hm3_pkg(variant "" "")
 hm3_pkg(spdlog "-DFMT_HEADER_ONLY" "")
 hm3_pkg(Eigen3 "" "")
+hm3_pkg(hm3_resources "" "")
 
 # MPI:
 find_package(MPI REQUIRED)

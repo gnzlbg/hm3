@@ -75,6 +75,9 @@ using ranges::Same;
 template <typename U, typename V>
 using UCVSame = Same<uncvref_t<U>, uncvref_t<V>>;
 
+template <typename T>
+static constexpr bool RValueRef = std::is_rvalue_reference<T>::value;
+
 using ranges::Range;
 using ranges::InputRange;
 using ranges::ForwardRange;
@@ -110,7 +113,7 @@ using ranges::cbegin;
 using ranges::cend;
 using ranges::front;
 using ranges::back;
-using ranges::at;
+using ranges::index;
 using ranges::size;
 using ranges::equal;
 
@@ -182,6 +185,13 @@ void unique_push_back(Container&& c, Value&& v, Comp&& comp = Comp{}) {
       == ranges::find_if(c, [&comp, &v](auto&& i) { return comp(i, v); })) {
     c.push_back(v);
   }
+}
+
+template <typename V, CONCEPT_REQUIRES_(ranges::View<V>())>
+bool try_increment(V& v) {
+  if (ranges::empty(v)) { return false; }
+  ++v.begin();
+  return true;
 }
 
 }  // namespace hm3

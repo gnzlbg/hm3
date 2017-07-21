@@ -28,9 +28,10 @@ struct aabb {
   using geometry_type = trait::aabb<Ad>;
   using point_t       = point<Ad>;
   using vector_t      = vec<Ad>;
+  using data_t        = array<point_t, 2>;
 
  private:
-  array<point_t, 2> x_;
+  data_t x_;
 
  public:
   constexpr aabb()            = default;

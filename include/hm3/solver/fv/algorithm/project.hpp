@@ -1,3 +1,4 @@
+#ifdef ABCD
 #pragma once
 /// \file
 ///
@@ -48,3 +49,4 @@ constexpr auto const& project = static_const<project_fn>::value;
 }  // namespace
 
 }  // namespace hm3::solver::fv
+#endif

@@ -13,10 +13,6 @@
 
 namespace hm3 {
 
-/// TODO: put rvref where it belongs
-template <typename T>
-static constexpr bool rvref = std::is_rvalue_reference<T>::value;
-
 /// \name Primitive type aliases
 ///@{
 
@@ -92,5 +88,9 @@ struct fallback {};
 struct preferred : fallback {};
 
 static constexpr inline preferred dispatch{};
+
+/// This type is always false.
+template <typename T>
+struct always_false : std::false_type {};
 
 }  // namespace hm3

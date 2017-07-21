@@ -44,7 +44,7 @@ template <>
 struct gauss_legendre_points<1, 2> {
   using p_t = geometry::point<1>;
   static array<p_t, 2> points() noexcept {
-    static const num_t v = 1. / std::sqrt(1. / 3.);
+    static const num_t v          = 1. / std::sqrt(1. / 3.);
     static const array<p_t, 2> ps = {{
      p_t{-v},  // p0
      p_t{+v}   // p1
@@ -64,7 +64,7 @@ template <>
 struct gauss_legendre_points<2, 2> {
   using p_t = geometry::point<2>;
   static array<p_t, 4> points() noexcept {
-    static const num_t v = 1. / std::sqrt(1. / 3.);
+    static const num_t v          = 1. / std::sqrt(1. / 3.);
     static const array<p_t, 4> ps = {{
      p_t{-v, -v},  // p0
      p_t{+v, -v},  // p1
@@ -88,7 +88,7 @@ template <>
 struct gauss_legendre_points<3, 2> {
   using p_t = geometry::point<3>;
   static array<p_t, 8> points() noexcept {
-    static const num_t v = 1. / std::sqrt(1. / 3.);
+    static const num_t v          = 1. / std::sqrt(1. / 3.);
     static const array<p_t, 8> ps = {{
      p_t{-v, -v, -v},  // p0
      p_t{+v, -v, -v},  // p1

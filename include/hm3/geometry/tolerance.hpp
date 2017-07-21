@@ -65,7 +65,7 @@ constexpr auto const& default_tolerance
  = static_const<tolerance_detail::tolerance_fn>::value;
 }
 
-template <typename T>  //
+template <typename T>
 struct with_default_tolerance : T {
   using T::operator();
 

@@ -35,26 +35,22 @@ struct intersection_segment_aabb_fn {
     return visit(
      [&](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Point<T>{}) {
-           // If the ray intersects the aabb on a point:
-           // - if the intersection point is on the segment, return the point
-           // - otherwise, no intersection
-           if (intersection_test_segment_point(s, v, abs_tol, rel_tol)) {
-             return r_t{v};
-           } else {
-             return r_t{monostate{}};
-           }
+       if constexpr (Point<T>{}) {
+         // If the ray intersects the aabb on a point:
+         // - if the intersection point is on the segment, return the point
+         // - otherwise, no intersection
+         if (intersection_test_segment_point(s, v, abs_tol, rel_tol)) {
+           return r_t{v};
+         } else {
+           return r_t{monostate{}};
          }
-       else if
-         constexpr(Segment<T>{}) {
-           // If the ray intersect the aabb on a segment:
-           // - compute the intersection between this and the original segment
-           // (that's the result, might be the same segment, a part of the
-           // segment, a point, or nothing)
-           return r_t{intersection_segment_segment(s, v, abs_tol, rel_tol)};
-         }
-       else {
+       } else if constexpr (Segment<T>{}) {
+         // If the ray intersect the aabb on a segment:
+         // - compute the intersection between this and the original segment
+         // (that's the result, might be the same segment, a part of the
+         // segment, a point, or nothing)
+         return r_t{intersection_segment_segment(s, v, abs_tol, rel_tol)};
+       } else {
          // otherwise the ray does not intersect the AABB, so there is no
          // intersection.
          static_assert(Same<T, monostate>{});
@@ -88,9 +84,9 @@ struct intersection_test_segment_aabb_fn {
     return visit(
      [](auto&& v) {
        using V = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<V, monostate>{}) { return false; }
-       else {
+       if constexpr (Same<V, monostate>{}) {
+         return false;
+       } else {
          return true;
        }
      },

@@ -7,8 +7,6 @@
 using namespace hm3;
 
 int main(int argc, char* argv[]) {
-  ascii_fmt::err("Hello World!\n");
-
   mpi::env env(argc, argv);
   mpi::comm comm = env.world();
   mpi::reactor reactor(comm);
@@ -21,7 +19,6 @@ int main(int argc, char* argv[]) {
 
   if (rank(comm) == 0) {
     value[0] = 0;
-
     reactor.send(value[0], 1_r, "ZERO"_t);
     reactor.receive(value[1], 1_r, "ONE"_t);
   }

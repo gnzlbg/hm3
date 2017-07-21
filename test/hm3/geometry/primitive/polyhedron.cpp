@@ -8,7 +8,7 @@ using namespace geometry;
 int main() {
   using p_t    = point<3>;
   using f_t    = polygon<3>;
-  using h_t    = polyhedron;
+  using h_t    = polyhedron<>;
   using aabb_t = aabb<3>;
   using box_t  = box<3>;
 

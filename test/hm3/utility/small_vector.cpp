@@ -679,7 +679,7 @@ for (++j; j < 105; ++j) CHECK(v[j] == 0);
 }
 {
   small_vector<int, 130> v(100);
-  size_t sz = v.size();
+  size_t sz                          = v.size();
   small_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
   CHECK(v.size() == sz + 5);
   CHECK(i == v.begin() + 10);
@@ -690,7 +690,7 @@ for (++j; j < 105; ++j) CHECK(v[j] == 0);
 }
 {
   small_vector<int, 130> v(100);
-  size_t sz = v.size();
+  size_t sz                          = v.size();
   small_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 5, 1);
   CHECK(v.size() == sz + 5);
   CHECK(i == v.begin() + 10);
@@ -713,7 +713,7 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
 }
 {
   small_vector<int, 130> v(100);
-  size_t sz = v.size();
+  size_t sz                          = v.size();
   small_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
   CHECK(v.size() == sz + 1);
   CHECK(i == v.begin() + 10);
@@ -726,7 +726,7 @@ for (++j; j < 101; ++j) CHECK(v[j] == 0);
   small_vector<int, 130> v(100);
   v.pop_back();
   v.pop_back();  // force no reallocation
-  size_t sz = v.size();
+  size_t sz                          = v.size();
   small_vector<int, 130>::iterator i = v.insert(v.cbegin() + 10, 1);
   CHECK(v.size() == sz + 1);
   CHECK(i == v.begin() + 10);

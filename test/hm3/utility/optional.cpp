@@ -108,7 +108,7 @@ struct date {
   date() = delete;
   explicit date(int i) : i{i} {};
   date(date&& d) : i(d.i) { d.i = 0; }
-  date(const date&)             = delete;
+  date(const date&) = delete;
   date& operator=(const date&) = delete;
   date& operator               =(date&& d) {
     i   = d.i;

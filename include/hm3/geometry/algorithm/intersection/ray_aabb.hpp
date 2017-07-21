@@ -32,12 +32,10 @@ struct intersection_ray_aabb_fn {
     return visit(
      [&](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<T, num_t>{}) {
-           // intersection on a point
-           return r_t{p_t{r.origin()() + v * r.direction()()}};
-         }
-       else {
+       if constexpr (Same<T, num_t>{}) {
+         // intersection on a point
+         return r_t{p_t{r.origin()() + v * r.direction()()}};
+       } else {
          // intersection on a line segment:
          static_assert(Same<T, pair<num_t, num_t>>{});
          auto[tmin, tmax] = v;

@@ -57,7 +57,7 @@ struct tagged_initializer_list {
        "cannot dereference tagged_initializer_list of size {} != 1",
        ranges::size(data));
     };
-    return at(data, 0);
+    return index(data, 0);
   }
 };
 

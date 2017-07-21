@@ -16,9 +16,9 @@ struct parallel_plane_fn {
   constexpr auto operator()(T const& a, T const& b, num_t abs_tol,
                             num_t rel_tol) const {
     static_assert(Plane<T>{});
-    if
-      constexpr(ad_v<T> == 1) { return true; }
-    else {
+    if constexpr (ad_v<T> == 1) {
+      return true;
+    } else {
       return approx_vector(a.normal(), b.normal(), abs_tol, rel_tol);
     }
   }

@@ -16,6 +16,8 @@
 #include <iostream>
 #include <utility>
 
+#define HM3_TEST_RESOURCES "hm3_resources/"
+
 namespace hm3 {
 
 /// Unit-testing utilities
@@ -60,7 +62,7 @@ struct ret {
     ascii_fmt::err("> ERROR: CHECK failed '{}'\n > \t {} ({})\n", expr_,
                    filename_, lineno_);
     if (dismissed_) {
-      ascii_fmt::err("> \tEXPECTED: {}\n> \tACTUAL:   {} \n", u, t_);
+      ascii_fmt::err("> \tEXPECTED: \"{}\"\n> \tACTUAL:   \"{}\" \n", u, t_);
     }
     ++failures();
   }
@@ -184,10 +186,15 @@ void check_equal(Rng&& actual, std::initializer_list<Val> expected) {
   auto end0   = ranges::end(actual);
   auto begin1 = ranges::begin(expected), end1 = ranges::end(expected);
   for (; begin0 != end0 && begin1 != end1; ++begin0, ++begin1) {
-    CHECK(*begin0 == *begin1);
+    if (begin1 == end1) {
+      CHECK(false);
+      break;
+    } else {
+      CHECK(*begin0 == *begin1);
+    }
   }
-  CHECK(begin0 == end0);
-  CHECK(begin1 == end1);
+  CHECK((begin0 == end0));
+  CHECK((begin1 == end1));
 }
 
 template <typename Rng, typename Rng2>
@@ -197,10 +204,15 @@ void check_equal(Rng&& actual, Rng2&& expected) {
   auto begin1 = ranges::begin(expected);
   auto end1   = ranges::end(expected);
   for (; begin0 != end0 && begin1 != end1; ++begin0, ++begin1) {
-    CHECK(*begin0 == *begin1);
+    if (begin1 == end1) {
+      CHECK(false);
+      break;
+    } else {
+      CHECK(*begin0 == *begin1);
+    }
   }
-  CHECK(begin0 == end0);
-  CHECK(begin1 == end1);
+  CHECK((begin0 == end0));
+  CHECK((begin1 == end1));
 }
 
 template <typename Rng, typename Rng2>
@@ -210,10 +222,15 @@ void check_approx_equal(Rng&& actual, Rng2&& expected) {
   auto begin1 = ranges::begin(expected);
   auto end1   = ranges::end(expected);
   for (; begin0 != end0 && begin1 != end1; ++begin0, ++begin1) {
-    CHECK(std::fabs(*begin0 - *begin1) < math::eps);
+    if (begin1 == end1) {
+      CHECK(false);
+      break;
+    } else {
+      CHECK(std::fabs(*begin0 - *begin1) < math::eps);
+    }
   }
-  CHECK(begin0 == end0);
-  CHECK(begin1 == end1);
+  CHECK((begin0 == end0));
+  CHECK((begin1 == end1));
 }
 
 }  // namespace test

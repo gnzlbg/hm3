@@ -25,8 +25,8 @@ constexpr QT make_aa_quad(PT xmin, PT xmax, dim_t d) noexcept {
   constexpr dim_t c0s[3] = {1, 2, 0};
   constexpr dim_t c1s[3] = {2, 0, 1};
 
-  dim_t c0 = ranges::at(c0s, d);
-  dim_t c1 = ranges::at(c1s, d);
+  dim_t c0 = ranges::index(c0s, d);
+  dim_t c1 = ranges::index(c1s, d);
 
   // compute the quad corner points
   auto p0 = xmin;

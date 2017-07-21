@@ -5,6 +5,7 @@
 #include <hm3/io/client.hpp>
 #include <hm3/solver/level_set/fio.hpp>
 #include <hm3/solver/level_set/fwd.hpp>
+#include <hm3/solver/utility/base.hpp>
 
 namespace hm3::solver::level_set {
 
@@ -14,47 +15,31 @@ string type(state<Ad> const&) {
   return "level_set";
 }
 
-/// Name of the level-set solver state
 template <dim_t Ad>
-string name(state<Ad> const& s, grid_idx idx) {
-  using std::to_string;
-  return type(s) + "_" + to_string(*idx);
-}
-
-template <dim_t Ad>
-string name(state<Ad> const& s) {
-  return name(s, s.idx());
-}
-
-template <dim_t Ad>
-struct state : geometry::with_ambient_dimension<Ad> {
+struct state : geometry::with_ambient_dimension<Ad>, base {
   using grid = ::hm3::grid::hierarchical::client::multi<Ad>;
 
   using tree_t   = typename grid::tree_t;
   using cell_idx = grid_node_idx;
   using node_idx = tree_node_idx;
 
-  hm3::log::serial log;
   grid g;
-  io::client io_;
 
   dense::vector<num_t, dense::dynamic, cell_idx> signed_distance;
 
   state() = default;
 
   /// Constructs a new empty state
-  state(tree_t& t, grid_idx gidx, grid_node_idx node_capacity, io::session& s)
-   : log(name(*this, gidx))
+  state(tree_t& t, grid_idx gidx, grid_node_idx node_capacity)
+   : base(t.client().session(), gidx, *this, t)
    , g(t, gidx, node_capacity, log)
-   , io_(s, name(*this), type(*this), name(g.tree()))
    , signed_distance(*node_capacity) {
     reset();
   }
 
-  state(grid&& g_, io::session& s)
-   : log(name(*this, g_.idx()))
+  state(grid&& g_)
+   : base(g_.client().session(), g_.idx(), *this, g.tree())
    , g(std::move(g_))
-   , io_(s, name(*this), type(*this), name(g.tree()))
    , signed_distance(*g.capacity()) {}
 
   state(state&&) = default;

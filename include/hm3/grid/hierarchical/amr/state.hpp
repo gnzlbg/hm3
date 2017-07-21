@@ -180,7 +180,7 @@ struct state {
             and neighbor.action != action::refine) {
           neighbor.action = action::refine;
           ranges::for_each(siblings(neighbor),
-                           [&](auto&& s) { s.action = action::refine; });
+                           [&](auto&& s) { s.action= action::refine; });
           done = false;
         }
       }

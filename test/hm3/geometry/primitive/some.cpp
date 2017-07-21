@@ -11,17 +11,14 @@ auto check_some(Some& a, Value v) {
   CHECK(visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(VertexAccess<Value>{}) {
-         if
-           constexpr(VertexAccess<T>{}) {
-             test::check_equal(vertices(i), vertices(v));
-             return true;
-           }
-         else {
-           return false;
-         }
+     if constexpr (VertexAccess<Value>{}) {
+       if constexpr (VertexAccess<T>{}) {
+         test::check_equal(vertices(i), vertices(v));
+         return true;
+       } else {
+         return false;
        }
+     }
      return true;
    },
    a));
@@ -29,17 +26,14 @@ auto check_some(Some& a, Value v) {
   CHECK(visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(EdgeAccess<Value>{}) {
-         if
-           constexpr(EdgeAccess<T>{}) {
-             test::check_equal(edges(i), edges(v));
-             return true;
-           }
-         else {
-           return false;
-         }
+     if constexpr (EdgeAccess<Value>{}) {
+       if constexpr (EdgeAccess<T>{}) {
+         test::check_equal(edges(i), edges(v));
+         return true;
+       } else {
+         return false;
        }
+     }
      return true;
    },
    a));

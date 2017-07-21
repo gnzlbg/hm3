@@ -62,10 +62,9 @@ struct binary_split_fn {
       auto r = intersection_polygon_point(pg, p);
       return visit(
        [&](auto&& v) {
-         if
-           constexpr(Point<uncvref_t<decltype(v)>>{}) {
-             return approx_point(v, p);
-           }
+         if constexpr (Point<uncvref_t<decltype(v)>>{}) {
+           return approx_point(v, p);
+         }
          return false;
        },
        r);
@@ -88,13 +87,12 @@ struct binary_split_fn {
           visit(
            [&](auto&& v) {
              using T = uncvref_t<decltype(v)>;
-             if
-               constexpr(Segment<T>{}) {
-                 unique_push_back(ips, v.x(0), approx_point);
-                 unique_push_back(ips, v.x(1), approx_point);
-               }
-             else if
-               constexpr(Point<T>{}) { unique_push_back(ips, v, approx_point); }
+             if constexpr (Segment<T>{}) {
+               unique_push_back(ips, v.x(0), approx_point);
+               unique_push_back(ips, v.x(1), approx_point);
+             } else if constexpr (Point<T>{}) {
+               unique_push_back(ips, v, approx_point);
+             }
            },
            i);
         }
@@ -214,7 +212,7 @@ struct split_polygon_polyline_fn {
     suint_t pg_idx = 0;
     while (pg_idx < ranges::size(result)) {
     start:
-      auto&& pg_ = result[pg_idx];
+      auto&& pg_         = result[pg_idx];
       auto[_, polylines] = intersection_polygon_polyline(pg_, pl);
 
       for (auto&& pl_ : polylines) {

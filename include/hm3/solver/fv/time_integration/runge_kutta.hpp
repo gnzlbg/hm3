@@ -10,9 +10,7 @@
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace fv {
+namespace hm3::solver::fv {
 
 template <suint_t NoStages>
 struct runge_kutta {
@@ -23,7 +21,7 @@ struct runge_kutta {
   struct tile_variables {
     template <typename Grid, typename Physics,
               typename Order = dense::col_major_t>
-    using invoke             = meta::list<              //
+    using invoke = meta::list<                          //
      right_hand_side<Grid, Physics::nvars(), Order>,    //
      left_hand_side<Grid, Physics::nvars(), Order>,     //
      new_left_hand_side<Grid, Physics::nvars(), Order>  //
@@ -107,6 +105,4 @@ struct runge_kutta_5 : runge_kutta<5> {
   }
 };
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv

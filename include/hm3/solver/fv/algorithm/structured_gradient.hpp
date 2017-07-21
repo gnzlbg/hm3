@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -107,3 +108,4 @@ constexpr auto const& compute_structured_gradients
 }  // namespace
 */
 }  // namespace hm3::solver::fv
+#endif

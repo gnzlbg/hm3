@@ -62,13 +62,13 @@ void test_ray_segment_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, s_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(true); }
-     else {
+     if constexpr (Same<T, s_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(true);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
@@ -77,16 +77,14 @@ void test_ray_segment_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, s_t>{}) {
-         // fmt::print("result: {}\n", i);
-         CHECK(false);
-       }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(i == so2); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, s_t>{}) {
+       // fmt::print("result: {}\n", i);
+       CHECK(false);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(i == so2);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
@@ -95,13 +93,13 @@ void test_ray_segment_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, s_t>{}) { CHECK(i == s3); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, s_t>{}) {
+       CHECK(i == s3);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
@@ -109,13 +107,13 @@ void test_ray_segment_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, s_t>{}) { CHECK(i == s3); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, s_t>{}) {
+       CHECK(i == s3);
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },
@@ -123,13 +121,13 @@ void test_ray_segment_intersection() {
   visit(
    [&](auto&& i) {
      using T = uncvref_t<decltype(i)>;
-     if
-       constexpr(Same<T, s_t>{}) { CHECK(approx(i, s4)); }
-     else if
-       constexpr(Same<T, p_t>{}) { CHECK(false); }
-     else if
-       constexpr(Same<T, monostate>{}) { CHECK(false); }
-     else {
+     if constexpr (Same<T, s_t>{}) {
+       CHECK(approx(i, s4));
+     } else if constexpr (Same<T, p_t>{}) {
+       CHECK(false);
+     } else if constexpr (Same<T, monostate>{}) {
+       CHECK(false);
+     } else {
        static_assert(always_false<T>{}, "non-exhaustive variant");
      }
    },

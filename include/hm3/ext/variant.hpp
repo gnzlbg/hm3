@@ -40,10 +40,6 @@ constexpr auto const& visit
  = ::ranges::static_const<variant_detail::visit_fn>::value;
 }  // namespace
 
-/// This type is always false.
-template <typename T>
-struct always_false : std::false_type {};
-
 }  // namespace hm3
 
 #define HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T) \

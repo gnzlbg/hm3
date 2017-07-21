@@ -15,7 +15,7 @@ namespace hm3::grid::hierarchical::cartesian {
 /// Serialization to VTK
 namespace vtk {
 
-/// Adapts a tree<Ad> to be Serializable to a vtkUnstructuredGrid
+/// Adapts a multi<Ad> to be Serializable to a vtkUnstructuredGrid
 ///  - a cell_geometry(node_idx) method
 ///  - a bounding_box() method
 ///  - a dimensions() method

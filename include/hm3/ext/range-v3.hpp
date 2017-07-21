@@ -17,11 +17,3 @@
 #ifdef HM3_COMPILER_CLANG
 #pragma clang diagnostic pop
 #endif
-
-/// Extensions:
-namespace ranges {
-
-template <typename T, class Alloc>
-struct is_view<boost::container::vector<T, Alloc>> : std::false_type {};
-
-}  // namespace ranges

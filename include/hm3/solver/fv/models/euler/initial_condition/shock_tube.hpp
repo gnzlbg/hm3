@@ -109,7 +109,7 @@ template <dim_t Ad>
 constexpr auto sod_shock_tube() {
   return shock_tube<Ad>(1.0, 0.0, 1.0,   // left state
                         0.125, 0.0, 0.1  // right state
-                        );
+  );
 }
 
 /// Modified Sod's test
@@ -148,7 +148,7 @@ template <dim_t Ad>
 auto one_two_three_shock_tube() {
   return shock_tube<Ad>(1.0, -2.0, 0.4,  // left state
                         1.0, 2.0, 0.4    // right state
-                        );
+  );
 }
 
 }  // namespace ic

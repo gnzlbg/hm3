@@ -17,7 +17,7 @@ int main() {
     num_t l      = std::sqrt(2.);
     point<2> p_c = point<2>::constant(0.5);
     CHECK(ambient_dimension(l0) == 2_u);
-    CHECK(bounding_length(l0, 0) == l);
+    CHECK(length(l0) == l);
     CHECK(centroid(l0) == point<2>::constant(0.5));
     CHECK(direction(l0) == vec<2>::constant(1.0 / l));
     vec<2> n;

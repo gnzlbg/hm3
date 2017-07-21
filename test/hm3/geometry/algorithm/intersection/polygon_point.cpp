@@ -48,9 +48,9 @@ int main() {
     visit(
      [&](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<T, p_t>{}) { CHECK(v == pi); }
-       else {
+       if constexpr (Same<T, p_t>{}) {
+         CHECK(v == pi);
+       } else {
          CHECK(false);
        }
      },
@@ -64,9 +64,9 @@ int main() {
     visit(
      [](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Same<T, monostate>{}) { CHECK(true); }
-       else {
+       if constexpr (Same<T, monostate>{}) {
+         CHECK(true);
+       } else {
          CHECK(false);
        }
      },

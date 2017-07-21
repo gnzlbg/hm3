@@ -43,6 +43,7 @@ int main() {
 
     using s_t = geometry::segment<ad>;
     using p_t = geometry::point<ad>;
+    using b_t = geometry::box<ad>;
 
     p_t x0 = {0., 0.};
     p_t x1 = {2., 0.};
@@ -64,6 +65,11 @@ int main() {
 #ifdef HM3_ENABLE_VTK
     solver::geometry::vtk::serialize(mesh, "discrete_domain_2d");
 #endif
+
+    {  // test relative position of box inside the domain
+      b_t b{p_t::constant(0.75), 0.5};
+      CHECK(mesh.relative_position(b) == inside);
+    }
   }
 
   {  // 2D multiple shapes

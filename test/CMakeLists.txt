@@ -23,8 +23,8 @@ add_custom_target(tests
 # Equivalent to `add_test`, except the test is also added as a
 # dependency of the `tests` target.
 function(hm3_add_unit_test name)
-  add_test(${name} ${ARGN})
-  #  add_test(${name} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} 1 ${ARGN})
+  add_test(NAME ${name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMAND ${ARGN})
   hm3_add_packages_to_target(${name})
   add_dependencies(test.unit ${name})
   target_link_libraries(${name} ${HM3_LIBS})
@@ -36,11 +36,12 @@ endfunction()
 function(hm3_add_mpi_unit_test name no_proc)
   set(file_path "${CMAKE_CURRENT_BINARY_DIR}/${name}.cpp")
   set(test_name "test.hm3.mpi.${name}.np${no_proc}")
+  set(test_path "${CMAKE_CURRENT_BINARY_DIR}/${test_name}")
   add_executable(${test_name} EXCLUDE_FROM_ALL ${name}.cpp)
   hm3_add_packages_to_target(${test_name})
   target_link_libraries(${test_name} ${HM3_LIBS})
-  add_test(${test_name} ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${no_proc}
-    ${CMAKE_CURRENT_BINARY_DIR}/${test_name})
+  add_test(NAME ${test_name} WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMAND ${MPIEXEC} ${MPIEXEC_NUMPROC_FLAG} ${no_proc} ${test_path})
   add_dependencies(tests.mpi ${test_name})
 endfunction()
 
@@ -69,6 +70,7 @@ endfunction()
 
 # A list of all the test files
 file(GLOB_RECURSE HM3_TEST_SOURCES "${hm3_SOURCE_DIR}/test/*.cpp")
+list(FILTER HM3_TEST_SOURCES EXCLUDE REGEX "mpi.cpp")
 
 # A list of all the public headers
 file(GLOB_RECURSE HM3_PUBLIC_HEADERS "${hm3_SOURCE_DIR}/include/*.hpp")

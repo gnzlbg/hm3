@@ -49,8 +49,8 @@ int main(int argc, char* argv[]) {
   using hm3::math::pi;
   using geometry::point;
   auto time_steps = view::generate([]() mutable {
-                      static num_t next = 0.;
-                      auto r            = next;
+                      static num_t next= 0.;
+                      auto r= next;
                       next += 1. / 2. * pi;
                       return r;
                     })

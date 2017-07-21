@@ -11,9 +11,9 @@ namespace fixed_capacity_vector_detail {
 
 template <typename T>  //, CONCEPT_REQUIRES_(not std::is_const<T>{})>
 constexpr void swap(T& a, T& b) noexcept {
-  uncvref_t<T> tmp = std::move(a);
-  a                = std::move(b);
-  b                = std::move(tmp);
+  uncvref_t<T> tmp(std::move(a));
+  a = std::move(b);
+  b = std::move(tmp);
 }
 
 template <typename ForwardIt, CONCEPT_REQUIRES_(ForwardIterator<ForwardIt>{})>
@@ -118,21 +118,13 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
            + size();  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
   }
 
-  reverse_iterator rbegin() noexcept {
-    return reverse_iterator(
-     end() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  }
+  reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const noexcept {
-    return const_reverse_iterator(
-     end() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    return const_reverse_iterator(end());
   }
-  reverse_iterator rend() noexcept {
-    return reverse_iterator(
-     data() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-  }
+  reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
   const_reverse_iterator rend() const noexcept {
-    return const_reverse_iterator(
-     data() - 1);  // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    return const_reverse_iterator(begin());
   }
 
   constexpr const_iterator cbegin() noexcept { return begin(); }
@@ -145,19 +137,17 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
  private:
   template <typename It>
   constexpr void assert_iterator_in_range(It it) noexcept {
-    if
-      constexpr(std::is_pointer<It>{}) {
-        HM3_ASSERT(begin() <= it, "iterator not in range");
-        HM3_ASSERT(it <= end(), "iterator not in range");
-      }
+    if constexpr (std::is_pointer<It>{}) {
+      HM3_ASSERT(begin() <= it, "iterator not in range");
+      HM3_ASSERT(it <= end(), "iterator not in range");
+    }
   }
 
   template <typename It0, typename It1>
   constexpr void assert_valid_iterator_pair(It0 first, It1 last) noexcept {
-    if
-      constexpr(std::is_pointer<It0>{} and std::is_pointer<It1>{}) {
-        HM3_ASSERT(first <= last, "invalid iterator pair");
-      }
+    if constexpr (std::is_pointer<It0>{} and std::is_pointer<It1>{}) {
+      HM3_ASSERT(first <= last, "invalid iterator pair");
+    }
   }
 
   template <typename It0, typename It1>
@@ -189,7 +179,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
       throw std::out_of_range(
        "cannot access fixed_capacity_vector element at pos >= size");
     }
-    return ranges::at(*this, pos);
+    return ranges::index(*this, pos);
   }
 
   constexpr const_reference at(size_type pos) const {
@@ -197,7 +187,7 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
       throw std::out_of_range(
        "cannot access fixed_capacity_vector element at pos >= size");
     }
-    return ranges::at(*this, pos);
+    return ranges::index(*this, pos);
   }
 
   constexpr reference front() noexcept {
@@ -325,11 +315,10 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
    InputIt last) noexcept(noexcept(emplace_back(*first))) {
     assert_iterator_in_range(position);
     assert_valid_iterator_pair(first, last);
-    if
-      constexpr(RandomAccessIterator<InputIt>{}) {
-        HM3_ASSERT(size() + (last - first) <= capacity(),
-                   "trying to insert beyond capacity!");
-      }
+    if constexpr (RandomAccessIterator<InputIt>{}) {
+      HM3_ASSERT(size() + (last - first) <= capacity(),
+                 "trying to insert beyond capacity!");
+    }
     auto b = end();
 
     // insert at the end and then just rotate:
@@ -352,11 +341,10 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
    InputIt last) noexcept(noexcept(emplace_back(std::move(*first)))) {
     assert_iterator_in_range(position);
     assert_valid_iterator_pair(first, last);
-    if
-      constexpr(RandomAccessIterator<InputIt>{}) {
-        HM3_ASSERT(size() + (last - first) <= capacity(),
-                   "trying to insert beyond capacity!");
-      }
+    if constexpr (RandomAccessIterator<InputIt>{}) {
+      HM3_ASSERT(size() + (last - first) <= capacity(),
+                 "trying to insert beyond capacity!");
+    }
     iterator b = end();
     // cannot use try in constexpr function
     // try {  // if move_constructor throws you get basic-guarantee?
@@ -536,14 +524,13 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
   /// Initialize vector from range [first, last).
   template <class InputIt, CONCEPT_REQUIRES_(InputIterator<InputIt>{})>
   constexpr fixed_capacity_vector(InputIt first, InputIt last) {
-    if
-      constexpr(RandomAccessIterator<InputIt>{}) {
-        HM3_ASSERT(
-         last - first <= capacity(),
-         "tried to initialize fixed_capacity_vector with capacity {}, with a "
-         "range with {} elements",
-         capacity(), last - first);
-      }
+    if constexpr (RandomAccessIterator<InputIt>{}) {
+      HM3_ASSERT(
+       last - first <= capacity(),
+       "tried to initialize fixed_capacity_vector with capacity {}, with a "
+       "range with {} elements",
+       capacity(), last - first);
+    }
     insert(begin(), first, last);
   }
 
@@ -556,14 +543,13 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
   template <class InputIt, CONCEPT_REQUIRES_(InputIterator<InputIt>{})>
   constexpr void assign(InputIt first, InputIt last) noexcept(
    noexcept(clear()) and noexcept(insert(begin(), first, last))) {
-    if
-      constexpr(RandomAccessIterator<InputIt>{}) {
-        HM3_ASSERT(
-         last - first <= capacity(),
-         "tried to initialize fixed_capacity_vector with capacity {}, with a "
-         "range with {} elements",
-         capacity(), last - first);
-      }
+    if constexpr (RandomAccessIterator<InputIt>{}) {
+      HM3_ASSERT(
+       last - first <= capacity(),
+       "tried to initialize fixed_capacity_vector with capacity {}, with a "
+       "range with {} elements",
+       capacity(), last - first);
+    }
     clear();
     insert(begin(), first, last);
   }
@@ -574,18 +560,16 @@ struct fixed_capacity_vector : private embedded_storage<T, Capacity> {
    = meta::strict_and<InputRange<Rng>, ConvertibleTo<range_value_t<Rng>, T>>;
 
   /// Assign from range \p rng.
-  template <typename Rng, CONCEPT_REQUIRES_(RangeAssignable<Rng>{}
-                                            and CopyConstructible<T>{})>
+  template <typename Rng, CONCEPT_REQUIRES_(RangeAssignable<Rng>{})>
   constexpr void range_assign(Rng&& rng)
   // noexcept(noexcept(emplace_back(*begin(rng))))
   {
-    if
-      constexpr(RandomAccessRange<Rng>{}) {
-        HM3_ASSERT(ranges::distance(rng) <= capacity(),
-                   "tried to assign range with {} "
-                   "elements to fixed_capacity_vector of capacity {}",
-                   ranges::distance(rng), capacity());
-      }
+    if constexpr (RandomAccessRange<Rng>{}) {
+      HM3_ASSERT(ranges::distance(rng) <= capacity(),
+                 "tried to assign range with {} "
+                 "elements to fixed_capacity_vector of capacity {}",
+                 ranges::distance(rng), capacity());
+    }
     for (auto&& i : rng) { emplace_back(std::forward<decltype(i)>(i)); }
   }
 

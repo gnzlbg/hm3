@@ -8,40 +8,46 @@
 
 namespace hm3 {
 
+namespace flat_set_detail {
+template <typename K, template <typename> typename Vector>
+using storage_t = meta::if_c<std::is_const_v<K>,
+                             const Vector<std::remove_const_t<K>>, Vector<K>>;
+}  // namespace flat_set_detail
+
+struct sorted_uniqued_t {};
+static constexpr inline sorted_uniqued_t sorted_uniqued{};
+
 /// A set that models ContiguousContainer.
 ///
 /// \tparam K key-type stored in the container.
 /// \tparam Compare BinaryPredicate + Strict Weak Ordering Relation.
 /// \tparam Vector vector-like container used as storage.
 template <typename K, typename Compare = std::less<K>,
-          typename Vector = vector<K>>
-struct flat_set : private Vector, Compare {
-  static_assert(Same<ranges::range_value_t<Vector>, K>{});
-  static_assert(not std::is_const<K>{});
+          template <typename> typename Vector = vector>
+struct flat_set : private flat_set_detail::storage_t<K, Vector>, Compare {
+  using storage_t = flat_set_detail::storage_t<K, Vector>;
   static_assert(ranges::Relation<Compare, K, K>{});
   static_assert(ranges::Predicate<Compare, K, K>{});
+
+  using const_key = meta::_t<std::is_const<K>>;
 
   using size_type       = std::size_t;
   using difference_type = std::ptrdiff_t;
 
   using value_type             = K;
-  using const_reference        = typename Vector::const_reference&;
+  using const_reference        = typename storage_t::const_reference&;
   using reference              = const_reference;
-  using const_pointer          = typename Vector::const_pointer;
+  using const_pointer          = typename storage_t::const_pointer;
   using pointer                = const_pointer;
-  using const_iterator         = typename Vector::const_iterator;
+  using const_iterator         = typename storage_t::const_iterator;
   using iterator               = const_iterator;
   using const_reverse_iterator = typename std::reverse_iterator<const_iterator>;
   using reverse_iterator       = const_reverse_iterator;
 
- private:
-  using vec_t = Vector;
-
- public:
-  using vec_t::size;
-  using vec_t::capacity;
-  using vec_t::empty;
-  using vec_t::max_size;
+  using storage_t::size;
+  using storage_t::capacity;
+  using storage_t::empty;
+  using storage_t::max_size;
 
   /// \name Immutable data access
   ///@{
@@ -84,11 +90,11 @@ struct flat_set : private Vector, Compare {
   ///@}  // Immutable data access
 
  private:
-  constexpr Vector& get_vector() noexcept {
-    return static_cast<Vector&>(*this);
+  constexpr storage_t& get_vector() noexcept {
+    return static_cast<storage_t&>(*this);
   }
-  constexpr Vector const& get_vector() const noexcept {
-    return static_cast<Vector const&>(*this);
+  constexpr storage_t const& get_vector() const noexcept {
+    return static_cast<storage_t const&>(*this);
   }
   constexpr Compare& get_compare() noexcept {
     return static_cast<Compare&>(*this);
@@ -107,9 +113,17 @@ struct flat_set : private Vector, Compare {
   /// \name Constructors / Assignment
   ///@{
 
-  constexpr flat_set(const Compare& comp = Compare(), Vector&& vec = Vector())
-   : Vector(std::move(vec)), Compare(comp) {
+  constexpr flat_set(const Compare& comp = Compare(),
+                     storage_t&& vec     = storage_t())
+   : storage_t(std::move(vec)), Compare(comp) {
     sort_unique();
+  }
+
+  constexpr flat_set(sorted_uniqued_t, const Compare& comp = Compare(),
+                     storage_t&& vec = storage_t())
+   : storage_t(std::move(vec)), Compare(comp) {
+    HM3_ASSERT(ranges::is_sorted(get_vector(), comp), "Input not sorted!\n{}",
+               get_vector());
   }
 
   constexpr flat_set(const flat_set& other) = default;
@@ -117,26 +131,37 @@ struct flat_set : private Vector, Compare {
   constexpr flat_set& operator=(flat_set const& other) = default;
   constexpr flat_set& operator=(flat_set&& other) = default;
 
-  explicit constexpr flat_set(Vector&& vec)
+  explicit constexpr flat_set(storage_t&& vec)
    : flat_set(Compare(), std::move(vec)) {}
+
+  explicit constexpr flat_set(sorted_uniqued_t, storage_t&& vec)
+   : flat_set(sorted_uniqued, Compare(), std::move(vec)) {}
 
   template <class InputIt>
   constexpr flat_set(InputIt first, InputIt last,
                      const Compare& comp = Compare())
-   : Vector(first, last), Compare(comp) {
+   : storage_t(first, last), Compare(comp) {
     static_assert(InputIterator<InputIt>{});
     static_assert(ConvertibleTo<ranges::iterator_value_t<InputIt>, K>{});
     sort_unique();
   }
 
-  constexpr flat_set(std::initializer_list<value_type> init,
+  CONCEPT_REQUIRES(not const_key())
+  constexpr flat_set(std::initializer_list<value_type> il,
                      const Compare& comp = Compare())
-   : flat_set(ranges::begin(init), ranges::end(init), comp) {}
+   : flat_set(ranges::begin(il), ranges::end(il), comp) {}
+
+  CONCEPT_REQUIRES(const_key())
+  constexpr flat_set(std::initializer_list<value_type> il,
+                     const Compare& comp = Compare())
+   : flat_set(sorted_uniqued, comp,
+              std::remove_const_t<storage_t>(ranges::begin(il), ranges::end(il))
+               | action::sort(comp) | action::unique) {}
 
  private:
   template <typename Rng>
   using insertable_range
-   = meta::if_<meta::not_<Same<uncvref_t<Rng>, Vector>>,
+   = meta::if_<meta::not_<Same<uncvref_t<Rng>, storage_t>>,
                meta::not_<Same<uncvref_t<Rng>, value_type>>,
                ConvertibleTo<ranges::range_reference_t<Rng>, value_type>>;
 
@@ -144,16 +169,27 @@ struct flat_set : private Vector, Compare {
   template <typename Rng,
             CONCEPT_REQUIRES_(
              insertable_range<Rng>{}
-             and not Same<uncvref_t<Rng>, std::initializer_list<value_type>>{})>
+             and not Same<uncvref_t<Rng>, std::initializer_list<value_type>>{}
+             and not const_key{})>
   explicit constexpr flat_set(Rng&& rng, const Compare& comp = Compare())
    : flat_set(ranges::begin(rng), ranges::end(rng), comp) {}
+
+  template <typename Rng,
+            CONCEPT_REQUIRES_(
+             insertable_range<Rng>{}
+             and not Same<uncvref_t<Rng>, std::initializer_list<value_type>>{}
+             and const_key{})>
+  explicit constexpr flat_set(Rng&& rng, const Compare& comp = Compare())
+   : flat_set(
+      comp, std::remove_const_t<storage_t>(ranges::begin(rng), ranges::end(rng))
+             | action::sort(comp) | action::unique) {}
 
   ///@}  Constructors / Assignment
 
   /// \name Mutating operations
   ///@{
 
-  using vec_t::clear;
+  using storage_t::clear;
 
   /// Inserts the key \p v in the set. Returns a pair of an iterator to the
   /// inserted value and a boolean which is true if an insertion happenend, and
@@ -281,7 +317,7 @@ struct flat_set : private Vector, Compare {
   ///@}  // Immutable operations
 
   /// Releases the vector.
-  Vector release() noexcept { return std::move(get_vector()); }
+  storage_t release() noexcept { return std::move(get_vector()); }
 
   /// Returns a copy of the object that compares the keys.
   constexpr Compare key_comp() const noexcept { return get_compare(); }
@@ -325,9 +361,39 @@ struct flat_set : private Vector, Compare {
   }
 
   ///@}  // Comparison operators
+
+ private:
+  template <typename T>
+  struct unit {
+    auto operator()() const noexcept { return T{}; }
+  };
+
+ public:
+  /// Monadic map
+  template <typename K_, typename ThenF,
+            typename ElseF
+            = unit<decltype(std::declval<ThenF>(std::declval<K_>()))>>
+  auto map(K_&& key, ThenF&& tf, ElseF&& ef = ElseF{}) {
+    if (auto it = find(key); it != end()) {
+      return tf(*it);
+    } else {
+      return ef();
+    }
+  }
 };
 
+namespace flat_set_detail {
+
+template <std::size_t N>
+struct small_vector_ {
+  template <typename K>
+  using type = small_vector<K, N>;
+};
+
+}  // namespace flat_set_detail
+
 template <typename K, std::size_t N, typename C = std::less<K>>
-using small_flat_set = flat_set<K, C, small_vector<K, N>>;
+using small_flat_set
+ = flat_set<K, C, flat_set_detail::small_vector_<N>::template type>;
 
 }  // namespace hm3

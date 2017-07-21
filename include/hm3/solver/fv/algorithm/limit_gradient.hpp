@@ -1,3 +1,4 @@
+#ifdef ABCD
 #pragma once
 /// \file
 ///
@@ -23,3 +24,4 @@ constexpr auto const& limit_gradient = static_const<limit_gradient_fn>::value;
 }  // namespace
 
 }  // namespace hm3::solver::fv
+#endif

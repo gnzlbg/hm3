@@ -90,20 +90,16 @@ struct intersection_test_non_degenerate_ray_segment_fn {
     return visit(
      [&](auto&& v) {
        using T = uncvref_t<decltype(v)>;
-       if
-         constexpr(Point<T>{}) {
-           if (not approx_point(s.x(0), v) and not approx_point(s.x(1), v)) {
-             return non_degenerate_intersection_test_result::intersection;
-           }
-           return non_degenerate_intersection_test_result::
-            degenerate_intersection;
+       if constexpr (Point<T>{}) {
+         if (not approx_point(s.x(0), v) and not approx_point(s.x(1), v)) {
+           return non_degenerate_intersection_test_result::intersection;
          }
-       else if
-         constexpr(Segment<T>{}) {
-           return non_degenerate_intersection_test_result::
-            degenerate_intersection;
-         }
-       else {
+         return non_degenerate_intersection_test_result::
+          degenerate_intersection;
+       } else if constexpr (Segment<T>{}) {
+         return non_degenerate_intersection_test_result::
+          degenerate_intersection;
+       } else {
          static_assert(Same<T, monostate>{});
          return non_degenerate_intersection_test_result::no_intersection;
        }

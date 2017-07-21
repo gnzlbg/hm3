@@ -55,49 +55,43 @@ struct origin_rotation : Sd {
   }
 
   void set_origin_rotation_angle(num_t angle, dim_t d = 2) noexcept {
-    if
-      constexpr(ad_v<Sd> == 2) {
-        HM3_ASSERT(
-         d == 2,
-         "rotation axis {} not possible in 2D (only z-axis rotations allowed)",
-         d);
-        origin_rotation_angles_ = angle;
-      }
+    if constexpr (ad_v<Sd> == 2) {
+      HM3_ASSERT(
+       d == 2,
+       "rotation axis {} not possible in 2D (only z-axis rotations allowed)",
+       d);
+      origin_rotation_angles_ = angle;
+    }
 
-    if
-      constexpr(ad_v<Sd> == 3) {
-        HM3_ASSERT(d < 3, "rotation axis {} out-of-bounds [0, 3)", d);
-        origin_rotation_angles_(d) = angle;
-      }
+    if constexpr (ad_v<Sd> == 3) {
+      HM3_ASSERT(d < 3, "rotation axis {} out-of-bounds [0, 3)", d);
+      origin_rotation_angles_(d) = angle;
+    }
   }
 
   template <typename V>
   void set_origin_rotation_angles(V v) noexcept {
     static_assert(Vector<V, 3>{});
-    if
-      constexpr(ad_v<Sd> == 2) {
-        HM3_ASSERT(unwrap(v)(0) == 0. and unwrap(v)(1) == 0.,
-                   "In 2D only rotations around the z-axis are possible");
-        origin_rotation_angles_ = unwrap(v)(2);
-      }
+    if constexpr (ad_v<Sd> == 2) {
+      HM3_ASSERT(unwrap(v)(0) == 0. and unwrap(v)(1) == 0.,
+                 "In 2D only rotations around the z-axis are possible");
+      origin_rotation_angles_ = unwrap(v)(2);
+    }
 
-    if
-      constexpr(ad_v<Sd> == 3) { origin_rotation_angles_ = unwrap(v); }
+    if constexpr (ad_v<Sd> == 3) { origin_rotation_angles_ = unwrap(v); }
   }
 
   template <typename P>
   constexpr auto operator()(P const& x) const noexcept {
-    if
-      constexpr(ad_v<Sd> == 2) {
-        return static_cast<Sd const&>(*this)(
-         invoke_unwrapped(rotate_around_origin_2d, x, origin_rotation_angles_));
-      }
+    if constexpr (ad_v<Sd> == 2) {
+      return static_cast<Sd const&>(*this)(
+       invoke_unwrapped(rotate_around_origin_2d, x, origin_rotation_angles_));
+    }
 
-    if
-      constexpr(ad_v<Sd> == 3) {
-        return static_cast<Sd const&>(*this)(
-         invoke_unwrapped(rotate_around_origin_3d, x, origin_rotation_angles_));
-      }
+    if constexpr (ad_v<Sd> == 3) {
+      return static_cast<Sd const&>(*this)(
+       invoke_unwrapped(rotate_around_origin_3d, x, origin_rotation_angles_));
+    }
   }
 
  public:

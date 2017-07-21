@@ -5,8 +5,7 @@
 #include <hm3/grid/hierarchical/cartesian/multi.hpp>
 #include <hm3/grid/hierarchical/types.hpp>
 
-namespace hm3 {
-namespace grid {
+namespace hm3::grid {
 
 /// Hierarchical grids data-structures and algorithms
 namespace hierarchical {
@@ -20,8 +19,7 @@ template <dim_t Ad>
 using cm = cartesian::multi<Ad>;
 
 }  // namespace hierarchical
-}  // namespace grid
 
 using namespace grid;
 
-}  // namespace hm3
+}  // namespace hm3::grid

@@ -23,8 +23,12 @@ struct aabb_of_polyline_fn {
     constexpr auto ad = ad_v<P>;
     using aabb_t      = associated::aabb_t<P>;
     using p_t         = associated::point_t<aabb_t>;
-    aabb_t bounds(p_t::constant(math::highest<num_t>),
-                  p_t::constant(math::lowest<num_t>));
+    aabb_t bounds     = []() {
+      aabb_t bounds{};
+      x_min(bounds) = p_t::constant(math::highest<num_t>);
+      x_max(bounds) = p_t::constant(math::lowest<num_t>);
+      return bounds;
+    }();
     for (auto&& v : vertices(p)) {
       for (dim_t d = 0; d < ad; ++d) {
         x_min(bounds)(d) = std::min(x_min(bounds)(d), v(d));

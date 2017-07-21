@@ -22,7 +22,7 @@ struct intersection_test_aabb_aabb_fn {
     static_assert(AABB<U>{});
     static_assert(ad_v<T> == ad_v<U>);
     return approx.leq(x_min(a), x_max(b), abs_tol, rel_tol)
-      and approx.geq(x_max(a), x_min(b), abs_tol, rel_tol);
+           and approx.geq(x_max(a), x_min(b), abs_tol, rel_tol);
   }
 };
 

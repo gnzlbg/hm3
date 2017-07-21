@@ -1,3 +1,4 @@
+#ifdef ABC
 #pragma once
 /// \file
 ///
@@ -5,9 +6,8 @@
 #include <hm3/types.hpp>
 #include <hm3/utility/matrix.hpp>
 #include <type_traits>
-namespace hm3 {
-namespace solver {
-namespace fv {
+
+namespace hm3::solver::fv {
 
 template <typename NumFluxF, typename V, typename Tile, typename CIdx,
           typename LHS>
@@ -22,12 +22,14 @@ num_a<uncvref_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf, num_t dt,
   struct {
     num_t dx, area, volume, dt;
   } data;
-  data.dx         = b.geometry().cell_length();
-  data.area       = b.geometry().cell_surface_area();
-  data.volume     = b.geometry().cell_volume();
-  data.dt         = dt;
-  const num_t f   = 1. / data.dx;
+  data.dx       = b.geometry().cell_length();
+  data.area     = b.geometry().cell_surface_area();
+  data.volume   = b.geometry().cell_volume();
+  data.dt       = dt;
+  const num_t f = 1. / data.dx;
+#ifdef SECOND_ORDER
   const num_t dx2 = data.dx / 2.;
+#endif
   for (auto&& d : ambient_dimensions(b)) {
     auto c_m = c.offset(d, -1);
     auto c_p = c.offset(d, +1);
@@ -49,6 +51,5 @@ num_a<uncvref_t<V>::nvars()> structured_numerical_flux(NumFluxF&& nf, num_t dt,
   return f * result;
 }
 
-}  // namespace fv
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::fv
+#endif

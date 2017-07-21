@@ -8,128 +8,123 @@
 using namespace hm3;
 using namespace geometry;
 
-template <dim_t Ad>
+template <typename PL>
 void test_polyline() {
-  using p_t  = point<Ad>;
-  using v_t  = vec<Ad>;
-  using pl_t = polyline<Ad>;
-  using s_t  = segment<Ad>;
-  using a_t  = aabb<Ad>;
-  using b_t  = box<Ad>;
+  static constexpr dim_t ad = ambient_dimension_v<PL>;
+  using pl_t                = PL;
+  using p_t                 = associated::point_t<pl_t>;
+  using v_t                 = associated::vector_t<pl_t>;
+  using s_t                 = associated::edge_t<pl_t>;
+  using a_t                 = aabb<ad>;
+  using b_t                 = box<ad>;
 
-  static_assert(AmbientDimension<pl_t>{}, "");
-  static_assert(AmbientDimension<pl_t, Ad>{}, "");
+  {  // Generic tests
 
-  static_assert(ElementDimension<pl_t>{}, "");
-  static_assert(ElementDimension<pl_t, Ad>{}, "");
-  static_assert(ElementDimension<pl_t, Ad, 1>{}, "");
+    static_assert(AmbientDimension<pl_t>{}, "");
+    static_assert(AmbientDimension<pl_t, ad>{}, "");
 
-  static_assert(GeometryObject<pl_t>{}, "");
-  static_assert(GeometryObject<pl_t, Ad>{}, "");
-  static_assert(GeometryObject<pl_t, Ad, 1>{}, "");
+    static_assert(ElementDimension<pl_t>{}, "");
+    static_assert(ElementDimension<pl_t, ad>{}, "");
+    static_assert(ElementDimension<pl_t, ad, 1>{}, "");
 
-  static_assert(Polyline<pl_t>{}, "");
-  static_assert(Polyline<pl_t, Ad>{}, "");
-  static_assert(MutablePolyline<pl_t>{}, "");
-  static_assert(MutablePolyline<pl_t, Ad>{}, "");
+    static_assert(GeometryObject<pl_t>{}, "");
+    static_assert(GeometryObject<pl_t, ad>{}, "");
+    static_assert(GeometryObject<pl_t, ad, 1>{}, "");
 
-  auto p0 = p_t::constant(0.);
-  auto p1 = p_t::constant(1.);
-  auto p2 = p_t::constant(2.);
-  auto p3 = p_t::constant(3.);
+    static_assert(Polyline<pl_t>{}, "");
+    static_assert(Polyline<pl_t, ad>{}, "");
+    static_assert(MutablePolyline<pl_t>{}, "");
+    static_assert(MutablePolyline<pl_t, ad>{}, "");
 
-  auto vxs = {p0, p1, p2, p3};
+    auto p0 = p_t::constant(0.);
+    auto p1 = p_t::constant(1.);
+    auto p2 = p_t::constant(2.);
+    auto p3 = p_t::constant(3.);
 
-  s_t s0(p0, p1);
-  s_t s1(p1, p2);
-  s_t s2(p2, p3);
+    auto vxs = {p0, p1, p2, p3};
 
-  auto es = {s0, s1, s2};
-  pl_t pl(es);
+    s_t s0(p0, p1);
+    s_t s1(p1, p2);
+    s_t s2(p2, p3);
 
-  {  // construct polyline from segment
-    auto es2 = {s0};
-    auto pl2 = pl_t(es2);
-    CHECK(vertex(pl2, 0) == vertex(s0, 0));
-    CHECK(vertex(pl2, 1) == vertex(s0, 1));
-  }
+    auto es = {s0, s1, s2};
+    pl_t pl(es);
 
-  auto ss = {s0, s1, s2};
+    {  // construct polyline from segment
+      auto es2 = {s0};
+      auto pl2 = pl_t(es2);
+      CHECK(vertex(pl2, 0) == vertex(s0, 0));
+      CHECK(vertex(pl2, 1) == vertex(s0, 1));
+    }
 
-  CHECK(vertex_size(pl) == 4_u);
-  CHECK(edge_size(pl) == 3_u);
+    auto ss = {s0, s1, s2};
 
-  test::check_equal(vertices(pl), vxs);
-  test::check_equal(edges(pl), ss);
+    CHECK(vertex_size(pl) == 4_u);
+    CHECK(edge_size(pl) == 3_u);
 
-  auto ls = v_t::constant(3.);
-  CHECK(bounding_length(pl, 0) == 3.);
-  CHECK(bounding_length.all(pl) == ls);
-  CHECK(bounding_length.max(pl) == 3.);
+    test::check_equal(vertices(pl), vxs);
+    test::check_equal(edges(pl), ss);
 
-  a_t aabb(p0, p3);
-  CHECK(bounding_volume.aabb(pl) == aabb);
+    auto ls = v_t::constant(3.);
+    CHECK(bounding_length(pl, 0) == 3.);
+    CHECK(bounding_length.all(pl) == ls);
+    CHECK(bounding_length.max(pl) == 3.);
 
-  b_t box(p0, p3);
-  CHECK(bounding_volume.box(pl) == box);
+    a_t aabb(p0, p3);
+    CHECK(bounding_volume.aabb(pl) == aabb);
 
-  auto xc = p_t::constant(1.5);
-  CHECK(approx(centroid(pl), xc));
+    b_t box(p0, p3);
+    CHECK(bounding_volume.box(pl) == box);
 
-  auto p4 = p_t::constant(3.);
-  auto p5 = p_t::constant(4.);
-  auto p6 = p_t::constant(5.);
-  auto p7 = p_t::constant(6.);
+    auto xc = p_t::constant(1.5);
+    CHECK(approx(centroid(pl), xc));
 
-  auto es2 = {s_t{p4, p5}, s_t{p5, p6}, s_t{p6, p7}};
-  pl_t pl2(es2);
+    auto p4 = p_t::constant(3.);
+    auto p5 = p_t::constant(4.);
+    auto p6 = p_t::constant(5.);
+    auto p7 = p_t::constant(6.);
 
-  auto u  = concatenate(pl, pl2);
-  auto u2 = concatenate(pl2, pl);
+    auto es2 = {s_t{p4, p5}, s_t{p5, p6}, s_t{p6, p7}};
+    pl_t pl2(es2);
 
-  CHECK(u);
-  CHECK(u2);
-  auto ess = {s_t{p0, p1}, s_t{p1, p2}, s_t{p2, p3},
-              s_t{p3, p5}, s_t{p5, p6}, s_t{p6, p7}};
-  auto pl_union_should = pl_t(ess);
+    auto u  = concatenate(pl, pl2);
+    auto u2 = concatenate(pl2, pl);
 
-  CHECK(u.value() == pl_union_should);
-  CHECK(u2.value() == pl_union_should);
+    CHECK(u);
+    CHECK(u2);
+    auto ess             = {s_t{p0, p1}, s_t{p1, p2}, s_t{p2, p3},
+                s_t{p3, p5}, s_t{p5, p6}, s_t{p6, p7}};
+    auto pl_union_should = pl_t(ess);
 
-  auto ess2 = {s_t{p5, p6}, s_t{p6, p7}};
-  pl_t pl3(ess2);
-  auto u3 = concatenate(pl, pl3);
-  auto u4 = concatenate(pl3, pl);
+    CHECK(u.value() == pl_union_should);
+    CHECK(u2.value() == pl_union_should);
 
-  CHECK(!u3);
-  CHECK(!u4);
+    auto ess2 = {s_t{p5, p6}, s_t{p6, p7}};
+    pl_t pl3(ess2);
+    auto u3 = concatenate(pl, pl3);
+    auto u4 = concatenate(pl3, pl);
 
-  {  // pl, p2
-    auto u_fail = concatenate(direction.invert(pl), pl2);
-    CHECK(!u_fail);
-    auto u5 = concatenate.direction_independent(direction.invert(pl), pl2);
-    CHECK(u5);
-    CHECK(u5.value() == direction.invert(pl_union_should));
-  }
+    CHECK(!u3);
+    CHECK(!u4);
 
-  {  // pl2, pl
-    auto u_fail = concatenate(direction.invert(pl2), pl);
-    CHECK(!u_fail);
-    auto u6 = concatenate.direction_independent(direction.invert(pl2), pl);
-    CHECK(u6);
-    CHECK(u6.value() == direction.invert(pl_union_should));
-  }
-}
+    {  // pl, p2
+      auto u_fail = concatenate(direction.invert(pl), pl2);
+      CHECK(!u_fail);
+      auto u5 = concatenate.direction_independent(direction.invert(pl), pl2);
+      CHECK(u5);
+      CHECK(u5.value() == direction.invert(pl_union_should));
+    }
 
-int main() {
-  test_polyline<1>();
-  test_polyline<2>();
-  test_polyline<3>();
+    {  // pl2, pl
+      auto u_fail = concatenate(direction.invert(pl2), pl);
+      CHECK(!u_fail);
+      auto u6 = concatenate.direction_independent(direction.invert(pl2), pl);
+      CHECK(u6);
+      CHECK(u6.value() == direction.invert(pl_union_should));
+    }
+  }  // Generic tests
 
-  {  // 2D polyline sides
-    using p_t  = point<2>;
-    using s_t  = segment<2>;
-    using pl_t = polyline<2>;
+  if constexpr (ad == 2) {  // 2D polyline sides
     p_t p0{1., 1.};
     p_t p1{2., 2.};
     p_t p2{3., 1.5};
@@ -169,11 +164,7 @@ int main() {
     CHECK(relative_position(o8, pl) == relative_position_t::outside);
   }
 
-  {  // 2D simplify
-    using p_t  = point<2>;
-    using s_t  = segment<2>;
-    using pl_t = polyline<2>;
-
+  if constexpr (ad == 2) {  // 2D simplify
     p_t p0{0., 0.};
     p_t p1{1., 1.};
     p_t p2{2., 2.};
@@ -250,6 +241,20 @@ int main() {
       auto r = simplify(pl_o);
       CHECK(r == pl_s);
     }
+  }
+}
+
+int main() {
+  {  // point-based
+    test_polyline<polyline<1>>();
+    test_polyline<polyline<2>>();
+    test_polyline<polyline<3>>();
+  }
+
+  {  // edge-based
+    test_polyline<edge_polyline<1>>();
+    test_polyline<edge_polyline<2>>();
+    test_polyline<edge_polyline<3>>();
   }
 
   return test::result();

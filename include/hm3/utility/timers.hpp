@@ -55,13 +55,10 @@ struct state {
   string name;
   /// Parent timer of the timer (if any).
   state* parent = nullptr;
-  /// Is the timer running?
-  /// \todo should have type std::atomic<bool>.
-  bool running{false};
   /// Total running time of the timer's scope.
-  duration_t time = duration_t();
+  duration_t time_ = duration_t();
   /// Number of times that the timer was updated.
-  uint_t iterations = 0;
+  uint_t iterations_ = 0;
   /// Sub-timers (if any).
   std::map<string, state> sub_timers;
 
@@ -80,6 +77,15 @@ struct state {
 
   /// Start this timer
   updater start() { return {this}; }
+
+  void update(duration_t d) {
+    // TODO: should grab a lock here or use atomics
+    time_ += d;
+    ++iterations_;
+  }
+
+  duration_t time() const noexcept { return time_; }
+  uint_t iterations() const noexcept { return iterations_; }
 
   template <typename S, CONCEPT_REQUIRES_(ConvertibleTo<S, string>{})>
   void init_timer(S&& sub_timer) {
@@ -104,15 +110,6 @@ struct state {
     init_timer(sub_timer);
     return sub_timers.at(std::forward<S>(sub_timer))
      .start(std::forward<Ss>(ss)...);
-  }
-
-  /// Is any subtimer of this timer running?
-  state const* any_subtimer_running() const noexcept {
-    for (auto&& st : sub_timers | view::values) {
-      if (st.running) { return &st; }
-      if (auto* result = st.any_subtimer_running()) { return result; }
-    }
-    return nullptr;
   }
 };
 
@@ -145,13 +142,13 @@ inline io::json gather(state const& t) {
   };
 
   data["name"]               = clear_function_name(t.name);
-  data["total_running_time"] = as_seconds(t.time);
-  data["no_iterations"]      = t.iterations;
-  if (t.iterations > 0) {
-    data["time_per_iteration"] = as_miliseconds(t.time) / (num_t)t.iterations;
+  data["total_running_time"] = as_seconds(t.time());
+  data["no_iterations"]      = t.iterations();
+  if (t.iterations() > 0) {
+    data["time_per_iteration"]
+     = as_miliseconds(t.time()) / (num_t)t.iterations();
   }
   if (t.parent) { data["parent"] = clear_function_name(t.parent->name); }
-  data["is_running"]             = t.running;
 
   if (t.parent == nullptr) {
     data["total_percent"] = 100.00;
@@ -160,13 +157,13 @@ inline io::json gather(state const& t) {
     while (p->parent != nullptr) { p = p->parent; }
     // p points to main:
     data["total_percent"]
-     = p->time.count() != 0 ? percent(t.time, p->time) : math::inf;
+     = p->time().count() != 0 ? percent(t.time(), p->time()) : math::inf;
   }
   if (t.parent == nullptr) {
     data["parent_percent"] = 100.00;
   } else {
-    data["parent_percent"] = t.parent->time.count() != 0
-                              ? percent(t.time, t.parent->time)
+    data["parent_percent"] = t.parent->time().count() != 0
+                              ? percent(t.time(), t.parent->time())
                               : math::inf;
   }
 
@@ -295,22 +292,9 @@ inline registry& initialized() {
 
 inline updater::updater(state* n) : timer_(n) {
   HM3_ASSERT(timer_, "cannot construct updater without a valid timer!");
-  // TODO: bool result = timer_->running.exchange(true);
-  bool result     = timer_->running;
-  timer_->running = true;
-  HM3_ASSERT(!result, "timer {} is already started!", timer_->name);
-  HM3_ASSERT(
-   [&]() {
-     auto* cr = timer_->any_subtimer_running();
-     HM3_ASSERT(cr == nullptr, "child timer {} of {} is already running!",
-                cr->name, timer_->name);
-     return true;
-   }(),
-   "");
-  HM3_ASSERT((timer_->parent and timer_->parent->running)
-              || (!timer_->parent and timer_->name == "main"),
-             "parent timer {} of timer {} is not running! Timers:\n\n{}",
-             timer_->parent->name, timer_->name, initialized().data());
+  // If a timer has already been started, the timer might be being updated
+  // concurrently. As long as the updater writes are synchronized everything is
+  // fine.
 
   start_ = clock_t::now();
 }
@@ -321,27 +305,8 @@ inline updater::~updater() {
   HM3_ASSERT(end_ >= start_, "start time {}{} !<= end time {}{}",
              start_.time_since_epoch().count(), duration_units(),
              end_.time_since_epoch().count(), duration_units());
-  timer_->time += end_ - start_;
-  timer_->iterations += 1;
-
-  HM3_ASSERT(
-   [&]() {
-     auto* cr = timer_->any_subtimer_running();
-     HM3_ASSERT(cr == nullptr, "child timer {} of {} is still running!",
-                cr->name, timer_->name);
-     return true;
-   }(),
-   "");
-
-  // TODO: auto result = timer_->running.exchange(false);
-  auto result     = timer_->running;
-  timer_->running = false;
-  HM3_ASSERT(result, "timer {} was already stopped!", timer_->name);
-
-  HM3_ASSERT((timer_->parent and timer_->parent->running)
-              || (!timer_->parent and timer_->name == "main"),
-             "parent timer {} of timer {} is not running! Timers:\n\n{}",
-             timer_->parent->name, timer_->name, initialized().data());
+  auto count = end_ - start_;
+  timer_->update(count);
 }
 
 inline updater::updater(updater&& other)
@@ -384,8 +349,10 @@ auto start(S&& s, Ss&&... ss) {
   auto HM3_TIMER_VAR() { ::hm3::timer::start(__VA_ARGS__) }
 
 /// Time type
-#define HM3_TIME_TYPE(name) \
-  hm3::timer::detail::updater hm3_type_timer { ::hm3::timer::start(#name) }
+#define HM3_TIME_TYPE(name)                                                   \
+  std::shared_ptr<hm3::timer::detail::updater> hm3_type_timer {               \
+    std::make_shared<hm3::timer::detail::updater>(::hm3::timer::start(#name)) \
+  }
 
 /// Time member function
 #define HM3_TIME_MEMF() \

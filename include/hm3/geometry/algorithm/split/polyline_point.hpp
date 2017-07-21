@@ -40,26 +40,23 @@ struct split_polyline_point_fn {
       r_t result = visit(
        [&](auto&& v) {
          using T = uncvref_t<decltype(v)>;
-         if
-           constexpr(Same<T, P>{}) {
-             if (geometry::approx(s.x(0), p)) { return split_at_vertex(sidx); }
-             if (geometry::approx(s.x(1), p)) {
-               return split_at_vertex(sidx + 1);
-             }
-             auto el = s;
-             el.x(1) = v;
-
-             auto er = s;
-             er.x(0) = v;
-
-             auto edges_l = view::concat(edges_before(sidx), view::single(el));
-             auto edges_r
-              = view::concat(view::single(er), edges_after(sidx + 1));
-             return r_t{UPL(edges_l), UPL(edges_r)};
+         if constexpr (Same<T, P>{}) {
+           if (geometry::approx(s.x(0), p)) { return split_at_vertex(sidx); }
+           if (geometry::approx(s.x(1), p)) {
+             return split_at_vertex(sidx + 1);
            }
-         else if
-           constexpr(Same<T, monostate>{}) { return r_t{}; }
-         else {
+           auto el = s;
+           el.x(1) = v;
+
+           auto er = s;
+           er.x(0) = v;
+
+           auto edges_l = view::concat(edges_before(sidx), view::single(el));
+           auto edges_r = view::concat(view::single(er), edges_after(sidx + 1));
+           return r_t{UPL(edges_l), UPL(edges_r)};
+         } else if constexpr (Same<T, monostate>{}) {
+           return r_t{};
+         } else {
            HM3_STATIC_ASSERT_EXHAUSTIVE_VISITOR(T);
          }
        },

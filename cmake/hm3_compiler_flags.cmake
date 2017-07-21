@@ -158,6 +158,7 @@ endif()
 
 # Optimization flags: release
 if (CMAKE_BUILD_TYPE STREQUAL "Release")
+  hm3_append_flag(HM3_HAS_DHM3_RELEASE_BUILD -DHM3_RELEASE_BUILD)
   hm3_append_flag(HM3_HAS_OFAST -Ofast)
   hm3_append_flag(HM3_HAS_OFAST -fstrict-vtable-pointers)
   hm3_append_flag(HM3_HAS_EIGEN_FAST_MATH "-DEIGEN_FAST_MATH=1")

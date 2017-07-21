@@ -7,17 +7,17 @@
 /// \todo Remove unstable APIs
 #include <hm3/geometry/algorithm/ambient_dimension.hpp>
 #include <hm3/grid/hierarchical/client/multi.hpp>
+#include <hm3/solver/geometry/types.hpp>
 #include <hm3/solver/types.hpp>
 
-namespace hm3 {
-namespace solver {
+namespace hm3::solver {
 
 /// Hierarchical grid of tiles
 ///
 /// \tparam Tile Type of the tile to store per octree node
 template <typename Tile>
-struct tiled_hierarchical_grid : geometry::with_ambient_dimension<ad_v<Tile>> {
-  using geometry::with_ambient_dimension<ad_v<Tile>>::ambient_dimension;
+struct tiled_hierarchical_grid : hg::with_ambient_dimension<ad_v<Tile>> {
+  using hg::with_ambient_dimension<ad_v<Tile>>::ambient_dimension;
 
   /// Type of the tile
   using tile_t     = Tile;
@@ -122,7 +122,7 @@ struct tiled_hierarchical_grid : geometry::with_ambient_dimension<ad_v<Tile>> {
   /// \todo rename to size()
   /// \todo store the size here
   /// \todo add support for non-constant sized tiles (need to dispatch here)
-  cell_idx no_cells() const noexcept {
+  cell_idx_t no_cells() const noexcept {
     return tile_t::cells().size() * (*grid_client.size());
   }
 
@@ -138,30 +138,30 @@ struct tiled_hierarchical_grid : geometry::with_ambient_dimension<ad_v<Tile>> {
   /// \todo unstable API
   ///
   auto all_cells() const noexcept {
-    return boxed_ints<cell_idx>(cell_idx(0), no_cells());
+    return boxed_ints<cell_idx_t>(cell_idx_t(0), no_cells());
   }
 
-  bool is_internal(cell_idx c) const noexcept {
+  bool is_internal(cell_idx_t c) const noexcept {
     auto tidx   = tile_idx(c);
     auto tlcidx = tile_local_cell_idx(c);
     return tile(tidx).cells().is_internal(tlcidx);
   }
 
-  static constexpr bool is_in_tile(cell_idx c, tile_idx_t t) noexcept {
+  static constexpr bool is_in_tile(cell_idx_t c, tile_idx_t t) noexcept {
     return tile_idx(c) == t;
   }
 
   /// Tile containing the cell at index \p c
-  static constexpr tile_idx_t tile_idx(cell_idx c) noexcept {
+  static constexpr tile_idx_t tile_idx(cell_idx_t c) noexcept {
     return tile_idx_t{*c / tile_t::cells().size()};
   }
 
   /// Returns a reference to tile at index \p t
-  tile_t& tile(cell_idx c) noexcept { return tile(tile_idx(c)); }
+  tile_t& tile(cell_idx_t c) noexcept { return tile(tile_idx(c)); }
   /// Returns a reference to tile at index \p t
-  tile_t const& tile(cell_idx c) const noexcept { return tile(tile_idx(c)); }
+  tile_t const& tile(cell_idx_t c) const noexcept { return tile(tile_idx(c)); }
 
-  static tile_local_cell_idx_t tile_local_cell_idx(cell_idx c) noexcept {
+  static tile_local_cell_idx_t tile_local_cell_idx(cell_idx_t c) noexcept {
     // TODO: this is only going to work fast for a constant number of cells per
     // tile
     return tile_local_cell_idx_t{(*c)
@@ -170,20 +170,19 @@ struct tiled_hierarchical_grid : geometry::with_ambient_dimension<ad_v<Tile>> {
 
   auto cells() const noexcept {
     return all_cells()
-           | view::filter([&](cell_idx c) { return is_internal(c); });
+           | view::filter([&](cell_idx_t c) { return is_internal(c); });
   }
 
   auto all_cells(tile_idx_t t) const noexcept {
     return all_cells()
-           | view::filter([&, t](cell_idx c) { return is_in_tile(c, t); });
+           | view::filter([&, t](cell_idx_t c) { return is_in_tile(c, t); });
   }
 
-  auto geometry(cell_idx c) const noexcept {
+  auto geometry(cell_idx_t c) const noexcept {
     return tile(tile_idx(c)).geometry()(tile_local_cell_idx(c));
   }
 
   ///@}  UNSTABLE API
 };
 
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver

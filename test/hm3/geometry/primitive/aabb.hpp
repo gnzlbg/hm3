@@ -25,29 +25,24 @@ void test_unit_aabb() {
   static_assert(GeometryObject<aabb_t, ad>{}, "");
   static_assert(GeometryObject<aabb_t, ad, ad>{}, "");
 
-  if
-    constexpr(ad == 1) {
-      static_assert(VertexAccess<aabb_t>{});
-      static_assert(Edge<aabb_t>{});
-      static_assert(EdgeAccess<aabb_t>{});
-      static_assert(Segment<aabb_t>{});
-      static_assert(Segment<aabb_t, ad>{});
-    }
-  else if
-    constexpr(ad == 2) {
-      static_assert(VertexAccess<aabb_t>{});
-      static_assert(EdgeAccess<aabb_t>{});
-      static_assert(Polygon<aabb_t>{});
-      static_assert(Polygon<aabb_t, ad>{});
-    }
-  else if
-    constexpr(ad == 3) {
-      static_assert(VertexAccess<aabb_t>{});
-      static_assert(EdgeAccess<aabb_t>{});
-      static_assert(FaceAccess<aabb_t>{});
-      static_assert(Polyhedron<aabb_t>{});
-      static_assert(Polyhedron<aabb_t, ad>{});
-    }
+  if constexpr (ad == 1) {
+    static_assert(VertexAccess<aabb_t>{});
+    static_assert(Edge<aabb_t>{});
+    static_assert(EdgeAccess<aabb_t>{});
+    static_assert(Segment<aabb_t>{});
+    static_assert(Segment<aabb_t, ad>{});
+  } else if constexpr (ad == 2) {
+    static_assert(VertexAccess<aabb_t>{});
+    static_assert(EdgeAccess<aabb_t>{});
+    static_assert(Polygon<aabb_t>{});
+    static_assert(Polygon<aabb_t, ad>{});
+  } else if constexpr (ad == 3) {
+    static_assert(VertexAccess<aabb_t>{});
+    static_assert(EdgeAccess<aabb_t>{});
+    static_assert(FaceAccess<aabb_t>{});
+    static_assert(Polyhedron<aabb_t>{});
+    static_assert(Polyhedron<aabb_t, ad>{});
+  }
 
   auto pz = p_t::constant(0.);
   auto po = p_t::constant(1.);

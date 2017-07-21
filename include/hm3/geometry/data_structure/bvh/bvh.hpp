@@ -56,7 +56,7 @@ struct bvh : with_ambient_dimension<Ad> {
   auto& node(node_idx i) noexcept { return nodes_[*i]; }
 
   /// Axis-Aligned Bounding Box of node \p i.
-  auto bounding_box(node_idx i) const noexcept { return node(i).bound; }
+  aabb<Ad> bounding_aabb(node_idx i) const noexcept { return node(i).bound; }
 
   /// Simplex idx of node \p i
   auto simplex(node_idx i) const noexcept { return node(i).simplex; }
@@ -111,8 +111,8 @@ struct bvh : with_ambient_dimension<Ad> {
   }
 
   /// Bounding box of all the nodes in range [\p b, \p e).
-  aabb<Ad> bounding_box(node_idx b, node_idx e) const {
-    HM3_TIME("bvh", "rebuild", "bounding_box");
+  aabb<Ad> bounding_aabb(node_idx b, node_idx e) const {
+    HM3_TIME("bvh", "rebuild", "bounding_aabb");
     return bounding_volume.aabb(
      ranges::make_iterator_range(begin(nodes_) + (*b), begin(nodes_) + (*e))
      | view::transform([](auto&& n) { return n.bound; }));
@@ -127,7 +127,7 @@ struct bvh : with_ambient_dimension<Ad> {
   /// Returns the surface area of the bounding box that encloses all nodes in
   /// range [\p b, \p e).
   num_t surface_area_range(node_idx b, node_idx e) const {
-    return surface_area(bounding_box(b, e));
+    return surface_area(bounding_aabb(b, e));
   };
 
   /// Split the child nodes of \p p in range [\p b, \p e)
@@ -218,7 +218,7 @@ struct bvh : with_ambient_dimension<Ad> {
     if (no_nodes_left == node_idx{1}) {
       n.left = b;
     } else {
-      auto left_bbox = bounding_box(b, split_node);
+      auto left_bbox = bounding_aabb(b, split_node);
       node_t left(left_bbox);
       n.left = push(left);
       insert_tree_nodes(nodes_.back(), b, split_node);
@@ -227,7 +227,7 @@ struct bvh : with_ambient_dimension<Ad> {
     if (no_nodes_right == node_idx{1}) {
       n.right = split_node;
     } else {
-      auto right_bbox = bounding_box(split_node, e);
+      auto right_bbox = bounding_aabb(split_node, e);
       node_t right(right_bbox);
       n.right = push(right);
       insert_tree_nodes(nodes_.back(), split_node, e);
@@ -335,8 +335,13 @@ struct bvh : with_ambient_dimension<Ad> {
      "not sorted!");
   }
 
+  /// Bounding aabb of the BVH
+  auto bounding_aabb() const noexcept { return bounding_aabb(node_idx{0}); }
+
   /// Bounding box of the BVH
-  auto bounding_box() const noexcept { return bounding_box(node_idx{0}); }
+  auto bounding_box() const noexcept {
+    return bounding_volume.box(bounding_aabb());
+  }
 
   /// Are all nodes valid?
   bool valid_nodes() const noexcept {
@@ -420,7 +425,7 @@ struct bvh : with_ambient_dimension<Ad> {
     num_t d = math::highest<num_t>;
 
     bool valid() const noexcept {
-      return n != node_idx{} and d != math::highest<num_t>;
+      return n != node_idx{} and not math::approx(d, math::highest<num_t>);
     }
   };
 
@@ -434,8 +439,8 @@ struct bvh : with_ambient_dimension<Ad> {
       // distance to the aabb is larger than the currently computed distance,
       // the distance to any simplex inside the aabb cannot be smaller than the
       // current distance, so we are done:
-      if (not hg::intersection.test(p, bounding_box(n))) {
-        num_t d_aabb = distance(p, bounding_box(n));
+      if (not hg::intersection.test(p, bounding_aabb(n))) {
+        num_t d_aabb = distance(p, bounding_aabb(n));
         if (d_aabb > smallest.d) { return visitor_action::done; }
         // If the distance to the aabb is smaller, that does not mean that the
         // distance to a simplex contained in it will be smaller too.
@@ -466,7 +471,7 @@ struct bvh : with_ambient_dimension<Ad> {
     auto f = [&](auto&& n) {
       // If the bounding box of \p n does not intersect \p target we are done
       // (the bounding box of the children won't intersect target).
-      if (not hg::intersection.test(bounding_box(n), target)) {
+      if (not hg::intersection.test(bounding_aabb(n), target)) {
         return visitor_action::done;
       }
 
@@ -492,7 +497,7 @@ struct bvh : with_ambient_dimension<Ad> {
     auto f = [&](auto&& n) {
       // If the bounding box of \p n does not intersect \p target we are done
       // (the bounding box of the children won't intersect target).
-      if (not hg::intersection.test(bounding_box(n), target)) {
+      if (not hg::intersection.test(bounding_aabb(n), target)) {
         return visitor_action::done;
       }
 
@@ -518,7 +523,7 @@ struct bvh : with_ambient_dimension<Ad> {
     uint_t count = 0;
 
     auto f = [&](auto&& n) {
-      if (not hg::intersection.test(p, bounding_box(n))) {
+      if (not hg::intersection.test(p, bounding_aabb(n))) {
         return visitor_action::done;
       }
 
@@ -561,7 +566,7 @@ struct bvh : with_ambient_dimension<Ad> {
     bool result = false;
 
     auto f = [&](auto&& n) {
-      if (not hg::intersection.test(p, bounding_box(n))) {
+      if (not hg::intersection.test(p, bounding_aabb(n))) {
         return visitor_action::done;
       }
 
@@ -588,7 +593,7 @@ struct bvh : with_ambient_dimension<Ad> {
     count_t count{0};
 
     auto f = [&](auto&& n) {
-      if (not count or not hg::intersection.test(p, bounding_box(n))) {
+      if (not count or not hg::intersection.test(p, bounding_aabb(n))) {
         return visitor_action::done;
       }
 

@@ -6,9 +6,7 @@
 #include <hm3/utility/fmt.hpp>
 #include <hm3/utility/range.hpp>
 
-namespace hm3 {
-namespace solver {
-namespace lbm {
+namespace hm3::solver::lbm {
 
 /// Initializes variables to the equilibrium distribution
 template <typename State, typename InitialCondition>
@@ -66,7 +64,7 @@ void propagate(State&& s) noexcept {
   for (auto&& b : s.blocks()) {
     b.for_each_internal([&](auto&& c) {
       for (auto&& d : s.physics.all()) {
-        auto nghbr = b.at(c, s.physics.dir(d));
+        auto nghbr         = b.at(c, s.physics.dir(d));
         b.nodes1(nghbr, d) = b.nodes0(c, d);
       }
     });
@@ -78,7 +76,7 @@ void propagate_periodic_x(State&& s, Solid&& solid) noexcept {
     b.for_each_halo([&](auto&& c) {
       if (solid(s, b, c)) { return; }
       for (auto&& d : s.physics.all()) {
-        auto nghbr = b.at(c, s.physics.periodic_neighbor_dir_x(d));
+        auto nghbr         = b.at(c, s.physics.periodic_neighbor_dir_x(d));
         b.nodes1(nghbr, d) = b.nodes0(c, d);
       }
     });
@@ -148,6 +146,4 @@ void propagate_slip(State&& s, Solid&& solid) noexcept {
 //   return d;
 // }
 
-}  // namespace lbm
-}  // namespace solver
-}  // namespace hm3
+}  // namespace hm3::solver::lbm
