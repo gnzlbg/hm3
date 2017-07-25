@@ -48,6 +48,4 @@ bool operator!=(ray<Ad> const& a, ray<Ad> const& b) noexcept {
 
 }  // namespace ray_primitive
 
-using ray_primitive::ray;
-
 }  // namespace hm3::geometry

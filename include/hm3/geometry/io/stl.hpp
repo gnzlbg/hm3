@@ -1,12 +1,8 @@
 #pragma once
 /// \file
 ///
-/// STereoLithography Parser
-///
-/// Copyright Gonzalo Brito Gadeschi 2016
-/// Distributed under the Boost Software License, Version 1.0.
-/// (See accompanying file LICENSE.md or copy at
-/// http://boost.org/LICENSE_1_0.txt)
+/// STereoLithography Parser. This replaces the old Boost.Spirit-based parser
+/// because it took forever to compile.
 ///
 #include <hm3/geometry/algorithm/approx/number.hpp>
 #include <hm3/io/file_system.hpp>
@@ -24,30 +20,56 @@ using vec_t = array<float, 3>;
 ///
 /// \note STL format works with 32-bit floating-point numbers only.
 struct triangle {
-  char data_[50];
+  /// Number of bytes in the raw storage:
+  static constexpr suint_t no_bytes =  //
+   1 * sizeof(vec_t) +                 // normal vector
+   3 * sizeof(vec_t) +                 // 3 vertices
+   sizeof(std::uint16_t);              // attribute
+  static_assert(no_bytes == 50);
 
-  vec_t& normal() { return *reinterpret_cast<vec_t*>(data_); };
-  vec_t const& normal() const { return const_cast<triangle&>(*this).normal(); };
-  array<vec_t, 3>& vertices() {
+  /// Raw storage for direct serialization of the triangle:
+  char data_[no_bytes]{};
+
+  /// Triangle normal vector
+  vec_t& normal() noexcept { return *reinterpret_cast<vec_t*>(data_); };
+  /// Triangle normal vector
+  vec_t const& normal() const noexcept {
+    return const_cast<triangle&>(*this).normal();
+  };
+  /// Triangle vertices
+  array<vec_t, 3>& vertices() noexcept {
     return *reinterpret_cast<array<vec_t, 3>*>(data_ + 12);
   }
-  array<vec_t, 3> const& vertices() const {
+  /// Triangle vertices
+  array<vec_t, 3> const& vertices() const noexcept {
     return const_cast<triangle&>(*this).vertices();
   }
-  std::uint16_t& attribute() {
+  /// Triangle attribute
+  std::uint16_t& attribute() noexcept {
     return *reinterpret_cast<std::uint16_t*>(data_ + 48);
   };
-  std::uint16_t const& attribute() const {
+  /// Triangle attribute
+  std::uint16_t const& attribute() const noexcept {
     return const_cast<triangle&>(*this).attribute();
   }
 
-  triangle()                = default;
-  triangle(triangle const&) = default;
-  triangle(triangle&&)      = default;
-  triangle& operator=(triangle const&) = default;
-  triangle& operator=(triangle&&) = default;
+  constexpr triangle()                = default;
+  constexpr triangle(triangle const&) = default;
+  constexpr triangle(triangle&&)      = default;
+  ~triangle()                         = default;
 
-  triangle(vec_t n, array<vec_t, 3> vxs, std::uint16_t a = 0) {
+  constexpr triangle& operator=(triangle const& other) noexcept {
+    for (suint_t i = 0; i < no_bytes; ++i) { data_[i] = other.data_[i]; }
+    return *this;
+  }
+  constexpr triangle& operator=(triangle&& other) noexcept {
+    for (suint_t i = 0; i < no_bytes; ++i) {
+      data_[i] = std::move(other.data_[i]);
+    }
+    return *this;
+  }
+
+  triangle(vec_t n, array<vec_t, 3> vxs, std::uint16_t a = 0) noexcept {
     normal()    = n;
     vertices()  = vxs;
     attribute() = a;
@@ -64,6 +86,10 @@ OStream& operator<<(OStream& os, triangle const& t) {
   return os;
 }
 
+/// Two STL triangles are equal if their normal vectors and vertices are equal.
+///
+/// The triangle attributes are ignored from equality. In general they contain
+/// garbage, depending on the source of the STL file.
 inline bool operator==(triangle const& a, triangle const& b) noexcept {
   num_t rel_float_tol = 1e-7;
   num_t abs_float_tol = 1e-6;
@@ -81,8 +107,17 @@ inline bool operator!=(triangle const& a, triangle const& b) noexcept {
   return !(a == b);
 }
 
+/// STL concepts
 namespace concept {
 
+/// These are used for optimizations. If a source is bulk writable/readable we
+/// can write/read a sequence of triangles in one go. Otherwise we need to
+/// write/read triangles one by one.
+
+/// TODO: Bulk... should refine Single... since if a source can be written in
+/// bulk this means that triangles can also be written one by one.
+
+/// A source is BulkWritable if it is a ContiguousRange of triangles.
 struct BulkWritable {
   template <typename T>
   static auto requires_(T&& t) -> decltype(  //
@@ -93,6 +128,7 @@ struct BulkWritable {
   );
 };
 
+/// A source is BulkReadable if it is a resizable ContiguousRange of triangles.
 struct BulkReadable {
   template <typename T>
   static auto requires_(T&& t) -> decltype(          //
@@ -147,7 +183,8 @@ namespace ascii {
 
 using namespace parsing;
 
-/// range-v3 stopped supporting front on InputRanges
+// TODO: workaround range-v3 recent lack of support for ranges::front on
+// InputRanges.
 template <typename Rng, CONCEPT_REQUIRES_(InputRange<Rng>{})>
 auto front_(Rng&& rng) {
   HM3_ASSERT(!ranges::empty(rng), "The range is empty!");
@@ -166,15 +203,17 @@ auto front_(Rng&& rng) {
 ///       endloop
 ///     endfacet
 ///
+/// If the range of lines represents an ASCII STL triangle, returns a triangle.
+/// Otherwise returns nothing.
 template <typename Lines>
 [[nodiscard]] optional<triangle> parse_triangle(Lines&& lines_) {
   auto lines
    = ranges::make_iterator_range(ranges::begin(lines_), ranges::end(lines_));
   if (ranges::empty(lines)) { return {}; }
+  string line_chars = front_(lines);  // TODO: use string_view
 
-  triangle tri;
-  string line_chars = front_(lines);  // TODO: string_view
-
+  // Reports a parsing error with context information: what the parser attempted
+  // to parse, and what was the input that failed:
   auto fail = [&](string expected) {
     throw parsing::failure{
      "parsing ASCII STL triangle",  // context
@@ -183,6 +222,8 @@ template <typename Lines>
     };
   };
 
+  // Parses the current line if it contains a name + a vector of three floating
+  // point values:
   auto parse_vec = [&](auto&& name, auto& out) {
     if (auto result = parse_named_array<vec_t>(name, trim(line_chars))) {
       out = result.value();
@@ -191,6 +232,7 @@ template <typename Lines>
     }
   };
 
+  // Advances the range by one line:
   auto next_line = [&]() {
     if (not try_increment(lines)) {
       fail("another line (but buffer is empty)");
@@ -198,15 +240,16 @@ template <typename Lines>
     line_chars = front_(lines);
   };
 
-  // First line: facet normal nx ny nz
-  // On failure return nothing (not parsing a triangle).
+  triangle tri;
+
+  // First line, parse: facet normal nx ny nz
+  // On failure return nothing (we are not parsing a triangle).
   try {
     parse_vec("facet normal", tri.normal());
   } catch (parsing::failure const&) { return {}; }
 
-  // Success: from now on parsing a triangle, parsing errors are hard errors:
-
-  // If that succeeds, we are parsing
+  // Success: from now on we are parsing a triangle, parsing errors are hard
+  // errors:
   try {
     // Second line: 'outer loop'
     next_line();
@@ -332,7 +375,9 @@ static constexpr single_t single;
 constexpr std::size_t file_size(std::size_t no_triangles) {
   // header + no_triangles * 50bytes + attribute
   static_assert(sizeof(triangle) == 50, "");
-  return 80 + 4 + no_triangles * sizeof(triangle);
+  return 80 +                              // header (80 bytes)
+         sizeof(std::uint32_t) +           // 4bytes storing no_triangles
+         no_triangles * sizeof(triangle);  // triangles
 }
 
 /// Parses a binary STL file from \p stream.
@@ -370,9 +415,10 @@ void read(Stream& stream, Tris& tris, ReadType) {
      file_byte_size, file_should_byte_size);
   }
 
-  // Read all triangles:
+  // Skip the header and the number of triangles -> go to the first triangle
   stream.seekg(80 + 4, std::ios_base::beg);
 
+  // Read all triangles:
   if constexpr (Same<ReadType, bulk_t>{}) {
     // Reads all triangles of the file in one go:
     static_assert(BulkReadable<Tris&>(), "tris does not model BulkReadable");
@@ -489,6 +535,14 @@ void read(Format, string filepath, Tris& tris, mpi::comm const& comm) {
     static_assert(always_false<Format>(), "unknown format (ascii/binary)");
   }
 }
+
+/// TODO: detect whether the STL file is a binary file or a ascii file
+/// automatically. It turns out that the STL file format makes this extremely
+/// hard to do correctly. Basically one should attempt to parse an STL file as
+/// an ASCII file, and if that fails, then re-attempt to parse it as a binary
+/// file. If that fails, you still don't know in which format the file is
+/// supposed to be. It is also trivial to construct Binary STL files that do
+/// look like ASCII files for a while.
 
 }  // namespace stl
 

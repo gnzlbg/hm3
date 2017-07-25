@@ -1,4 +1,4 @@
-#include <hm3/solver/geometry/discrete_domain.hpp>
+#include <hm3/solver/geometry/domain/discrete.hpp>
 #include <hm3/utility/test.hpp>
 
 using namespace hm3;

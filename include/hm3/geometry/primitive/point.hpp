@@ -2,6 +2,7 @@
 /// \file
 ///
 /// Point type.
+#include <hm3/geometry/primitive/data.hpp>
 #include <hm3/geometry/primitive/vec.hpp>
 #include <hm3/math/core.hpp>
 #include <hm3/types.hpp>
@@ -15,24 +16,26 @@ namespace point_primitive {
 /// Point.
 ///
 /// \tparam Ad Ambient dimension.
-template <dim_t Ad>
-struct point : private point_vector_detail::base_t<Ad> {
-  using geometry_type = trait::point<Ad>;
-  using vector_t      = vec<Ad>;
-  using base_t        = point_vector_detail::base_t<Ad>;
+template <dim_t Ad, typename Data>
+struct point : private point_vector_detail::base_t<Ad>,
+               public primitive_data<Data> {
+  using geometry_type    = trait::point<Ad>;
+  using point_value_type = point<Ad, Data>;
+  using vector_t         = vec<Ad>;
+  using base_t           = point_vector_detail::base_t<Ad>;
   using base_t::base_t;
   using base_t::operator=;
   using base_t::operator();
   using base_t::operator[];
-  using base_t::c;
   using base_t::begin;
+  using base_t::c;
   using base_t::end;
-  using base_t::zero;
   using base_t::ones;
-  using typename base_t::iterator;
+  using base_t::zero;
   using typename base_t::const_iterator;
-  using typename base_t::reference;
   using typename base_t::const_reference;
+  using typename base_t::iterator;
+  using typename base_t::reference;
   using typename base_t::value_type;
 
   constexpr point() = default;
@@ -150,9 +153,9 @@ constexpr VT as_v(P p) noexcept {
 
 namespace associated::customization {
 
-template <dim_t Ad>
-struct edge<::hm3::geometry::point<Ad>> {
-  using type = ::hm3::geometry::segment<Ad, ::hm3::geometry::point<Ad>>;
+template <dim_t Ad, typename Data>
+struct edge<::hm3::geometry::point<Ad, Data>> {
+  using type = ::hm3::geometry::segment<Ad, ::hm3::geometry::point<Ad, Data>>;
 };
 
 }  // namespace associated::customization

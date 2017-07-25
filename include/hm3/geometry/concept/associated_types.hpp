@@ -228,6 +228,20 @@ struct face<T, std::void_t<typename uncvref_t<T>::face_value_type>> {
 template <typename T>
 using face_t = typename customization::face<T>::type;
 
+namespace detail {
+struct ERROR_UNKNOWN_DIM;
+}  // namespace detail
+
+// clang-format off
+
+template <typename T, dim_t Ad = ambient_dimension_v<T>>
+using simplex_t
+ = meta::if_c<Ad == 1, point_t<T>,  //
+   meta::if_c<Ad == 2, edge_t<T>,   //
+   meta::if_c<Ad == 3, face_t<T>,  //
+              detail::ERROR_UNKNOWN_DIM>>>;
+// clang-format on
+
 namespace customization {
 
 template <typename T, typename = void>

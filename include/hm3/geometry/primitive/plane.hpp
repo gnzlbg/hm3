@@ -98,6 +98,4 @@ bool operator!=(plane<Ad> const& a, plane<Ad> const& b) noexcept {
 
 }  // namespace plane_primitive
 
-using plane_primitive::plane;
-
 }  // namespace hm3::geometry

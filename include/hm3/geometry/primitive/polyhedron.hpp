@@ -6,6 +6,7 @@
 #include <hm3/geometry/algorithm/direction/segment.hpp>
 #include <hm3/geometry/primitive/fwd.hpp>
 #include <hm3/geometry/primitive/polygon.hpp>
+#include <hm3/geometry/primitive/data.hpp>
 #include <hm3/utility/small_vector.hpp>
 
 namespace hm3::geometry {
@@ -29,8 +30,8 @@ constexpr auto const& edge_abs_eq = static_const<edge_abs_eq_fn>::value;
 }
 
 /// Watertight Polyhedron.
-template <typename FaceType>
-struct polyhedron {
+  template <typename FaceType, typename Data>
+  struct polyhedron : primitive_data<Data> {
   static_assert(
    Polygon<FaceType>{},
    "The type of the polyhedron faces must model the Polygon concept.");
@@ -420,7 +421,5 @@ auto face(polyhedron<FT> const& p, dim_t e) noexcept {
 ///@}  // FaceAccess
 
 }  // namespace polyhedron_primitive
-
-using polyhedron_primitive::polyhedron;
 
 }  // namespace hm3::geometry

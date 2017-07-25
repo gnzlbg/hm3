@@ -38,7 +38,13 @@ void check_point_concepts() {
 
   static_assert(Point<T>{}, "");
   static_assert(Point<T, Ad>{}, "");
+
+  // static_assert(sizeof(T) == (Ad * sizeof(num_t)));
 }
+
+struct data_ {
+  int i = 7;
+};
 
 int main() {
   using namespace geometry;
@@ -64,6 +70,10 @@ int main() {
     check_point_concepts<p1t, 1>();
     check_point_concepts<p2t, 2>();
     check_point_concepts<p3t, 3>();
+
+    static_assert(sizeof(p1t) == (1 * sizeof(num_t)));
+    static_assert(sizeof(p2t) == (2 * sizeof(num_t)));
+    static_assert(sizeof(p3t) == (4 * sizeof(num_t)));
   }
 
   {  // check values:
@@ -269,6 +279,24 @@ CHECK(p4(0) == 3.5);
 
   CHECK(p2t(v) == p);
   CHECK(as_v(p) == v);
+}
+
+{  // primitive data
+  static_assert(!HasData<p2t>{});
+
+  using p1i = point<1, data_>;
+
+  static_assert(HasData<p1i>{});
+
+  p1i p{};
+  CHECK(data(p).i == 7);
+  data(p).i = 3;
+  CHECK(data(p).i == 3);
+
+  const p1i& p_ref = p;
+  CHECK(data(p_ref).i == 3);
+  // data(p_ref) = 4;
+  CHECK(data(std::move(p)).i == 3);
 }
 
 return test::result();

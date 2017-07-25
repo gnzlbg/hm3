@@ -4,6 +4,7 @@
 /// Polyline.
 #include <hm3/geometry/concept/resizable.hpp>
 #include <hm3/geometry/fwd.hpp>
+#include <hm3/geometry/primitive/data.hpp>
 #include <hm3/geometry/primitive/detail/generic_storage.hpp>
 #include <hm3/geometry/primitive/point.hpp>
 #include <hm3/geometry/primitive/segment.hpp>
@@ -33,10 +34,10 @@ using polyline_type_t = meta::if_c<Point<T>{}, point_based_t,
 /// \tparam Ad Ambient space dimension.
 /// \tparam Storage Vector-like container for storing the polyline points or
 /// edges.
-template <dim_t Ad, typename Storage>
-struct polyline {
+template <dim_t Ad, typename Storage, typename Data>
+struct polyline : public primitive_data<Data> {
   using storage_type = polyline_type_t<Storage>;
-  using self         = polyline<Ad, Storage>;
+  using self         = polyline<Ad, Storage, Data>;
 
   static_assert(
    !Same<storage_type, void>{},
@@ -240,13 +241,15 @@ struct polyline {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };  // namespace polyline_primitive
 
-template <dim_t Ad, typename S>
-bool operator==(polyline<Ad, S> const& a, polyline<Ad, S> const& b) noexcept {
+template <dim_t Ad, typename S, typename D>
+bool operator==(polyline<Ad, S, D> const& a,
+                polyline<Ad, S, D> const& b) noexcept {
   return equal(a.vertices(), b.vertices());
 }
 
-template <dim_t Ad, typename S>
-bool operator!=(polyline<Ad, S> const& a, polyline<Ad, S> const& b) noexcept {
+template <dim_t Ad, typename S, typename D>
+bool operator!=(polyline<Ad, S, D> const& a,
+                polyline<Ad, S, D> const& b) noexcept {
   return !(a == b);
 }
 
@@ -254,14 +257,14 @@ bool operator!=(polyline<Ad, S> const& a, polyline<Ad, S> const& b) noexcept {
 ///@{
 
 /// Number of vertices of the polyline \p p.
-template <dim_t Ad, typename S>
-constexpr auto vertex_size(polyline<Ad, S> const& p) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto vertex_size(polyline<Ad, S, D> const& p) noexcept {
   return p.vertex_size();
 }
 
 /// Vertex \p i of the polyline \p p.
-template <dim_t Ad, typename S>
-constexpr auto vertex(polyline<Ad, S> const& p, dim_t i) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto vertex(polyline<Ad, S, D> const& p, dim_t i) noexcept {
   HM3_ASSERT(i < p.vertex_size(), "");
   return p.vertex(i);
 }
@@ -272,14 +275,14 @@ constexpr auto vertex(polyline<Ad, S> const& p, dim_t i) noexcept {
 ///@{
 
 /// Number of edges in the polyline \p p.
-template <dim_t Ad, typename S>
-constexpr auto edge_size(polyline<Ad, S> const& p) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto edge_size(polyline<Ad, S, D> const& p) noexcept {
   return p.edge_size();
 }
 
 /// Edge \p e of the polyline \p p.
-template <dim_t Ad, typename S>
-constexpr auto edge(polyline<Ad, S> const& p, dim_t e) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto edge(polyline<Ad, S, D> const& p, dim_t e) noexcept {
   HM3_ASSERT(e < p.edge_size(), "");
   return p.edge(e);
 }
@@ -287,7 +290,5 @@ constexpr auto edge(polyline<Ad, S> const& p, dim_t e) noexcept {
 ///@}  // EdgeAccess
 
 }  // namespace polyline_primitive
-
-using polyline_primitive::polyline;
 
 }  // namespace hm3::geometry

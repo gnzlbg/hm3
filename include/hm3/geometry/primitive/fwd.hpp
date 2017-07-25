@@ -12,7 +12,7 @@ namespace hm3::geometry {
 ///@{
 
 namespace point_primitive {
-template <dim_t Ad>
+template <dim_t Ad, typename Data = void>
 struct point;
 }  // namespace point_primitive
 using point_primitive::point;
@@ -48,28 +48,34 @@ struct ray;
 using ray_primitive::ray;
 
 namespace segment_primitive {
-template <dim_t Ad, typename PT = point<Ad>>
+template <dim_t Ad, typename PT = point<Ad>, typename Data = void>
 struct segment;
 }  // namespace segment_primitive
 using segment_primitive::segment;
 
 namespace polyline_primitive {
-template <dim_t Ad, typename Storage = small_vector<point<Ad>, 5>>
+
+template <dim_t Ad, typename Storage, typename Data>
 struct polyline;
 }  // namespace polyline_primitive
-using polyline_primitive::polyline;
 
-template <dim_t Ad>
-using edge_polyline = polyline<Ad, small_vector<segment<Ad>, 4>>;
+template <dim_t Ad, typename Point = point<Ad>, typename Data = void>
+using polyline = polyline_primitive::polyline<Ad, small_vector<Point, 5>, Data>;
+
+template <dim_t Ad, typename Edge = segment<Ad>, typename Data = void>
+using edge_polyline = polyline<Ad, Edge, Data>;
 
 namespace polygon_primitive {
-template <dim_t Ad, typename Storage = small_vector<point<Ad>, 5>>
+template <dim_t Ad, typename Storage = small_vector<point<Ad>, 5>,
+          typename Data = void>
 struct polygon;
 }  // namespace polygon_primitive
-using polygon_primitive::polygon;
 
-template <dim_t Ad>
-using edge_polygon = polygon<Ad, small_vector<segment<Ad>, 4>>;
+template <dim_t Ad, typename Point = point<Ad>, typename Data = void>
+using polygon = polygon_primitive::polygon<Ad, small_vector<Point, 5>, Data>;
+
+template <dim_t Ad, typename Edge = segment<Ad>, typename Data = void>
+using edge_polygon = polygon<Ad, Edge, Data>;
 
 namespace plane_primitive {
 template <dim_t Ad>
@@ -78,7 +84,7 @@ struct plane;
 using plane_primitive::plane;
 
 namespace polyhedron_primitive {
-template <typename FaceType = polygon<3>>
+template <typename FaceType = polygon<3>, typename Data = void>
 struct polyhedron;
 }  // namespace polyhedron_primitive
 using polyhedron_primitive::polyhedron;
@@ -103,14 +109,16 @@ using some_primitive::some;
 ///
 /// \tparam Ad Dimension of the ambient space.
 /// \tparam Nv Number of polygon vertices.
-template <dim_t Ad, dim_t Nv>
+///
+/// TODO: make this == Nv ?
+template <dim_t Ad, dim_t Nv, typename Data = void>
 using fixed_polygon
- = polygon<Ad, array<point<Ad>, Nv + 1>>;  // TODO: make this == Nv ?
+ = polygon_primitive::polygon<Ad, array<point<Ad>, Nv + 1>, Data>;
 
-template <dim_t Ad>
-using triangle = fixed_polygon<Ad, 3>;
-template <dim_t Ad>
-using quad = fixed_polygon<Ad, 4>;
+template <dim_t Ad, typename Data = void>
+using triangle = fixed_polygon<Ad, 3, Data>;
+template <dim_t Ad, typename Data = void>
+using quad = fixed_polygon<Ad, 4, Data>;
 
 namespace simplex_detail {
 struct ERROR_UNKNOWN_DIMENSION;
@@ -119,13 +127,12 @@ struct ERROR_UNKNOWN_DIMENSION;
 // clang-format off
 
 /// Simplex: points (1D), segments (2D), triangles(3D)
-template <dim_t Ad>
-using simplex = std::conditional_t<Ad == 1, point<1>,
-                std::conditional_t<Ad == 2, segment<2>,
-                std::conditional_t<Ad == 3, triangle<3>,
+template <dim_t Ad, typename Data = void>
+using simplex = std::conditional_t<Ad == 1, point<1, Data>,
+                std::conditional_t<Ad == 2, segment<2, point<2>, Data>,
+                std::conditional_t<Ad == 3, triangle<3, Data>,
                 simplex_detail::ERROR_UNKNOWN_DIMENSION
                >>>;
-
 // clang-format on
 
 }  // namespace hm3::geometry

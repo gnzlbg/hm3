@@ -103,6 +103,4 @@ bool operator>=(vec<Ad> const& l, vec<Ad> const& r) noexcept {
 
 }  // namespace vec_primitive
 
-using vec_primitive::vec;
-
 }  // namespace hm3::geometry

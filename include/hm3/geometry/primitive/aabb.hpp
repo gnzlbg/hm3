@@ -210,6 +210,4 @@ inline polygon<3> face(aabb<3> const& a, dim_t fidx) noexcept {
 
 }  // namespace aabb_primitive
 
-using aabb_primitive::aabb;
-
 }  // namespace hm3::geometry

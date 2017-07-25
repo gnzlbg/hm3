@@ -18,21 +18,24 @@ namespace polygon_primitive {
 /// \tparam Ad Number of spatial dimensions.
 /// \tparam Storage Vector-like container for storing the polygon vertices or
 /// edges.
-template <dim_t Ad, typename Storage>
-struct polygon : private polyline<Ad, Storage> {
+template <dim_t Ad, typename Storage, typename Data>
+struct polygon : private polyline_primitive::polyline<Ad, Storage, Data> {
   static_assert(Ad > 1, "Polygons do not exist in 1D ambient space!");
   using geometry_type = trait::polygon<Ad>;
 
-  using polyline_t = polyline<Ad, Storage>;
+  using polyline_t = polyline_primitive::polyline<Ad, Storage, Data>;
 
-  using typename polyline_t::storage_type;
   using typename polyline_t::edge_value_type;
   using typename polyline_t::point_value_type;
+  using typename polyline_t::storage_type;
 
-  using polyline_t::edge_size;
   using polyline_t::edge;
+  using polyline_t::edge_size;
   using polyline_t::edges;
+  using polyline_t::get_primitive_data;
   using polyline_t::reserve;
+
+  using face_value_type = polygon<Ad, Storage, Data>;
 
   /// \name Vertices
   ///@{
@@ -152,13 +155,15 @@ struct polygon : private polyline<Ad, Storage> {
   }
 };
 
-template <dim_t Ad, typename S>
-bool operator==(polygon<Ad, S> const& a, polygon<Ad, S> const& b) noexcept {
+template <dim_t Ad, typename S, typename D>
+bool operator==(polygon<Ad, S, D> const& a,
+                polygon<Ad, S, D> const& b) noexcept {
   return equal(a.vertices(), b.vertices());
 }
 
-template <dim_t Ad, typename S>
-bool operator!=(polygon<Ad, S> const& a, polygon<Ad, S> const& b) noexcept {
+template <dim_t Ad, typename S, typename D>
+bool operator!=(polygon<Ad, S, D> const& a,
+                polygon<Ad, S, D> const& b) noexcept {
   return !(a == b);
 }
 
@@ -166,14 +171,14 @@ bool operator!=(polygon<Ad, S> const& a, polygon<Ad, S> const& b) noexcept {
 ///@{
 
 /// Number of vertices of the polygon \p p.
-template <dim_t Ad, typename S>
-constexpr auto vertex_size(polygon<Ad, S> const& p) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto vertex_size(polygon<Ad, S, D> const& p) noexcept {
   return p.vertex_size();
 }
 
 /// Vertex \p i of the polygon \p p.
-template <dim_t Ad, typename S>
-constexpr auto vertex(polygon<Ad, S> const& p, dim_t i) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto vertex(polygon<Ad, S, D> const& p, dim_t i) noexcept {
   HM3_ASSERT(i < p.vertex_size(), "");
   return p.vertex(i);
 }
@@ -184,14 +189,14 @@ constexpr auto vertex(polygon<Ad, S> const& p, dim_t i) noexcept {
 ///@{
 
 /// Number of edges in the polygon \p p.
-template <dim_t Ad, typename S>
-constexpr auto edge_size(polygon<Ad, S> const& p) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto edge_size(polygon<Ad, S, D> const& p) noexcept {
   return p.edge_size();
 }
 
 /// Edge \p e of the polygon \p p.
-template <dim_t Ad, typename S>
-constexpr auto edge(polygon<Ad, S> const& p, dim_t e) noexcept {
+template <dim_t Ad, typename S, typename D>
+constexpr auto edge(polygon<Ad, S, D> const& p, dim_t e) noexcept {
   HM3_ASSERT(e < p.edge_size(), "");
   return p.edge(e);
 }
@@ -199,7 +204,5 @@ constexpr auto edge(polygon<Ad, S> const& p, dim_t e) noexcept {
 ///@}  // EdgeAccess
 
 }  // namespace polygon_primitive
-
-using polygon_primitive::polygon;
 
 }  // namespace hm3::geometry

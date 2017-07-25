@@ -83,7 +83,6 @@ bool operator!=(line<Ad> const& a, line<Ad> const& b) noexcept {
 
 }  // namespace line_primitive
 
-using line_primitive::line;
 using line_primitive::not_normalized;
 
 // namespace concepts {

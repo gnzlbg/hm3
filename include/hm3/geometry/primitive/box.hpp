@@ -202,6 +202,4 @@ inline polygon<3> face(box<3> const& a, dim_t fidx) noexcept {
 
 }  // namespace box_primitive
 
-using box_primitive::box;
-
 }  // namespace hm3::geometry
