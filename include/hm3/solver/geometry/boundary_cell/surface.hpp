@@ -19,6 +19,14 @@ struct surface {
   using surface_geometry   = cell_surface_type<Ad>;
   using internal_surface_t = internal_surface<Ad>;
   using boundary_surface_t = boundary_surface<Ad>;
+  // clang-format off
+  using concatenated_value_type
+    = meta::if_c<Ad == 1 or Ad == 2,
+                 hg::polyline<Ad, self, void>,
+                 // TODO: meta::if_c<Ad == 3,
+                 //       hg::polysurface<Ad, self, void>,
+                 void>;
+  // clang-format on
 
   using data_t = variant<surface_geometry,    //
                          internal_surface_t,  //
@@ -71,20 +79,50 @@ struct surface {
     return (*ptr).id;
   }
 
+  /// \name Constructors/Destructors/Assignment
+  ///@{
+
   surface()               = default;
   surface(surface const&) = default;
   surface(surface&&)      = default;
   surface& operator=(surface const&) = default;
   surface& operator=(surface&&) = default;
+
+  surface(data_t i) : value{std::move(i)} {}
+  surface& operator=(data_t i) {
+    value = std::move(i);
+    return *this;
+  }
+
   surface(internal_surface_t i) : value{std::move(i)} {}
   surface(boundary_surface_t i) : value{std::move(i)} {}
   surface(surface_geometry i) : value{std::move(i)} {}
+
+  surface& operator=(internal_surface_t other) noexcept {
+    value = std::move(other);
+    return *this;
+  }
+
+  surface& operator=(boundary_surface_t other) noexcept {
+    value = std::move(other);
+    return *this;
+  }
+
+  surface& operator=(surface_geometry other) noexcept {
+    value = std::move(other);
+    return *this;
+  }
+
+  ///@} // Constructors/Destructors/Assignment
+
+  /// \name Comparison operators
+  ///@{
 
   constexpr bool operator==(self const& other) const noexcept {
     return value == other.value;
   }
   constexpr bool operator!=(self const& other) const noexcept {
-    return value != other.value;
+    return !((*this) == other);
   }
 
   CONCEPT_REQUIRES(Ad == 1)
@@ -104,8 +142,24 @@ struct surface {
     return value >= other.value;
   }
 
+  ///@} // Comparison operators
+
   /// \name Vertex
   ///@{
+
+  CONCEPT_REQUIRES(Ad == 1)
+  auto operator()() const noexcept {
+    return visit([](auto&& v) { return v(); }, value);
+  }
+
+  CONCEPT_REQUIRES(Ad == 1)
+  auto& layout() noexcept {
+    return visit([](auto&& v) -> auto& { return v.layout(); }, value);
+  }
+  CONCEPT_REQUIRES(Ad == 1)
+  auto const& layout() const noexcept {
+    return visit([](auto&& v) -> auto const& { return v.layout(); }, value);
+  }
 
   CONCEPT_REQUIRES(Ad == 1) constexpr auto operator()(dim_t i) noexcept {
     return visit([i](auto&& v) { return v(i); }, value);
@@ -212,7 +266,17 @@ struct surface {
   // }
 
   ///@}
-};  // namespace hm3::solver::geometry
+};
+
+template <typename OS, dim_t Ad>
+OS& to_ascii(OS& os, surface<Ad> const& s, ascii_fmt::solver_geometry) {
+  os << "{ bc_s | t: ";
+  ascii_fmt::to_ascii(os, s.type());
+  os << " | s: ";
+  visit([&](auto&& v) { ascii_fmt::to_ascii(os, v); }, s.value);
+  os << "}";
+  return os;
+}
 
 /// \name VertexAccess
 ///@{

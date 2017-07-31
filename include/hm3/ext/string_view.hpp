@@ -4,9 +4,7 @@
 /// Include std::experimental::string_view
 #include <cstddef>
 
-// If string_view is available in the standard library use it.
-#if defined(_cpp_lib_experimental_string_view) \
- && _cpp_lib_experimental_string_view >= 201411
+#if __has_include(<string_view>)
 
 #include <experimental/string_view>
 

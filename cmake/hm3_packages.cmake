@@ -65,6 +65,7 @@ set(HM3_LIBS ${Boost_LIBRARIES} ${MPI_LIBRARIES})
 
 # ParaView:
 if (HM3_ENABLE_PARAVIEW_PLUGINS)
+  message("ParaView_DIR is ${ParaView_DIR}")
   find_package(ParaView REQUIRED)
   include(${PARAVIEW_USE_FILE})
   # If ParaView found use VTK from ParaView

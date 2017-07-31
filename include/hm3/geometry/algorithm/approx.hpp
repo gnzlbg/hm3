@@ -136,7 +136,6 @@ struct approx_fn {
       return approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
                            rel_tol);
     } else {
-      static_assert(UCVSame<T, U>{}, "T and U must be equal");
       return default_eq(std::forward<T>(t), std::forward<U>(u), abs_tol,
                         rel_tol, associated::v_<T>);
     }
@@ -150,7 +149,6 @@ struct approx_fn {
              or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
                               rel_tol);
     } else {
-      static_assert(UCVSame<T, U>{}, "T and U must be equal");
       return default_leq(std::forward<T>(t), std::forward<U>(u), abs_tol,
                          rel_tol, associated::v_<T>);
     }
@@ -164,7 +162,6 @@ struct approx_fn {
              or approx_number(std::forward<T>(t), std::forward<U>(u), abs_tol,
                               rel_tol);
     } else {
-      static_assert(UCVSame<T, U>{}, "T and U must be equal");
       return default_geq(std::forward<T>(t), std::forward<U>(u), abs_tol,
                          rel_tol, associated::v_<T>);
     }

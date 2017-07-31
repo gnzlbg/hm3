@@ -10,7 +10,7 @@ namespace hm3::solver::geometry {
 enum class surface_t { internal, boundary, geometry };
 
 template <typename OStream>
-OStream& to_ascii(OStream& o, surface_t const& v) {
+OStream& to_ascii(OStream& o, surface_t const& v, ascii_fmt::solver_geometry) {
   switch (v) {
     case surface_t::internal: {
       o << "internal surface";

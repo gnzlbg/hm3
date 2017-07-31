@@ -46,8 +46,8 @@ struct geometry : utility {};
 struct tree : geometry {};
 struct grid : tree {};
 struct solver : grid {};
-
-struct io : solver {};
+struct solver_geometry : solver {};
+struct io : solver_geometry {};
 
 ///@} // Trait hierarchy
 
@@ -106,8 +106,8 @@ decltype(auto) wrap(T&& t) {
 
 namespace detail {
 
-using ::fmt::format;
 using ::fmt::MemoryWriter;
+using ::fmt::format;
 
 template <typename Output, typename FmtString, typename... Args>
 void print(Output&& o, FmtString&& s, Args&&... args) {

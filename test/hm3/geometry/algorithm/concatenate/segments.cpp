@@ -42,7 +42,7 @@ int main() {
   pl_t rs0(make_open_segment_range(vxs0));
   auto vxs1 = {p5, p6, p7, p8};
   pl_t rs1(make_open_segment_range(vxs1));
-  auto vxs2 = {p9, p10, p11};
+  auto vxs2 = {p9, p11};
   pl_t rs2(make_open_segment_range(vxs2));
 
   CHECK(r[0] == rs0);

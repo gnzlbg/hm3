@@ -12,8 +12,8 @@ namespace hm3::geometry {
 
 namespace approx_point_detail {
 
-template <typename T, typename NT>
-constexpr bool approx_point_or_vector(T const& a, T const& b, NT abs_tol,
+template <typename T, typename U, typename NT>
+constexpr bool approx_point_or_vector(T const& a, U const& b, NT abs_tol,
                                       NT rel_tol) noexcept {
   constexpr auto ad = ad_v<T>;
   for (dim_t d = 0; d < ad; ++d) {
@@ -22,8 +22,8 @@ constexpr bool approx_point_or_vector(T const& a, T const& b, NT abs_tol,
   return true;
 }
 
-template <typename T, typename NT>
-constexpr bool geq_point_or_vector(T const& a, T const& b, NT abs_tol,
+template <typename T, typename U, typename NT>
+constexpr bool geq_point_or_vector(T const& a, U const& b, NT abs_tol,
                                    NT rel_tol) noexcept {
   constexpr auto ad = ad_v<T>;
   for (dim_t d = 0; d < ad; ++d) {
@@ -34,8 +34,8 @@ constexpr bool geq_point_or_vector(T const& a, T const& b, NT abs_tol,
   return true;
 }
 
-template <typename T, typename NT>
-constexpr bool leq_point_or_vector(T const& a, T const& b, NT abs_tol,
+template <typename T, typename U, typename NT>
+constexpr bool leq_point_or_vector(T const& a, U const& b, NT abs_tol,
                                    NT rel_tol) noexcept {
   constexpr auto ad = ad_v<T>;
   for (dim_t d = 0; d < ad; ++d) {
@@ -47,47 +47,53 @@ constexpr bool leq_point_or_vector(T const& a, T const& b, NT abs_tol,
 }
 
 struct approx_point_fn {
-  template <typename T, typename NT>
-  constexpr bool operator()(T const& a, T const& b, NT abs_tol,
+  template <typename T, typename U, typename NT>
+  constexpr bool operator()(T const& a, U const& b, NT abs_tol,
                             NT rel_tol) const noexcept {
     static_assert(Point<T>{});
+    static_assert(Point<U>{});
     return approx_point_or_vector(a, b, abs_tol, rel_tol);
   }
 
-  template <typename T, typename NT>
-  static constexpr bool geq(T const& a, T const& b, NT abs_tol,
+  template <typename T, typename U, typename NT>
+  static constexpr bool geq(T const& a, U const& b, NT abs_tol,
                             NT rel_tol) noexcept {
     static_assert(Point<T>{});
+    static_assert(Point<U>{});
     return geq_point_or_vector(a, b, abs_tol, rel_tol);
   }
 
-  template <typename T, typename NT>
-  static constexpr bool leq(T const& a, T const& b, NT abs_tol,
+  template <typename T, typename U, typename NT>
+  static constexpr bool leq(T const& a, U const& b, NT abs_tol,
                             NT rel_tol) noexcept {
     static_assert(Point<T>{});
+    static_assert(Point<U>{});
     return leq_point_or_vector(a, b, abs_tol, rel_tol);
   }
 };
 
 struct approx_vector_fn {
-  template <typename T, typename NT>
-  constexpr bool operator()(T const& a, T const& b, NT abs_tol,
+  template <typename T, typename U, typename NT>
+  constexpr bool operator()(T const& a, U const& b, NT abs_tol,
                             NT rel_tol) const noexcept {
     static_assert(Vector<T>{});
+    static_assert(Vector<U>{});
     return approx_point_or_vector(a, b, abs_tol, rel_tol);
   }
 
-  template <typename T, typename NT>
-  static constexpr bool geq(T const& a, T const& b, NT abs_tol,
+  template <typename T, typename U, typename NT>
+  static constexpr bool geq(T const& a, U const& b, NT abs_tol,
                             NT rel_tol) noexcept {
     static_assert(Vector<T>{});
+    static_assert(Vector<U>{});
     return geq_point_or_vector(a, b, abs_tol, rel_tol);
   }
 
-  template <typename T, typename NT>
-  static constexpr bool leq(T const& a, T const& b, NT abs_tol,
+  template <typename T, typename U, typename NT>
+  static constexpr bool leq(T const& a, U const& b, NT abs_tol,
                             NT rel_tol) noexcept {
     static_assert(Vector<T>{});
+    static_assert(Vector<U>{});
     return leq_point_or_vector(a, b, abs_tol, rel_tol);
   }
 };

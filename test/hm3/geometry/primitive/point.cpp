@@ -44,6 +44,9 @@ void check_point_concepts() {
 
 struct data_ {
   int i = 7;
+
+  friend bool operator==(data_ const& a, data_ const& b) { return a.i == b.i; }
+  friend bool operator!=(data_ const& a, data_ const& b) { return !(a == b); }
 };
 
 int main() {

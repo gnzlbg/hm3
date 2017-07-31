@@ -1,5 +1,4 @@
 #pragma once
-#define HM3_USE_EDGE_BASED_POLYLINE
 /// \file
 ///
 /// Primitive forward declarations.

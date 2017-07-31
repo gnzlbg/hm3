@@ -92,8 +92,8 @@ void test_polyline() {
 
     CHECK(u);
     CHECK(u2);
-    auto ess             = {s_t{p0, p1}, s_t{p1, p2}, s_t{p2, p3},
-                s_t{p3, p5}, s_t{p5, p6}, s_t{p6, p7}};
+    auto ess = {s_t{p0, p7}};
+
     auto pl_union_should = pl_t(ess);
 
     CHECK(u.value() == pl_union_should);
@@ -135,6 +135,15 @@ void test_polyline() {
     auto es = {s_t{p0, p1}, s_t{p1, p2}, s_t{p2, p3}, s_t{p3, p4}, s_t{p4, p5}};
 
     pl_t pl(es);
+    {
+      auto es0 = {s_t{p0, p1}, s_t{p1, p2}, s_t{p2, p3}};
+      pl_t pl0{es0};
+      auto es1 = {s_t{p3, p4}, s_t{p4, p5}};
+      pl_t pl1{es1};
+      auto r = concatenate(pl0, pl1);
+      CHECK(r);
+      CHECK(r.value() == pl);
+    }
 
     p_t o0{1., 2.};
     p_t o1{1.5, 0.5};

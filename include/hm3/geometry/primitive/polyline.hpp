@@ -244,6 +244,9 @@ struct polyline : public primitive_data<Data> {
 template <dim_t Ad, typename S, typename D>
 bool operator==(polyline<Ad, S, D> const& a,
                 polyline<Ad, S, D> const& b) noexcept {
+  if constexpr (HasData<polyline<Ad, S, D>>{}) {
+    if (data(a) != data(b)) { return false; }
+  }
   return equal(a.vertices(), b.vertices());
 }
 

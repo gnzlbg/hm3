@@ -25,7 +25,7 @@ struct point : private point_vector_detail::base_t<Ad>,
   using base_t           = point_vector_detail::base_t<Ad>;
   using base_t::base_t;
   using base_t::operator=;
-  using base_t::operator();
+  using base_t::operator();  // TODO: replace with layout
   using base_t::operator[];
   using base_t::begin;
   using base_t::c;
@@ -37,6 +37,7 @@ struct point : private point_vector_detail::base_t<Ad>,
   using typename base_t::iterator;
   using typename base_t::reference;
   using typename base_t::value_type;
+  using concatenated_value_type = polyline<Ad, point_value_type, void>;
 
   constexpr point() = default;
   constexpr point(base_t const& s)
@@ -77,33 +78,36 @@ struct point : private point_vector_detail::base_t<Ad>,
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-template <dim_t Ad>
-bool operator==(point<Ad> const& l, point<Ad> const& r) noexcept {
+template <dim_t Ad, typename D>
+bool operator==(point<Ad, D> const& l, point<Ad, D> const& r) noexcept {
+  if constexpr (HasData<point<Ad, D>>{}) {
+    if (data(l) != data(r)) { return false; }
+  }
   return (l().array() == r().array()).all();
 }
 
-template <dim_t Ad>
-bool operator!=(point<Ad> const& l, point<Ad> const& r) noexcept {
+template <dim_t Ad, typename D>
+bool operator!=(point<Ad, D> const& l, point<Ad, D> const& r) noexcept {
   return !(l == r);
 }
 
-template <dim_t Ad>
-bool operator<(point<Ad> const& l, point<Ad> const& r) noexcept {
+template <dim_t Ad, typename D>
+bool operator<(point<Ad, D> const& l, point<Ad, D> const& r) noexcept {
   return (l().array() < r().array()).all();
 }
 
-template <dim_t Ad>
-bool operator>(point<Ad> const& l, point<Ad> const& r) noexcept {
+template <dim_t Ad, typename D>
+bool operator>(point<Ad, D> const& l, point<Ad, D> const& r) noexcept {
   return (l().array() > r().array()).all();
 }
 
-template <dim_t Ad>
-bool operator<=(point<Ad> const& l, point<Ad> const& r) noexcept {
+template <dim_t Ad, typename D>
+bool operator<=(point<Ad, D> const& l, point<Ad, D> const& r) noexcept {
   return (l().array() <= r().array()).all();
 }
 
-template <dim_t Ad>
-bool operator>=(point<Ad> const& l, point<Ad> const& r) noexcept {
+template <dim_t Ad, typename D>
+bool operator>=(point<Ad, D> const& l, point<Ad, D> const& r) noexcept {
   return (l().array() >= r().array()).all();
 }
 
@@ -111,28 +115,28 @@ bool operator>=(point<Ad> const& l, point<Ad> const& r) noexcept {
 ///@{
 
 /// Number of vertices in a point
-template <dim_t Ad>
-constexpr dim_t vertex_size(point<Ad> const&) noexcept {
+template <dim_t Ad, typename D>
+constexpr dim_t vertex_size(point<Ad, D> const&) noexcept {
   return 1;
 }
 
 /// Vertex of a point (its the point itself).
-template <dim_t Ad>
-constexpr point<Ad> const& vertex(point<Ad> const& p, dim_t v) noexcept {
+template <dim_t Ad, typename D>
+constexpr point<Ad, D> const& vertex(point<Ad, D> const& p, dim_t v) noexcept {
   HM3_ASSERT(v == 0, "");
   return p;
 }
 
 /// Vertex of a point (its the point itself).
-template <dim_t Ad>
-constexpr point<Ad> vertex(point<Ad>&& p, dim_t v) noexcept {
+template <dim_t Ad, typename D>
+constexpr point<Ad, D> vertex(point<Ad, D>&& p, dim_t v) noexcept {
   HM3_ASSERT(v == 0, "");
   return p;
 }
 
 /// Vertex of a point (its the point itself).
-template <dim_t Ad>
-constexpr point<Ad>& vertex(point<Ad>& p, dim_t v) noexcept {
+template <dim_t Ad, typename D>
+constexpr point<Ad, D>& vertex(point<Ad, D>& p, dim_t v) noexcept {
   HM3_ASSERT(v == 0, "");
   return p;
 }

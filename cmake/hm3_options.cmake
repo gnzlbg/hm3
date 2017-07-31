@@ -21,9 +21,12 @@ option(HM3_VERBOSE_CONFIGURE "Prints helpful debug information about CMake scrip
 option(HM3_ENABLE_DEBUG_INFO_GDB "Include GDB debug information in the binaries." OFF)
 option(HM3_ENABLE_DEBUG_INFO_LLDB "Include LLDB debug information in the binaries." OFF)
 option(HM3_ENABLE_MODULES "Enables the Modules TS." OFF)
+option(HM3_ENABLE_OPENMP "Enables OpenMP." OFF)
 
 # Enable verbose configure when passing -Wdev to CMake
 if (DEFINED CMAKE_SUPPRESS_DEVELOPER_WARNINGS AND
     NOT CMAKE_SUPPRESS_DEVELOPER_WARNINGS)
   set(HM3_VERBOSE_CONFIGURE ON)
+  # Also dump the target dependency graph:
+  set_property(GLOBAL PROPERTY GLOBAL_DEPENDS_DEBUG_MODE 1)
 endif()

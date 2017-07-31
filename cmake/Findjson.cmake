@@ -3,7 +3,6 @@
 #  json_FOUND        - True when the json include directory is found.
 #  json_INCLUDE_DIR  - The path to where the json include files are.
 # If json is not found, json_FOUND is set to false.
-
 find_package(PkgConfig)
 
 if(NOT EXISTS "${json_INCLUDE_DIR}")

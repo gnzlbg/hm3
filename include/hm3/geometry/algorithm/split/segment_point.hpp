@@ -18,7 +18,7 @@ struct split_segment_point_fn {
     static_assert(Segment<S>{});
     static_assert(Point<P>{});
     static_assert(ad_v<S> == ad_v<P>);
-    static_assert(Same<associated::point_t<S>, P>{});
+    static_assert(ranges::Assignable<associated::point_t<S>&, P const&>{});
 
     auto ir = intersection_segment_point(s, p);
 
@@ -32,8 +32,16 @@ struct split_segment_point_fn {
            result.push_back(s);
            return;
          }
-         result.push_back(S(s.x(0), p));
-         result.push_back(S(p, s.x(1)));
+         {
+           S r0(s);
+           r0.x(1) = p;
+           result.push_back(r0);
+         }
+         {
+           S r1(s);
+           r1.x(0) = p;
+           result.push_back(r1);
+         }
        } else if constexpr (Same<T, monostate>{}) {
          return;
        } else {

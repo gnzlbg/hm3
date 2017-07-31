@@ -15,6 +15,14 @@ struct boundary_surface : hg::simplex<Ad> {
   using self      = boundary_surface<Ad>;
   using surface_t = hg::simplex<Ad>;
   using surface_t::surface_t;
+  // clang-format off
+  using concatenated_value_type
+  = meta::if_c<Ad == 1 or Ad == 2,
+               hg::polyline<Ad, self, void>,
+               // TODO: meta::if_c<Ad == 3,
+               //       hg::polysurface<Ad, surface<Ad>, void>,
+               void>;
+  // clang-format on
 
   boundary_surface()                        = default;
   boundary_surface(boundary_surface const&) = default;
@@ -47,5 +55,17 @@ struct boundary_surface : hg::simplex<Ad> {
  public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
+
+template <typename OS, dim_t Ad>
+OS& to_ascii(OS& os, boundary_surface<Ad> const& s,
+             ascii_fmt::solver_geometry) {
+  os << "{ bs | g: ";
+  using s_t = typename boundary_surface<Ad>::surface_t;
+  ascii_fmt::to_ascii(os, static_cast<s_t const&>(s));
+  os << " | d: ";
+  ascii_fmt::to_ascii(os, s.id);
+  os << "}";
+  return os;
+}
 
 }  // namespace hm3::solver::geometry

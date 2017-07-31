@@ -50,6 +50,7 @@ static hg::vec<Ad> random_vector(T random_gen) noexcept {
   }
 }
 
+/// Generates \tparam N random vectors.
 template <dim_t Ad, dim_t N>
 array<hg::vec<Ad>, N> random_vectors() noexcept {
   std::ranlux24 random_gen{};
@@ -79,8 +80,8 @@ struct discrete_domain : hg::with_ambient_dimension<Ad> {
   using vec_t     = hg::vec<Ad>;
   using surface_t = boundary_surface<Ad>;
   static_assert(hg::Simplex<surface_t, Ad>{});
-  using simplex_t = hg::associated::simplex_t<surface_t>;
-  static_assert(hg::Simplex<simplex_t, Ad>{});
+  using surface_boundary_t = hg::associated::boundary_t<surface_t>;
+  static_assert(hg::Simplex<surface_boundary_t, Ad>{});
   struct empty_t {};
 
   using edge_t
@@ -314,13 +315,16 @@ struct discrete_domain : hg::with_ambient_dimension<Ad> {
   /// Surface at index \p s
   surface_t surface(sidx_t s) const noexcept {
     if constexpr (Ad == 1) {
-      return surface_t{simplex_t{surface_vertex(s, 0)}, surface_data(s)};
+      return surface_t{surface_boundary_t{surface_vertex(s, 0)},
+                       surface_data(s)};
     } else if constexpr (Ad == 2) {
-      return surface_t{simplex_t{surface_vertex(s, 0), surface_vertex(s, 1)},
-                       surface_data(s)};
+      return surface_t{
+       surface_boundary_t{surface_vertex(s, 0), surface_vertex(s, 1)},
+       surface_data(s)};
     } else if constexpr (Ad == 3) {
-      return surface_t{simplex_t{hg::make_segment_range(surface_vertices(s))},
-                       surface_data(s)};
+      return surface_t{
+       surface_boundary_t{hg::make_segment_range(surface_vertices(s))},
+       surface_data(s)};
     }
   }
 
@@ -886,12 +890,20 @@ struct discrete_domain : hg::with_ambient_dimension<Ad> {
     // 1. Find simplices intersected by the volume
     auto is = intersected_simplices(v);
 
-    // 2. Concatenates single polylines/polysurfaces into bigger ones
-    auto ps = hg::concatenate.range(
-     is | view::transform([&](auto&& sidx) { return surface(sidx); }));
+    if constexpr (Ad == 1) {
+      // 2. In 1D we split directly against the points intersected by the volume
+      // (points are disjoint, so there is nothing to "concatenate").
+      return hg::split.against_range(
+       v, is | view::transform([&](auto&& sidx) { return surface(sidx); }));
+    } else {
+      // 2. In 2D/3D we first concatenate single polylines/polysurfaces into
+      // bigger ones:
+      auto ps = hg::concatenate.range(
+       is | view::transform([&](auto&& sidx) { return surface(sidx); }));
 
-    // 3. Split the volume with the polysurfaces
-    return hg::split.against_range(v, ps);
+      // 3. Split the volume with the polysurfaces
+      return hg::split.against_range(v, ps);
+    }
   }
 
   template <typename Volume>

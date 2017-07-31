@@ -31,7 +31,7 @@ struct segment : public primitive_data<Data> {
   using edge_value_type         = segment<Ad, point_value_type, Data>;
   using edge_reference          = edge_value_type&;
   using edge_const_reference    = edge_value_type const&;
-  using concatenated_value_type = polyline<Ad, PT, Data>;
+  using concatenated_value_type = polyline<Ad, PT, void>;
 
   array<point_value_type, 2> xs_;
 
@@ -53,7 +53,7 @@ struct segment : public primitive_data<Data> {
 
   /// Obtains an unbounded line from the segment.
   constexpr line_type line() const noexcept {
-    return line_type(x(dim_t{0}), x(dim_t{1}));
+    return line_type(x(dim_t{0}).layout(), x(dim_t{1}).layout());
   }
 
   template <typename At>
@@ -111,6 +111,17 @@ struct segment : public primitive_data<Data> {
 template <dim_t Ad, typename PT, typename D>
 constexpr bool operator==(segment<Ad, PT, D> const& l,
                           segment<Ad, PT, D> const& r) noexcept {
+  ascii_fmt::err("segment equality\n");
+  if constexpr (HasData<segment<Ad, PT, D>>{}) {
+    ascii_fmt::err("has data\n");
+    if (data(l) != data(r)) {
+      ascii_fmt::err(" has data differs\n");
+      return false;
+    }
+    ascii_fmt::err("data is equal\n");
+  } else {
+    ascii_fmt::err("has no data\n");
+  }
   return l.x(0) == r.x(0) and l.x(1) == r.x(1);
 }
 
@@ -179,12 +190,6 @@ constexpr segment<Ad, PT, D> edge(segment<Ad, PT, D>&& s, dim_t f) noexcept {
 }
 
 ///@}  // EdgeAccess
-
-template <dim_t Ad, typename PT, typename D>
-constexpr optional<segment<Ad, PT, D>> merge_collinear_adjacent_segments(
- segment<Ad, PT, D> const& s0, segment<Ad, PT, D> const& s1) {
-  return segment<Ad, PT, D>(s0.x(0), s1.x(1));
-}
 
 }  // namespace segment_primitive
 

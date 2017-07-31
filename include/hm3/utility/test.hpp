@@ -18,6 +18,13 @@
 
 #define HM3_TEST_RESOURCES "hm3_resources/"
 
+// This macro overrides equality for geometry object and replaces it with a call
+// to the `approx(a, b)` algorithm (this will fail to take other properties of
+// the geometry objects into account when performing a comparison in a
+// CHECK(...) clause, like, e.g., geometry object data).
+//
+// #define HM3_TEST_GEOMETRY_APPROX_EQ
+
 namespace hm3 {
 
 /// Unit-testing utilities
@@ -30,6 +37,7 @@ inline int& failures() {
   return no_failures;
 }
 
+#ifdef HM3_TEST_GEOMETRY_APPROX_EQ
 struct approx_fn {
   template <typename T, typename U>
   static constexpr auto impl(T&&, U&&, fallback) -> bool {
@@ -47,6 +55,7 @@ struct approx_fn {
     return impl(std::forward<T>(t), std::forward<U>(u), dispatch);
   }
 };
+#endif
 
 template <typename T>
 struct ret {
@@ -84,6 +93,7 @@ struct ret {
   ret& operator=(ret const&) = default;
   ret& operator=(ret&&) = default;
 
+#ifdef HM3_TEST_GEOMETRY_APPROX_EQ
   template <typename U,
             CONCEPT_REQUIRES_(!std::is_floating_point<U>{}
                               && !std::is_floating_point<T>{}
@@ -92,11 +102,18 @@ struct ret {
     dismiss();
     if (!approx_fn{}(t_, u)) { this->oops(u); }
   }
+#endif
 
   template <typename U,
+#ifdef HM3_TEST_GEOMETRY_APPROX_EQ
             CONCEPT_REQUIRES_(!std::is_floating_point<U>{}
                               && !std::is_floating_point<T>{}
-                              && !geometry::GeometryObject<uncvref_t<U>>{})>
+                              && !geometry::GeometryObject<uncvref_t<U>>{})
+#else
+            CONCEPT_REQUIRES_(!std::is_floating_point<U>{}
+                              && !std::is_floating_point<T>{})
+#endif
+            >
   void operator==(U const& u) {
     dismiss();
     if (!(t_ == u)) { this->oops(u); }

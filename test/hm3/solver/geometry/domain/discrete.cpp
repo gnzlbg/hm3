@@ -3,8 +3,8 @@
 
 using namespace hm3;
 using namespace geometry;
-using solver::geometry::discrete_domain;
 using solver::geometry::boundary_surface;
+using solver::geometry::discrete_domain;
 using namespace solver::geometry;
 
 // template struct hm3::solver::geometry::discrete_domain<1>;

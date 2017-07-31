@@ -158,6 +158,9 @@ struct polygon : private polyline_primitive::polyline<Ad, Storage, Data> {
 template <dim_t Ad, typename S, typename D>
 bool operator==(polygon<Ad, S, D> const& a,
                 polygon<Ad, S, D> const& b) noexcept {
+  if constexpr (HasData<polygon<Ad, S, D>>{}) {
+    if (data(a) != data(b)) { return false; }
+  }
   return equal(a.vertices(), b.vertices());
 }
 

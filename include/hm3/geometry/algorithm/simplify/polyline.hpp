@@ -4,10 +4,9 @@
 /// Simplifies a polyline: merges colinear adjacent edges.
 #include <hm3/geometry/algorithm/concatenate/segment_segment.hpp>
 #include <hm3/geometry/algorithm/edge.hpp>
+#include <hm3/geometry/algorithm/merge.hpp>
 #include <hm3/geometry/concept/polyline.hpp>
 #include <hm3/geometry/fwd.hpp>
-
-#include <hm3/io/ascii.hpp>
 
 namespace hm3::geometry {
 
@@ -17,7 +16,8 @@ struct simplify_polyline_fn {
   /// Simplify the polyline \p pl by merging colinear adjacent edges.
   template <typename P, typename UP = uncvref_t<P>,
             CONCEPT_REQUIRES_(MutablePolyline<UP>{})>
-  constexpr auto operator()(P&& pl) const noexcept -> UP {
+  constexpr auto operator()(P&& pl, num_t abs_tol, num_t rel_tol) const noexcept
+   -> UP {
     // Break early if the polyline is empty or has only one segment:
     if (edge_size(pl) < 2) { return pl; }
 
@@ -29,7 +29,7 @@ struct simplify_polyline_fn {
     for (dim_t neidx = 1; neidx < edge_size(pl); ++neidx) {
       auto edge_next = edge(pl, neidx);
 
-      auto r = concatenate_segment_segment(edge_current, edge_next);
+      auto r = merge(edge_current, edge_next, abs_tol, rel_tol);
 
       if (r) {
         // segments can be simplified
@@ -49,8 +49,8 @@ struct simplify_polyline_fn {
 }  // namespace simplify_polyline_detail
 
 namespace {
-constexpr auto const& simplify_polyline
- = static_const<simplify_polyline_detail::simplify_polyline_fn>::value;
+constexpr auto const& simplify_polyline = static_const<
+ with_default_tolerance<simplify_polyline_detail::simplify_polyline_fn>>::value;
 }
 
 }  // namespace hm3::geometry

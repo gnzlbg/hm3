@@ -1,4 +1,4 @@
-#include <hm3/solver/geometry/surface/cell.hpp>
+#include <hm3/solver/geometry/boundary_cell/surface.hpp>
 #include <hm3/utility/test.hpp>
 
 template struct hm3::solver::geometry::boundary_cell::surface<1>;

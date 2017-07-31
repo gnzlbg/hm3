@@ -169,7 +169,7 @@ if __name__ == '__main__':
       shutil.rmtree(build_dir)
       os.makedirs(build_dir)
 
-   # Set up libc++
+   # Set up c++stdlib
    if not args['--without-libcxx']:
       if args['--libcxx_i'] is None:
          if 'LIBCXX_INCLUDE' in os.environ:

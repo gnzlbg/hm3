@@ -4,6 +4,7 @@
 /// Concatenate two non-overlapping polylines
 #include <hm3/geometry/algorithm/approx.hpp>
 #include <hm3/geometry/algorithm/edge.hpp>
+#include <hm3/geometry/algorithm/simplify/polyline.hpp>
 #include <hm3/geometry/algorithm/vertex.hpp>
 #include <hm3/geometry/concept/polyline.hpp>
 #include <hm3/geometry/fwd.hpp>
@@ -14,9 +15,8 @@ namespace hm3::geometry {
 namespace concatenate_polyline_polyline_detail {
 
 struct concatenate_polyline_polyline_fn {
-  template <typename P>
-
-  constexpr bool non_overlapping(P&& /*l0*/, P&& /*l1*/) const {
+  template <typename P0, typename P1>
+  constexpr bool non_overlapping(P0&& /*l0*/, P1&& /*l1*/) const {
     // TODO:
     //
     // 1. Does any segment of l0 intersect any segment of l1? If no, they do not
@@ -30,10 +30,11 @@ struct concatenate_polyline_polyline_fn {
 
   /// Set union between two polylines.
   template <typename P0, typename P1, typename UP0 = uncvref_t<P0>,
-            typename UP1 = uncvref_t<P1>,
-            CONCEPT_REQUIRES_(Same<UP0, UP1>{} and MutablePolyline<UP0>{})>
+            typename UP1 = uncvref_t<P1>>
   constexpr optional<UP0> operator()(P0&& l0, P1&& l1, num_t abs_tol,
                                      num_t rel_tol) const noexcept {
+    static_assert(Same<UP0, UP1>{});
+    static_assert(MutablePolyline<UP0>{});
     HM3_ASSERT(vertex_size(l0) > 1, "");
     HM3_ASSERT(vertex_size(l1) > 1, "");
     HM3_ASSERT(non_overlapping(l0, l1), "");
@@ -54,11 +55,13 @@ struct concatenate_polyline_polyline_fn {
 
     if (approx(last0, first1, abs_tol,
                rel_tol)) {  // insert l1 at the end of l0
-      return from_edges(edges(l0), edges(l1));
+      return simplify_polyline(from_edges(edges(l0), edges(l1)), abs_tol,
+                               rel_tol);
     }
     if (approx(last1, first0, abs_tol,
                rel_tol)) {  // insert l0 at the end of l1
-      return from_edges(edges(l1), edges(l0));
+      return simplify_polyline(from_edges(edges(l1), edges(l0)), abs_tol,
+                               rel_tol);
     }
     return {};
   }
