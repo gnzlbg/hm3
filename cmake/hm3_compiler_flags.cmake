@@ -17,7 +17,8 @@ endmacro()
 
 # All compilation flags
 # Language flag: version of the C++ standard to use
-hm3_append_flag(HM3_HAS_STDCXX1Z -std=c++1z)
+hm3_append_flag(HM3_HAS_STDCXX1Z -std=c++20a)
+set(CMAKE_CXX_STANDARD 17)
 
 # PITA warning flags:
 hm3_append_flag(HM3_HAS_WSHADOW -Wshadow)
