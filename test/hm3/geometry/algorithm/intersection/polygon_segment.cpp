@@ -45,8 +45,6 @@ int main() {
 
   s_t s14(p_t{0.5, 0.5}, p_t{1.5, 0.5});
 
-  auto ss = {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14};
-
   using i_t = decltype(intersection(p, s0));
   CHECK(intersection(p, s0) == i_t{p0});
   CHECK(intersection(p, s1) == i_t{s1});
@@ -76,6 +74,7 @@ int main() {
   }
 
 #ifdef HM3_ENABLE_VTK
+  auto ss = {s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14};
   geometry::io::vtk<2> o{};
   o.push_cell(p);
   o.push_range(ss);

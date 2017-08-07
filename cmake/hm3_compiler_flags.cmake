@@ -116,9 +116,12 @@ else()
 endif()
 
 if (HM3_ENABLE_MSAN)
-  set(HM3_MSAN_FLAGS "-fsanitize=memory -fsanitize-recover=all")
-  hm3_append_flag(HM3_HAS_MSAN "${HM3_MSAN_FLAGS}")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HM3_MSAN_FLAGS}")
+  hm3_append_flag(HM3_HAS_PIE, -fPIE)
+  if (HM3_HAS_PIE)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie ")
+  endif()
+  hm3_append_flag(HM3_HAS_MSAN "-fsanitize=memory")
+  hm3_append_flag(HM3_HAS_MSAN_WITH_ORIGINS "-fsanitize-memory-track-origins")
   hm3_append_flag(HM3_HAS_NO_OMIT_FRAME_POINTER -fno-omit-frame-pointer)
 endif()
 
@@ -182,7 +185,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   if (NOT HM3_ENABLE_ASAN AND NOT HM3_ENABLE_PROFILE)
     hm3_append_flag(HM3_HAS_OMIT_FRAME_POINTER -fomit-frame-pointer)
   endif()
-  # Others could be: -pipe pfdata-sections -ffunction-sections
+  # Inlining threshold:
   # for clang: -mllvm -inline-threshold=X (X=1000, 10000, ...)
 endif()
 
