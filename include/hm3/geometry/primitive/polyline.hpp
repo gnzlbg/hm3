@@ -209,8 +209,7 @@ struct polyline : public primitive_data<Data> {
   explicit polyline(Edges&& es) noexcept {
     auto no_edges = ranges::distance(es);
     if constexpr (Same<point_based_t, storage_type>{}) {
-      HM3_ASSERT(
-       no_edges + 1 == ranges::size(data_),
+      HM3_ASSERT(no_edges + 1_u == ranges::size(data_),
        "no_edges: {}, no_points: {} (no_edges + 1), point_storage_size: {}",
        no_edges, no_edges + 1, ranges::size(data_));
       auto last

@@ -15,7 +15,7 @@ option(HM3_ENABLE_LIKELY "Enables branch-prediction hints (HM3_LIKELY/HM3_UNLIKE
 option(HM3_ENABLE_PROFILE "Enables compiler flags that help profilers." OFF)
 option(HM3_ENABLE_RESTRICT "Enables restrict hint (HM3_RESTRICT macro)." ON)
 option(HM3_ENABLE_WERROR "Fail and stop if a warning is triggered." OFF)
-option(HM3_ENABLE_PARAVIEW_PLUGINS "Builds ParaView plugins." ON)
+option(HM3_ENABLE_PARAVIEW_PLUGINS "Builds ParaView plugins." OFF)
 option(HM3_ENABLE_VTK "Builds with VTK libraries." OFF)
 option(HM3_VERBOSE_CONFIGURE "Prints helpful debug information about CMake scripts." OFF)
 option(HM3_ENABLE_DEBUG_INFO_GDB "Include GDB debug information in the binaries." OFF)

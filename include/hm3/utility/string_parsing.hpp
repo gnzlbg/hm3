@@ -2,7 +2,6 @@
 /// \file
 ///
 /// String parsing utilities
-
 #include <hm3/ext/string_view.hpp>
 #include <hm3/utility/array.hpp>
 #include <hm3/utility/optional.hpp>
@@ -10,7 +9,7 @@
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
-
+#include <cinttypes>
 namespace hm3::parsing {
 
 /// Exception used to indicate a parsing failure.
@@ -69,31 +68,32 @@ optional<pair<string_view, T>> from_chars(string_view chars) noexcept {
   chars = trim(chars);
   T value;
   int ret;
-  if
-    constexpr(std::is_integral<T>() and std::is_signed<T>()) {
-      std::int64_t tmp;
-      ret   = std::sscanf(chars.data(), "%lld", &tmp);
-      value = static_cast<T>(tmp);
-    }
-  else if
-    constexpr(std::is_integral<T>() and std::is_unsigned<T>()) {
-      std::uint64_t tmp;
-      ret   = std::sscanf(chars.data(), "%llu", &tmp);
-      value = static_cast<T>(tmp);
-    }
-  else if
-    constexpr(std::is_floating_point<T>()) {
+  if constexpr(std::is_integral<T>()) {
+      if constexpr(std::is_signed<T>()) {
+          std::int64_t tmp;
+          ret   = std::sscanf(chars.data(), "%" PRId64, &tmp);
+          value = static_cast<T>(tmp);
+      } else if constexpr(std::is_unsigned<T>()) {
+          std::uint64_t tmp;
+          ret   = std::sscanf(chars.data(), "%" PRIu64, &tmp);
+          value = static_cast<T>(tmp);
+      }
+  } else if constexpr(std::is_floating_point<T>()) {
       double tmp;
       ret   = std::sscanf(chars.data(), "%lf", &tmp);
       value = static_cast<T>(tmp);
-    }
-  else {
+  } else {
     static_assert(always_false<T>{}, "unhandled case");
   }
 
   if (ret != 1) { return {}; }
   // Find the next white-space character:
   auto n = chars.find_first_of(space_chars);
+  if (n == string_view::npos) {
+    // If not found, advance till the end
+    n = chars.size();
+  }
+  
   chars.remove_prefix(n);
   return make_pair(chars, value);
 }
