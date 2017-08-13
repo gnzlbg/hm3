@@ -3,13 +3,14 @@
 ///
 /// AT macro used to get a source file location (file, line, function)
 #include <hm3/types.hpp>
+#include <hm3/config/attributes.hpp>
 
 namespace hm3 {
 
 #ifndef HM3_DISABLE_ASSERTIONS
 struct source_location {
   template <typename A, typename B, typename C>
-  [[always_inline]] constexpr source_location(A&& func, B&& file, C&& line)
+  [[HM3_ALWAYS_INLINE]] constexpr source_location(A&& func, B&& file, C&& line)
    : function_name(static_cast<const char*>(func))
    , file_name(static_cast<const char*>(file))
    , line_number(line) {}

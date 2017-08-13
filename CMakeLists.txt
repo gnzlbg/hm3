@@ -6,7 +6,6 @@
 # CMake Version:
 cmake_minimum_required(VERSION 3.0)
 cmake_policy(VERSION 3.7.1)
-#cmake_policy(SET CMP0066 NEW)
 
 # Setup project
 project(hm3 CXX)

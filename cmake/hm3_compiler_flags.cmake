@@ -6,6 +6,9 @@
 # Setup compiler flags (more can be set on a per-target basis or in
 # subdirectories)
 
+# Target for fetching packages
+add_custom_target(fetch_packages)
+
 # Compilation flags
 include(CheckCXXCompilerFlag)
 macro(hm3_append_flag testname flag)
@@ -16,9 +19,13 @@ macro(hm3_append_flag testname flag)
 endmacro()
 
 # All compilation flags
+
 # Language flag: version of the C++ standard to use
-hm3_append_flag(HM3_HAS_STDCXX1Z -std=c++20a)
+# 1) Override internal CMake option for the C++17 standard with custom one:
+set(CMAKE_CXX17_STANDARD_COMPILE_OPTION -std=c++2a)
+# 2) Tell CMake to compile in C++17 mode.
 set(CMAKE_CXX_STANDARD 17)
+# Yep.
 
 # PITA warning flags:
 hm3_append_flag(HM3_HAS_WSHADOW -Wshadow)
@@ -104,11 +111,8 @@ if (HM3_ENABLE_WERROR)
 endif()
 
 if (HM3_ENABLE_ASAN)
-  #set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined,leak")
-  set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined")
-  #set(HM3_ASAN_FLAGS "-fsanitize=address,integer,undefined -fno-sanitize-recover=address,integer,undefined -fsanitize-blacklist=${PROJECT_SOURCE_DIR}/sanitize.blacklist")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${HM3_ASAN_FLAGS}")
-  hm3_append_flag(HM3_HAS_SANITIZE_FLAGS "-fsanitize=address,integer,undefined")
+  hm3_append_flag(HM3_HAS_SANITIZE_FLAGS "-fsanitize=address,integer,undefined,nullability")
+  hm3_append_flag(HM3_HAS_SANITIZE_FLAGS2 "-fsanitize-address-use-after-scope")
   hm3_append_flag(HM3_HAS_SANITIZE_NO_RECOVER "-fno-sanitize-recover=address,integer,undefined")
   hm3_append_flag(HM3_HAS_SANITIZE_BLACKLIST "-fsanitize-blacklist=${PROJECT_SOURCE_DIR}/sanitize.blacklist")
   hm3_append_flag(HM3_HAS_NO_OMIT_FRAME_POINTER -fno-omit-frame-pointer)

@@ -37,7 +37,7 @@ struct sphere_at_origin : signed_distance<Ad> {
   }
 
   void set_radius(num_t r) noexcept {
-    HM3_ASSERT(radius_ > 0., "sphere radius = {} !> 0.", radius_);
+    HM3_ASSERT(r > 0., "sphere radius = {} !> 0.", r);
     radius_ = r;
   }
 

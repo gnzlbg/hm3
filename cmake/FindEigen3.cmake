@@ -6,17 +6,17 @@
 
 find_package(PkgConfig)
 
-if(NOT EXISTS "${Eigen3_INCLUDE_DIR}")
-  find_path(Eigen3_INCLUDE_DIR
-    NAMES Eigen
-    DOC "Eigen3 library header files"
-    )
-endif()
+#if(NOT EXISTS "${Eigen3_INCLUDE_DIR}")
+#  find_path(Eigen3_INCLUDE_DIR
+#    NAMES Eigen
+#    DOC "Eigen3 library header files"
+#    )
+#endif()
 
-if(EXISTS "${Eigen3_INCLUDE_DIR}")
-  include(FindPackageHandleStandardArgs)
-  mark_as_advanced(Eigen3_INCLUDE_DIR)
-else()
+#if(EXISTS "${Eigen3_INCLUDE_DIR}")
+#  include(FindPackageHandleStandardArgs)
+#  mark_as_advanced(Eigen3_INCLUDE_DIR)
+#else()
   include(ExternalProject)
   ExternalProject_Add(Eigen3
     HG_REPOSITORY https://bitbucket.org/eigen/eigen/
@@ -32,7 +32,7 @@ else()
   # Specify include dir
   ExternalProject_Get_Property(Eigen3 source_dir)
   set(Eigen3_INCLUDE_DIR ${source_dir})
-endif()
+#endif()
 
 if(EXISTS "${Eigen3_INCLUDE_DIR}")
   set(Eigen3_FOUND 1)

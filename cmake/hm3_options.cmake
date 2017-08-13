@@ -22,6 +22,7 @@ option(HM3_ENABLE_DEBUG_INFO_GDB "Include GDB debug information in the binaries.
 option(HM3_ENABLE_DEBUG_INFO_LLDB "Include LLDB debug information in the binaries." OFF)
 option(HM3_ENABLE_MODULES "Enables the Modules TS." OFF)
 option(HM3_ENABLE_OPENMP "Enables OpenMP." OFF)
+option(HM3_ENABLE_MPI "Enables MPI." ON)
 
 # Enable verbose configure when passing -Wdev to CMake
 if (DEFINED CMAKE_SUPPRESS_DEVELOPER_WARNINGS AND

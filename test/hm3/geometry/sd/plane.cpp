@@ -1,5 +1,7 @@
 #include <hm3/geometry/sd/functions/plane.hpp>
 #include <hm3/utility/test.hpp>
+// triangle stuff:
+#include <hm3/geometry/sd/functions/triangle.hpp>
 
 using namespace hm3;
 using namespace geometry;
@@ -66,6 +68,28 @@ int main() {
   }
 
   // TODO: 3D
+
+  // TODO: move triangle tests to their own file
+  {  // triangle 2D
+    using p2d_t      = hm3::geometry::point<2>;
+    p2d_t tri_vxs[3] = {p2d_t{-1., 0.}, p2d_t{1., 0.0}, p2d_t{0., 1.0}};
+    geometry::triangle<2> tri{make_segment_range(tri_vxs)};
+    geometry::sd::triangle tri0{tri};
+
+    // vertices:
+    CHECK(tri0(tri_vxs[0]) == 0.);
+    CHECK(tri0(tri_vxs[1]) == 0.);
+    CHECK(tri0(tri_vxs[2]) == 0.);
+    // edge mid points:
+    CHECK(tri0(p2d_t{0., 0.0}) == 0.);
+    CHECK(geometry::approx(tri0(p2d_t{-0.5, 0.5}), 0.));
+    CHECK(geometry::approx(tri0(p2d_t{0.5, 0.5}),0.));
+    // across bottom edge:
+    CHECK(tri0(p2d_t{0., 0.1}) == -0.1);
+    CHECK(tri0(p2d_t{0., -0.25}) == +0.25);
+    // outside the triangle along a plane:
+    CHECK(tri0(p2d_t{-1., 2.}) == std::sqrt(2.));
+  }
 
   return test::result();
 }

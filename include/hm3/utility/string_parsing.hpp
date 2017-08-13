@@ -27,18 +27,27 @@ OStream& operator<<(OStream& os, failure const& f) {
   return os;
 }
 
-static constexpr auto space_chars_ = " \f\n\r\t\v";
-static constexpr string_view space_chars(space_chars_, sizeof(space_chars_));
+constexpr string_view space_chars() noexcept {
+  constexpr auto space_chars_ = " \f\n\r\t\v\0";
+  return string_view(space_chars_);
+}
+
+string_view substr(string_view s, std::size_t pos,
+                     std::size_t size = string_view::npos) noexcept {
+  HM3_ASSERT(pos <= s.size(), "pos = {} out-of-range [0, {})", pos, s.size());
+  return s.substr(pos, size);
+}
 
 /// Remove leading and trailing whitespace.
 ///
 /// Whitespace chars = `{' ', '\f', '\n', '\r', '\t', '\v'}`.
 string_view trim(string_view s) noexcept {
-  auto first = s.find_first_not_of(space_chars);
+  auto first = s.find_first_not_of(space_chars());
   if (first == string_view::npos) { return ""; }
-  auto last = s.find_last_not_of(space_chars);
+  auto last = s.find_last_not_of(space_chars());
   auto size = (last - first) + 1;
-  return s.substr(first, size);
+
+  return substr(s, first, size);
 }
 
 /// Removes \p prefix from \p chars.
@@ -88,7 +97,7 @@ optional<pair<string_view, T>> from_chars(string_view chars) noexcept {
 
   if (ret != 1) { return {}; }
   // Find the next white-space character:
-  auto n = chars.find_first_of(space_chars);
+  auto n = chars.find_first_of(space_chars());
   if (n == string_view::npos) {
     // If not found, advance till the end
     n = chars.size();

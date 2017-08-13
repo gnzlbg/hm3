@@ -24,6 +24,7 @@ struct root_traversal_fn {
   template <typename Tree, typename F>
   auto operator()(Tree const& tree, node_idx n, F&& f) const noexcept
    -> node_idx {
+    //    assert(((std::size_t)(void*)&f) % alignof(decltype(f)) == 0 && "???a");
     while (n and f(n)) { n = tree.parent(n); }
     return n;
   }

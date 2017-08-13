@@ -2,6 +2,10 @@
 /// \file
 ///
 /// Assert macro
+///
+/// TODO: this should be configurable to e.g. throw instead of terminate, so
+/// that the errors do not bring external drivers down (e.g. like ParaView
+/// plugins).
 #include <hm3/config/assume.hpp>
 #include <hm3/config/compiler.hpp>
 #include <hm3/config/debug_trap.hpp>

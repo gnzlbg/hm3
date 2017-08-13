@@ -7,9 +7,6 @@
 # Behavior when the package is found or not is customized at the
 # point where the package is required.
 
-# Target for fetching packages
-add_custom_target(fetch_packages)
-
 macro(hm3_pkg name cflags lflags)
   find_package(${name} REQUIRED)
   include_directories(SYSTEM ${${name}_INCLUDE_DIR})
@@ -50,10 +47,12 @@ hm3_pkg(Eigen3 "" "")
 hm3_pkg(hm3_resources "" "")
 
 # MPI:
-find_package(MPI REQUIRED)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MPI_COMPILE_FLAGS}")
-set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS}")
-include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+if (HM3_ENABLE_MPI)
+  find_package(MPI REQUIRED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MPI_COMPILE_FLAGS}")
+  set(CMAKE_CXX_LINK_FLAGS "${CMAKE_CXX_LINK_FLAGS} ${MPI_LINK_FLAGS}")
+  include_directories(SYSTEM ${MPI_INCLUDE_PATH})
+endif()
 
 # Boost:
 set(Boost_USE_STATIC_LIBS OFF)
@@ -77,7 +76,7 @@ endif()
 # VTK: if ParaView not found but VTK enabled use systems VTK
 if (HM3_ENABLE_VTK AND NOT HM3_ENABLE_PARAVIEW_PLUGINS)
   find_package(VTK REQUIRED)
-
+  
   include(${VTK_USE_FILE})
   set(HM3_LIBS ${HM3_LIBS} vtkalglib vtkCommonCore vtkCommonMath vtkCommonSystem
     vtkCommonComputationalGeometry vtkIOXML)

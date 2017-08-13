@@ -52,6 +52,7 @@ struct level_till_distance {
   }
 };
 
+/// Helper to allow specifiying multiple distances
 template <typename Step>
 struct multiple {
   using Steps = vector<Step>;
@@ -101,6 +102,30 @@ struct level_till_cell_distances {
   template <typename Grid, typename SD, typename Node>
   amr::action operator()(Grid&& grid, SD&& sd, Node n) const {
     return r_(std::forward<Grid>(grid), std::forward<SD>(sd), n);
+  }
+};
+
+template <typename Filter, typename Criterion>
+struct filter {
+  Filter filter_;
+  Criterion criterion;
+
+  filter()              = default;
+  filter(filter const&) = default;
+  filter(filter&&)      = default;
+  filter& operator=(filter const&) = default;
+  filter& operator=(filter&&) = default;
+
+  constexpr filter(Filter df, Criterion c)
+   : filter_(std::move(df)), criterion(std::move(c)) {}
+
+  template <typename Grid, typename SD, typename Node>
+  action operator()(Grid&& grid, SD&& distance_fn, Node n) const {
+    if (filter_(grid, distance_fn, n)) {
+      return criterion(std::forward<Grid>(grid), std::forward<SD>(distance_fn),
+                       n);
+    }
+    return action::none;
   }
 };
 

@@ -4,6 +4,7 @@
 /// Computes the order of polygon vertices in 2D. (In 3D the "order" of polygon
 /// vertices does not really make sense).
 #include <hm3/geometry/algorithm/planar_projection.hpp>
+#include <hm3/geometry/algorithm/edge.hpp>
 #include <hm3/geometry/concept/polygon.hpp>
 
 namespace hm3::geometry {
